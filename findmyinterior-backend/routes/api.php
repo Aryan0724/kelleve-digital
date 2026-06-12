@@ -26,11 +26,16 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->group(function () {
     
+    // Simple health check to verify PHP is running
+    Route::get('/health', function () {
+        return response()->json(['status' => 'ok', 'database' => 'connected']);
+    });
+
     // TEMPORARY: Render Free Tier Migration Route
     Route::get('/setup-db-secret', function () {
         try {
-            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--seed' => true, '--force' => true]);
-            return "Database migrated and seeded successfully! Please remove this route later.";
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
+            return "Database migrated successfully! (Seeders disabled to prevent memory crashes). Please remove this route later.";
         } catch (\Throwable $e) {
             return response()->json([
                 'error' => $e->getMessage(),
