@@ -7,7 +7,13 @@ import { Search, MapPin, Store, Star, ShieldCheck } from "lucide-react";
 
 async function getSuppliers(searchParams: any) {
   try {
-    const params = new URLSearchParams(searchParams).toString();
+    const cleanParams: Record<string, string> = {};
+    for (const key in searchParams) {
+      if (typeof searchParams[key] === 'string') {
+        cleanParams[key] = searchParams[key];
+      }
+    }
+    const params = new URLSearchParams(cleanParams).toString();
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/suppliers?${params}`, {
       cache: 'no-store'
     });

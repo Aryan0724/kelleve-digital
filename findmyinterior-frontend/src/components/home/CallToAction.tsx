@@ -17,10 +17,10 @@ export function CallToAction() {
         </p>
         
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Button size="lg" variant="secondary" className="h-14 px-8 text-lg font-semibold w-full sm:w-auto" render={<Link href="/join" />}>
+          <Button size="lg" variant="secondary" className="h-14 px-8 text-lg font-semibold w-full sm:w-auto" render={<Link href="/join" />} nativeButton={false}>
             List Your Business Free
           </Button>
-          <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-semibold text-white border-white hover:bg-white hover:text-orange-600 w-full sm:w-auto" render={<Link href="/pricing" />}>
+          <Button size="lg" variant="outline" className="h-14 px-8 text-lg font-semibold text-white border-white hover:bg-white hover:text-orange-600 w-full sm:w-auto" render={<Link href="/pricing" />} nativeButton={false}>
             View Premium Plans
           </Button>
         </div>

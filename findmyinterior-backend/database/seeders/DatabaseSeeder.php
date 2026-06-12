@@ -17,11 +17,15 @@ class DatabaseSeeder extends Seeder
             SubscriptionPlanSeeder::class, // Basic, Professional, Premium
 
             // ── Marketplace Seed Data (makes the platform look alive) ──────────
-            BuilderSeeder::class,         // 20 builders + 5 projects each
-            SupplierSeeder::class,        // 20 suppliers + 5 products each
-            WorkerSeeder::class,          // 50 workers
-            ListingSeeder::class,         // 50 professionals across all categories
-            BlogSeeder::class,            // 10 blog posts
+            MarketplaceSeeder::class,
+            BuilderSeeder::class,
+            SupplierSeeder::class,
+            WorkerSeeder::class,
+            RequirementSeeder::class,
+            InquirySeeder::class,
+            ReviewSeeder::class,
+            BlogSeeder::class,
+            SeoPageSeeder::class,
         ]);
     }
 }

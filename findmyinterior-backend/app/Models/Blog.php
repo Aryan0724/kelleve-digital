@@ -37,7 +37,7 @@ class Blog extends Model
 
     public function scopePublished($query)
     {
-        return $query->where( 'published')
+        return $query->where('status', 'published')
             ->whereNotNull('published_at')
             ->where('published_at', '<=', now());
     }
@@ -56,7 +56,7 @@ class Blog extends Model
 
     public function incrementViews(): void
     {
-        $this->increment('views');
+        $this->increment('views_count');
     }
 
     public function getTagListAttribute(): array

@@ -24,6 +24,9 @@ export function Navbar() {
           <Link href="/workers" className="text-sm font-medium hover:text-primary">
             Workforce
           </Link>
+          <Link href="/blog" className="text-sm font-medium hover:text-primary">
+            Blog
+          </Link>
           <Link href="/post-requirement" className="text-sm font-medium text-orange-600 hover:text-orange-700">
             Post Requirement
           </Link>
@@ -34,10 +37,10 @@ export function Navbar() {
             <span className="sr-only">Search</span>
           </Button>
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="outline" render={<Link href="/login" />}>
+            <Button variant="outline" render={<Link href="/login" />} nativeButton={false}>
               Log in
             </Button>
-            <Button render={<Link href="/join" />}>
+            <Button render={<Link href="/join" />} nativeButton={false}>
               List Business
             </Button>
           </div>
