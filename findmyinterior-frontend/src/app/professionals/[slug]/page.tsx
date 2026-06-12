@@ -46,7 +46,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>
-                    {listing.is_verified && <ShieldCheck className="h-8 w-8 text-green-500 flex-shrink-0" title="Verified Business" />}
+                    {listing.is_verified && <span title="Verified Business"><ShieldCheck className="h-8 w-8 text-green-500 flex-shrink-0" /></span>}
                   </div>
                   <div className="flex items-center text-slate-500 mb-2">
                     <MapPin className="h-4 w-4 mr-1" /> {listing.address}, {listing.city}, {listing.district}
