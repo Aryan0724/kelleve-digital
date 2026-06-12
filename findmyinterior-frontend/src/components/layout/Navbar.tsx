@@ -34,11 +34,11 @@ export function Navbar() {
             <span className="sr-only">Search</span>
           </Button>
           <div className="hidden md:flex items-center gap-2">
-            <Button variant="outline" asChild>
-              <Link href="/login">Log in</Link>
+            <Button variant="outline" render={<Link href="/login" />}>
+              Log in
             </Button>
-            <Button asChild>
-              <Link href="/join">List Business</Link>
+            <Button render={<Link href="/join" />}>
+              List Business
             </Button>
           </div>
           <Button variant="ghost" size="icon" className="md:hidden">

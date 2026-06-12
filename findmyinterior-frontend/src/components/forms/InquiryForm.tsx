@@ -40,8 +40,8 @@ export function InquiryForm({ type, id, title }: { type: 'Listing' | 'BuilderPro
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button size="lg" className="w-full bg-orange-600 hover:bg-orange-700">Contact Now</Button>
+      <DialogTrigger render={<Button size="lg" className="w-full bg-orange-600 hover:bg-orange-700" />}>
+        Contact Now
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
