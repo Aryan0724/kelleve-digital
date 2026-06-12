@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { Paintbrush, Hammer, Wrench, Truculence, Sofa, Ruler } from "lucide-react"; // Fallback icons
+import { Paintbrush, Hammer, Sofa, Ruler } from "lucide-react"; // Fallback icons
 
 export function Categories({ categories }: { categories: any[] }) {
   if (!categories || categories.length === 0) return null;
