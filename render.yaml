@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: findmyinterior-api
+    env: docker
+    rootDir: findmyinterior-backend
+    plan: free
+    healthCheckPath: /api/v1/homepage
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: DB_CONNECTION
+        value: mysql
+      - key: QUEUE_CONNECTION
+        value: database
