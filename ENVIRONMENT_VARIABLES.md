@@ -20,6 +20,7 @@ APP_KEY= # Generate via: php artisan key:generate
 APP_DEBUG=true
 APP_URL=http://localhost:8000
 FRONTEND_URL=http://localhost:3000
+QUEUE_CONNECTION=database
 ```
 
 ## 3. JWT/Sanctum Settings
