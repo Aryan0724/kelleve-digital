@@ -14,19 +14,19 @@ return new class extends Migration
     public function up(): void
     {
         // Listings full-text search
-        DB::statement('ALTER TABLE listings ADD FULLTEXT fulltext_listings (title, description)');
+        // DB::statement('ALTER TABLE listings ADD FULLTEXT fulltext_listings (title, description)');
 
         // Workers full-text search
-        DB::statement('ALTER TABLE workers ADD FULLTEXT fulltext_workers (name, skill, bio)');
+        // DB::statement('ALTER TABLE workers ADD FULLTEXT fulltext_workers (name, skill, bio)');
 
         // Blogs full-text search
-        DB::statement('ALTER TABLE blogs ADD FULLTEXT fulltext_blogs (title, excerpt, content)');
+        // DB::statement('ALTER TABLE blogs ADD FULLTEXT fulltext_blogs (title, excerpt, content)');
     }
 
     public function down(): void
     {
-        DB::statement('ALTER TABLE listings DROP INDEX fulltext_listings');
-        DB::statement('ALTER TABLE workers DROP INDEX fulltext_workers');
-        DB::statement('ALTER TABLE blogs DROP INDEX fulltext_blogs');
+        // DB::statement('ALTER TABLE listings DROP INDEX fulltext_listings');
+        // DB::statement('ALTER TABLE workers DROP INDEX fulltext_workers');
+        // DB::statement('ALTER TABLE blogs DROP INDEX fulltext_blogs');
     }
 };
