@@ -21,6 +21,7 @@ return Application::configure(basePath: dirname(__DIR__))
         // Allow cross-origin requests from the frontend (Vercel)
         $middleware->api(prepend: [
             \Illuminate\Http\Middleware\HandleCors::class,
+            \App\Http\Middleware\SecureHeadersMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

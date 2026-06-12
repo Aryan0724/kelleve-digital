@@ -13,6 +13,7 @@ use App\Models\UserSubscription;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Razorpay\Api\Api as RazorpayApi;
 
 class PaymentController extends Controller
@@ -97,6 +98,7 @@ class PaymentController extends Controller
                 'razorpay_signature'  => $data['razorpay_signature'],
             ]);
         } catch (\Exception $e) {
+            Log::error("Payment verification failed for order {$data['razorpay_order_id']}: " . $e->getMessage());
             return response()->json([
                 'success' => false,
                 'message' => 'Payment verification failed. If money was deducted, contact support.',
@@ -114,6 +116,8 @@ class PaymentController extends Controller
 
             $this->fulfillPayment($payment);
         });
+
+        Log::info("Payment fulfilled successfully for order {$data['razorpay_order_id']}");
 
         return response()->json([
             'success' => true,

@@ -8,6 +8,7 @@ use App\Models\Requirement;
 use App\Models\RequirementImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
 class RequirementController extends Controller
@@ -95,6 +96,8 @@ class RequirementController extends Controller
                 ]);
             }
         }
+
+        Log::info("New requirement posted: ID {$requirement->id} by user " . ($request->user()?->id ?? 'guest'));
 
         return response()->json([
             'success' => true,

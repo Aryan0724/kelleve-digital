@@ -24,7 +24,7 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
     // Simple health check to verify PHP is running
     Route::get('/health', function () {
@@ -47,7 +47,7 @@ Route::prefix('v1')->group(function () {
     });
 
     // ─── Auth ─────────────────────────────────────────────────────────────
-    Route::prefix('auth')->group(function () {
+    Route::prefix('auth')->middleware('throttle:auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
         Route::post('login', [AuthController::class, 'login']);
         Route::post('forgot-password', [PasswordResetController::class, 'forgotPassword']);
