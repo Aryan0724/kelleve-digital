@@ -8,6 +8,7 @@ export function Hubs() {
       titleColor: "text-green-700",
       buttonColor: "bg-green-700 hover:bg-green-800",
       buttonText: "VIEW PROJECTS",
+      link: "/projects",
       image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=600&auto=format&fit=crop",
       content: (
         <>
@@ -23,6 +24,7 @@ export function Hubs() {
       titleColor: "text-blue-600",
       buttonColor: "bg-blue-600 hover:bg-blue-700",
       buttonText: "VIEW PROJECT",
+      link: "/projects?type=builder",
       image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=600&auto=format&fit=crop",
       content: (
         <>
@@ -38,6 +40,7 @@ export function Hubs() {
       titleColor: "text-orange-600",
       buttonColor: "bg-orange-600 hover:bg-orange-700",
       buttonText: "VIEW PROJECTS",
+      link: "/projects",
       image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=600&auto=format&fit=crop",
       content: (
         <>
@@ -53,6 +56,7 @@ export function Hubs() {
       titleColor: "text-purple-700",
       buttonColor: "bg-purple-700 hover:bg-purple-800",
       buttonText: "FIND WORKERS",
+      link: "/workers",
       image: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=600&auto=format&fit=crop",
       content: (
         <>
@@ -66,6 +70,7 @@ export function Hubs() {
       titleColor: "text-teal-600",
       buttonColor: "bg-teal-600 hover:bg-teal-700",
       buttonText: "FIND SUPPLIERS",
+      link: "/materials",
       image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=600&auto=format&fit=crop",
       content: (
         <>
@@ -86,7 +91,7 @@ export function Hubs() {
                 <h3 className={`text-[10px] font-extrabold uppercase tracking-widest ${hub.titleColor}`}>
                   {hub.title}
                 </h3>
-                <Link href="#" className="text-[10px] font-semibold text-blue-600 hover:underline shrink-0 ml-2">
+                <Link href={hub.link} className="text-[10px] font-semibold text-blue-600 hover:underline shrink-0 ml-2">
                   View All
                 </Link>
               </div>
@@ -104,9 +109,11 @@ export function Hubs() {
                 <div className="flex flex-col flex-1 justify-center lg:justify-start xl:justify-center">
                   {hub.content}
                   <div className="mt-auto pt-2 lg:pt-3">
-                    <button className={`w-full ${hub.buttonColor} text-white text-[10px] font-bold py-2 rounded uppercase tracking-wider transition`}>
-                      {hub.buttonText}
-                    </button>
+                    <Link href={hub.link} className="block">
+                      <button className={`w-full ${hub.buttonColor} text-white text-[10px] font-bold py-2 rounded uppercase tracking-wider transition`}>
+                        {hub.buttonText}
+                      </button>
+                    </Link>
                   </div>
                 </div>
               </div>

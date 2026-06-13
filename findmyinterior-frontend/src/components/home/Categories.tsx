@@ -36,7 +36,7 @@ export function Categories({ categories }: { categories?: any[] }) {
           <h2 className="text-[1.1rem] font-bold text-[#0a1c3a] uppercase tracking-wide">
             Browse By Services
           </h2>
-          <Link href="/services" className="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline">
+          <Link href="/professionals" className="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline">
             View All
           </Link>
         </div>
@@ -45,7 +45,7 @@ export function Categories({ categories }: { categories?: any[] }) {
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-between gap-4">
           {staticServices.map((service, idx) => (
             <Link 
-              href={`/search?category=${service.name.toLowerCase().replace(/ /g, '-')}`}
+              href={`/professionals?search=${service.name.replace(/ /g, '+')}`}
               key={idx}
               className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 transition-all cursor-pointer xl:w-[calc(9.09%-12px)] min-w-[100px]"
             >
