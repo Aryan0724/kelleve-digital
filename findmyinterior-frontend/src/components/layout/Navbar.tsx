@@ -29,7 +29,8 @@ import {
 import { Button } from "@/components/ui/button";
 
 export function Navbar() {
-  const { user, isAuthenticated, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
+  const isAuthenticated = !!user;
 
   return (
     <div className="w-full flex flex-col font-sans">

@@ -10,6 +10,8 @@ import {
   ChevronRight, Gavel, Upload, Image as ImageIcon, Briefcase, FileText
 } from "lucide-react";
 import { AdvancedBidForm } from "@/components/bids/AdvancedBidForm";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 export default function RequirementDetail() {
   const params = useParams();
