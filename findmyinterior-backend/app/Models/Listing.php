@@ -111,7 +111,7 @@ class Listing extends Model
 
     public function incrementViews(): void
     {
-        $this->increment('views');
+        $this->increment('views_count');
     }
 
     public function recalculateRating(): void

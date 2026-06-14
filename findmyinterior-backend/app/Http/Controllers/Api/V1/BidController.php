@@ -109,9 +109,9 @@ class BidController extends Controller
             return [
                 'bid_id' => $bid->id,
                 'vendor_id' => $bid->professional_id,
-                'company_name' => $bid->company_name,
-                'price' => $bid->estimated_cost,
-                'experience_years' => $bid->experience_years,
+                'company_name' => collect($bid->professional->roles)->firstWhere('slug', 'business') ? $bid->professional->name : null,
+                'price' => $bid->amount,
+                'experience_years' => null,
                 'rating' => $bid->professional->vendorMetrics->score ?? 0.0,
                 'projects_completed' => $bid->previous_projects_count,
                 'warranty_months' => $bid->warranty_months,

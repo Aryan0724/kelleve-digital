@@ -7,8 +7,11 @@ import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, Settings, LogOut, LayoutDashboard, MessageSquare, Star, Gavel, CheckCircle2 } from "lucide-react";
+import { User, Settings, LogOut, LayoutDashboard, MessageSquare, Star, Gavel, CheckCircle2, Search, Trophy, Wallet } from "lucide-react";
 import { WalletTab } from "@/components/dashboard/WalletTab";
+import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
+import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 
 export default function UserDashboard() {
   const { user, token, logout } = useAuthStore();
@@ -16,26 +19,25 @@ export default function UserDashboard() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
-  // Tab state: "overview", "bids_received", "bids_submitted", "unlocked_leads"
+  // Tab state: "overview", "bids_received", "available_leads", "recommended_leads", "bids_submitted", "won_projects", "unlocked_leads", "wallet", "performance"
   const [activeTab, setActiveTab] = useState("overview");
+
+  const fetchDashboard = async () => {
+    try {
+      const res = await api.get("/user/dashboard");
+      setData(res.data.data);
+    } catch (err) {
+      console.error("Dashboard fetch error", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     if (!token) {
       router.push("/login");
       return;
     }
-
-    const fetchDashboard = async () => {
-      try {
-        const res = await api.get("/user/dashboard");
-        setData(res.data.data);
-      } catch (err) {
-        console.error("Dashboard fetch error", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchDashboard();
   }, [token, router]);
 
@@ -48,9 +50,7 @@ export default function UserDashboard() {
     try {
       await api.patch(`/bids/${bidId}/accept`);
       alert("Bid accepted successfully!");
-      // reload
-      const res = await api.get("/dashboard");
-      setData(res.data.data);
+      fetchDashboard();
     } catch (e) {
       alert("Failed to accept bid.");
     }
@@ -88,28 +88,44 @@ export default function UserDashboard() {
                   {user.name.charAt(0)}
                 </div>
                 <h3 className="font-bold text-lg">{user.name}</h3>
-                <Badge className="mt-2 capitalize" variant={isCustomer ? 'secondary' : 'default'}>
+                <Badge className="mt-2 capitalize mb-4" variant={isCustomer ? 'secondary' : 'default'}>
                   {user.role}
                 </Badge>
+                
+                {/* Subscription Widget */}
                 {!isCustomer && (
-                  <Badge variant="outline" className="mt-2 border-orange-200 text-orange-700 bg-orange-50">
-                    {data?.user?.subscription || "Free Plan"}
-                  </Badge>
+                  <div className="w-full bg-orange-50 border border-orange-100 rounded-lg p-3 text-left flex justify-between items-center">
+                    <div>
+                      <div className="text-xs text-orange-600 font-medium">Current Plan</div>
+                      <div className="font-bold text-slate-900">{data?.user?.subscription || "Free Plan"}</div>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200">Upgrade</Button>
+                  </div>
+                )}
+                
+                {/* Wallet Widget */}
+                {!isCustomer && (
+                  <div className="w-full bg-green-50 border border-green-100 rounded-lg p-3 text-left flex justify-between items-center mt-2">
+                    <div>
+                      <div className="text-xs text-green-700 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
+                      <div className="font-bold text-slate-900">₹{data?.user?.wallet_balance || 0}</div>
+                    </div>
+                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-green-700 border-green-200" onClick={() => setActiveTab("wallet")}>Add</Button>
+                  </div>
                 )}
               </CardContent>
             </Card>
 
             <div className="bg-white border rounded-xl overflow-hidden flex flex-col">
-              <button 
-                onClick={() => setActiveTab("overview")}
-                className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-              >
-                <LayoutDashboard className={`h-5 w-5 mr-3 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                Overview
-              </button>
-              
               {isCustomer ? (
                 <>
+                  <button 
+                    onClick={() => setActiveTab("overview")}
+                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                  >
+                    <LayoutDashboard className={`h-5 w-5 mr-3 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    My Posted Requirements
+                  </button>
                   <button 
                     onClick={() => setActiveTab("bids_received")}
                     className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'bids_received' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
@@ -117,15 +133,41 @@ export default function UserDashboard() {
                     <Gavel className={`h-5 w-5 mr-3 ${activeTab === 'bids_received' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     Bids Received
                   </button>
+                  <button 
+                    onClick={() => router.push("/messages")}
+                    className="flex items-center justify-between p-4 border-b text-left font-medium hover:bg-slate-50 text-slate-700"
+                  >
+                    <div className="flex items-center">
+                      <MessageSquare className="h-5 w-5 mr-3 text-slate-400" /> 
+                      Messages
+                    </div>
+                    {data?.user?.unread_messages_count > 0 && (
+                      <Badge className="bg-orange-600 hover:bg-orange-700">{data.user.unread_messages_count}</Badge>
+                    )}
+                  </button>
                 </>
               ) : (
                 <>
                   <button 
-                    onClick={() => setActiveTab("bids_submitted")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'bids_submitted' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    onClick={() => setActiveTab("overview")}
+                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Gavel className={`h-5 w-5 mr-3 ${activeTab === 'bids_submitted' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    My Submitted Bids
+                    <LayoutDashboard className={`h-5 w-5 mr-3 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    Dashboard Overview
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("available_leads")}
+                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'available_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                  >
+                    <Search className={`h-5 w-5 mr-3 ${activeTab === 'available_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    Available Leads
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("recommended_leads")}
+                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'recommended_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                  >
+                    <Star className={`h-5 w-5 mr-3 ${activeTab === 'recommended_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    Recommended Leads
                   </button>
                   <button 
                     onClick={() => setActiveTab("unlocked_leads")}
@@ -135,32 +177,47 @@ export default function UserDashboard() {
                     Unlocked Leads
                   </button>
                   <button 
-                    onClick={() => setActiveTab("performance")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'performance' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    onClick={() => setActiveTab("bids_submitted")}
+                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'bids_submitted' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Star className={`h-5 w-5 mr-3 ${activeTab === 'performance' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    Performance Metrics
+                    <Gavel className={`h-5 w-5 mr-3 ${activeTab === 'bids_submitted' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    My Bids
+                  </button>
+                  <button 
+                    onClick={() => setActiveTab("won_projects")}
+                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'won_projects' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                  >
+                    <Trophy className={`h-5 w-5 mr-3 ${activeTab === 'won_projects' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    Won Projects
                   </button>
                   <button 
                     onClick={() => setActiveTab("wallet")}
                     className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'wallet' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Star className={`h-5 w-5 mr-3 ${activeTab === 'wallet' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <Wallet className={`h-5 w-5 mr-3 ${activeTab === 'wallet' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     My Wallet
+                  </button>
+                  <button 
+                    onClick={() => router.push("/messages")}
+                    className="flex items-center justify-between p-4 border-b text-left font-medium hover:bg-slate-50 text-slate-700"
+                  >
+                    <div className="flex items-center">
+                      <MessageSquare className="h-5 w-5 mr-3 text-slate-400" /> 
+                      Messages
+                    </div>
+                    {data?.user?.unread_messages_count > 0 && (
+                      <Badge className="bg-orange-600 hover:bg-orange-700">{data.user.unread_messages_count}</Badge>
+                    )}
                   </button>
                 </>
               )}
-              
-              <button className="flex items-center p-4 hover:bg-slate-50 text-left text-slate-700">
-                <Settings className="h-5 w-5 mr-3 text-slate-400" /> Account Settings
-              </button>
             </div>
           </div>
 
           {/* Main Content Area */}
           <div className="lg:col-span-3 space-y-6">
             
-            {/* ---------------- CUSTOMER OVERVIEW ---------------- */}
+            {/* ---------------- CUSTOMER VIEWS ---------------- */}
             {isCustomer && activeTab === 'overview' && data && (
               <Card>
                 <CardHeader>
@@ -170,12 +227,26 @@ export default function UserDashboard() {
                   {data.requirements && data.requirements.length > 0 ? (
                     <div className="space-y-4">
                       {data.requirements.map((req: any) => (
-                        <div key={req.id} className="p-4 border rounded-lg bg-slate-50">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-semibold text-slate-900">{req.title}</span>
-                            <Badge variant={req.status === 'open' ? 'default' : 'secondary'}>{req.status}</Badge>
-                          </div>
-                          <p className="text-slate-600 text-sm">{req.description}</p>
+                        <div key={req.id} className="p-4 border rounded-lg bg-slate-50 flex justify-between">
+                            <div>
+                              <div className="flex items-start gap-3 mb-2">
+                                <span className="font-semibold text-slate-900">{req.title}</span>
+                                <Badge variant={req.status === 'open' ? 'default' : 'secondary'}>{req.status}</Badge>
+                              </div>
+                              <p className="text-slate-600 text-sm">{req.description}</p>
+                              
+                              {data.received_bids && data.received_bids.filter((b: any) => b.requirement_id === req.id).length > 0 && (
+                                <div className="mt-3 text-sm text-orange-600 font-medium">
+                                  {data.received_bids.filter((b: any) => b.requirement_id === req.id).length} bid(s) received
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex flex-col gap-2">
+                              <Button onClick={() => router.push(`/requirements/${req.id}`)} variant="outline">View Detail</Button>
+                              {data.received_bids && data.received_bids.filter((b: any) => b.requirement_id === req.id).length > 0 && (
+                                <Button onClick={() => router.push(`/requirements/${req.id}/compare`)} className="bg-orange-600 hover:bg-orange-700">Compare Bids</Button>
+                              )}
+                            </div>
                         </div>
                       ))}
                     </div>
@@ -188,7 +259,6 @@ export default function UserDashboard() {
               </Card>
             )}
 
-            {/* ---------------- CUSTOMER BIDS RECEIVED ---------------- */}
             {isCustomer && activeTab === 'bids_received' && data && (
               <Card>
                 <CardHeader>
@@ -237,8 +307,8 @@ export default function UserDashboard() {
               </Card>
             )}
 
-
-            {/* ---------------- PROFESSIONAL OVERVIEW ---------------- */}
+            {/* ---------------- PROFESSIONAL VIEWS ---------------- */}
+            
             {!isCustomer && activeTab === 'overview' && data && (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -256,190 +326,61 @@ export default function UserDashboard() {
                   </Card>
                   <Card>
                     <CardContent className="p-6">
-                      <div className="text-slate-500 text-sm mb-1">Average Rating</div>
-                      <div className="text-3xl font-bold flex items-center">
-                        {data.avg_rating || 0} <Star className="h-5 w-5 fill-amber-400 text-amber-400 ml-2" />
+                      <div className="text-slate-500 text-sm mb-1">Projects Won</div>
+                      <div className="text-3xl font-bold text-green-600">
+                        {data.submitted_bids?.filter((b:any) => b.status === 'awarded').length || 0}
                       </div>
                     </CardContent>
                   </Card>
                 </div>
-                
-                <Card className="mt-6">
-                  <CardHeader>
-                    <CardTitle>Recommended Leads</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    {data.recommended_leads && data.recommended_leads.length > 0 ? (
-                      <div className="space-y-4">
-                        {data.recommended_leads.map((req: any) => (
-                          <div key={req.id} className="p-4 border rounded-lg bg-slate-50 flex flex-col md:flex-row justify-between md:items-center gap-4">
-                            <div>
-                              <h4 className="font-bold text-slate-900">{req.title}</h4>
-                              <div className="text-sm text-slate-500 mb-1">{req.city?.name} • Match Score: {req.match_score || 0}%</div>
-                              <p className="text-slate-600 text-sm line-clamp-2">{req.description}</p>
-                            </div>
-                            <Button onClick={() => router.push(`/requirements/${req.id}`)} className="bg-orange-600 hover:bg-orange-700 whitespace-nowrap">
-                              View Lead
-                            </Button>
-                          </div>
-                        ))}
-                      </div>
-                    ) : (
-                      <div className="text-center py-6 text-slate-500 bg-slate-50 rounded-lg border border-dashed">
-                        You have no new recommended leads at this time.
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
               </>
             )}
 
-            {/* ---------------- PROFESSIONAL BIDS SUBMITTED ---------------- */}
-            {!isCustomer && activeTab === 'bids_submitted' && data && (
+            {!isCustomer && activeTab === 'available_leads' && <AvailableLeadsTab />}
+
+            {!isCustomer && activeTab === 'recommended_leads' && data && (
               <Card>
                 <CardHeader>
-                  <CardTitle>My Submitted Bids</CardTitle>
+                  <CardTitle>Recommended Leads</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  {data.submitted_bids && data.submitted_bids.length > 0 ? (
+                  {data.recommended_leads && data.recommended_leads.length > 0 ? (
                     <div className="space-y-4">
-                      {data.submitted_bids.map((bid: any) => (
-                        <div key={bid.id} className="p-4 border rounded-lg bg-slate-50">
-                          <div className="flex justify-between items-start mb-2">
-                            <div>
-                              <span className="font-semibold text-slate-900">For: {bid.requirement?.title}</span>
-                              <div className="text-xs text-slate-500">{bid.requirement?.city?.name}</div>
-                            </div>
-                            <Badge variant={bid.status === 'accepted' ? 'default' : (bid.status === 'rejected' ? 'destructive' : 'secondary')}>
-                              {bid.status}
-                            </Badge>
+                      {data.recommended_leads.map((req: any) => (
+                        <div key={req.id} className="p-4 border rounded-lg bg-slate-50 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                          <div>
+                            <h4 className="font-bold text-slate-900">{req.title}</h4>
+                            <div className="text-sm text-slate-500 mb-1">{req.city?.name} • Match Score: {req.match_score || 0}%</div>
+                            <p className="text-slate-600 text-sm line-clamp-2">{req.description}</p>
                           </div>
-                          <div className="flex gap-6 my-3">
-                            <div>
-                              <div className="text-xs text-slate-500">My Bid</div>
-                              <div className="font-bold text-orange-600">₹{bid.amount}</div>
-                            </div>
-                            <div>
-                              <div className="text-xs text-slate-500">Timeline</div>
-                              <div className="font-bold text-slate-700">{bid.timeline_days} Days</div>
-                            </div>
-                          </div>
+                          <Button onClick={() => router.push(`/requirements/${req.id}`)} className="bg-orange-600 hover:bg-orange-700 whitespace-nowrap">
+                            View Lead
+                          </Button>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-10 text-slate-500">
-                      You haven't submitted any bids.
+                    <div className="text-center py-6 text-slate-500 bg-slate-50 rounded-lg border border-dashed">
+                      You have no new recommended leads at this time.
                     </div>
                   )}
                 </CardContent>
               </Card>
             )}
 
-            {/* ---------------- PROFESSIONAL UNLOCKED LEADS ---------------- */}
             {!isCustomer && activeTab === 'unlocked_leads' && data && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Unlocked Customer Contacts</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {data.unlocked_contacts && data.unlocked_contacts.length > 0 ? (
-                    <div className="space-y-4">
-                      {data.unlocked_contacts.map((unlock: any) => (
-                        <div key={unlock.id} className="p-4 border rounded-lg bg-green-50 border-green-200">
-                          <div className="mb-2">
-                            <span className="font-semibold text-slate-900">{unlock.requirement?.title}</span>
-                          </div>
-                          <div className="flex flex-col gap-1">
-                            <span className="text-sm font-bold text-slate-800">Customer: {unlock.requirement?.name}</span>
-                            <span className="text-sm font-bold text-slate-800">Phone: {unlock.requirement?.phone}</span>
-                            <span className="text-sm font-bold text-slate-800">Email: {unlock.requirement?.email}</span>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-10 text-slate-500">
-                      You haven't unlocked any contacts yet. View requirements and pay to unlock!
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <UnlockedLeadsTab unlockedContacts={data.unlocked_contacts} onRefresh={fetchDashboard} />
             )}
 
-            {/* ---------------- PROFESSIONAL PERFORMANCE METRICS ---------------- */}
-            {!isCustomer && activeTab === 'performance' && data && data.vendor_metrics && (
-              <div className="space-y-6">
-                <Card>
-                  <CardHeader>
-                    <CardTitle>My Performance KPIs</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      <div className="p-4 border rounded-lg flex flex-col justify-center items-center">
-                        <div className="text-sm text-slate-500 mb-2">Response Rate</div>
-                        <div className="text-3xl font-bold mb-2 text-slate-900">{data.vendor_metrics.response_rate}%</div>
-                        {data.vendor_metrics.response_rate >= 90 ? <Badge className="bg-green-100 text-green-800 hover:bg-green-100">🟢 Excellent</Badge> : (data.vendor_metrics.response_rate >= 50 ? <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">🟡 Average</Badge> : <Badge className="bg-red-100 text-red-800 hover:bg-red-100">🔴 Poor</Badge>)}
-                      </div>
-                      <div className="p-4 border rounded-lg flex flex-col justify-center items-center">
-                        <div className="text-sm text-slate-500 mb-2">Completion Rate</div>
-                        <div className="text-3xl font-bold mb-2 text-slate-900">{data.vendor_metrics.completion_rate}%</div>
-                        {data.vendor_metrics.completion_rate >= 90 ? <Badge className="bg-green-100 text-green-800 hover:bg-green-100">🟢 Excellent</Badge> : (data.vendor_metrics.completion_rate >= 50 ? <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">🟡 Average</Badge> : <Badge className="bg-red-100 text-red-800 hover:bg-red-100">🔴 Poor</Badge>)}
-                      </div>
-                      <div className="p-4 border rounded-lg flex flex-col justify-center items-center">
-                        <div className="text-sm text-slate-500 mb-2">Win Rate</div>
-                        <div className="text-3xl font-bold mb-2 text-slate-900">{data.vendor_metrics.win_rate}%</div>
-                        {data.vendor_metrics.win_rate >= 20 ? <Badge className="bg-green-100 text-green-800 hover:bg-green-100">🟢 Excellent</Badge> : (data.vendor_metrics.win_rate >= 10 ? <Badge className="bg-amber-100 text-amber-800 hover:bg-amber-100">🟡 Average</Badge> : <Badge className="bg-red-100 text-red-800 hover:bg-red-100">🔴 Poor</Badge>)}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card>
-                  <CardHeader>
-                    <CardTitle>Lead Conversion Funnel</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center p-3 bg-slate-50 rounded">
-                        <span className="font-medium text-slate-700">Recommendations Received</span>
-                        <span className="font-bold text-lg">{data.vendor_metrics.recommendations_received}</span>
-                      </div>
-                      <div className="flex justify-center text-slate-300 font-bold text-xl">↓</div>
-                      <div className="flex justify-between items-center p-3 bg-slate-50 rounded">
-                        <span className="font-medium text-slate-700">Profile Views</span>
-                        <span className="font-bold text-lg">{data.vendor_metrics.profile_views}</span>
-                      </div>
-                      <div className="flex justify-center text-slate-300 font-bold text-xl">↓</div>
-                      <div className="flex justify-between items-center p-3 bg-slate-50 rounded">
-                        <span className="font-medium text-slate-700">Invites Received</span>
-                        <span className="font-bold text-lg">{data.vendor_metrics.invites_received}</span>
-                      </div>
-                      <div className="flex justify-center text-slate-300 font-bold text-xl">↓</div>
-                      <div className="flex justify-between items-center p-3 bg-slate-50 rounded">
-                        <span className="font-medium text-slate-700">Bids Submitted</span>
-                        <span className="font-bold text-lg">{data.vendor_metrics.total_bids}</span>
-                      </div>
-                      <div className="flex justify-center text-slate-300 font-bold text-xl">↓</div>
-                      <div className="flex justify-between items-center p-3 bg-slate-50 rounded">
-                        <span className="font-medium text-slate-700">Projects Awarded</span>
-                        <span className="font-bold text-lg">{data.vendor_metrics.award_count}</span>
-                      </div>
-                      <div className="flex justify-center text-slate-300 font-bold text-xl">↓</div>
-                      <div className="flex justify-between items-center p-3 bg-green-50 rounded border-l-4 border-green-500">
-                        <span className="font-medium text-green-800">Projects Completed</span>
-                        <span className="font-bold text-lg text-green-700">{data.vendor_metrics.projects_completed}</span>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
+            {!isCustomer && activeTab === 'bids_submitted' && data && (
+              <MyBidsTab bids={data.submitted_bids} title="My Submitted Bids" showAwardedOnly={false} />
             )}
 
-            {/* ---------------- PROFESSIONAL WALLET ---------------- */}
-            {!isCustomer && activeTab === 'wallet' && (
-              <WalletTab />
+            {!isCustomer && activeTab === 'won_projects' && data && (
+              <MyBidsTab bids={data.submitted_bids} title="My Won Projects" showAwardedOnly={true} />
             )}
+
+            {!isCustomer && activeTab === 'wallet' && <WalletTab />}
 
           </div>
         </div>

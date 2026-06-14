@@ -1,0 +1,1 @@
+- [ ] Encountered Error (net::ERR_CONNECTION_REFUSED at http://localhost:3000/register)

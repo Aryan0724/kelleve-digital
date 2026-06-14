@@ -19,6 +19,9 @@ class DashboardController extends Controller
     {
         $user = $request->user()->load(['activeSubscription.plan']);
 
+        $unreadCustomer = \App\Models\Conversation::where('customer_id', $user->id)->sum('customer_unread_count');
+        $unreadVendor = \App\Models\Conversation::where('vendor_id', $user->id)->sum('vendor_unread_count');
+
         $data = [
             'user' => [
                 'id'           => $user->id,
@@ -26,6 +29,7 @@ class DashboardController extends Controller
                 'roles'        => $user->roles->pluck('slug'),
                 'subscription' => $user->activeSubscription?->plan?->name ?? 'Basic (Free)',
                 'wallet_balance' => \Illuminate\Support\Facades\DB::table('wallets')->where('user_id', $user->id)->value('balance') ?? 0.0,
+                'unread_messages_count' => $unreadCustomer + $unreadVendor,
             ],
         ];
 

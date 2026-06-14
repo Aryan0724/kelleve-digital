@@ -24,7 +24,8 @@ import {
   Bell,
   MessageCircle,
   LayoutDashboard,
-  LogOut
+  LogOut,
+  MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -46,6 +47,10 @@ export function Navbar() {
           </div>
           {isAuthenticated ? (
             <>
+              <Link href="/messages" className="hover:text-white flex items-center space-x-1">
+                <MessageSquare className="w-3.5 h-3.5" />
+                <span>Messages</span>
+              </Link>
               <Link href="/dashboard" className="hover:text-white flex items-center space-x-1">
                 <LayoutDashboard className="w-3.5 h-3.5" />
                 <span>Dashboard</span>

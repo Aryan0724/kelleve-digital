@@ -20,7 +20,14 @@ class ConversationController extends Controller
     {
         $user = $request->user();
         
-        $conversations = Conversation::with(['conversationable', 'customer', 'vendor'])
+        $conversations = Conversation::with([
+            'conversationable', 
+            'customer', 
+            'vendor',
+            'messages' => function($query) {
+                $query->latest()->limit(1);
+            }
+        ])
             ->where('customer_id', $user->id)
             ->orWhere('vendor_id', $user->id)
             ->orderByDesc('last_message_at')
@@ -53,12 +60,23 @@ class ConversationController extends Controller
             ->where('user_id', $vendorId)
             ->exists();
             
-        $isBidder = Bid::where('requirement_id', $requirementId)
+        $bid = Bid::where('requirement_id', $requirementId)
             ->where('professional_id', $vendorId)
-            ->exists();
+            ->first();
             
-        if (!$isUnlocked && !$isBidder) {
-            return response()->json(['message' => 'Unauthorized to message. Vendor must bid or unlock first.'], 403);
+        $isBidder = $bid !== null;
+        $isAwarded = $isBidder && $bid->status === 'awarded';
+            
+        if ($user->id === $customerId) {
+            // Customer -> Professional: Professional submitted bid OR Customer awarded the bid (which implies isBidder)
+            if (!$isBidder) {
+                return response()->json(['message' => 'Unauthorized to message. Vendor must submit a bid first.'], 403);
+            }
+        } else {
+            // Professional -> Customer: Lead unlocked OR bid submitted
+            if (!$isUnlocked && !$isBidder) {
+                return response()->json(['message' => 'Unauthorized to message. You must unlock the lead or submit a bid first.'], 403);
+            }
         }
         
         // Create or get existing conversation
