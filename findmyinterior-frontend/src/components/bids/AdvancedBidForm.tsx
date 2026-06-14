@@ -13,6 +13,8 @@ import { Upload } from "lucide-react";
 export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: number, onSuccess: () => void }) {
   const { token, user } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [portfolioFiles, setPortfolioFiles] = useState<File[]>([]);
+  const [portfolioPreview, setPortfolioPreview] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     company_name: user?.name || "",
     contact_person: user?.name || "",
@@ -37,6 +39,34 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
     setFormData({ ...formData, [name]: checked });
   };
 
+  const handlePortfolioUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || []);
+    const validFiles = files.filter(file => file.size <= 5 * 1024 * 1024);
+    
+    if (files.length !== validFiles.length) {
+      alert("Some files exceeded 5MB limit and were skipped.");
+    }
+
+    setPortfolioFiles(prev => [...prev, ...validFiles]);
+    
+    validFiles.forEach(file => {
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          setPortfolioPreview(prev => [...prev, event.target?.result as string]);
+        };
+        reader.readAsDataURL(file);
+      } else {
+        setPortfolioPreview(prev => [...prev, `📄 ${file.name}`]);
+      }
+    });
+  };
+
+  const removePortfolioFile = (index: number) => {
+    setPortfolioFiles(prev => prev.filter((_, i) => i !== index));
+    setPortfolioPreview(prev => prev.filter((_, i) => i !== index));
+  };
+
   const submitBid = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!token) {
@@ -46,7 +76,7 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
 
     setLoading(true);
     try {
-      await api.post("/bids", {
+      const bidPayload = {
         requirement_id: requirementId,
         estimated_cost: Number(formData.amount),
         timeline_days: Number(formData.timeline_days),
@@ -61,12 +91,33 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
         contact_person: formData.contact_person,
         category: formData.category,
         experience_years: Number(formData.experience) || 0,
-      });
+      };
+
+      const bidResponse = await api.post("/bids", bidPayload);
+      const bidId = bidResponse.data.data.id;
+
+      // Upload portfolio files if provided
+      if (portfolioFiles.length > 0) {
+        const formDataWithFiles = new FormData();
+        portfolioFiles.forEach((file) => {
+          formDataWithFiles.append('images[]', file);
+        });
+
+        try {
+          await api.post(`/user/listings/${bidId}/gallery`, formDataWithFiles, {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          });
+        } catch (uploadErr) {
+          console.warn("Portfolio upload failed (bid still created):", uploadErr);
+        }
+      }
+
       alert("Bid submitted successfully!");
       onSuccess();
     } catch (err: any) {
       if (err.response?.status === 422) {
-        // Validation error
         alert("Validation Error: " + JSON.stringify(err.response.data.errors));
       } else {
         alert(err.response?.data?.message || "Failed to submit bid.");
@@ -171,11 +222,38 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
 
       <div className="space-y-2">
         <Label>Portfolio Upload</Label>
-        <div className="border-2 border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer">
+        <label className="border-2 border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer">
+          <input 
+            type="file" 
+            multiple 
+            accept="image/*,.pdf" 
+            onChange={handlePortfolioUpload}
+            className="hidden"
+          />
           <Upload className="w-8 h-8 text-slate-400 mb-2" />
           <span className="text-sm font-medium text-slate-600">Click to upload portfolio PDF/Images</span>
-          <span className="text-xs text-slate-400 mt-1">Max 5MB</span>
-        </div>
+          <span className="text-xs text-slate-400 mt-1">Max 5MB per file</span>
+        </label>
+        {portfolioPreview.length > 0 && (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
+            {portfolioPreview.map((preview, idx) => (
+              <div key={idx} className="relative border rounded p-2 bg-slate-50">
+                {typeof preview === 'string' && preview.startsWith('data:') ? (
+                  <img src={preview} alt={`Preview ${idx}`} className="w-full h-20 object-cover rounded" />
+                ) : (
+                  <div className="w-full h-20 flex items-center justify-center text-xs font-medium text-slate-600">{preview}</div>
+                )}
+                <button 
+                  type="button"
+                  onClick={() => removePortfolioFile(idx)}
+                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-red-600"
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="space-y-2">
