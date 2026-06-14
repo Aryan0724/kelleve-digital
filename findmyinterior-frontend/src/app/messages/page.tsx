@@ -65,7 +65,7 @@ export default function InboxPage() {
   }, [token, router]);
 
   if (!user) return null;
-  const isCustomer = user.roles?.includes('customer');
+  const isCustomer = user.role === 'customer';
 
   return (
     <div className="bg-slate-50 min-h-[calc(100vh-64px)] py-8">

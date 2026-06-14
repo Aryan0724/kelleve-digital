@@ -142,7 +142,7 @@ export default function ConversationPage() {
     return <div className="p-20 text-center text-red-500 font-medium">Conversation not found.</div>;
   }
 
-  const isCustomer = user.roles?.includes('customer');
+  const isCustomer = user.role === 'customer';
   const otherUser = isCustomer ? conversation.vendor : conversation.customer;
 
   return (
