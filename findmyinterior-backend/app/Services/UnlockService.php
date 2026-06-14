@@ -33,9 +33,9 @@ class UnlockService
                 'success' => true,
                 'message' => 'Contact already unlocked',
                 'contact' => [
-                    'name' => $requirement->customer->name ?? 'Customer',
-                    'phone' => $requirement->customer->phone ?? null,
-                    'email' => $requirement->customer->email ?? null,
+                    'name' => $requirement->name ?? $requirement->user->name ?? 'Customer',
+                    'phone' => $requirement->phone ?? $requirement->user->phone ?? null,
+                    'email' => $requirement->email ?? $requirement->user->email ?? null,
                 ]
             ];
         }
@@ -78,9 +78,9 @@ class UnlockService
                 'success' => true,
                 'message' => 'Contact unlocked successfully',
                 'contact' => [
-                    'name' => $requirement->customer->name ?? 'Customer',
-                    'phone' => $requirement->customer->phone ?? null,
-                    'email' => $requirement->customer->email ?? null,
+                    'name' => $requirement->name ?? $requirement->user->name ?? 'Customer',
+                    'phone' => $requirement->phone ?? $requirement->user->phone ?? null,
+                    'email' => $requirement->email ?? $requirement->user->email ?? null,
                 ]
             ];
         });

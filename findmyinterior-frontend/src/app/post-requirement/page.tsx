@@ -29,8 +29,10 @@ export default function PostRequirementPage() {
     email: user?.email || "",
   });
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (e: any) => {
+    if (e?.preventDefault) {
+      e.preventDefault();
+    }
     
     if (!token) {
       router.push("/login");
@@ -41,7 +43,9 @@ export default function PostRequirementPage() {
     setError("");
 
     try {
-      await api.post("/requirements", formData);
+      const payload = { ...formData };
+      if (!payload.email) delete payload.email;
+      await api.post("/requirements", payload);
       setSuccess(true);
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to post requirement");
@@ -79,7 +83,7 @@ export default function PostRequirementPage() {
             Tell us what you need. We'll connect you with the best professionals in Bihar.
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleSubmit}>
+        <div className="space-y-4 pt-6">
           <CardContent className="space-y-4">
             {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md">{error}</div>}
             
@@ -118,11 +122,11 @@ export default function PostRequirementPage() {
             </div>
           </CardContent>
           <CardFooter>
-            <Button type="submit" disabled={loading} className="w-full bg-orange-600 hover:bg-orange-700">
+            <Button type="button" onClick={handleSubmit} disabled={loading} className="w-full bg-orange-600 hover:bg-orange-700">
               {loading ? "Posting..." : "Post Requirement"}
             </Button>
           </CardFooter>
-        </form>
+        </div>
       </Card>
     </div>
   );

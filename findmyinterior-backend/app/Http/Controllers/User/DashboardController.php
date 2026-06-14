@@ -100,6 +100,31 @@ class DashboardController extends Controller
 
             // Fetch Vendor Metrics
             $data['vendor_metrics'] = $user->vendorMetric;
+
+            // Fetch Recommended Leads
+            $recommendedIds = \Illuminate\Support\Facades\DB::table('requirement_recommendations')
+                ->where('vendor_id', $user->id)
+                ->pluck('requirement_id');
+                
+            if ($recommendedIds->isEmpty()) {
+                // Fallback for new professionals without a listing/recommendations
+                $data['recommended_leads'] = RequirementResource::collection(
+                    \App\Models\Requirement::where('status', 'open')
+                        ->with(['city', 'category'])
+                        ->latest()
+                        ->take(10)
+                        ->get()
+                );
+            } else {
+                $data['recommended_leads'] = RequirementResource::collection(
+                    \App\Models\Requirement::whereIn('id', $recommendedIds)
+                        ->where('status', 'open')
+                        ->with(['city', 'category'])
+                        ->latest()
+                        ->take(10)
+                        ->get()
+                );
+            }
         }
 
         return response()->json([

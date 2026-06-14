@@ -27,7 +27,7 @@ export default function UserDashboard() {
 
     const fetchDashboard = async () => {
       try {
-        const res = await api.get("/dashboard");
+        const res = await api.get("/user/dashboard");
         setData(res.data.data);
       } catch (err) {
         console.error("Dashboard fetch error", err);
@@ -263,6 +263,34 @@ export default function UserDashboard() {
                     </CardContent>
                   </Card>
                 </div>
+                
+                <Card className="mt-6">
+                  <CardHeader>
+                    <CardTitle>Recommended Leads</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    {data.recommended_leads && data.recommended_leads.length > 0 ? (
+                      <div className="space-y-4">
+                        {data.recommended_leads.map((req: any) => (
+                          <div key={req.id} className="p-4 border rounded-lg bg-slate-50 flex flex-col md:flex-row justify-between md:items-center gap-4">
+                            <div>
+                              <h4 className="font-bold text-slate-900">{req.title}</h4>
+                              <div className="text-sm text-slate-500 mb-1">{req.city?.name} • Match Score: {req.match_score || 0}%</div>
+                              <p className="text-slate-600 text-sm line-clamp-2">{req.description}</p>
+                            </div>
+                            <Button onClick={() => router.push(`/requirements/${req.id}`)} className="bg-orange-600 hover:bg-orange-700 whitespace-nowrap">
+                              View Lead
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-slate-500 bg-slate-50 rounded-lg border border-dashed">
+                        You have no new recommended leads at this time.
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
               </>
             )}
 

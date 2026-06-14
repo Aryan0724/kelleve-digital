@@ -6,6 +6,7 @@ use App\Models\Requirement;
 use App\Models\Bid;
 use App\Services\VendorMetricService;
 use App\Services\RecommendationEngineService;
+use App\Jobs\GenerateRequirementRecommendations;
 
 class RequirementObserver
 {
@@ -16,10 +17,12 @@ class RequirementObserver
         $this->metricService = $metricService;
     }
 
+    /**
+     * Handle the Requirement "created" event.
+     */
     public function created(Requirement $requirement): void
     {
-        // Use RecommendationEngineService to generate matches
-        app(RecommendationEngineService::class)->generateFor($requirement);
+        GenerateRequirementRecommendations::dispatch($requirement);
     }
 
     public function updated(Requirement $requirement): void

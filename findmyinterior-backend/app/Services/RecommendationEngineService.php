@@ -55,22 +55,20 @@ class RecommendationEngineService
         usort($scores, fn($a, $b) => $b['match_score'] <=> $a['match_score']);
         $top = array_slice($scores, 0, 20);
 
-        // Upsert into requirement_recommendations (safe to re-run)
+        $inserts = [];
+        $vendorIds = [];
         foreach ($top as $row) {
-            $exists = DB::table('requirement_recommendations')
-                ->where('requirement_id', $row['requirement_id'])
-                ->where('vendor_id', $row['vendor_id'])
-                ->exists();
+            $inserts[] = array_merge($row, ['created_at' => now(), 'updated_at' => now()]);
+            $vendorIds[] = $row['vendor_id'];
+        }
 
-            if (!$exists) {
-                DB::table('requirement_recommendations')->insert(array_merge($row, ['created_at' => now(), 'updated_at' => now()]));
-                VendorMetric::where('vendor_id', $row['vendor_id'])->increment('recommendations_received');
-            } else {
-                DB::table('requirement_recommendations')
-                    ->where('requirement_id', $row['requirement_id'])
-                    ->where('vendor_id', $row['vendor_id'])
-                    ->update(array_merge($row, ['updated_at' => now()]));
-            }
+        if (!empty($inserts)) {
+            DB::table('requirement_recommendations')->upsert(
+                $inserts,
+                ['requirement_id', 'vendor_id'],
+                ['match_score', 'score_breakdown_json', 'updated_at', 'recommended_at']
+            );
+            VendorMetric::whereIn('vendor_id', $vendorIds)->increment('recommendations_received');
         }
 
         // Notify top vendors with flood protection
