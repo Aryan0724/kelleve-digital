@@ -43,7 +43,7 @@ export default function PostRequirementPage() {
     setError("");
 
     try {
-      const payload = { ...formData };
+      const payload: Record<string, any> = { ...formData };
       if (!payload.email) delete payload.email;
       await api.post("/requirements", payload);
       setSuccess(true);
