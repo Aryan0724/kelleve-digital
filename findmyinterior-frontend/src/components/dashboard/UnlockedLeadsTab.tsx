@@ -7,8 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Phone, Mail, User, Send, ExternalLink, MessageSquare } from "lucide-react";
 import Link from "next/link";
-import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useRouter } from "next/navigation";
+
+function locationName(value: any) {
+  return typeof value === "string" ? value : value?.name || "Location not set";
+}
 
 export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedContacts: any[], onRefresh: () => void }) {
   const [biddingId, setBiddingId] = useState<number | null>(null);
@@ -42,9 +45,11 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
     try {
       await api.post("/bids", {
         requirement_id: requirementId,
-        amount: parseFloat(amount),
+        estimated_cost: parseFloat(amount),
         timeline_days: parseInt(timeline),
-        proposal
+        proposal_message: proposal,
+        experience_years: 0,
+        previous_projects_count: 0,
       });
       alert("Bid submitted successfully!");
       setBiddingId(null);
@@ -78,7 +83,7 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                         Status: {unlock.requirement?.status}
                       </Badge>
                     </div>
-                    <div className="text-sm text-slate-500 mb-4">{unlock.requirement?.city?.name} • ₹{unlock.requirement?.budget_min} - ₹{unlock.requirement?.budget_max}</div>
+                    <div className="text-sm text-slate-500 mb-4">{locationName(unlock.requirement?.city)} • ₹{unlock.requirement?.budget_min} - ₹{unlock.requirement?.budget_max}</div>
 
                     <div className="bg-green-50 border border-green-100 rounded-lg p-4 space-y-2 mb-4">
                       <div className="font-semibold text-green-900 flex items-center mb-2">
@@ -177,8 +182,12 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
             ))}
           </div>
         ) : (
-          <div className="text-center py-10 text-slate-500 border border-dashed rounded-lg bg-slate-50">
-            You haven't unlocked any contacts yet. Go to Available Leads to unlock your first client!
+          <div className="text-center py-16 px-4 border border-dashed rounded-xl bg-slate-50">
+            <User className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">No Unlocked Contacts</h3>
+            <p className="text-slate-500 max-w-md mx-auto">
+              You haven't unlocked any contacts yet. Go to Available Leads to find projects and unlock your first client!
+            </p>
           </div>
         )}
       </CardContent>

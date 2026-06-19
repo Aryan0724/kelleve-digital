@@ -56,6 +56,8 @@ class AdminController extends Controller
                     'total_requirements'    => Requirement::count(),
                     'total_bids'            => \App\Models\Bid::count(),
                     'open_requirements'     => Requirement::open()->count(),
+                    'pending_reviews'       => Review::where('is_approved', false)->count(),
+                    'pending_listings'      => Listing::where('is_verified', false)->count(),
                     'total_revenue'         => $totalRevenue,
                     'unlock_revenue'        => $unlockRevenue,
                     'bid_revenue'           => $bidRevenue,
@@ -148,12 +150,34 @@ class AdminController extends Controller
     public function verifyListing(int $id): JsonResponse
     {
         $listing = Listing::findOrFail($id);
-        $listing->update(['is_verified' => !$listing->is_verified]);
+        $listing->update([
+            'is_verified' => true,
+            'status' => 'active',
+        ]);
 
         return response()->json([
             'success'     => true,
-            'message'     => 'Listing verification status updated.',
+            'message'     => 'Listing approved and verified.',
             'is_verified' => $listing->is_verified,
+            'status'      => $listing->status,
+        ]);
+    }
+
+    /**
+     * PATCH /api/v1/admin/listings/{id}/reject
+     */
+    public function rejectListing(int $id): JsonResponse
+    {
+        $listing = Listing::findOrFail($id);
+        $listing->update([
+            'is_verified' => false,
+            'status' => 'suspended',
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Listing rejected and suspended.',
+            'status' => $listing->status,
         ]);
     }
 
@@ -300,6 +324,8 @@ class AdminController extends Controller
     public function requirements(Request $request): JsonResponse
     {
         $requirements = Requirement::with(['user:id,name', 'category:id,name'])
+            ->withCount('bids')
+            ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
             ->latest()
             ->paginate(15);
 
@@ -315,8 +341,69 @@ class AdminController extends Controller
      */
     public function closeRequirement(int $id): JsonResponse
     {
-        Requirement::findOrFail($id)->update(['status' => 'closed']);
+        Requirement::findOrFail($id)->update(['status' => 'expired']);
 
         return response()->json(['success' => true, 'message' => 'Requirement closed.']);
+    }
+
+    /**
+     * PATCH /api/v1/admin/requirements/{id}/status
+     */
+    public function updateRequirementStatus(Request $request, int $id): JsonResponse
+    {
+        $data = $request->validate([
+            'status' => ['required', 'in:open,bidding,shortlisted,awarded,completed,expired'],
+        ]);
+
+        $requirement = Requirement::findOrFail($id);
+        $requirement->update(['status' => $data['status']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requirement status updated.',
+            'data' => $requirement,
+        ]);
+    }
+
+    /**
+     * PATCH /api/v1/admin/users/{id}/verify
+     */
+    public function verifyUser(Request $request, int $id): JsonResponse
+    {
+        $data = $request->validate([
+            'verification_level' => ['nullable', 'in:unverified,mobile_verified,identity_verified,business_verified,site_verified'],
+        ]);
+
+        $user = User::findOrFail($id);
+        $nextVerified = !$user->is_verified;
+
+        $user->update([
+            'is_verified' => $nextVerified,
+            'verification_level' => $data['verification_level'] ?? ($nextVerified ? 'business_verified' : 'unverified'),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'User verification updated.',
+            'data' => $user->only(['id', 'name', 'email', 'is_verified', 'verification_level']),
+        ]);
+    }
+
+    /**
+     * GET /api/v1/admin/payments
+     */
+    public function payments(Request $request): JsonResponse
+    {
+        $payments = Payment::with('user:id,name,email')
+            ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+            ->when($request->filled('purpose'), fn($q) => $q->where('purpose', $request->purpose))
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'data' => $payments->items(),
+            'meta' => ['total' => $payments->total(), 'last_page' => $payments->lastPage()],
+        ]);
     }
 }

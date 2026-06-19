@@ -1,4 +1,6 @@
 import { InquiryForm } from "@/components/forms/InquiryForm";
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
 import ReviewSection from "@/components/reviews/ReviewSection";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, ShieldCheck, Phone, Mail, Globe, CheckCircle2 } from "lucide-react";
@@ -116,7 +118,17 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                 )}
               </div>
 
-              <InquiryForm type="Listing" id={listing.id} title={listing.title} />
+              <div className="space-y-3">
+                <InquiryForm type="Listing" id={listing.id} title={listing.title} />
+                
+                {listing.user && (
+                  <Link href={`/messages?user_id=${listing.user.id}`} className="block">
+                    <Button variant="outline" size="lg" className="w-full">
+                      Message Professional
+                    </Button>
+                  </Link>
+                )}
+              </div>
 
               {listing.is_premium && (
                 <div className="mt-4 flex items-center justify-center text-sm text-green-600 font-medium bg-green-50 p-2 rounded-lg">

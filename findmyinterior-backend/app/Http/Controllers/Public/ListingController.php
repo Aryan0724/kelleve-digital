@@ -39,6 +39,9 @@ class ListingController extends Controller
         if ($request->filled('search')) {
             $query->search($request->search);
         }
+        if ($request->filled('min_rating')) {
+            $query->where('avg_rating', '>=', $request->min_rating);
+        }
 
         // Sorting
         match ($request->get('sort', 'featured')) {

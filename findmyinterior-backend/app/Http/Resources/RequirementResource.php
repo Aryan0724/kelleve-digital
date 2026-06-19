@@ -18,6 +18,7 @@ class RequirementResource extends JsonResource
 
         return [
             'id'             => $this->id,
+            'user_id'        => $this->user_id,
             'title'          => $this->title,
             'description'    => $this->description,
             'project_type'   => $this->project_type,
@@ -28,6 +29,8 @@ class RequirementResource extends JsonResource
             'city'           => $this->city,
             'district'       => $this->district,
             'status'         => $this->status,
+            'bids_count'     => $this->whenCounted('bids'),
+            'views_count'    => $this->views_count ?? null,
             'images'         => RequirementImageResource::collection($this->whenLoaded('images')),
             // Contact details — only for premium subscribers or admin
             'name'           => $canSeeContact ? $this->name : '***',

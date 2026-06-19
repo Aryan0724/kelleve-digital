@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 
 use App\Models\Message;
 use App\Models\Conversation;
+use App\Notifications\NewMessageNotification;
 
 class MessageController extends Controller
 {
@@ -90,14 +91,12 @@ class MessageController extends Controller
         
         $recipient = $user->id === $conversation->customer_id ? $conversation->vendor : $conversation->customer;
         
-        \Illuminate\Support\Facades\DB::table('notifications')->insert([
-            'user_id' => $recipient->id,
-            'type' => 'new_message',
-            'title' => 'New Message',
-            'message' => 'You have received a new message.',
-            'created_at' => now(),
-            'updated_at' => now()
-        ]);
+        if ($recipient) {
+            $recipient->notify(new NewMessageNotification([
+                'sender_name' => $user->name,
+                'conversation_id' => $conversationId
+            ]));
+        }
         
         return response()->json($message->load(['sender', 'attachments']), 201);
     }

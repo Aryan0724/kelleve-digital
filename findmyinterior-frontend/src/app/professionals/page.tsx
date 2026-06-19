@@ -5,6 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Star, ShieldCheck, Filter } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { ProfessionalsFilters } from "@/components/professionals/ProfessionalsFilters";
+import { ProfessionalsPagination } from "@/components/professionals/ProfessionalsPagination";
 
 async function getProfessionals(searchParams: any) {
   try {
@@ -53,30 +55,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Sidebar */}
         <div className="w-full lg:w-1/4 space-y-6">
-          <div className="border rounded-xl p-5 bg-white sticky top-24">
-            <div className="flex items-center gap-2 font-semibold text-lg mb-4 pb-4 border-b">
-              <Filter className="h-5 w-5" /> Filters
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <h3 className="font-medium text-sm text-slate-900 mb-2">Verification</h3>
-                <label className="flex items-center gap-2 text-sm text-slate-600 cursor-pointer">
-                  <input type="checkbox" className="rounded border-slate-300 text-orange-600 focus:ring-orange-600" />
-                  Verified Only
-                </label>
-              </div>
-              
-              <div>
-                <h3 className="font-medium text-sm text-slate-900 mb-2">Sort By</h3>
-                <select className="w-full border-slate-200 rounded-md text-sm focus:ring-orange-600 focus:border-orange-600 p-2 border">
-                  <option value="featured">Featured First</option>
-                  <option value="rating">Highest Rated</option>
-                  <option value="newest">Newest</option>
-                </select>
-              </div>
-            </div>
-          </div>
+          <ProfessionalsFilters />
         </div>
 
         {/* Results Grid */}
@@ -139,6 +118,8 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
               </div>
             )}
           </div>
+          
+          {meta && <ProfessionalsPagination currentPage={meta.current_page} lastPage={meta.last_page} />}
         </div>
       </div>
     </div>

@@ -96,23 +96,7 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
       const bidResponse = await api.post("/bids", bidPayload);
       const bidId = bidResponse.data.data.id;
 
-      // Upload portfolio files if provided
-      if (portfolioFiles.length > 0) {
-        const formDataWithFiles = new FormData();
-        portfolioFiles.forEach((file) => {
-          formDataWithFiles.append('images[]', file);
-        });
-
-        try {
-          await api.post(`/user/listings/${bidId}/gallery`, formDataWithFiles, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          });
-        } catch (uploadErr) {
-          console.warn("Portfolio upload failed (bid still created):", uploadErr);
-        }
-      }
+      // Upload portfolio files if provided - Removed since backend doesn't support bid attachments yet
 
       alert("Bid submitted successfully!");
       onSuccess();
@@ -220,41 +204,7 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
         </div>
       </div>
 
-      <div className="space-y-2">
-        <Label>Portfolio Upload</Label>
-        <label className="border-2 border-dashed border-slate-300 rounded-lg p-6 flex flex-col items-center justify-center bg-slate-50 hover:bg-slate-100 transition cursor-pointer">
-          <input 
-            type="file" 
-            multiple 
-            accept="image/*,.pdf" 
-            onChange={handlePortfolioUpload}
-            className="hidden"
-          />
-          <Upload className="w-8 h-8 text-slate-400 mb-2" />
-          <span className="text-sm font-medium text-slate-600">Click to upload portfolio PDF/Images</span>
-          <span className="text-xs text-slate-400 mt-1">Max 5MB per file</span>
-        </label>
-        {portfolioPreview.length > 0 && (
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mt-3">
-            {portfolioPreview.map((preview, idx) => (
-              <div key={idx} className="relative border rounded p-2 bg-slate-50">
-                {typeof preview === 'string' && preview.startsWith('data:') ? (
-                  <img src={preview} alt={`Preview ${idx}`} className="w-full h-20 object-cover rounded" />
-                ) : (
-                  <div className="w-full h-20 flex items-center justify-center text-xs font-medium text-slate-600">{preview}</div>
-                )}
-                <button 
-                  type="button"
-                  onClick={() => removePortfolioFile(idx)}
-                  className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs font-bold hover:bg-red-600"
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+
 
       <div className="space-y-2">
         <Label>Detailed Proposal *</Label>

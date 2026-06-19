@@ -28,6 +28,7 @@ import {
   MessageSquare
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { NotificationDropdown } from "./NotificationDropdown";
 
 export function Navbar() {
   const { user, logout } = useAuthStore();
@@ -123,10 +124,7 @@ export function Navbar() {
               <span className="absolute top-1 right-1 w-2 h-2 bg-[#E8701A] rounded-full ring-2 ring-white"></span>
             </Link>
             
-            <button className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-[0.6rem] font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-red-500 rounded-full">3</span>
-            </button>
+            <NotificationDropdown />
             
             <div className="w-px h-6 bg-gray-200 mx-2"></div>
             

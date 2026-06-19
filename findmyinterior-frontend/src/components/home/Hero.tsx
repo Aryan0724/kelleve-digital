@@ -39,30 +39,37 @@ export function Hero() {
         
         {/* Left Content */}
         <div className="w-full lg:w-[60%] flex flex-col">
-          <h1 className="text-4xl md:text-5xl lg:text-[3.25rem] font-bold tracking-tight text-[#0a1c3a] leading-tight mb-4">
-            Find, Compare & Hire<br/>
-            Best Experts for Your<br/>
-            <span className="text-[#0a1c3a]">Home & Project Needs</span>
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-100 w-fit mb-6 shadow-sm">
+            <div className="flex -space-x-2">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=32&h=32&fit=crop" className="w-6 h-6 rounded-full border-2 border-white" alt="User" />
+              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=32&h=32&fit=crop" className="w-6 h-6 rounded-full border-2 border-white" alt="User" />
+              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=32&h=32&fit=crop" className="w-6 h-6 rounded-full border-2 border-white" alt="User" />
+            </div>
+            <span className="text-xs font-semibold text-orange-800">Trusted by 10,000+ Happy Customers</span>
+          </div>
+
+          <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-5">
+            Find & Hire The Best<br/>
+            Interior Experts in <span className="text-[#E8701A] relative inline-block">
+              Bihar
+              <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
+            </span>
           </h1>
           
-          <p className="text-base md:text-lg text-gray-700 mb-6 max-w-2xl font-medium leading-relaxed">
-            Interior Designers, Contractors, Architects, Skilled Workers,<br/>
-            Suppliers & More — All in One Place Across Bihar.
+          <p className="text-base md:text-lg text-gray-700 mb-8 max-w-2xl font-medium leading-relaxed">
+            From top-rated Interior Designers to skilled Contractors & Material Suppliers. Compare quotes and save up to 30% on your next home project.
           </p>
 
           {/* 4 Value Props */}
-          <div className="flex flex-wrap items-center gap-4 md:gap-6 mb-8">
-            <div className="flex items-center text-sm font-semibold text-gray-800">
-              <ShieldCheck className="w-5 h-5 text-[#E8701A] mr-1.5" /> Verified Professionals
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-8 bg-white/50 p-3 rounded-lg border border-gray-100 inline-flex w-fit backdrop-blur-sm shadow-sm">
+            <div className="flex items-center text-sm font-bold text-gray-800">
+              <ShieldCheck className="w-5 h-5 text-[#E8701A] mr-2" /> Verified Pros
             </div>
-            <div className="flex items-center text-sm font-semibold text-gray-800">
-              <FileText className="w-5 h-5 text-[#E8701A] mr-1.5" /> Multiple Quotes
+            <div className="flex items-center text-sm font-bold text-gray-800">
+              <FileText className="w-5 h-5 text-[#E8701A] mr-2" /> Get Multiple Quotes
             </div>
-            <div className="flex items-center text-sm font-semibold text-gray-800">
-              <IndianRupee className="w-5 h-5 text-[#E8701A] mr-1.5" /> Best Price Guarantee
-            </div>
-            <div className="flex items-center text-sm font-semibold text-gray-800">
-              <Lock className="w-5 h-5 text-[#E8701A] mr-1.5" /> 100% Secure
+            <div className="flex items-center text-sm font-bold text-gray-800">
+              <IndianRupee className="w-5 h-5 text-[#E8701A] mr-2" /> Best Prices
             </div>
           </div>
           

@@ -9,7 +9,10 @@ use App\Models\RequirementImage;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Str;
+use App\Models\User;
+use App\Notifications\NewLeadNotification;
 
 class RequirementController extends Controller
 {
@@ -21,6 +24,7 @@ class RequirementController extends Controller
     {
         $query = Requirement::open()
             ->with(['category', 'images'])
+            ->withCount('bids')
             ->latest();
 
         if ($request->filled('category')) {
@@ -49,8 +53,9 @@ class RequirementController extends Controller
      */
     public function show(Request $request, int $id): JsonResponse
     {
-        $requirement = Requirement::open()
+        $requirement = Requirement::query()
             ->with(['category', 'images'])
+            ->withCount('bids')
             ->findOrFail($id);
 
         return response()->json([
@@ -99,10 +104,75 @@ class RequirementController extends Controller
 
         Log::info("New requirement posted: ID {$requirement->id} by user " . ($request->user()?->id ?? 'guest'));
 
+        // Notify matching professionals (mocking the match by sending to some active professionals)
+        // In a real scenario, this would filter by category, district, and subscription.
+        $professionals = User::whereIn('role', ['business', 'worker', 'builder', 'supplier'])
+            ->where('is_active', true)
+            ->take(50) // Limit to avoid massive email blasts during testing
+            ->get();
+            
+        if ($professionals->count() > 0) {
+            Notification::send($professionals, new NewLeadNotification([
+                'title' => $requirement->title,
+                'city' => $requirement->city,
+                'requirement_id' => $requirement->id
+            ]));
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Your project requirement has been posted successfully.',
             'data'    => new RequirementResource($requirement->load('category', 'images')),
         ], 201);
+    }
+
+    /**
+     * PUT/PATCH /api/v1/requirements/{id}
+     */
+    public function update(Request $request, int $id): JsonResponse
+    {
+        $requirement = Requirement::findOrFail($id);
+        if ($request->user()->id !== $requirement->user_id && $request->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = $request->validate([
+            'title'        => ['sometimes', 'string', 'max:255'],
+            'description'  => ['sometimes', 'string', 'max:2000'],
+            'project_type' => ['sometimes', 'string', 'max:100'],
+            'budget_min'   => ['sometimes', 'numeric', 'min:0'],
+            'budget_max'   => ['sometimes', 'numeric', 'min:0'],
+        ]);
+
+        $requirement->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requirement updated successfully.',
+            'data'    => new RequirementResource($requirement),
+        ]);
+    }
+
+    /**
+     * PATCH /api/v1/requirements/{id}/status
+     */
+    public function updateStatus(Request $request, int $id): JsonResponse
+    {
+        $requirement = Requirement::findOrFail($id);
+        if ($request->user()->id !== $requirement->user_id && $request->user()->role !== 'admin') {
+            abort(403, 'Unauthorized action.');
+        }
+
+        $data = $request->validate([
+            'status' => ['required', 'in:open,closed,fulfilled'],
+        ]);
+
+        $requirement->update(['status' => $data['status']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requirement status updated.',
+            'data'    => new RequirementResource($requirement),
+        ]);
     }
 }

@@ -1,14 +1,15 @@
 const API_BASE = 'http://localhost:8000/api/v1';
 
 async function fetchJSON(path, options = {}) {
+  const { headers, ...restOptions } = options;
   try {
     const res = await fetch(`${API_BASE}${path}`, {
       headers: {
         'Accept': 'application/json',
         'Content-Type': 'application/json',
-        ...(options.headers || {})
+        ...(headers || {})
       },
-      ...options
+      ...restOptions
     });
     const text = await res.text();
     let data;
@@ -53,7 +54,18 @@ async function runTests() {
   const reqRes = await fetchJSON('/requirements', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${customerToken}` },
-    body: JSON.stringify({ title: 'Need Kitchen Design', description: 'Test desc', city: 'Patna', district: 'Patna', budget: '200000', project_type: 'Residential', service_category_id: 1, phone: '9999999999' })
+    body: JSON.stringify({
+      title: 'Need Kitchen Design',
+      description: 'Test desc',
+      category_id: 1,
+      project_type: 'Residential',
+      city: 'Patna',
+      district: 'Patna',
+      budget_min: 100000,
+      budget_max: 200000,
+      name: 'Audit Customer',
+      phone: '9999999999'
+    })
   });
   console.log(`Status: ${reqRes.status}`);
   if (reqRes.status !== 201) console.log(reqRes.data);
@@ -64,7 +76,13 @@ async function runTests() {
   const bidRes = await fetchJSON('/bids', {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${vendorToken}` },
-    body: JSON.stringify({ requirement_id: reqId, amount: 50000, timeline_days: 10, proposal_message: "We can do this!" })
+    body: JSON.stringify({
+      requirement_id: reqId,
+      estimated_cost: 50000,
+      timeline_days: 10,
+      proposal_message: "We can do this!",
+      experience_years: 5
+    })
   });
   console.log(`Status: ${bidRes.status}`);
   if (bidRes.status !== 201) console.log(bidRes.data);
@@ -102,7 +120,11 @@ async function runTests() {
   const subRes = await fetchJSON(`/payments/create-order`, {
     method: 'POST',
     headers: { 'Authorization': `Bearer ${vendorToken}` },
-    body: JSON.stringify({ amount: 5000, currency: "INR" })
+    body: JSON.stringify({
+      purpose: 'subscription',
+      subscription_plan_id: 1,
+      billing_cycle: 'monthly'
+    })
   });
   console.log(`Status: ${subRes.status}`);
   console.log(subRes.data);

@@ -12,6 +12,8 @@ import { WalletTab } from "@/components/dashboard/WalletTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
+import { ProfileTab } from "@/components/dashboard/ProfileTab";
+import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 
 export default function UserDashboard() {
   const { user, token, logout } = useAuthStore();
@@ -21,6 +23,10 @@ export default function UserDashboard() {
 
   // Tab state: "overview", "bids_received", "available_leads", "recommended_leads", "bids_submitted", "won_projects", "unlocked_leads", "wallet", "performance"
   const [activeTab, setActiveTab] = useState("overview");
+  
+  const [reviewModalData, setReviewModalData] = useState<{isOpen: boolean, profId: number, reqId: number}>({
+    isOpen: false, profId: 0, reqId: 0
+  });
 
   const fetchDashboard = async () => {
     try {
@@ -116,100 +122,107 @@ export default function UserDashboard() {
               </CardContent>
             </Card>
 
-            <div className="bg-white border rounded-xl overflow-hidden flex flex-col">
+            <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               {isCustomer ? (
-                <>
+                <div className="flex md:flex-col min-w-max md:min-w-0">
                   <button 
                     onClick={() => setActiveTab("overview")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <LayoutDashboard className={`h-5 w-5 mr-3 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <LayoutDashboard className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     My Posted Requirements
                   </button>
                   <button 
                     onClick={() => setActiveTab("bids_received")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'bids_received' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'bids_received' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Gavel className={`h-5 w-5 mr-3 ${activeTab === 'bids_received' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <Gavel className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'bids_received' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     Bids Received
                   </button>
                   <button 
                     onClick={() => router.push("/messages")}
-                    className="flex items-center justify-between p-4 border-b text-left font-medium hover:bg-slate-50 text-slate-700"
+                    className="flex items-center justify-between p-4 border-b md:border-r-0 border-r text-left font-medium hover:bg-slate-50 text-slate-700 whitespace-nowrap md:whitespace-normal"
                   >
                     <div className="flex items-center">
-                      <MessageSquare className="h-5 w-5 mr-3 text-slate-400" /> 
+                      <MessageSquare className="h-5 w-5 mr-3 shrink-0 text-slate-400" /> 
                       Messages
                     </div>
                     {data?.user?.unread_messages_count > 0 && (
-                      <Badge className="bg-orange-600 hover:bg-orange-700">{data.user.unread_messages_count}</Badge>
+                      <Badge className="bg-orange-600 hover:bg-orange-700 ml-2">{data.user.unread_messages_count}</Badge>
                     )}
                   </button>
-                </>
+                </div>
               ) : (
-                <>
+                <div className="flex md:flex-col min-w-max md:min-w-0">
                   <button 
                     onClick={() => setActiveTab("overview")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <LayoutDashboard className={`h-5 w-5 mr-3 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <LayoutDashboard className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     Dashboard Overview
                   </button>
                   <button 
                     onClick={() => setActiveTab("available_leads")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'available_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'available_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Search className={`h-5 w-5 mr-3 ${activeTab === 'available_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <Search className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'available_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     Available Leads
                   </button>
                   <button 
                     onClick={() => setActiveTab("recommended_leads")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'recommended_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'recommended_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Star className={`h-5 w-5 mr-3 ${activeTab === 'recommended_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <Star className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'recommended_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     Recommended Leads
                   </button>
                   <button 
                     onClick={() => setActiveTab("unlocked_leads")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'unlocked_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'unlocked_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <MessageSquare className={`h-5 w-5 mr-3 ${activeTab === 'unlocked_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <MessageSquare className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'unlocked_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     Unlocked Leads
                   </button>
                   <button 
                     onClick={() => setActiveTab("bids_submitted")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'bids_submitted' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'bids_submitted' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Gavel className={`h-5 w-5 mr-3 ${activeTab === 'bids_submitted' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <Gavel className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'bids_submitted' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     My Bids
                   </button>
                   <button 
                     onClick={() => setActiveTab("won_projects")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'won_projects' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'won_projects' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Trophy className={`h-5 w-5 mr-3 ${activeTab === 'won_projects' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <Trophy className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'won_projects' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     Won Projects
                   </button>
                   <button 
                     onClick={() => setActiveTab("wallet")}
-                    className={`flex items-center p-4 border-b text-left font-medium ${activeTab === 'wallet' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'wallet' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
                   >
-                    <Wallet className={`h-5 w-5 mr-3 ${activeTab === 'wallet' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    <Wallet className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'wallet' ? 'text-orange-600' : 'text-slate-400'}`} /> 
                     My Wallet
                   </button>
                   <button 
+                    onClick={() => setActiveTab("profile")}
+                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'profile' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+                  >
+                    <User className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'profile' ? 'text-orange-600' : 'text-slate-400'}`} /> 
+                    Business Profile
+                  </button>
+                  <button 
                     onClick={() => router.push("/messages")}
-                    className="flex items-center justify-between p-4 border-b text-left font-medium hover:bg-slate-50 text-slate-700"
+                    className="flex items-center justify-between p-4 border-b md:border-r-0 border-r text-left font-medium hover:bg-slate-50 text-slate-700 whitespace-nowrap md:whitespace-normal"
                   >
                     <div className="flex items-center">
-                      <MessageSquare className="h-5 w-5 mr-3 text-slate-400" /> 
+                      <MessageSquare className="h-5 w-5 mr-3 shrink-0 text-slate-400" /> 
                       Messages
                     </div>
                     {data?.user?.unread_messages_count > 0 && (
-                      <Badge className="bg-orange-600 hover:bg-orange-700">{data.user.unread_messages_count}</Badge>
+                      <Badge className="bg-orange-600 hover:bg-orange-700 ml-2">{data.user.unread_messages_count}</Badge>
                     )}
                   </button>
-                </>
+                </div>
               )}
             </div>
           </div>
@@ -251,8 +264,15 @@ export default function UserDashboard() {
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-10 text-slate-500">
-                      You haven't posted any requirements yet.
+                    <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
+                      <LayoutDashboard className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">No Requirements Yet</h3>
+                      <p className="text-slate-500 mb-6 max-w-md mx-auto">
+                        You haven't posted any requirements. Post your first requirement to start receiving bids from top professionals.
+                      </p>
+                      <Button onClick={() => router.push("/post-requirement")} className="bg-orange-600 hover:bg-orange-700">
+                        Post a Requirement
+                      </Button>
                     </div>
                   )}
                 </CardContent>
@@ -295,12 +315,28 @@ export default function UserDashboard() {
                               <Button onClick={() => acceptBid(bid.id)} className="bg-green-600 hover:bg-green-700 text-white">Accept Bid</Button>
                             </div>
                           )}
+                          
+                          {bid.status === 'accepted' && (
+                            <div className="mt-4 flex gap-2">
+                              <Button 
+                                onClick={() => setReviewModalData({isOpen: true, profId: bid.professional_id, reqId: bid.requirement_id})} 
+                                variant="outline" 
+                                className="border-orange-200 text-orange-600 hover:bg-orange-50"
+                              >
+                                Leave a Review
+                              </Button>
+                            </div>
+                          )}
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-10 text-slate-500">
-                      No bids received yet.
+                    <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
+                      <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">No Bids Yet</h3>
+                      <p className="text-slate-500 max-w-md mx-auto">
+                        Once professionals review your requirements, their bids will appear here.
+                      </p>
                     </div>
                   )}
                 </CardContent>
@@ -382,9 +418,20 @@ export default function UserDashboard() {
 
             {!isCustomer && activeTab === 'wallet' && <WalletTab />}
 
+            {!isCustomer && activeTab === 'profile' && <ProfileTab />}
+
           </div>
         </div>
       </div>
+      
+      {/* Modals */}
+      <LeaveReviewModal 
+        isOpen={reviewModalData.isOpen}
+        onClose={() => setReviewModalData({...reviewModalData, isOpen: false})}
+        professionalId={reviewModalData.profId}
+        requirementId={reviewModalData.reqId}
+        onSuccess={() => fetchDashboard()}
+      />
     </div>
   );
 }

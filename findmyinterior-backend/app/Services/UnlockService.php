@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Requirement;
 use App\Services\WalletService;
 use Illuminate\Support\Facades\DB;
+use App\Notifications\LeadUnlockedNotification;
 use Exception;
 
 class UnlockService
@@ -73,6 +74,11 @@ class UnlockService
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
+
+            $vendor->notify(new LeadUnlockedNotification([
+                'title' => $requirement->title,
+                'phone' => $requirement->phone ?? $requirement->user->phone ?? 'Not Available',
+            ]));
 
             return [
                 'success' => true,

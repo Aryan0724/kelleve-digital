@@ -5,6 +5,8 @@ namespace App\Services;
 use App\Models\Bid;
 use App\Models\Requirement;
 use App\Models\User;
+use App\Notifications\BidReceivedNotification;
+use App\Notifications\BidAwardedNotification;
 use Illuminate\Support\Facades\DB;
 
 class BidService
@@ -79,15 +81,15 @@ class BidService
             // Notify Customer
             $requirement = Requirement::find($data['requirement_id']);
             if ($requirement && $requirement->user_id) {
-                DB::table('notifications')->insert([
-                    'user_id' => $requirement->user_id,
-                    'type' => 'new_bid',
-                    'title' => 'New Bid Received',
-                    'message' => "You received a new bid for your requirement: {$requirement->title}",
-                    'data' => json_encode(['bid_id' => $bid->id, 'requirement_id' => $requirement->id]),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                $customer = User::find($requirement->user_id);
+                if ($customer) {
+                    $customer->notify(new BidReceivedNotification([
+                        'amount' => $data['amount'],
+                        'vendor_name' => $data['company_name'] ?? 'A Professional',
+                        'bid_id' => $bid->id,
+                        'requirement_id' => $requirement->id
+                    ]));
+                }
             }
 
             // Update Requirement Status if it's open
@@ -156,15 +158,14 @@ class BidService
             $requirement->update(['status' => 'awarded']);
             
             // Notify Professional
-            DB::table('notifications')->insert([
-                'user_id' => $bid->professional_id,
-                'type' => 'bid_awarded',
-                'title' => 'Project Awarded!',
-                'message' => "Congratulations! You have been awarded the project: {$requirement->title}.",
-                'data' => json_encode(['bid_id' => $bid->id, 'requirement_id' => $requirement->id]),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            $professional = User::find($bid->professional_id);
+            if ($professional) {
+                $professional->notify(new BidAwardedNotification([
+                    'title' => $requirement->title,
+                    'bid_id' => $bid->id,
+                    'requirement_id' => $requirement->id
+                ]));
+            }
             
             // Log Timeline
             DB::table('activity_timelines')->insert([

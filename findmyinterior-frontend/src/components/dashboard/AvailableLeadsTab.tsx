@@ -5,14 +5,16 @@ import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Wallet } from "lucide-react";
-import { useAuthStore } from "@/lib/store/useAuthStore";
+import { MapPin, Search } from "lucide-react";
+
+function locationName(value: any) {
+  return typeof value === "string" ? value : value?.name || "Location not set";
+}
 
 export function AvailableLeadsTab() {
   const [requirements, setRequirements] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [unlockingId, setUnlockingId] = useState<number | null>(null);
-  const { user } = useAuthStore();
 
   const fetchRequirements = async () => {
     try {
@@ -66,12 +68,12 @@ export function AvailableLeadsTab() {
                   
                   <div className="flex items-center text-sm text-slate-500 mt-1 mb-2 gap-3">
                     {req.city && (
-                      <span className="flex items-center"><MapPin className="w-3 h-3 mr-1" /> {req.city.name}</span>
+                      <span className="flex items-center"><MapPin className="w-3 h-3 mr-1" /> {locationName(req.city)}</span>
                     )}
                     <span className="capitalize px-2 py-0.5 bg-slate-100 rounded-full text-xs font-medium text-slate-600">
                       {req.category?.name || 'General'}
                     </span>
-                    <span>• {req.property_type || "N/A"}</span>
+                    <span>{req.project_type || "General project"}</span>
                   </div>
                   
                   <p className="text-slate-600 text-sm line-clamp-2">{req.description}</p>
@@ -93,8 +95,12 @@ export function AvailableLeadsTab() {
             ))}
           </div>
         ) : (
-          <div className="text-center py-10 text-slate-500 border border-dashed rounded-lg bg-slate-50">
-            No new leads available at the moment. Check back later!
+          <div className="text-center py-16 px-4 border border-dashed rounded-xl bg-slate-50">
+            <Search className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 mb-2">No Available Leads</h3>
+            <p className="text-slate-500 max-w-md mx-auto">
+              There are no new leads matching your profile right now. We will notify you when new requirements are posted!
+            </p>
           </div>
         )}
       </CardContent>

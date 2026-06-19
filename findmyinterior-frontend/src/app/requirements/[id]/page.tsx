@@ -124,9 +124,45 @@ export default function RequirementDetail() {
               <span className="bg-[#4CAF50] text-white text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider">
                 {requirement.status === 'open' ? 'NEW PROJECT' : requirement.status.toUpperCase()}
               </span>
-              <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-2">
+              <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
                 {requirement.title}
                 <ShieldCheck className="w-6 h-6 text-[#ff6b00]" fill="#ff6b00" stroke="white" />
+                {isOwner && requirement.status === 'open' && (
+                  <Button 
+                    size="sm" 
+                    variant="destructive" 
+                    className="ml-auto" 
+                    onClick={async () => {
+                      if (confirm("Are you sure you want to close this requirement? Professionals will no longer be able to bid on it.")) {
+                        try {
+                          await api.patch(`/requirements/${requirement.id}/status`, { status: 'closed' });
+                          setRequirement({ ...requirement, status: 'closed' });
+                        } catch(e) {
+                          alert("Failed to close requirement.");
+                        }
+                      }
+                    }}
+                  >
+                    Close Requirement
+                  </Button>
+                )}
+                {isOwner && requirement.status === 'closed' && (
+                  <Button 
+                    size="sm" 
+                    variant="outline" 
+                    className="ml-auto text-green-600 border-green-600 hover:bg-green-50" 
+                    onClick={async () => {
+                      try {
+                        await api.patch(`/requirements/${requirement.id}/status`, { status: 'open' });
+                        setRequirement({ ...requirement, status: 'open' });
+                      } catch(e) {
+                        alert("Failed to reopen requirement.");
+                      }
+                    }}
+                  >
+                    Reopen Requirement
+                  </Button>
+                )}
               </h1>
             </div>
             

@@ -56,47 +56,49 @@ Deliverable:
 PHASE 4 - MESSAGING
 ===================
 
-STATUS: IN PROGRESS
+STATUS: COMPLETE
 
 Build:
 
-* Inbox
-* Conversation List
-* Chat Window
-* Message Sending
-* Message Polling (5 seconds)
+* [x] Inbox
+* [x] Conversation List
+* [x] Chat Window
+* [x] Message Sending
+* [x] Message Polling (5 seconds)
 
 Verify:
 
-* Customer sends message
-* Professional receives
-* Professional replies
-* Customer receives
+* [x] Customer sends message
+* [x] Professional receives
+* [x] Professional replies
+* [x] Customer receives
 
 Deliverable:
-PHASE_4_PROOF_REPORT.md
+[x] PHASE_4_PROOF_REPORT.md
 
 ====================================================
 PHASE 5 - ADMIN PANEL
 =====================
 
+STATUS: COMPLETE
+
 Build:
 
-* Verification Queue
-* User Management
-* Requirement Moderation
-* Review Moderation
-* Revenue Dashboard
+* [x] Verification Queue
+* [x] User Management
+* [x] Requirement Moderation
+* [x] Review Moderation
+* [x] Revenue Dashboard
 
 Verify:
 
-* Admin verifies professional
-* Admin rejects professional
-* Admin approves review
-* Admin disables user
+* [x] Admin verifies professional
+* [x] Admin rejects professional
+* [x] Admin approves review
+* [x] Admin disables user
 
 Deliverable:
-PHASE_5_PROOF_REPORT.md
+[x] PHASE_5_PROOF_REPORT.md
 
 ====================================================
 PHASE 6 - RAZORPAY

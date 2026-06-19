@@ -2,7 +2,7 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { ExternalLink, CheckCircle2, Clock, XCircle, Trophy, MessageSquare } from "lucide-react";
+import { ExternalLink, CheckCircle2, Clock, XCircle, Trophy, MessageSquare, Gavel } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
@@ -102,10 +102,20 @@ export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly =
             ))}
           </div>
         ) : (
-          <div className="text-center py-10 text-slate-500 border border-dashed rounded-lg bg-slate-50">
-            {showAwardedOnly 
-              ? "You haven't won any projects yet. Keep bidding on unlocked leads!" 
-              : "You don't have any active bids. Go to Unlocked Leads to submit a bid."}
+          <div className="text-center py-16 px-4 border border-dashed rounded-xl bg-slate-50">
+            {showAwardedOnly ? (
+              <Trophy className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            ) : (
+              <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+            )}
+            <h3 className="text-lg font-medium text-slate-900 mb-2">
+              {showAwardedOnly ? "No Projects Won Yet" : "No Active Bids"}
+            </h3>
+            <p className="text-slate-500 max-w-md mx-auto">
+              {showAwardedOnly 
+                ? "You haven't won any projects yet. Keep bidding on unlocked leads!" 
+                : "You don't have any active bids. Go to Unlocked Leads to submit a bid on an available project."}
+            </p>
           </div>
         )}
       </CardContent>

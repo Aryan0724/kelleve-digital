@@ -24,6 +24,10 @@ async function run() {
 
     const browser = await puppeteer.launch({ headless: 'new', args: ['--no-sandbox'] });
     const custPage = await browser.newPage();
+    custPage.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    custPage.on('requestfailed', request => {
+      console.log('REQUEST FAILED:', request.url(), request.failure()?.errorText);
+    });
     const profPage = await browser.newPage();
 
     try {
@@ -42,16 +46,22 @@ async function run() {
         await custPage.type('#password_confirmation', 'password123');
 
         const [regRes] = await Promise.all([
-            custPage.waitForResponse(res => res.url().includes('/register') && res.request().method() === 'POST', { timeout: 15000 }).catch(e => null),
+            custPage.waitForResponse(res => res.url().includes('/register') && res.request().method() === 'POST', { timeout: 60000 }).catch(e => null),
             custPage.evaluate(() => {
                 const btns = Array.from(document.querySelectorAll('button'));
                 const btn = btns.find(b => b.textContent && b.textContent.includes('Register'));
+                console.log('Found button?', !!btn);
                 if(btn) btn.click();
             })
         ]);
         
         const regStatus = regRes.status();
         const regPayload = await regRes.text();
+        await custPage.waitForFunction(() => {
+            const auth = localStorage.getItem('auth-storage');
+            return auth && JSON.parse(auth).state && JSON.parse(auth).state.token;
+        }, { timeout: 10000 }).catch(() => console.log('Wait for auth storage timed out'));
+        
         await new Promise(r => setTimeout(r, 1000));
         await custPage.screenshot({ path: 'artifacts/proof_1_after_register.png' });
         
@@ -70,9 +80,9 @@ async function run() {
         await custPage.type('#district', 'Patna');
         
         const [postRes] = await Promise.all([
-            custPage.waitForResponse(res => res.url().includes('/requirements') && res.request().method() === 'POST'),
+            custPage.waitForResponse(res => res.url().includes('/requirements') && res.request().method() === 'POST', { timeout: 90000 }),
             custPage.evaluate(() => {
-                const btn = Array.from(document.querySelectorAll('button')).find(b => b.innerText.includes('Post'));
+                const btn = Array.from(document.querySelectorAll('button')).find(b => b.textContent && b.textContent.includes('Post'));
                 if(btn) btn.click();
             })
         ]);
@@ -98,13 +108,19 @@ async function run() {
         await profPage.type('#password', 'password123');
         await profPage.type('#password_confirmation', 'password123');
         await Promise.all([
-            profPage.waitForResponse(res => res.url().includes('/register') && res.request().method() === 'POST', { timeout: 15000 }).catch(e => null),
+            profPage.waitForResponse(res => res.url().includes('/register') && res.request().method() === 'POST', { timeout: 60000 }).catch(e => null),
             profPage.evaluate(() => {
                 const btns = Array.from(document.querySelectorAll('button'));
                 const btn = btns.find(b => b.textContent && b.textContent.includes('Register'));
                 if(btn) btn.click();
             })
         ]);
+        
+        await profPage.waitForFunction(() => {
+            const auth = localStorage.getItem('auth-storage');
+            return auth && JSON.parse(auth).state && JSON.parse(auth).state.token;
+        }, { timeout: 10000 }).catch(() => console.log('Wait for auth storage timed out'));
+        
         await new Promise(r => setTimeout(r, 2000));
         
         console.log("Adding wallet balance via tinker...");
@@ -125,17 +141,17 @@ async function run() {
         // click UNLOCK NOW button to show modal
         await profPage.evaluate(() => {
             const btns = Array.from(document.querySelectorAll('button'));
-            const btn = btns.find(b => b.innerText.includes('UNLOCK NOW') || b.innerText.includes('Unlock'));
+            const btn = btns.find(b => b.textContent && (b.textContent.includes('UNLOCK NOW') || b.textContent.includes('Unlock')));
             if(btn) btn.click();
         });
         await new Promise(r => setTimeout(r, 1000));
         
         // click Confirm Unlock in modal
         const [unlockRes] = await Promise.all([
-            profPage.waitForResponse(res => res.url().includes('/unlock') && res.request().method() === 'POST'),
+            profPage.waitForResponse(res => res.url().includes('/unlock') && res.request().method() === 'POST', { timeout: 90000 }),
             profPage.evaluate(() => {
                 const btns = Array.from(document.querySelectorAll('button'));
-                const btn = btns.find(b => b.innerText.includes('Confirm Unlock'));
+                const btn = btns.find(b => b.textContent && b.textContent.includes('Confirm Unlock'));
                 if(btn) btn.click();
             })
         ]);
@@ -153,7 +169,7 @@ async function run() {
         
         await profPage.evaluate(() => {
             const btns = Array.from(document.querySelectorAll('button'));
-            const btn = btns.find(b => b.innerText.includes('PLACE BID NOW'));
+            const btn = btns.find(b => b.textContent && b.textContent.includes('PLACE BID NOW'));
             if(btn) btn.click();
         });
         await new Promise(r => setTimeout(r, 1000));
@@ -165,10 +181,10 @@ async function run() {
         });
         
         const [bidRes] = await Promise.all([
-            profPage.waitForResponse(res => res.url().includes('/bids') && res.request().method() === 'POST'),
+            profPage.waitForResponse(res => res.url().includes('/bids') && res.request().method() === 'POST', { timeout: 90000 }),
             profPage.evaluate(() => {
                 const btns = Array.from(document.querySelectorAll('button'));
-                const btn = btns.find(b => b.innerText.includes('Submit Bid') || b.innerText.includes('Submit'));
+                const btn = btns.find(b => b.textContent && (b.textContent.includes('Submit Bid') || b.textContent.includes('Submit')));
                 if(btn) btn.click();
             })
         ]);
@@ -189,10 +205,10 @@ async function run() {
         
         // There might be an award button directly or on a bids tab. We will try clicking the first Award button we find.
         const [awardRes] = await Promise.all([
-            custPage.waitForResponse(res => (res.url().includes('/award') || res.url().includes('/status')) && res.request().method() === 'POST').catch(()=>null),
+            custPage.waitForResponse(res => (res.url().includes('/award') || res.url().includes('/status')) && res.request().method() === 'POST', { timeout: 90000 }).catch(()=>null),
             custPage.evaluate(() => {
                 const btns = Array.from(document.querySelectorAll('button'));
-                const btn = btns.find(b => b.innerText.includes('Award') || b.innerText.includes('Accept'));
+                const btn = btns.find(b => b.textContent && (b.textContent.includes('Award') || b.textContent.includes('Accept')));
                 if(btn) btn.click();
             })
         ]);
@@ -222,7 +238,6 @@ async function run() {
         console.error("Error during proof:", e);
     } finally {
         await browser.close();
-        if (db) await db.end();
     }
 }
 

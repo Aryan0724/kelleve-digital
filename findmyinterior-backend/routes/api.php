@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\VendorMetricController;
 use App\Http\Controllers\Api\V1\InviteController;
 use App\Http\Controllers\Api\V1\Admin\RevenueController;
 
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -129,10 +130,12 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('bids', [BidController::class, 'myBids']);
         Route::get('requirements/{id}/bids', [BidController::class, 'indexForRequirement']);
         Route::get('requirements/{id}/bids/compare', [BidController::class, 'compare']);
+        Route::patch('requirements/{id}/complete', [BidController::class, 'complete']);
+        Route::put('requirements/{id}', [RequirementController::class, 'update']);
+        Route::patch('requirements/{id}/status', [RequirementController::class, 'updateStatus']);
         Route::patch('bids/{bid}/accept', [BidController::class, 'accept']);
         Route::patch('bids/{bid}/reject', [BidController::class, 'reject']);
         Route::patch('bids/{bid}/award', [BidController::class, 'award']);
-        Route::patch('requirements/{id}/complete', [BidController::class, 'complete']);
         
         // Wallet
         Route::get('wallet', [WalletController::class, 'index']);
@@ -187,9 +190,11 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         Route::get('users', [AdminController::class, 'users']);
         Route::patch('users/{id}/toggle-active', [AdminController::class, 'toggleUserActive']);
+        Route::patch('users/{id}/verify', [AdminController::class, 'verifyUser']);
         
         Route::get('listings', [AdminController::class, 'listings']);
         Route::patch('listings/{id}/verify', [AdminController::class, 'verifyListing']);
+        Route::patch('listings/{id}/reject', [AdminController::class, 'rejectListing']);
         Route::patch('listings/{id}/feature', [AdminController::class, 'featureListing']);
         
         Route::get('reviews/pending', [AdminController::class, 'pendingReviews']);
@@ -205,8 +210,10 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         Route::get('requirements', [AdminController::class, 'requirements']);
         Route::patch('requirements/{id}/close', [AdminController::class, 'closeRequirement']);
+        Route::patch('requirements/{id}/status', [AdminController::class, 'updateRequirementStatus']);
 
         // Revenue Dashboard
         Route::get('revenue', [RevenueController::class, 'index']);
+        Route::get('payments', [AdminController::class, 'payments']);
     });
 });
