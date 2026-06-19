@@ -18,7 +18,18 @@ import {
 export function Hero() {
   const router = useRouter();
   const [city, setCity] = useState("Patna");
-  const [service, setService] = useState("All Services");
+  const [service, setService] = useState("");
+  const [showServiceDropdown, setShowServiceDropdown] = useState(false);
+
+  const availableServices = [
+    "Interior Designer", "Contractor", "Architect", "Builder",
+    "Painter", "False Ceiling", "Carpenter", "Plumber",
+    "Electrician", "Tiles Supplier", "Hardware Supplier"
+  ];
+
+  const filteredServices = availableServices.filter(s => 
+    s.toLowerCase().includes(service.toLowerCase())
+  );
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -39,14 +50,7 @@ export function Hero() {
         
         {/* Left Content */}
         <div className="w-full lg:w-[60%] flex flex-col">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-50 border border-orange-100 w-fit mb-6 shadow-sm">
-            <div className="flex -space-x-2">
-              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=32&h=32&fit=crop" className="w-6 h-6 rounded-full border-2 border-white" alt="User" />
-              <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=32&h=32&fit=crop" className="w-6 h-6 rounded-full border-2 border-white" alt="User" />
-              <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=32&h=32&fit=crop" className="w-6 h-6 rounded-full border-2 border-white" alt="User" />
-            </div>
-            <span className="text-xs font-semibold text-orange-800">Trusted by 10,000+ Happy Customers</span>
-          </div>
+
 
           <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-5">
             Find & Hire The Best<br/>
@@ -89,17 +93,40 @@ export function Hero() {
               </div>
             </div>
             {/* Service */}
-            <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-lg transition">
+            <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-lg transition relative">
               <span className="text-[0.65rem] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Select Service</span>
               <div className="flex items-center justify-between">
                 <input 
                   type="text"
                   value={service}
-                  onChange={(e) => setService(e.target.value)}
+                  onChange={(e) => {
+                    setService(e.target.value);
+                    setShowServiceDropdown(true);
+                  }}
+                  onFocus={() => setShowServiceDropdown(true)}
+                  onBlur={() => setTimeout(() => setShowServiceDropdown(false), 200)}
                   className="bg-transparent font-semibold text-[#0a1c3a] outline-none w-full"
-                  placeholder="All Services"
+                  placeholder="e.g. Contractor"
                 />
               </div>
+              
+              {/* Autocomplete Dropdown */}
+              {showServiceDropdown && filteredServices.length > 0 && (
+                <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-50">
+                  {filteredServices.map(s => (
+                    <div 
+                      key={s} 
+                      className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm font-medium text-slate-700"
+                      onClick={() => {
+                        setService(s);
+                        setShowServiceDropdown(false);
+                      }}
+                    >
+                      {s}
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
             {/* Budget */}
             <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-lg transition">

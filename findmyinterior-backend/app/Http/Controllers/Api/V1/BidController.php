@@ -29,10 +29,6 @@ class BidController extends Controller
 
         $validated = $request->validate([
             'requirement_id' => 'required|exists:requirements,id',
-            'company_name' => 'nullable|string',
-            'contact_person' => 'nullable|string',
-            'category' => 'nullable|string',
-            'experience_years' => 'required|integer|min:0',
             'estimated_cost' => 'required|numeric|min:0',
             'timeline_days' => 'required|integer|min:1',
             'warranty_months' => 'nullable|integer|min:0',
@@ -41,9 +37,17 @@ class BidController extends Controller
             'design_included' => 'boolean',
             'supervision_included' => 'boolean',
             'portfolio_urls' => 'nullable|array',
-            'previous_projects_count' => 'nullable|integer|min:0',
             'proposal_message' => 'required|string|max:1000',
         ]);
+
+        // Attempt to auto-fill business details from the user's listing
+        $listing = \App\Models\Listing::where('user_id', $request->user()->id)->first();
+        
+        $validated['company_name'] = $listing ? $listing->title : $request->user()->name;
+        $validated['contact_person'] = $request->user()->name;
+        $validated['category'] = collect($request->user()->roles)->first() ?? 'Professional';
+        $validated['experience_years'] = $listing ? $listing->years_experience : 0;
+        $validated['previous_projects_count'] = 0; // Default or calculate from won bids
 
         $bid = $this->bidService->submitBid($request->user()->id, $validated);
 

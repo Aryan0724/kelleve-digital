@@ -1,6 +1,5 @@
 import { Hero } from "@/components/home/Hero";
 import { Stats } from "@/components/home/Stats";
-import RecentActivityFeed from "@/components/home/RecentActivityFeed";
 import { Categories } from "@/components/home/Categories";
 import { Hubs } from "@/components/home/Hubs";
 import { ActionBanner } from "@/components/home/ActionBanner";
@@ -14,7 +13,6 @@ export default function Home() {
       <Hero />
       <Stats />
       <FeaturedProfessionals />
-      <RecentActivityFeed />
       <Categories />
       <Hubs />
       <ActionBanner />

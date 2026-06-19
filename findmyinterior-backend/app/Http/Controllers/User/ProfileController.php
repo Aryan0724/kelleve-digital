@@ -166,6 +166,8 @@ class ProfileController extends Controller
             'address'          => ['sometimes', 'nullable', 'string'],
             'years_experience' => ['sometimes', 'nullable', 'integer'],
             'team_size'        => ['sometimes', 'nullable', 'integer'],
+            'gst_number'       => ['sometimes', 'nullable', 'string', 'max:50'],
+            'pan_number'       => ['sometimes', 'nullable', 'string', 'max:50'],
         ]);
 
         $listing->update($data);

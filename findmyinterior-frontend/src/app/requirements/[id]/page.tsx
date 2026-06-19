@@ -7,7 +7,7 @@ import api from "@/lib/api";
 import { 
   Lock, Phone, Mail, CheckCircle, IndianRupee, Clock, Building2, Eye, Users, 
   MapPin, Home, Maximize, Calendar, ShieldCheck, Flame, Star, ChevronLeft, 
-  ChevronRight, Gavel, Upload, Image as ImageIcon, Briefcase, FileText
+  ChevronRight, Gavel, Upload, Image as ImageIcon, Briefcase, FileText, MessageCircle
 } from "lucide-react";
 import { AdvancedBidForm } from "@/components/bids/AdvancedBidForm";
 import { Badge } from "@/components/ui/badge";
@@ -376,6 +376,12 @@ export default function RequirementDetail() {
                     <p className="text-sm text-slate-700 mb-5 leading-relaxed">
                       Unlock & connect directly with the client to discuss the project.
                     </p>
+                    <Button 
+                      onClick={() => router.push("/messages")}
+                      className="w-full bg-[#0b1b36] hover:bg-slate-800 text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
+                    >
+                      <MessageCircle className="w-5 h-5" /> Message Client
+                    </Button>
                   </div>
                 ) : (
                   <>

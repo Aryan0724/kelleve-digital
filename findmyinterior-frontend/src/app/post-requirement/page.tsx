@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
@@ -17,6 +17,7 @@ export default function PostRequirementPage() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
+  const [mounted, setMounted] = useState(false);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -29,11 +30,16 @@ export default function PostRequirementPage() {
     email: user?.email || "",
   });
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const handleSubmit = async (e: any) => {
     if (e?.preventDefault) {
       e.preventDefault();
     }
     
+    if (!mounted) return;
     if (!token) {
       router.push("/login");
       return;

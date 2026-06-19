@@ -16,10 +16,6 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
   const [portfolioFiles, setPortfolioFiles] = useState<File[]>([]);
   const [portfolioPreview, setPortfolioPreview] = useState<string[]>([]);
   const [formData, setFormData] = useState({
-    company_name: user?.name || "",
-    contact_person: user?.name || "",
-    category: "Interior Design",
-    experience: "5",
     amount: "",
     timeline_days: "",
     warranty_months: "",
@@ -27,7 +23,6 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
     labour_included: false,
     design_included: false,
     supervision_included: false,
-    previous_projects_count: "",
     proposal_message: "",
   });
 
@@ -85,12 +80,7 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
         labour_included: formData.labour_included,
         design_included: formData.design_included,
         supervision_included: formData.supervision_included,
-        previous_projects_count: Number(formData.previous_projects_count) || 0,
         proposal_message: formData.proposal_message,
-        company_name: formData.company_name,
-        contact_person: formData.contact_person,
-        category: formData.category,
-        experience_years: Number(formData.experience) || 0,
       };
 
       const bidResponse = await api.post("/bids", bidPayload);
@@ -115,23 +105,6 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
     <form onSubmit={submitBid} className="space-y-6">
       
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pb-4 border-b border-slate-100">
-        <div className="space-y-2">
-          <Label>Company Name</Label>
-          <Input name="company_name" value={formData.company_name} onChange={handleChange} required />
-        </div>
-        <div className="space-y-2">
-          <Label>Contact Person</Label>
-          <Input name="contact_person" value={formData.contact_person} onChange={handleChange} required />
-        </div>
-        <div className="space-y-2">
-          <Label>Category</Label>
-          <Input name="category" value={formData.category} onChange={handleChange} required />
-        </div>
-        <div className="space-y-2">
-          <Label>Experience (Years)</Label>
-          <Input type="number" name="experience" value={formData.experience} onChange={handleChange} required />
-        </div>
-      </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
@@ -167,17 +140,6 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
             value={formData.warranty_months}
             onChange={handleChange}
             placeholder="e.g. 12"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Projects Completed</Label>
-          <Input 
-            type="number" 
-            name="previous_projects_count"
-            min="0"
-            value={formData.previous_projects_count}
-            onChange={handleChange}
-            placeholder="e.g. 50"
           />
         </div>
       </div>

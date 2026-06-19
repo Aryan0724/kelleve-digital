@@ -7,21 +7,22 @@ import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { User, Settings, LogOut, LayoutDashboard, MessageSquare, Star, Gavel, CheckCircle2, Search, Trophy, Wallet } from "lucide-react";
+import { User, Settings, LogOut, LayoutDashboard, MessageSquare, Star, Gavel, CheckCircle2, Search, Trophy, Wallet, HardHat, Home, Building, Truck, Wrench } from "lucide-react";
 import { WalletTab } from "@/components/dashboard/WalletTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { ProfileTab } from "@/components/dashboard/ProfileTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
+import Link from "next/link";
 
 export default function UserDashboard() {
   const { user, token, logout } = useAuthStore();
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [mounted, setMounted] = useState(false);
 
-  // Tab state: "overview", "bids_received", "available_leads", "recommended_leads", "bids_submitted", "won_projects", "unlocked_leads", "wallet", "performance"
   const [activeTab, setActiveTab] = useState("overview");
   
   const [reviewModalData, setReviewModalData] = useState<{isOpen: boolean, profId: number, reqId: number}>({
@@ -40,12 +41,17 @@ export default function UserDashboard() {
   };
 
   useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (!mounted) return;
     if (!token) {
       router.push("/login");
       return;
     }
     fetchDashboard();
-  }, [token, router]);
+  }, [token, mounted, router]);
 
   const handleLogout = () => {
     logout();
@@ -62,20 +68,32 @@ export default function UserDashboard() {
     }
   };
 
-  if (!user || loading) return <div className="p-20 text-center">Loading dashboard...</div>;
+  if (!mounted || !user || loading) return <div className="p-20 text-center">Loading dashboard...</div>;
 
-  const isCustomer = user.role === 'customer';
+  const role = user.role; // customer, business, builder, supplier, worker
+  // If business, try to infer if contractor vs designer based on listing if needed, but for now we'll bundle.
+  
+  const renderSidebarButton = (id: string, icon: React.ReactNode, label: string) => (
+    <button 
+      onClick={() => setActiveTab(id)}
+      className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal transition-colors ${activeTab === id ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+    >
+      <div className={`mr-3 shrink-0 ${activeTab === id ? 'text-orange-600' : 'text-slate-400'}`}>
+        {icon}
+      </div>
+      {label}
+    </button>
+  );
 
   return (
     <div className="bg-slate-50 min-h-screen">
-      {/* Dashboard Nav */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-900 font-bold">
-            <LayoutDashboard className="h-5 w-5 text-orange-600" /> My Dashboard
+            <LayoutDashboard className="h-5 w-5 text-orange-600" /> {user.name}'s Workspace
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-slate-600">Welcome, {user.name}</span>
+            <span className="text-sm font-medium text-slate-600 hidden md:block">{role.toUpperCase()}</span>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600">
               <LogOut className="h-4 w-4 mr-2" /> Logout
             </Button>
@@ -94,134 +112,88 @@ export default function UserDashboard() {
                   {user.name.charAt(0)}
                 </div>
                 <h3 className="font-bold text-lg">{user.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant={isCustomer ? 'secondary' : 'default'}>
-                  {user.role}
+                <Badge className="mt-2 capitalize mb-4" variant={role === 'customer' ? 'secondary' : 'default'}>
+                  {role}
                 </Badge>
                 
-                {/* Subscription Widget */}
-                {!isCustomer && (
-                  <div className="w-full bg-orange-50 border border-orange-100 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-orange-600 font-medium">Current Plan</div>
-                      <div className="font-bold text-slate-900">{data?.user?.subscription || "Free Plan"}</div>
+                {role !== 'customer' && (
+                  <div className="w-full space-y-2 mt-2">
+                    <div className="w-full bg-orange-50 border border-orange-100 rounded-lg p-3 text-left flex justify-between items-center">
+                      <div>
+                        <div className="text-xs text-orange-600 font-medium">Subscription</div>
+                        <div className="font-bold text-slate-900">{data?.user?.subscription || "Free Plan"}</div>
+                      </div>
+                      <Link href="/pricing">
+                        <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200">Upgrade</Button>
+                      </Link>
                     </div>
-                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200">Upgrade</Button>
-                  </div>
-                )}
-                
-                {/* Wallet Widget */}
-                {!isCustomer && (
-                  <div className="w-full bg-green-50 border border-green-100 rounded-lg p-3 text-left flex justify-between items-center mt-2">
-                    <div>
-                      <div className="text-xs text-green-700 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
-                      <div className="font-bold text-slate-900">₹{data?.user?.wallet_balance || 0}</div>
+                    
+                    <div className="w-full bg-green-50 border border-green-100 rounded-lg p-3 text-left flex justify-between items-center">
+                      <div>
+                        <div className="text-xs text-green-700 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
+                        <div className="font-bold text-slate-900">₹{data?.user?.wallet_balance || 0}</div>
+                      </div>
+                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-green-700 border-green-200" onClick={() => setActiveTab("wallet")}>Add</Button>
                     </div>
-                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-green-700 border-green-200" onClick={() => setActiveTab("wallet")}>Add</Button>
                   </div>
                 )}
               </CardContent>
             </Card>
 
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
-              {isCustomer ? (
+              
+              {role === 'customer' && (
                 <div className="flex md:flex-col min-w-max md:min-w-0">
-                  <button 
-                    onClick={() => setActiveTab("overview")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <LayoutDashboard className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    My Posted Requirements
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("bids_received")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'bids_received' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <Gavel className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'bids_received' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    Bids Received
-                  </button>
-                  <button 
-                    onClick={() => router.push("/messages")}
-                    className="flex items-center justify-between p-4 border-b md:border-r-0 border-r text-left font-medium hover:bg-slate-50 text-slate-700 whitespace-nowrap md:whitespace-normal"
-                  >
-                    <div className="flex items-center">
-                      <MessageSquare className="h-5 w-5 mr-3 shrink-0 text-slate-400" /> 
-                      Messages
-                    </div>
-                    {data?.user?.unread_messages_count > 0 && (
-                      <Badge className="bg-orange-600 hover:bg-orange-700 ml-2">{data.user.unread_messages_count}</Badge>
-                    )}
-                  </button>
+                  {renderSidebarButton("overview", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
+                  {renderSidebarButton("bids_received", <Gavel className="h-5 w-5" />, "Received Bids")}
+                  {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                  {renderSidebarButton("saved", <Star className="h-5 w-5" />, "Saved Professionals")}
                 </div>
-              ) : (
+              )}
+
+              {role === 'business' && (
                 <div className="flex md:flex-col min-w-max md:min-w-0">
-                  <button 
-                    onClick={() => setActiveTab("overview")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'overview' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <LayoutDashboard className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'overview' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    Dashboard Overview
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("available_leads")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'available_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <Search className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'available_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    Available Leads
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("recommended_leads")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'recommended_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <Star className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'recommended_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    Recommended Leads
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("unlocked_leads")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'unlocked_leads' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <MessageSquare className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'unlocked_leads' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    Unlocked Leads
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("bids_submitted")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'bids_submitted' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <Gavel className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'bids_submitted' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    My Bids
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("won_projects")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'won_projects' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <Trophy className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'won_projects' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    Won Projects
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("wallet")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'wallet' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <Wallet className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'wallet' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    My Wallet
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab("profile")}
-                    className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal ${activeTab === 'profile' ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
-                  >
-                    <User className={`h-5 w-5 mr-3 shrink-0 ${activeTab === 'profile' ? 'text-orange-600' : 'text-slate-400'}`} /> 
-                    Business Profile
-                  </button>
-                  <button 
-                    onClick={() => router.push("/messages")}
-                    className="flex items-center justify-between p-4 border-b md:border-r-0 border-r text-left font-medium hover:bg-slate-50 text-slate-700 whitespace-nowrap md:whitespace-normal"
-                  >
-                    <div className="flex items-center">
-                      <MessageSquare className="h-5 w-5 mr-3 shrink-0 text-slate-400" /> 
-                      Messages
-                    </div>
-                    {data?.user?.unread_messages_count > 0 && (
-                      <Badge className="bg-orange-600 hover:bg-orange-700 ml-2">{data.user.unread_messages_count}</Badge>
-                    )}
-                  </button>
+                  {renderSidebarButton("overview", <LayoutDashboard className="h-5 w-5" />, "My Posted RFQs")}
+                  {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Leads")}
+                  {renderSidebarButton("recommended_leads", <Star className="h-5 w-5" />, "Recommended Leads")}
+                  {renderSidebarButton("unlocked_leads", <MessageSquare className="h-5 w-5" />, "Unlocked Leads")}
+                  {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Submitted Bids")}
+                  {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
+                  {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
+                  {renderSidebarButton("profile", <User className="h-5 w-5" />, "Business Profile")}
+                  {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                </div>
+              )}
+
+              {role === 'builder' && (
+                <div className="flex md:flex-col min-w-max md:min-w-0">
+                  {renderSidebarButton("overview", <Building className="h-5 w-5" />, "Builder Projects")}
+                  {renderSidebarButton("contractor_reqs", <HardHat className="h-5 w-5" />, "Contractor Requests")}
+                  {renderSidebarButton("supplier_reqs", <Truck className="h-5 w-5" />, "Supplier Requests")}
+                  {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                  {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
+                  {renderSidebarButton("profile", <User className="h-5 w-5" />, "Builder Profile")}
+                </div>
+              )}
+
+              {role === 'supplier' && (
+                <div className="flex md:flex-col min-w-max md:min-w-0">
+                  {renderSidebarButton("overview", <LayoutDashboard className="h-5 w-5" />, "Dashboard Overview")}
+                  {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Quote Requests")}
+                  {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Submitted Quotes")}
+                  {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                  {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
+                  {renderSidebarButton("profile", <User className="h-5 w-5" />, "Product Catalogue")}
+                </div>
+              )}
+
+              {role === 'worker' && (
+                <div className="flex md:flex-col min-w-max md:min-w-0">
+                  {renderSidebarButton("overview", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
+                  {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Jobs")}
+                  {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
+                  {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                  {renderSidebarButton("profile", <User className="h-5 w-5" />, "Worker Profile")}
                 </div>
               )}
             </div>
@@ -230,34 +202,35 @@ export default function UserDashboard() {
           {/* Main Content Area */}
           <div className="lg:col-span-3 space-y-6">
             
-            {/* ---------------- CUSTOMER VIEWS ---------------- */}
-            {isCustomer && activeTab === 'overview' && data && (
+            {/* SHARED POSTED REQUIREMENTS VIEW (Everyone can post) */}
+            {activeTab === 'overview' && data && (
               <Card>
-                <CardHeader>
-                  <CardTitle>My Posted Requirements</CardTitle>
+                <CardHeader className="flex flex-row justify-between items-center">
+                  <CardTitle>{role === 'customer' ? 'My Requirements' : 'My Posted RFQs / Requirements'}</CardTitle>
+                  <Button onClick={() => router.push("/post-requirement")} size="sm" className="bg-orange-600 hover:bg-orange-700">Post New</Button>
                 </CardHeader>
                 <CardContent>
                   {data.requirements && data.requirements.length > 0 ? (
                     <div className="space-y-4">
                       {data.requirements.map((req: any) => (
-                        <div key={req.id} className="p-4 border rounded-lg bg-slate-50 flex justify-between">
+                        <div key={req.id} className="p-4 border rounded-lg bg-slate-50 flex justify-between flex-col md:flex-row gap-4">
                             <div>
                               <div className="flex items-start gap-3 mb-2">
                                 <span className="font-semibold text-slate-900">{req.title}</span>
                                 <Badge variant={req.status === 'open' ? 'default' : 'secondary'}>{req.status}</Badge>
                               </div>
-                              <p className="text-slate-600 text-sm">{req.description}</p>
+                              <p className="text-slate-600 text-sm line-clamp-2">{req.description}</p>
                               
                               {data.received_bids && data.received_bids.filter((b: any) => b.requirement_id === req.id).length > 0 && (
                                 <div className="mt-3 text-sm text-orange-600 font-medium">
-                                  {data.received_bids.filter((b: any) => b.requirement_id === req.id).length} bid(s) received
+                                  {data.received_bids.filter((b: any) => b.requirement_id === req.id).length} response(s) received
                                 </div>
                               )}
                             </div>
-                            <div className="flex flex-col gap-2">
+                            <div className="flex flex-col gap-2 shrink-0">
                               <Button onClick={() => router.push(`/requirements/${req.id}`)} variant="outline">View Detail</Button>
                               {data.received_bids && data.received_bids.filter((b: any) => b.requirement_id === req.id).length > 0 && (
-                                <Button onClick={() => router.push(`/requirements/${req.id}/compare`)} className="bg-orange-600 hover:bg-orange-700">Compare Bids</Button>
+                                <Button onClick={() => router.push(`/requirements/${req.id}/compare`)} className="bg-orange-600 hover:bg-orange-700">Compare</Button>
                               )}
                             </div>
                         </div>
@@ -266,23 +239,21 @@ export default function UserDashboard() {
                   ) : (
                     <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
                       <LayoutDashboard className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">No Requirements Yet</h3>
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">No active posts</h3>
                       <p className="text-slate-500 mb-6 max-w-md mx-auto">
-                        You haven't posted any requirements. Post your first requirement to start receiving bids from top professionals.
+                        You haven't posted any requirements or requests yet.
                       </p>
-                      <Button onClick={() => router.push("/post-requirement")} className="bg-orange-600 hover:bg-orange-700">
-                        Post a Requirement
-                      </Button>
                     </div>
                   )}
                 </CardContent>
               </Card>
             )}
 
-            {isCustomer && activeTab === 'bids_received' && data && (
+            {/* SHARED RECEIVED BIDS VIEW */}
+            {activeTab === 'bids_received' && data && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Bids on My Requirements</CardTitle>
+                  <CardTitle>Received Bids & Quotes</CardTitle>
                 </CardHeader>
                 <CardContent>
                   {data.received_bids && data.received_bids.length > 0 ? (
@@ -296,11 +267,11 @@ export default function UserDashboard() {
                           )}
                           <div className="mb-2">
                             <span className="font-semibold text-slate-900">Bid by Professional ID: {bid.professional_id}</span>
-                            <div className="text-xs text-slate-500">For Requirement: {bid.requirement?.title}</div>
+                            <div className="text-xs text-slate-500">For: {bid.requirement?.title}</div>
                           </div>
                           <div className="flex gap-6 my-3">
                             <div>
-                              <div className="text-xs text-slate-500">Bid Amount</div>
+                              <div className="text-xs text-slate-500">Amount</div>
                               <div className="font-bold text-orange-600">₹{bid.amount}</div>
                             </div>
                             <div>
@@ -312,19 +283,7 @@ export default function UserDashboard() {
                           
                           {bid.status === 'pending' && (
                             <div className="mt-4 flex gap-2">
-                              <Button onClick={() => acceptBid(bid.id)} className="bg-green-600 hover:bg-green-700 text-white">Accept Bid</Button>
-                            </div>
-                          )}
-                          
-                          {bid.status === 'accepted' && (
-                            <div className="mt-4 flex gap-2">
-                              <Button 
-                                onClick={() => setReviewModalData({isOpen: true, profId: bid.professional_id, reqId: bid.requirement_id})} 
-                                variant="outline" 
-                                className="border-orange-200 text-orange-600 hover:bg-orange-50"
-                              >
-                                Leave a Review
-                              </Button>
+                              <Button onClick={() => acceptBid(bid.id)} className="bg-green-600 hover:bg-green-700 text-white">Accept Quote</Button>
                             </div>
                           )}
                         </div>
@@ -334,47 +293,38 @@ export default function UserDashboard() {
                     <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
                       <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                       <h3 className="text-lg font-medium text-slate-900 mb-2">No Bids Yet</h3>
-                      <p className="text-slate-500 max-w-md mx-auto">
-                        Once professionals review your requirements, their bids will appear here.
-                      </p>
                     </div>
                   )}
                 </CardContent>
               </Card>
             )}
 
-            {/* ---------------- PROFESSIONAL VIEWS ---------------- */}
-            
-            {!isCustomer && activeTab === 'overview' && data && (
-              <>
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="text-slate-500 text-sm mb-1">Total Profile Views</div>
-                      <div className="text-3xl font-bold">{data.total_views || 0}</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="text-slate-500 text-sm mb-1">Leads Received</div>
-                      <div className="text-3xl font-bold text-orange-600">{data.total_inquiries || 0}</div>
-                    </CardContent>
-                  </Card>
-                  <Card>
-                    <CardContent className="p-6">
-                      <div className="text-slate-500 text-sm mb-1">Projects Won</div>
-                      <div className="text-3xl font-bold text-green-600">
-                        {data.submitted_bids?.filter((b:any) => b.status === 'awarded').length || 0}
-                      </div>
-                    </CardContent>
-                  </Card>
-                </div>
-              </>
+            {/* MESSAGES TAB FALLBACK */}
+            {activeTab === 'messages' && (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <MessageSquare className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-4">Go to your Messages Hub</h3>
+                  <Button onClick={() => router.push('/messages')} className="bg-[#0a1c3a]">Open Messenger</Button>
+                </CardContent>
+              </Card>
             )}
 
-            {!isCustomer && activeTab === 'available_leads' && <AvailableLeadsTab />}
+            {/* SAVED FALLBACK */}
+            {activeTab === 'saved' && (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <Star className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-4">No Saved Professionals Yet</h3>
+                </CardContent>
+              </Card>
+            )}
 
-            {!isCustomer && activeTab === 'recommended_leads' && data && (
+            {/* ---------------- PROFESSIONAL ONLY VIEWS ---------------- */}
+            
+            {role !== 'customer' && activeTab === 'available_leads' && <AvailableLeadsTab />}
+
+            {role !== 'customer' && activeTab === 'recommended_leads' && data && (
               <Card>
                 <CardHeader>
                   <CardTitle>Recommended Leads</CardTitle>
@@ -404,21 +354,31 @@ export default function UserDashboard() {
               </Card>
             )}
 
-            {!isCustomer && activeTab === 'unlocked_leads' && data && (
+            {role !== 'customer' && activeTab === 'unlocked_leads' && data && (
               <UnlockedLeadsTab unlockedContacts={data.unlocked_contacts} onRefresh={fetchDashboard} />
             )}
 
-            {!isCustomer && activeTab === 'bids_submitted' && data && (
-              <MyBidsTab bids={data.submitted_bids} title="My Submitted Bids" showAwardedOnly={false} />
+            {role !== 'customer' && activeTab === 'bids_submitted' && data && (
+              <MyBidsTab bids={data.submitted_bids} title="My Submitted Quotes" showAwardedOnly={false} />
             )}
 
-            {!isCustomer && activeTab === 'won_projects' && data && (
+            {role !== 'customer' && activeTab === 'won_projects' && data && (
               <MyBidsTab bids={data.submitted_bids} title="My Won Projects" showAwardedOnly={true} />
             )}
 
-            {!isCustomer && activeTab === 'wallet' && <WalletTab />}
+            {role !== 'customer' && activeTab === 'wallet' && <WalletTab />}
 
-            {!isCustomer && activeTab === 'profile' && <ProfileTab />}
+            {role !== 'customer' && activeTab === 'profile' && <ProfileTab />}
+
+            {/* Builder/Supplier Specific Tabs Fallbacks */}
+            {activeTab === 'contractor_reqs' || activeTab === 'supplier_reqs' ? (
+              <Card>
+                <CardContent className="py-16 text-center text-slate-500">
+                  <Building className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  No requests found in this category.
+                </CardContent>
+              </Card>
+            ) : null}
 
           </div>
         </div>
