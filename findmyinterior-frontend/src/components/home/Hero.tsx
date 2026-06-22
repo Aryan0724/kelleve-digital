@@ -71,14 +71,14 @@ export function Hero() {
   };
 
   return (
-    <section className="relative w-full min-h-[500px] flex items-center bg-white overflow-hidden">
+    <section className="relative w-full min-h-[500px] flex items-center bg-white">
       {/* Background Image with Gradient Fade */}
       <div 
         className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"
       />
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-white via-white/90 to-transparent w-full md:w-[70%]" />
       
-      <div className="container relative z-20 mx-auto px-4 py-12 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
+      <div className="container relative z-40 mx-auto px-4 py-12 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
         
         {/* Left Content */}
         <div className="w-full lg:w-[60%] flex flex-col">
