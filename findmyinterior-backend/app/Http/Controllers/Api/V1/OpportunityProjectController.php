@@ -39,6 +39,9 @@ class OpportunityProjectController extends Controller
             'description' => $validated['description'],
             'city' => $validated['city'],
             'district' => $validated['district'],
+            'project_type' => $validated['project_category'] ?? 'general', // Satisfy DB constraint
+            'name' => Auth::check() ? Auth::user()->name : 'Guest User', // Satisfy DB constraint
+            'phone' => Auth::check() ? (Auth::user()->phone ?? '0000000000') : '0000000000', // Satisfy DB constraint
             'opportunity_type' => $validated['opportunity_type'],
             'requirement_type' => $validated['requirement_type'],
             'project_category' => $validated['project_category'] ?? null,
