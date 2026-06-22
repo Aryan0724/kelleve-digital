@@ -34,6 +34,7 @@ class OpportunityProjectController extends Controller
 
         $project = Project::create([
             'user_id' => Auth::id() ?? 1, // fallback for testing
+            'category_id' => 1, // Default to 1 (Interior Designers) to satisfy DB constraint
             'title' => $validated['title'],
             'description' => $validated['description'],
             'city' => $validated['city'],
