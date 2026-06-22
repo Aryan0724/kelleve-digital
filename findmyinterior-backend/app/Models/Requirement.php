@@ -12,6 +12,8 @@ class Requirement extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $table = 'projects';
+
     protected $fillable = [
         'user_id', 'category_id', 'city_id', 'district_id',
         'title', 'description', 'project_type',

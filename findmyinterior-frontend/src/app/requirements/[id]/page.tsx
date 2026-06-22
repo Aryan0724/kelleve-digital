@@ -13,21 +13,6 @@ import { AdvancedBidForm } from "@/components/bids/AdvancedBidForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BidComparisonMatrix } from "@/components/bids/BidComparisonMatrix";
-import { Metadata } from "next";
-
-export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
-  const { id } = await params;
-  try {
-    const res = await api.get(`/requirements/${id}`);
-    const req = res.data.data;
-    return {
-      title: `${req.title} in ${req.city}`,
-      description: req.description ? req.description.substring(0, 160) : `View details for ${req.title} in ${req.city}.`,
-    };
-  } catch (e) {
-    return { title: "Lead Not Found" };
-  }
-}
 
 export default function RequirementDetail() {
   const params = useParams();
