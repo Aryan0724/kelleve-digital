@@ -89,6 +89,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Projects")}
+                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Contacts")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Submitted Bids")}
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
                 {renderSidebarButton("material_requests", <Truck className="h-5 w-5" />, "Material Requests")}
@@ -129,6 +130,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             </div>
             
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
+            {activeTab === 'unlocked_leads' && <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />}
             
             {activeTab === 'bids_submitted' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Submitted Bids" showAwardedOnly={false} />

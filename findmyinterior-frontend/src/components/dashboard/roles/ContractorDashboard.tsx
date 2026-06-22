@@ -11,6 +11,7 @@ import { WalletTab } from "@/components/dashboard/WalletTab";
 import { ProfileTab } from "@/components/dashboard/ProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
+import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import Link from "next/link";
 
 export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
@@ -88,6 +89,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Projects")}
+                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Contacts")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Submitted Bids")}
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
                 {renderSidebarButton("labour_requests", <HardHat className="h-5 w-5" />, "Labour Requests")}
@@ -102,6 +104,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
 
           <div className="lg:col-span-3 space-y-6">
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
+            {activeTab === 'unlocked_leads' && <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />}
             
             {activeTab === 'bids_submitted' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Submitted Bids" showAwardedOnly={false} />

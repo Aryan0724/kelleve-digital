@@ -10,6 +10,7 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 import { ProfileTab } from "@/components/dashboard/ProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
+import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 
 export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -66,6 +67,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Jobs")}
+                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Contacts")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
                 {renderSidebarButton("won_projects", <CheckCircle2 className="h-5 w-5" />, "Active & Completed Jobs")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
@@ -76,6 +78,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
 
           <div className="lg:col-span-3 space-y-6">
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
+            {activeTab === 'unlocked_leads' && <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />}
             
             {activeTab === 'bids_submitted' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Job Applications" showAwardedOnly={false} />

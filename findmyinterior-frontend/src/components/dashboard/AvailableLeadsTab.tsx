@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Search } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import Link from "next/link";
 
 function locationName(value: any) {
   return typeof value === "string" ? value : value?.name || "Location not set";
@@ -65,14 +66,19 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
                 </div>
                 
                 {req.user_id !== user?.id && (
-                  <div className="flex flex-col gap-2 shrink-0 border-l pl-4 md:items-center justify-center">
-                    <div className="text-sm font-medium text-slate-600 mb-1 text-center">
-                      Unlock Contact
+                  <div className="flex flex-col gap-2 shrink-0 border-l pl-4 md:items-center justify-center min-w-[140px]">
+                    <div className="text-sm font-medium text-slate-600 text-center mb-1">
+                      Action
                     </div>
+                    <Link href={`/requirements/${req.id}`} className="w-full">
+                      <Button variant="outline" className="w-full">
+                        View Details
+                      </Button>
+                    </Link>
                     <Button 
                       onClick={() => handleUnlock(req.id)} 
                       disabled={unlockingId === req.id}
-                      className="bg-orange-600 hover:bg-orange-700 w-full"
+                      className="bg-orange-600 hover:bg-orange-700 w-full mt-1"
                     >
                       {unlockingId === req.id ? "Unlocking..." : "Unlock (₹50)"}
                     </Button>
