@@ -11,8 +11,9 @@ use Illuminate\Support\Facades\DB;
 class RecommendationEngineService
 {
     // V2 Scoring Weights (total = 100)
-    const WEIGHT_CATEGORY     = 30;
-    const WEIGHT_CITY         = 25;
+    const WEIGHT_CATEGORY     = 25;
+    const WEIGHT_CITY         = 20;
+    const WEIGHT_BUDGET       = 10;
     const WEIGHT_AVAILABILITY = 10;
     const WEIGHT_RATING       = 10;
     const WEIGHT_COMPLETION   = 10;
@@ -103,7 +104,20 @@ class RecommendationEngineService
             $breakdown['city'] = 0;
         }
 
-        // 3. Rating (10 pts)
+        // 3. Budget Match (10 pts)
+        if ($listing->budget_tier && $requirement->budget_tier) {
+            if ($listing->budget_tier === $requirement->budget_tier) {
+                $score += self::WEIGHT_BUDGET;
+                $breakdown['budget'] = self::WEIGHT_BUDGET;
+            } else {
+                $score += self::WEIGHT_BUDGET * 0.5; // Partial points for nearby tier
+                $breakdown['budget'] = self::WEIGHT_BUDGET * 0.5;
+            }
+        } else {
+            $breakdown['budget'] = 0;
+        }
+
+        // 4. Rating (10 pts)
         $ratingAvg = $metrics?->rating_average ?? 4.5;
         $ratingScore = ($ratingAvg / 5.0) * self::WEIGHT_RATING;
         $score += $ratingScore;
@@ -177,15 +191,12 @@ class RecommendationEngineService
                 continue; // Skip — flood protection
             }
 
-            DB::table('notifications')->insert([
-                'user_id'    => $vendor->id,
-                'type'       => 'new_requirement_match',
-                'title'      => 'New Project Match',
-                'message'    => "A new requirement matching your profile has been posted: {$requirement->title}",
-                'data'       => json_encode(['requirement_id' => $requirement->id, 'match_score' => $row['match_score']]),
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            \Illuminate\Support\Facades\Notification::send([$vendor], new \App\Notifications\NewLeadNotification([
+                'title' => $requirement->title,
+                'city' => $requirement->city,
+                'requirement_id' => $requirement->id,
+                'match_score' => $row['match_score'],
+            ]));
         }
     }
 }

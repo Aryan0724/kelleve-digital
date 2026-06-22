@@ -23,15 +23,20 @@ import {
   XCircle,
 } from "lucide-react";
 
-type AdminTab = "overview" | "verifications" | "users" | "requirements" | "reviews" | "payments";
+type AdminTab = "overview" | "verifications" | "users" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries";
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: "overview", label: "Overview" },
+  { id: "database", label: "Database Explorer" },
   { id: "verifications", label: "Verifications" },
   { id: "users", label: "Users" },
   { id: "requirements", label: "Requirements" },
   { id: "reviews", label: "Reviews" },
   { id: "payments", label: "Payments" },
+  { id: "subscriptions", label: "Plans" },
+  { id: "categories", label: "Categories" },
+  { id: "cms", label: "CMS" },
+  { id: "inquiries", label: "Support" },
 ];
 
 const formatter = new Intl.NumberFormat("en-IN", {
@@ -49,6 +54,13 @@ export default function AdminDashboard() {
   const [requirements, setRequirements] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
+  const [dbTables, setDbTables] = useState<string[]>([]);
+  const [selectedTable, setSelectedTable] = useState<string>("");
+  const [dbData, setDbData] = useState<{ columns: string[], rows: any[] }>({ columns: [], rows: [] });
+  const [inquiries, setInquiries] = useState<any[]>([]);
+  const [blogs, setBlogs] = useState<any[]>([]);
+  const [plans, setPlans] = useState<any[]>([]);
+  const [categories, setCategories] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
@@ -80,14 +92,57 @@ export default function AdminDashboard() {
     setPayments(res.data.data || []);
   }, []);
 
+  const fetchDbTables = useCallback(async () => {
+    try {
+      const res = await api.get("/admin/database/tables");
+      setDbTables(res.data.data || []);
+    } catch (e) { console.error(e); }
+  }, []);
+
+  const fetchInquiries = useCallback(async () => {
+    try {
+      const res = await api.get("/admin/inquiries");
+      setInquiries(res.data.data || []);
+    } catch (e) {}
+  }, []);
+
+  const fetchBlogs = useCallback(async () => {
+    try {
+      const res = await api.get("/admin/blogs");
+      setBlogs(res.data.data || []);
+    } catch (e) {}
+  }, []);
+
+  const fetchPlans = useCallback(async () => {
+    try {
+      const res = await api.get("/subscriptions/plans"); // reusing public endpoint
+      setPlans(res.data.data || []);
+    } catch (e) {}
+  }, []);
+
+  const fetchCategories = useCallback(async () => {
+    try {
+      const res = await api.get("/categories"); // reusing public endpoint
+      setCategories(res.data.data || []);
+    } catch (e) {}
+  }, []);
+
+  useEffect(() => {
+    if (selectedTable) {
+      api.get(`/admin/database/query/${selectedTable}`).then(res => {
+        setDbData({ columns: res.data.columns, rows: res.data.data });
+      });
+    }
+  }, [selectedTable]);
+
   const refreshAll = useCallback(async () => {
     setLoading(true);
     try {
-      await Promise.all([fetchDashboard(), fetchUsers(), fetchRequirements(), fetchReviews(), fetchPayments()]);
+      await Promise.all([fetchDashboard(), fetchUsers(), fetchRequirements(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchInquiries(), fetchBlogs(), fetchPlans(), fetchCategories()]);
     } finally {
       setLoading(false);
     }
-  }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers]);
+  }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers, fetchDbTables, fetchInquiries, fetchBlogs, fetchPlans, fetchCategories]);
 
   useEffect(() => {
     if (!token || !isAdmin) {
@@ -325,15 +380,28 @@ export default function AdminDashboard() {
                     <div className="text-slate-500">{item.city}, {item.district}</div>
                   </div>,
                   <div key="customer">{item.user?.name || item.name || "Guest"}</div>,
-                  <Badge key="status" variant={item.status === "open" ? "default" : "secondary"}>{item.status}</Badge>,
+                  <Badge key="status" variant={item.status === "open" ? "default" : item.status === "pending" ? "destructive" : "secondary"} className="capitalize">{item.status}</Badge>,
                   <div key="bids">{item.bids_count || 0}</div>,
                   <div key="actions" className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline" onClick={() => runAction(`open-req-${item.id}`, () => api.patch(`/admin/requirements/${item.id}/status`, { status: "open" }))}>
-                      Reopen
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => runAction(`close-req-${item.id}`, () => api.patch(`/admin/requirements/${item.id}/close`))}>
-                      Expire
-                    </Button>
+                    {item.status === "pending" ? (
+                      <>
+                        <Button size="sm" onClick={() => runAction(`approve-req-${item.id}`, () => api.patch(`/admin/requirements/${item.id}/approve`))} className="bg-green-600 hover:bg-green-700">
+                          Approve
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => runAction(`reject-req-${item.id}`, () => api.patch(`/admin/requirements/${item.id}/reject`))} className="text-red-600 border-red-200 hover:bg-red-50">
+                          Reject
+                        </Button>
+                      </>
+                    ) : (
+                      <>
+                        <Button size="sm" variant="outline" onClick={() => runAction(`open-req-${item.id}`, () => api.patch(`/admin/requirements/${item.id}/status`, { status: "open" }))}>
+                          Reopen
+                        </Button>
+                        <Button size="sm" variant="outline" onClick={() => runAction(`close-req-${item.id}`, () => api.patch(`/admin/requirements/${item.id}/close`))}>
+                          Expire
+                        </Button>
+                      </>
+                    )}
                   </div>,
                 ])}
               />
@@ -391,6 +459,176 @@ export default function AdminDashboard() {
                   <div key="amount" className="font-semibold">{formatter.format(Number(item.amount || 0))}</div>,
                   <Badge key="status" variant={item.status === "success" ? "default" : "secondary"}>{item.status}</Badge>,
                   <div key="date">{new Date(item.created_at).toLocaleDateString()}</div>,
+                ])}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "database" && (
+          <Card className="border-red-200">
+            <CardHeader className="bg-red-50 rounded-t-lg">
+              <CardTitle className="text-red-700 flex items-center">
+                <ShieldAlert className="mr-2 h-5 w-5" /> God Mode: Database Explorer
+              </CardTitle>
+              <p className="text-sm text-red-600">Direct, unfiltered access to production tables. Use with extreme caution.</p>
+            </CardHeader>
+            <CardContent className="pt-6">
+              <div className="mb-4">
+                <label className="text-sm font-medium mb-2 block">Select Table</label>
+                <select 
+                  className="w-full max-w-md p-2 border rounded-md"
+                  value={selectedTable}
+                  onChange={(e) => setSelectedTable(e.target.value)}
+                >
+                  <option value="">-- Choose Table --</option>
+                  {dbTables.map(t => <option key={t} value={t}>{t}</option>)}
+                </select>
+              </div>
+
+              {selectedTable && dbData.columns.length > 0 && (
+                <div className="overflow-x-auto border rounded-lg max-h-[600px] overflow-y-auto">
+                  <table className="w-full text-left text-sm whitespace-nowrap">
+                    <thead className="bg-slate-100 text-slate-600 sticky top-0 z-10 shadow-sm">
+                      <tr>
+                        {dbData.columns.map(col => <th key={col} className="px-4 py-3 font-semibold">{col}</th>)}
+                        <th className="px-4 py-3 text-right">Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {dbData.rows.map((row, idx) => (
+                        <tr key={idx} className="border-b hover:bg-slate-50">
+                          {dbData.columns.map(col => (
+                            <td key={col} className="px-4 py-3 max-w-[200px] truncate" title={String(row[col])}>
+                              {row[col] === null ? <span className="text-slate-400 italic">null</span> : String(row[col])}
+                            </td>
+                          ))}
+                          <td className="px-4 py-3 text-right">
+                            <Button 
+                              size="sm" 
+                              variant="destructive" 
+                              onClick={() => {
+                                if(confirm('DELETE FOREVER?')) {
+                                  runAction(`del-row-${row.id}`, () => api.delete(`/admin/database/query/${selectedTable}/${row.id}`));
+                                  setTimeout(() => setSelectedTable(selectedTable), 500); // trigger re-fetch
+                                }
+                              }}
+                            >
+                              Drop
+                            </Button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "inquiries" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Support Inquiries</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AdminTable
+                headers={["Customer", "Subject", "Message", "Status", "Action"]}
+                rows={inquiries.map((item) => [
+                  <div key="cust">
+                    <div className="font-semibold">{item.name}</div>
+                    <div className="text-slate-500">{item.email}</div>
+                  </div>,
+                  <div key="subj" className="font-medium">{item.subject}</div>,
+                  <div key="msg" className="max-w-xs truncate">{item.message}</div>,
+                  <Badge key="status" variant={item.status === 'resolved' ? 'default' : 'secondary'}>{item.status}</Badge>,
+                  <div key="actions" className="flex justify-end gap-2">
+                    {item.status !== 'resolved' && (
+                      <Button size="sm" onClick={() => runAction(`res-inq-${item.id}`, () => api.patch(`/admin/inquiries/${item.id}/resolve`))}>
+                        Resolve
+                      </Button>
+                    )}
+                  </div>
+                ])}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "cms" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Content Management (Blogs)</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AdminTable
+                headers={["Title", "Author", "Status", "Published", "Action"]}
+                rows={blogs.map((item) => [
+                  <div key="title" className="font-semibold">{item.title}</div>,
+                  <div key="author">{item.author?.name}</div>,
+                  <Badge key="status" variant={item.status === 'published' ? 'default' : 'secondary'}>{item.status}</Badge>,
+                  <div key="date">{item.published_at ? new Date(item.published_at).toLocaleDateString() : '-'}</div>,
+                  <div key="actions" className="flex justify-end gap-2">
+                    <Button size="sm" variant="destructive" onClick={() => runAction(`del-blog-${item.id}`, () => api.delete(`/admin/blogs/${item.id}`))}>
+                      Delete
+                    </Button>
+                  </div>
+                ])}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "subscriptions" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Subscription Plans</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AdminTable
+                headers={["Plan Name", "Monthly (₹)", "Yearly (₹)", "Active", "Action"]}
+                rows={plans.map((item) => [
+                  <div key="name" className="font-semibold capitalize">{item.name}</div>,
+                  <div key="month">{item.price_monthly}</div>,
+                  <div key="year">{item.price_yearly}</div>,
+                  <Badge key="status" variant={item.is_active ? 'default' : 'secondary'}>{item.is_active ? 'Active' : 'Disabled'}</Badge>,
+                  <div key="actions" className="flex justify-end gap-2">
+                    <Button size="sm" variant="outline" onClick={() => {
+                      const p = prompt('Enter new Monthly Price', item.price_monthly);
+                      if (p) runAction(`edit-plan-${item.id}`, () => api.post(`/admin/subscription-plans/${item.id}`, { price_monthly: p }));
+                    }}>
+                      Edit Price
+                    </Button>
+                  </div>
+                ])}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "categories" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Service Categories</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="mb-4 text-right">
+                <Button onClick={() => {
+                  const n = prompt('New Category Name?');
+                  if (n) runAction('new-cat', () => api.post('/admin/categories', { name: n }));
+                }}>+ Add Category</Button>
+              </div>
+              <AdminTable
+                headers={["Name", "Slug", "Action"]}
+                rows={categories.map((item) => [
+                  <div key="name" className="font-semibold">{item.name}</div>,
+                  <div key="slug" className="text-slate-500">{item.slug}</div>,
+                  <div key="actions" className="flex justify-end gap-2">
+                    <Button size="sm" variant="destructive" onClick={() => runAction(`del-cat-${item.id}`, () => api.delete(`/admin/categories/${item.id}`))}>
+                      Delete
+                    </Button>
+                  </div>
                 ])}
               />
             </CardContent>

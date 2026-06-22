@@ -12,25 +12,33 @@ class Review extends Model
     use SoftDeletes;
 
     protected $fillable = [
-        'user_id', 'reviewable_type', 'reviewable_id',
-        'rating', 'title', 'body', 'is_approved',
+        'project_id',
+        'reviewer_id',
+        'reviewed_user_id',
+        'rating',
+        'title',
+        'body',
+        'role_of_reviewer',
+        'is_approved',
     ];
 
     protected $casts = [];
 
     // ─── Relationships ────────────────────────────────────────────────────────
 
-    public function user(): BelongsTo
+    public function project(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Project::class);
     }
 
-    /**
-     * Polymorphic parent: Listing, Builder, Supplier, or Worker
-     */
-    public function reviewable(): MorphTo
+    public function reviewer(): BelongsTo
     {
-        return $this->morphTo();
+        return $this->belongsTo(User::class, 'reviewer_id');
+    }
+
+    public function reviewedUser(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'reviewed_user_id');
     }
 
     // ─── Scopes ───────────────────────────────────────────────────────────────

@@ -18,9 +18,31 @@ class Requirement extends Model
         'budget_min', 'budget_max', 'status',
         'city', 'district',
         'name', 'phone', 'email',
+        'opportunity_type', 'requirement_type', 'creator_role',
+        'target_roles', 'project_category', 'budget_tier',
     ];
 
-    protected $casts = [];
+    protected $casts = [
+        'target_roles' => 'array',
+    ];
+
+    protected static function booted()
+    {
+        static::saving(function ($requirement) {
+            $budget = $requirement->budget_max ?: $requirement->budget_min ?: 0;
+            if ($budget >= 5000000) {
+                $requirement->budget_tier = 'Diamond';
+            } elseif ($budget >= 2000000) {
+                $requirement->budget_tier = 'Platinum';
+            } elseif ($budget >= 1000000) {
+                $requirement->budget_tier = 'Gold';
+            } elseif ($budget >= 500000) {
+                $requirement->budget_tier = 'Silver';
+            } else {
+                $requirement->budget_tier = 'Standard';
+            }
+        });
+    }
 
     // ─── Relationships ────────────────────────────────────────────────────────
 

@@ -19,7 +19,8 @@ class Listing extends Model
         'phone', 'whatsapp', 'email', 'website',
         'city', 'district', 'state', 'address', 'lat', 'lng',
         'years_experience', 'team_size', 'status', 'is_premium', 'is_featured', 'is_verified',
-        'gst_number', 'pan_number',
+        'gst_number', 'pan_number', 'budget_tier',
+        'phone_clicks', 'whatsapp_clicks', 'website_clicks',
     ];
 
     protected $casts = [];

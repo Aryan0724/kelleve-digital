@@ -67,12 +67,15 @@ class BidService
         return DB::transaction(function () use ($data) {
             $bid = Bid::create($data);
             
+            // Emit Event
+            event(new \App\Events\BidSubmitted($bid));
+            
             // Log to activity timeline
-            DB::table('activity_timelines')->insert([
-                'entity_type' => 'App\\Models\\Requirement',
-                'entity_id' => $data['requirement_id'],
+            DB::table('activity_logs')->insert([
+                'subject_type' => 'App\\Models\\Requirement',
+                'subject_id' => $data['requirement_id'],
                 'user_id' => $data['professional_id'],
-                'action' => 'bid_submitted',
+                'event_type' => 'Bid Submitted',
                 'description' => "A new bid was submitted by " . ($data['company_name'] ?? 'a professional') . ".",
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -126,13 +129,13 @@ class BidService
             ]);
             
             // Log Timeline
-            DB::table('activity_timelines')->insert([
-                'entity_type' => 'App\\Models\\Requirement',
-                'entity_id' => $requirement->id,
+            DB::table('activity_logs')->insert([
+                'subject_type' => 'App\\Models\\Requirement',
+                'subject_id' => $requirement->id,
                 'user_id' => $customer->id,
-                'action' => 'bid_shortlisted',
+                'event_type' => 'Bid Shortlisted',
                 'description' => "Customer shortlisted a bid.",
-                'meta_data' => json_encode(['bid_id' => $bid->id]),
+                'properties' => json_encode(['bid_id' => $bid->id]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -147,7 +150,11 @@ class BidService
     public function awardBid(Bid $bid, User $customer): bool
     {
         return DB::transaction(function () use ($bid, $customer) {
-            $bid->update(['status' => 'awarded']);
+            $bid->update([
+                'status' => 'accepted',
+                'is_awarded' => true,
+                'awarded_at' => now()
+            ]);
             
             // Mark all other bids as rejected
             Bid::where('requirement_id', $bid->requirement_id)
@@ -157,24 +164,37 @@ class BidService
             $requirement = $bid->requirement;
             $requirement->update(['status' => 'awarded']);
             
-            // Notify Professional
-            $professional = User::find($bid->professional_id);
-            if ($professional) {
-                $professional->notify(new BidAwardedNotification([
-                    'title' => $requirement->title,
-                    'bid_id' => $bid->id,
-                    'requirement_id' => $requirement->id
-                ]));
-            }
+            // Create the Project Record
+            $project = Project::create([
+                'requirement_id' => $requirement->id,
+                'winning_bid_id' => $bid->id,
+                'client_id' => $customer->id,
+                'professional_id' => $bid->professional_id,
+                'status' => 'awarded',
+                'started_at' => now(),
+            ]);
             
-            // Log Timeline
-            DB::table('activity_timelines')->insert([
-                'entity_type' => 'App\\Models\\Requirement',
-                'entity_id' => $requirement->id,
+            // 5. Create Conversation
+            $conversation = \App\Models\Conversation::create([
+                'project_id' => $project->id,
+                'customer_id' => $project->client_id,
+                'vendor_id' => $project->professional_id,
+                'status' => 'active',
+                'project_stage' => 'awarded',
+                'unlocked_at' => now(),
+            ]);
+            
+            // Notify Professional via Event
+            event(new \App\Events\ProjectAwarded($project));
+            
+            // Log Timeline to new activity_logs
+            DB::table('activity_logs')->insert([
                 'user_id' => $customer->id,
-                'action' => 'project_awarded',
+                'subject_type' => 'App\\Models\\Requirement',
+                'subject_id' => $requirement->id,
+                'event_type' => 'Project Awarded',
                 'description' => "Customer awarded the project to " . ($bid->company_name ?? 'a professional') . ".",
-                'meta_data' => json_encode(['bid_id' => $bid->id, 'professional_id' => $bid->professional_id]),
+                'properties' => json_encode(['bid_id' => $bid->id, 'project_id' => $project->id]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -199,6 +219,10 @@ class BidService
             if ($awardedBid) {
                 $awardedBid->update(['status' => 'completed']);
                 
+                // Update the project
+                \App\Models\Project::where('winning_bid_id', $awardedBid->id)
+                    ->update(['status' => 'completed', 'completed_at' => now()]);
+                
                 // Update vendor metrics (projects completed)
                 $vendorMetric = \App\Models\VendorMetric::firstOrCreate(
                     ['user_id' => $awardedBid->professional_id],
@@ -206,24 +230,19 @@ class BidService
                 );
                 $vendorMetric->increment('projects_completed');
                 
-                // Notify Professional
-                DB::table('notifications')->insert([
-                    'user_id' => $awardedBid->professional_id,
-                    'type' => 'project_completed',
-                    'title' => 'Project Completed!',
-                    'message' => "The customer marked the project {$requirement->title} as completed. You can now request a review.",
-                    'data' => json_encode(['requirement_id' => $requirement->id]),
-                    'created_at' => now(),
-                    'updated_at' => now(),
-                ]);
+                // Get project to emit event
+                $project = \App\Models\Project::where('winning_bid_id', $awardedBid->id)->first();
+                if ($project) {
+                    event(new \App\Events\ProjectCompleted($project));
+                }
             }
             
             // Log Timeline
-            DB::table('activity_timelines')->insert([
-                'entity_type' => 'App\\Models\\Requirement',
-                'entity_id' => $requirement->id,
+            DB::table('activity_logs')->insert([
+                'subject_type' => 'App\\Models\\Requirement',
+                'subject_id' => $requirement->id,
                 'user_id' => $customer->id,
-                'action' => 'project_completed',
+                'event_type' => 'Project Completed',
                 'description' => "Customer marked the project as completed.",
                 'created_at' => now(),
                 'updated_at' => now(),

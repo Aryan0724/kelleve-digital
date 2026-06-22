@@ -10,8 +10,7 @@ class Conversation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'conversationable_type',
-        'conversationable_id',
+        'project_id',
         'customer_id',
         'vendor_id',
         'status',
@@ -37,9 +36,9 @@ class Conversation extends Model
         'completed_at' => 'datetime',
     ];
 
-    public function conversationable()
+    public function project()
     {
-        return $this->morphTo();
+        return $this->belongsTo(Project::class);
     }
 
     public function customer()

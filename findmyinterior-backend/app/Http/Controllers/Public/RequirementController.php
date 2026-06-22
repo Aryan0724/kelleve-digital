@@ -71,26 +71,46 @@ class RequirementController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'title'        => ['required', 'string', 'max:255'],
-            'description'  => ['required', 'string', 'max:2000'],
-            'category_id'  => ['required', 'exists:categories,id'],
-            'project_type' => ['nullable', 'string', 'max:100'],
-            'budget_min'   => ['nullable', 'numeric', 'min:0'],
-            'budget_max'   => ['nullable', 'numeric', 'min:0'],
-            'city'         => ['required', 'string', 'max:100'],
-            'district'     => ['required', 'string', 'max:100'],
-            'name'         => ['required', 'string', 'max:255'],
-            'phone'        => ['required', 'string', 'max:20'],
-            'email'        => ['nullable', 'email'],
-            'images'       => ['nullable', 'array', 'max:5'],
-            'images.*'     => ['url'],
+            'title'            => ['required', 'string', 'max:255'],
+            'description'      => ['required', 'string', 'max:2000'],
+            'category_id'      => ['required', 'exists:categories,id'],
+            'opportunity_type' => ['nullable', 'string', 'max:50'],
+            'requirement_type' => ['nullable', 'string', 'max:50'],
+            'project_category' => ['nullable', 'string', 'max:50'],
+            'project_type'     => ['nullable', 'string', 'max:100'],
+            'budget_min'       => ['nullable', 'numeric', 'min:0'],
+            'budget_max'       => ['nullable', 'numeric', 'min:0'],
+            'city'             => ['required', 'string', 'max:100'],
+            'district'         => ['required', 'string', 'max:100'],
+            'name'             => ['required', 'string', 'max:255'],
+            'phone'            => ['required', 'string', 'max:20'],
+            'email'            => ['nullable', 'email'],
+            'images'           => ['nullable', 'array', 'max:5'],
+            'images.*'         => ['url'],
+            'target_roles'     => ['nullable', 'array'],
         ]);
+
+        // Basic Rule-based Spam Detection: Block URLs in the description
+        if (preg_match('/(http|https|www\.)/i', $data['description'])) {
+            return response()->json([
+                'message' => 'The given data was invalid.',
+                'errors' => [
+                    'description' => ['Descriptions cannot contain links or URLs for security reasons.']
+                ]
+            ], 422);
+        }
+
+        // Auto-assign creator role if logged in
+        $creatorRole = null;
+        if ($request->user() && $request->user()->roles()->exists()) {
+            $creatorRole = $request->user()->roles()->first()->slug;
+        }
 
         $requirement = Requirement::create([
             ...$data,
-            'project_type' => $data['project_type'] ?? 'general',
+            'creator_role' => $creatorRole,
             'user_id' => $request->user()?->id,
-            'status'  => 'open',
+            'status'  => 'pending',
         ]);
 
         if (!empty($data['images'])) {
@@ -102,24 +122,7 @@ class RequirementController extends Controller
             }
         }
 
-        Log::info("New requirement posted: ID {$requirement->id} by user " . ($request->user()?->id ?? 'guest'));
-
-        // Notify matching professionals (mocking the match by sending to some active professionals)
-        // In a real scenario, this would filter by category, district, and subscription.
-        $professionals = User::whereHas('roles', function ($q) {
-            $q->whereIn('slug', ['business', 'worker', 'builder', 'supplier']);
-        })
-              ->where('is_active', true)
-            ->take(50) // Limit to avoid massive email blasts during testing
-            ->get();
-            
-        if ($professionals->count() > 0) {
-            Notification::send($professionals, new NewLeadNotification([
-                'title' => $requirement->title,
-                'city' => $requirement->city,
-                'requirement_id' => $requirement->id
-            ]));
-        }
+        Log::info("New requirement posted (Pending Verification): ID {$requirement->id} by user " . ($request->user()?->id ?? 'guest'));
 
         return response()->json([
             'success' => true,
@@ -139,11 +142,15 @@ class RequirementController extends Controller
         }
 
         $data = $request->validate([
-            'title'        => ['sometimes', 'string', 'max:255'],
-            'description'  => ['sometimes', 'string', 'max:2000'],
-            'project_type' => ['sometimes', 'string', 'max:100'],
-            'budget_min'   => ['sometimes', 'numeric', 'min:0'],
-            'budget_max'   => ['sometimes', 'numeric', 'min:0'],
+            'title'            => ['sometimes', 'string', 'max:255'],
+            'description'      => ['sometimes', 'string', 'max:2000'],
+            'opportunity_type' => ['sometimes', 'string', 'max:50'],
+            'requirement_type' => ['sometimes', 'string', 'max:50'],
+            'project_category' => ['sometimes', 'string', 'max:50'],
+            'project_type'     => ['sometimes', 'string', 'max:100'],
+            'budget_min'       => ['sometimes', 'numeric', 'min:0'],
+            'budget_max'       => ['sometimes', 'numeric', 'min:0'],
+            'target_roles'     => ['sometimes', 'array'],
         ]);
 
         $requirement->update($data);

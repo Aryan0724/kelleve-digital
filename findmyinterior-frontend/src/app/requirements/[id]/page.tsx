@@ -12,6 +12,22 @@ import {
 import { AdvancedBidForm } from "@/components/bids/AdvancedBidForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { BidComparisonMatrix } from "@/components/bids/BidComparisonMatrix";
+import { Metadata } from "next";
+
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
+  const { id } = await params;
+  try {
+    const res = await api.get(`/requirements/${id}`);
+    const req = res.data.data;
+    return {
+      title: `${req.title} in ${req.city}`,
+      description: req.description ? req.description.substring(0, 160) : `View details for ${req.title} in ${req.city}.`,
+    };
+  } catch (e) {
+    return { title: "Lead Not Found" };
+  }
+}
 
 export default function RequirementDetail() {
   const params = useParams();
@@ -50,8 +66,24 @@ export default function RequirementDetail() {
       api.get(`/requirements/${params.id}/recommendations`).then(res => {
         setRecommendations(res.data.data);
       }).catch(console.error);
+      
+      api.get(`/requirements/${params.id}/bids`).then(res => {
+        // Fallback for different API responses
+        setBids(res.data.data || res.data || []);
+      }).catch(console.error);
     }
   }, [requirement?.id, user?.id]);
+
+  const handleAwardBid = async (bidId: number) => {
+    try {
+      await api.patch(`/bids/${bidId}/award`);
+      alert("Project awarded successfully!");
+      // Refresh the page
+      window.location.reload();
+    } catch (e) {
+      alert("Failed to award project.");
+    }
+  };
 
   const inviteToBid = async (vendorId: number) => {
     try {
@@ -420,8 +452,20 @@ export default function RequirementDetail() {
                 )}
               </div>
 
-              {/* Bid For This Project Block */}
-              {(!isOwner) && (
+              {/* Context Aware Action Block */}
+              {isOwner ? (
+                <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+                  <h2 className="font-bold text-xl text-slate-900 mb-4 border-l-4 border-[#0b1b36] pl-2">Received Bids</h2>
+                  <p className="text-sm text-slate-600 mb-4">Compare bids from professionals and award the project.</p>
+                  {bids.length > 0 ? (
+                    <BidComparisonMatrix bids={bids} onAward={handleAwardBid} />
+                  ) : (
+                    <div className="text-center p-6 bg-slate-50 rounded border border-dashed border-slate-300">
+                      <p className="text-slate-500 font-medium">No bids received yet.</p>
+                    </div>
+                  )}
+                </div>
+              ) : (
                 <div className="bg-[#fff7ed] border border-[#fed7aa] rounded-xl p-6 relative overflow-hidden">
                   <div className="flex justify-between items-start mb-2">
                     <div>

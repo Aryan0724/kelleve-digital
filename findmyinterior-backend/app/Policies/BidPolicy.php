@@ -53,6 +53,14 @@ class BidPolicy
      */
     public function award(User $user, Bid $bid): bool
     {
-        return $user->id === $bid->requirement->user_id;
+        return $user->id === $bid->requirement->user_id || $user->hasRole('admin');
+    }
+
+    /**
+     * Determine whether the user can withdraw the bid.
+     */
+    public function withdraw(User $user, Bid $bid): bool
+    {
+        return $user->id === $bid->professional_id && in_array($bid->status, ['draft', 'submitted', 'shortlisted']);
     }
 }

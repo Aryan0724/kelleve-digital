@@ -12,34 +12,19 @@ function locationName(value: any) {
   return typeof value === "string" ? value : value?.name || "Location not set";
 }
 
-export function AvailableLeadsTab() {
+export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
   const { user } = useAuthStore();
-  const [requirements, setRequirements] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
   const [unlockingId, setUnlockingId] = useState<number | null>(null);
 
-  const fetchRequirements = async () => {
-    try {
-      const res = await api.get("/requirements");
-      setRequirements(res.data.data);
-    } catch (err) {
-      console.error("Failed to fetch requirements", err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchRequirements();
-  }, []);
+  const requirements = leads || [];
 
   const handleUnlock = async (id: number) => {
     setUnlockingId(id);
     try {
       await api.post(`/requirements/${id}/unlock`);
       alert("Contact unlocked successfully! Check your Unlocked Leads tab.");
-      // Refresh to update wallet balance if needed (can be handled globally or refetched)
-      fetchRequirements();
+      // Refresh to update wallet balance if needed
+      window.location.reload();
     } catch (err: any) {
       console.error(err);
       alert(err.response?.data?.message || "Failed to unlock contact. Check your wallet balance.");
@@ -47,8 +32,6 @@ export function AvailableLeadsTab() {
       setUnlockingId(null);
     }
   };
-
-  if (loading) return <div className="p-8 text-center text-slate-500">Loading available leads...</div>;
 
   return (
     <Card>

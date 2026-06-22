@@ -366,6 +366,68 @@ class AdminController extends Controller
     }
 
     /**
+     * PATCH /api/v1/admin/requirements/{id}/approve
+     */
+    public function approveRequirement(Request $request, int $id, \App\Services\RecommendationEngineService $recommendationEngine): JsonResponse
+    {
+        $requirement = Requirement::findOrFail($id);
+        
+        if ($requirement->status !== 'pending') {
+            return response()->json(['message' => 'Requirement is not pending.'], 400);
+        }
+
+        $requirement->update(['status' => 'open']);
+
+        // Generate recommendations and notify top professionals
+        $recommendationEngine->generateFor($requirement);
+
+        // Notify Customer
+        if ($requirement->user_id) {
+            $customer = User::find($requirement->user_id);
+            if ($customer) {
+                $customer->notify(new \App\Notifications\RequirementApprovedNotification([
+                    'title' => $requirement->title,
+                    'city' => $requirement->city,
+                    'requirement_id' => $requirement->id
+                ]));
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requirement approved and notifications sent.',
+            'data' => $requirement,
+        ]);
+    }
+
+    /**
+     * PATCH /api/v1/admin/requirements/{id}/reject
+     */
+    public function rejectRequirement(Request $request, int $id): JsonResponse
+    {
+        $requirement = Requirement::findOrFail($id);
+        
+        $requirement->update(['status' => 'rejected']);
+
+        // Notify Customer
+        if ($requirement->user_id) {
+            $customer = User::find($requirement->user_id);
+            if ($customer) {
+                $customer->notify(new \App\Notifications\RequirementRejectedNotification([
+                    'title' => $requirement->title,
+                    'requirement_id' => $requirement->id
+                ]));
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requirement rejected.',
+            'data' => $requirement,
+        ]);
+    }
+
+    /**
      * PATCH /api/v1/admin/users/{id}/verify
      */
     public function verifyUser(Request $request, int $id): JsonResponse
@@ -404,6 +466,75 @@ class AdminController extends Controller
             'success' => true,
             'data' => $payments->items(),
             'meta' => ['total' => $payments->total(), 'last_page' => $payments->lastPage()],
+        ]);
+    }
+
+    // ─── God Mode Enhancements ───────────────────────────────────────────────
+
+    public function updateSubscriptionPlan(Request $request, int $id): JsonResponse
+    {
+        $data = $request->validate([
+            'price_monthly' => 'nullable|numeric',
+            'price_yearly'  => 'nullable|numeric',
+            'features'      => 'nullable|array',
+            'is_active'     => 'nullable|boolean',
+        ]);
+
+        $plan = \App\Models\SubscriptionPlan::findOrFail($id);
+        $plan->update($data);
+
+        return response()->json(['success' => true, 'message' => 'Subscription plan updated.', 'data' => $plan]);
+    }
+
+    public function createCategory(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'name'        => 'required|string|max:255',
+            'description' => 'nullable|string',
+            'icon'        => 'nullable|string',
+        ]);
+
+        $category = \App\Models\Category::create([
+            'name' => $data['name'],
+            'slug' => Str::slug($data['name']),
+            'description' => $data['description'] ?? null,
+            'icon' => $data['icon'] ?? null,
+            'is_active' => true,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Category created.', 'data' => $category]);
+    }
+
+    public function deleteCategory(int $id): JsonResponse
+    {
+        \App\Models\Category::findOrFail($id)->delete();
+        return response()->json(['success' => true, 'message' => 'Category deleted.']);
+    }
+
+    public function inquiries(Request $request): JsonResponse
+    {
+        $inquiries = Inquiry::latest()->paginate(20);
+        return response()->json([
+            'success' => true,
+            'data' => $inquiries->items(),
+            'meta' => ['total' => $inquiries->total()]
+        ]);
+    }
+
+    public function resolveInquiry(int $id): JsonResponse
+    {
+        $inquiry = Inquiry::findOrFail($id);
+        $inquiry->update(['status' => 'resolved']);
+        return response()->json(['success' => true, 'message' => 'Inquiry marked as resolved.']);
+    }
+
+    public function blogs(Request $request): JsonResponse
+    {
+        $blogs = Blog::with('author:id,name')->latest()->paginate(20);
+        return response()->json([
+            'success' => true,
+            'data' => $blogs->items(),
+            'meta' => ['total' => $blogs->total()]
         ]);
     }
 }

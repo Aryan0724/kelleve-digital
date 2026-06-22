@@ -25,11 +25,16 @@ class ListingResource extends JsonResource
             'team_size'        => $this->team_size,
             'avg_rating'       => (float) $this->avg_rating,
             'review_count'     => $this->review_count,
-            'is_verified'      => $this->is_verified,
-            'is_featured'      => $this->is_featured,
-            'is_premium'       => $this->is_premium,
+            'is_verified'      => (bool) $this->is_verified,
+            'is_featured'      => (bool) $this->is_featured,
+            'is_premium'       => (bool) $this->is_premium,
+            'is_sponsored'     => $this->sponsored_until && $this->sponsored_until->isFuture(),
+            'is_top_rated'     => $this->avg_rating >= 4.5 && $this->review_count >= 5,
             'status'           => $this->status,
             'views_count'      => $this->views_count,
+            'phone_clicks'     => $this->when($this->isOwner($request), $this->phone_clicks),
+            'whatsapp_clicks'  => $this->when($this->isOwner($request), $this->whatsapp_clicks),
+            'website_clicks'   => $this->when($this->isOwner($request), $this->website_clicks),
             // Contact — only expose if user has premium or it's the owner
             'phone'            => $this->when(
                 $this->shouldShowContact($request),
@@ -60,5 +65,11 @@ class ListingResource extends JsonResource
         if ($user->isAdmin()) return true;
         // Premium subscriber sees
         return $user->hasPremiumSubscription();
+    }
+
+    private function isOwner(Request $request): bool
+    {
+        $user = $request->user();
+        return $user && $user->id === $this->user_id;
     }
 }

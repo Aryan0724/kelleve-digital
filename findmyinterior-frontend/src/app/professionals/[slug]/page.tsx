@@ -1,10 +1,12 @@
 import { InquiryForm } from "@/components/forms/InquiryForm";
+import { ContactButtons } from "@/components/professionals/ContactButtons";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ReviewSection from "@/components/reviews/ReviewSection";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, ShieldCheck, Phone, Mail, Globe, CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
+import { Metadata } from "next";
 
 async function getProfessional(slug: string) {
   try {
@@ -21,6 +23,29 @@ async function getProfessional(slug: string) {
     console.error(error);
     return null;
   }
+}
+
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { slug } = await params;
+  const listing = await getProfessional(slug);
+  
+  if (!listing) {
+    return {
+      title: "Professional Not Found",
+    };
+  }
+
+  const categoryName = listing.category?.name || "Professional";
+  
+  return {
+    title: `${listing.title} - ${categoryName} in ${listing.city}`,
+    description: listing.description ? listing.description.substring(0, 160) : `Contact ${listing.title}, a top-rated ${categoryName} in ${listing.city}.`,
+    openGraph: {
+      title: `${listing.title} - ${categoryName} in ${listing.city}`,
+      description: listing.description ? listing.description.substring(0, 160) : `Contact ${listing.title}, a top-rated ${categoryName} in ${listing.city}.`,
+      images: listing.cover_image ? [listing.cover_image] : [],
+    }
+  };
 }
 
 export default async function ProfessionalProfilePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -93,30 +118,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
             <div className="bg-white rounded-xl shadow-sm border p-6 sticky top-24">
               <h3 className="text-lg font-semibold text-slate-900 mb-4">Contact Business</h3>
               
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center p-3 bg-slate-50 rounded-lg">
-                  <Phone className="h-5 w-5 text-slate-400 mr-3" />
-                  <div>
-                    <div className="text-xs text-slate-500 font-medium">Phone Number</div>
-                    <div className="text-slate-900 font-semibold">{listing.phone || '+91 ***** *****'}</div>
-                  </div>
-                </div>
-                <div className="flex items-center p-3 bg-slate-50 rounded-lg">
-                  <Mail className="h-5 w-5 text-slate-400 mr-3" />
-                  <div>
-                    <div className="text-xs text-slate-500 font-medium">Email Address</div>
-                    <div className="text-slate-900 font-semibold">{listing.email || 'hidden@example.com'}</div>
-                  </div>
-                </div>
-                {listing.website && (
-                  <div className="flex items-center p-3 bg-slate-50 rounded-lg">
-                    <Globe className="h-5 w-5 text-slate-400 mr-3" />
-                    <a href={listing.website} target="_blank" rel="noreferrer" className="text-blue-600 font-semibold hover:underline">
-                      Visit Website
-                    </a>
-                  </div>
-                )}
-              </div>
+              <ContactButtons listing={listing} />
 
               <div className="space-y-3">
                 <InquiryForm type="Listing" id={listing.id} title={listing.title} />

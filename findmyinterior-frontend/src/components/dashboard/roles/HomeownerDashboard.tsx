@@ -1,0 +1,218 @@
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut } from "lucide-react";
+import { useAuthStore } from "@/lib/store/useAuthStore";
+
+export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
+  const router = useRouter();
+  const { user, logout } = useAuthStore();
+  const [activeTab, setActiveTab] = useState("overview");
+
+  const handleLogout = () => {
+    logout();
+    router.push("/login");
+  };
+
+  const renderSidebarButton = (id: string, icon: React.ReactNode, label: string) => (
+    <button 
+      onClick={() => setActiveTab(id)}
+      className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal transition-colors ${activeTab === id ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+    >
+      <div className={`mr-3 shrink-0 ${activeTab === id ? 'text-orange-600' : 'text-slate-400'}`}>
+        {icon}
+      </div>
+      {label}
+    </button>
+  );
+
+  return (
+    <div className="bg-slate-50 min-h-screen">
+      <div className="bg-white border-b">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-slate-900 font-bold">
+            <LayoutDashboard className="h-5 w-5 text-orange-600" /> {user?.name}'s Workspace
+          </div>
+          <div className="flex items-center gap-4">
+            <span className="text-sm font-medium text-slate-600 hidden md:block">HOMEOWNER</span>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600">
+              <LogOut className="h-4 w-4 mr-2" /> Logout
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          
+          <div className="lg:col-span-1 space-y-4">
+            <Card>
+              <CardContent className="p-6 flex flex-col items-center text-center">
+                <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400">
+                  {user?.name?.charAt(0)}
+                </div>
+                <h3 className="font-bold text-lg">{user?.name}</h3>
+                <Badge className="mt-2 capitalize mb-4" variant="secondary">Homeowner</Badge>
+              </CardContent>
+            </Card>
+
+            <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
+              <div className="flex md:flex-col min-w-max md:min-w-0">
+                {renderSidebarButton("overview", <LayoutDashboard className="h-5 w-5" />, "My Projects")}
+                {renderSidebarButton("bids_received", <Gavel className="h-5 w-5" />, "Received Bids")}
+                {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                {renderSidebarButton("saved", <Star className="h-5 w-5" />, "Saved Professionals")}
+              </div>
+            </div>
+          </div>
+
+          <div className="lg:col-span-3 space-y-6">
+            {activeTab === 'overview' && (
+              <Card>
+                <CardHeader className="flex flex-row justify-between items-center">
+                  <CardTitle>My Projects</CardTitle>
+                  <Button onClick={() => router.push("/post-requirement")} size="sm" className="bg-orange-600 hover:bg-orange-700">Post New</Button>
+                </CardHeader>
+                <CardContent>
+                  {data?.projects && data.projects.length > 0 ? (
+                    <div className="space-y-4">
+                      {data.projects.map((req: any) => (
+                        <div key={req.id} className="p-4 border rounded-lg bg-slate-50 flex justify-between flex-col md:flex-row gap-4">
+                            <div>
+                              <div className="flex items-start gap-3 mb-2">
+                                <span className="font-semibold text-slate-900">{req.title}</span>
+                                <Badge variant={req.status === 'open' ? 'default' : 'secondary'}>{req.status}</Badge>
+                              </div>
+                              <p className="text-slate-600 text-sm line-clamp-2">{req.description}</p>
+                            </div>
+                            <div className="flex flex-col gap-2 shrink-0">
+                              <Button onClick={() => router.push(`/projects/${req.id}`)} variant="outline">View Detail</Button>
+                            </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
+                      <LayoutDashboard className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">No active projects</h3>
+                      <p className="text-slate-500 mb-6 max-w-md mx-auto">
+                        You haven't posted any projects yet.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'bids_received' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Received Bids</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {data?.received_bids && data.received_bids.length > 0 ? (
+                    <div className="space-y-4">
+                      {data.received_bids.map((bid: any) => (
+                        <div key={bid.id} className="p-4 border rounded-lg bg-slate-50">
+                          <div className="flex justify-between items-start mb-2">
+                            <span className="font-semibold text-slate-900">Bid from: {bid.professional?.name || 'Professional'}</span>
+                            <div className="flex gap-2">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                onClick={async () => {
+                                  try {
+                                    await import('@/lib/api').then(m => m.default.post('/shortlists', { professional_id: bid.professional?.id }));
+                                    alert("Shortlisted successfully!");
+                                    fetchDashboard();
+                                  } catch (err: any) {
+                                    alert(err.response?.data?.message || "Failed to shortlist");
+                                  }
+                                }}
+                              >
+                                Shortlist
+                              </Button>
+                              <Button size="sm" className="bg-orange-600 hover:bg-orange-700">Award Project</Button>
+                            </div>
+                          </div>
+                          <div className="flex gap-6 my-3">
+                            <div>
+                              <div className="text-xs text-slate-500">Amount</div>
+                              <div className="font-bold text-orange-600">₹{bid.amount}</div>
+                            </div>
+                          </div>
+                          <p className="text-slate-600 text-sm bg-white p-3 rounded border">{bid.proposal}</p>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
+                      <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">No Bids Yet</h3>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'messages' && (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <MessageSquare className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-4">Go to your Messages Hub</h3>
+                  <Button onClick={() => router.push('/messages')} className="bg-[#0a1c3a]">Open Messenger</Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'saved' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Shortlisted Professionals</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {data?.shortlisted_professionals && data.shortlisted_professionals.length > 0 ? (
+                    <div className="space-y-4">
+                      {data.shortlisted_professionals.map((shortlist: any) => (
+                        <div key={shortlist.id} className="p-4 border rounded-lg bg-slate-50 flex justify-between items-center">
+                          <div className="font-semibold">{shortlist.professional?.name || 'Unknown'}</div>
+                          <div className="flex gap-2">
+                            <Button onClick={() => router.push(`/professionals/${shortlist.professional?.id}`)} variant="outline" size="sm">View Profile</Button>
+                            <Button 
+                              variant="destructive" 
+                              size="sm"
+                              onClick={async () => {
+                                try {
+                                  await import('@/lib/api').then(m => m.default.delete(`/shortlists/${shortlist.professional?.id}`));
+                                  alert("Removed from shortlist!");
+                                  fetchDashboard();
+                                } catch (err: any) {
+                                  alert(err.response?.data?.message || "Failed to remove from shortlist");
+                                }
+                              }}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
+                      <Star className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">No Shortlisted Professionals Yet</h3>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -24,6 +26,7 @@ class User extends Authenticatable
         'is_active',
         'is_verified',
         'daily_notification_limit',
+        'primary_role_id',
     ];
 
     protected $hidden = [
@@ -34,6 +37,16 @@ class User extends Authenticatable
     protected $casts = [];
 
     // ─── Relationships ────────────────────────────────────────────────────────
+
+    public function primaryRole(): BelongsTo
+    {
+        return $this->belongsTo(Role::class, 'primary_role_id');
+    }
+
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
+    }
 
     public function listing(): HasOne
     {
@@ -118,11 +131,6 @@ class User extends Authenticatable
         return $this->hasMany(Bid::class, 'professional_id');
     }
 
-
-    public function roles()
-    {
-        return $this->belongsToMany(Role::class, 'user_roles');
-    }
 
     public function vendorMetrics(): HasOne
     {

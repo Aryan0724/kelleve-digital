@@ -12,6 +12,9 @@ use App\Http\Controllers\Public\RequirementController;
 use App\Http\Controllers\Public\SearchController;
 use App\Http\Controllers\Public\SupplierController;
 use App\Http\Controllers\Public\WorkerController;
+use App\Http\Controllers\Api\V1\OpportunityProjectController;
+use App\Http\Controllers\Api\V1\RfqController;
+use App\Http\Controllers\Api\V1\JobController;
 use App\Http\Controllers\User\DashboardController;
 use App\Http\Controllers\User\PaymentController;
 use App\Http\Controllers\User\ProfileController;
@@ -83,6 +86,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         return \App\Models\District::orderBy('name')->get();
     });
     Route::apiResource('listings', ListingController::class)->only(['index', 'show']);
+    Route::post('listings/{id}/click', [ListingController::class, 'trackClick']);
     Route::apiResource('builders', BuilderController::class)->only(['index', 'show']);
     Route::get('builder-projects', [BuilderController::class, 'projects']);
     Route::get('builder-projects/{slug}', [BuilderController::class, 'projectShow']);
@@ -94,7 +98,18 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     // Public inquiry submission
     Route::post('inquiries', [InquiryController::class, 'store']);
     
-    // Requirements (Masked for guests/free users, unmasked for premium/admin via Resource logic)
+    // Opportunity Backend Configuration
+    Route::get('opportunities/config', [\App\Http\Controllers\Public\OpportunityConfigController::class, '__invoke']);
+
+    // Opportunity Entity API Contracts (Sprint A)
+    Route::apiResource('projects', OpportunityProjectController::class);
+    Route::apiResource('rfqs', RfqController::class);
+    Route::apiResource('worker-jobs', JobController::class);
+    Route::get('shortlists', [\App\Http\Controllers\ShortlistController::class, 'index']);
+    Route::post('shortlists', [\App\Http\Controllers\ShortlistController::class, 'store']);
+    Route::delete('shortlists/{professional_id}', [\App\Http\Controllers\ShortlistController::class, 'destroy']);
+    
+    // Legacy Requirements (Masked for guests/free users, unmasked for premium/admin via Resource logic)
     Route::apiResource('requirements', RequirementController::class)->only(['index', 'show']);
     // Auth required to post requirement
     Route::post('requirements', [RequirementController::class, 'store'])->middleware('auth:sanctum');
@@ -175,6 +190,17 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             $notification->markAsRead();
             return response()->json(['message' => 'Marked as read']);
         });
+
+        // Ecosystem Opportunities
+        Route::apiResource('projects', \App\Http\Controllers\Api\V1\OpportunityProjectController::class);
+        Route::post('projects/{id}/progress', [\App\Http\Controllers\Api\V1\OpportunityProjectController::class, 'updateProgress']);
+        Route::post('projects/{id}/complete', [\App\Http\Controllers\Api\V1\OpportunityProjectController::class, 'complete']);
+
+        Route::apiResource('rfqs', \App\Http\Controllers\Api\V1\RfqController::class);
+        Route::post('rfqs/{id}/progress', [\App\Http\Controllers\Api\V1\RfqController::class, 'updateProgress']);
+
+        Route::apiResource('worker-jobs', \App\Http\Controllers\Api\V1\JobController::class);
+        Route::post('worker-jobs/{id}/progress', [\App\Http\Controllers\Api\V1\JobController::class, 'updateProgress']);
     });
 
     // ─── Payments (Protected) ─────────────────────────────────────────────
@@ -211,9 +237,41 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('requirements', [AdminController::class, 'requirements']);
         Route::patch('requirements/{id}/close', [AdminController::class, 'closeRequirement']);
         Route::patch('requirements/{id}/status', [AdminController::class, 'updateRequirementStatus']);
+        Route::patch('requirements/{id}/approve', [AdminController::class, 'approveRequirement']);
+        Route::patch('requirements/{id}/reject', [AdminController::class, 'rejectRequirement']);
+
+        // Projects
+        Route::post('projects/{id}/reviews', [App\Http\Controllers\Api\V1\ReviewController::class, 'store']);
+
+        // Projects
+        Route::get('projects', [App\Http\Controllers\Api\V1\ProjectController::class, 'index']);
+        Route::get('projects/{id}', [App\Http\Controllers\Api\V1\ProjectController::class, 'show']);
+        Route::post('projects/{id}/complete', [App\Http\Controllers\Api\V1\ProjectController::class, 'complete']);
+        Route::post('projects/{id}/progress', [App\Http\Controllers\Api\V1\ProjectController::class, 'markProgress']);
 
         // Revenue Dashboard
         Route::get('revenue', [RevenueController::class, 'index']);
         Route::get('payments', [AdminController::class, 'payments']);
+
+        // Database Explorer (God Mode)
+        Route::get('database/tables', [\App\Http\Controllers\Admin\DatabaseExplorerController::class, 'tables']);
+        Route::get('database/query/{table}', [\App\Http\Controllers\Admin\DatabaseExplorerController::class, 'query']);
+        Route::delete('database/query/{table}/{id}', [\App\Http\Controllers\Admin\DatabaseExplorerController::class, 'deleteRow']);
+
+        // Subscription Plans
+        Route::post('subscription-plans/{id}', [AdminController::class, 'updateSubscriptionPlan']);
+
+        // Categories
+        Route::post('categories', [AdminController::class, 'createCategory']);
+        Route::delete('categories/{id}', [AdminController::class, 'deleteCategory']);
+
+        // Inquiries
+        Route::get('inquiries', [AdminController::class, 'inquiries']);
+        Route::patch('inquiries/{id}/resolve', [AdminController::class, 'resolveInquiry']);
+        
+        // Blogs
+        Route::get('blogs', [AdminController::class, 'blogs']);
     });
 });
+
+

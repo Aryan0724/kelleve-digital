@@ -48,7 +48,12 @@ class ListingController extends Controller
             'rating'  => $query->orderByDesc('avg_rating'),
             'newest'  => $query->orderByDesc('created_at'),
             'popular' => $query->orderByDesc('views_count'),
-            default   => $query->orderByDesc('is_featured')->orderByDesc('is_premium')->orderByDesc('avg_rating'),
+            default   => $query
+                ->orderByRaw('CASE WHEN sponsored_until > NOW() THEN 1 ELSE 0 END DESC')
+                ->orderByDesc('sponsored_rank')
+                ->orderByDesc('is_featured')
+                ->orderByDesc('is_premium')
+                ->orderByDesc('avg_rating'),
         };
 
         $listings = $query->paginate($request->get('per_page', 12));
@@ -81,5 +86,21 @@ class ListingController extends Controller
             'success' => true,
             'data'    => new ListingResource($listing),
         ]);
+    }
+
+    /**
+     * POST /api/v1/listings/{id}/click
+     */
+    public function trackClick(Request $request, int $id): JsonResponse
+    {
+        $data = $request->validate([
+            'type' => ['required', 'in:phone,whatsapp,website']
+        ]);
+
+        $listing = Listing::findOrFail($id);
+        $field = $data['type'] . '_clicks';
+        $listing->increment($field);
+
+        return response()->json(['success' => true]);
     }
 }

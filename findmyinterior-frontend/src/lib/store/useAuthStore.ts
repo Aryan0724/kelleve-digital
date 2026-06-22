@@ -7,6 +7,7 @@ type User = {
   email: string;
   phone: string;
   role: string;
+  roles?: any[];
   avatar: string | null;
   subscription: any | null;
 };

@@ -3,10 +3,16 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Metadata } from "next";
 import { Search, MapPin, Star, ShieldCheck, Filter } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfessionalsFilters } from "@/components/professionals/ProfessionalsFilters";
 import { ProfessionalsPagination } from "@/components/professionals/ProfessionalsPagination";
+
+export const metadata: Metadata = {
+  title: "Find Professionals",
+  description: "Browse verified interior designers, architects, and contractors in Bihar.",
+};
 
 async function getProfessionals(searchParams: any) {
   try {
@@ -74,8 +80,14 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">No Image</div>
                     )}
-                    {listing.is_premium && (
+                    {listing.is_premium && !listing.is_sponsored && (
                       <Badge className="absolute top-3 right-3 bg-orange-600 hover:bg-orange-700 text-white border-0">Premium</Badge>
+                    )}
+                    {listing.is_sponsored && (
+                      <Badge className="absolute top-3 right-3 bg-amber-400 hover:bg-amber-500 text-slate-900 border-0 shadow-sm font-semibold">Sponsored</Badge>
+                    )}
+                    {listing.is_top_rated && (
+                      <Badge className="absolute top-3 left-3 bg-slate-900 hover:bg-slate-800 text-white border-0 shadow-sm">Top Rated</Badge>
                     )}
                   </div>
                   <CardContent className="p-5 flex-1">
