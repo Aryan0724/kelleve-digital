@@ -12,17 +12,24 @@ import {
   Lock, 
   CheckCircle2,
   Settings,
-  Wallet
+  Wallet,
+  LayoutDashboard,
+  Search as SearchIcon
 } from "lucide-react";
+import { useAuthStore } from "@/lib/store/useAuthStore";
 
 export function Hero() {
   const router = useRouter();
+  const { user } = useAuthStore();
   const [city, setCity] = useState("Patna");
   const [service, setService] = useState("");
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [budget, setBudget] = useState("");
   const [showBudgetDropdown, setShowBudgetDropdown] = useState(false);
+
+  const isCustomer = user?.role === 'customer';
+  const isPro = user && user.role !== 'customer';
 
   const availableCities = [
     "Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", 
@@ -52,6 +59,10 @@ export function Hero() {
   );
 
   const handleSearch = () => {
+    if (isPro) {
+      router.push('/dashboard');
+      return;
+    }
     const params = new URLSearchParams();
     if (city && city !== "All Cities") params.append("city", city);
     if (service && service !== "All Services") params.append("search", service);
@@ -73,17 +84,38 @@ export function Hero() {
         <div className="w-full lg:w-[60%] flex flex-col">
 
 
-          <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-5">
-            Find & Hire The Best<br/>
-            Interior Experts in <span className="text-[#E8701A] relative inline-block">
-              Bihar
-              <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
-            </span>
-          </h1>
-          
-          <p className="text-base md:text-lg text-gray-700 mb-8 max-w-2xl font-medium leading-relaxed">
-            From top-rated Interior Designers to skilled Contractors & Material Suppliers. Compare quotes and save up to 30% on your next home project.
-          </p>
+          {user && isCustomer && (
+            <h1 className="text-3xl md:text-4xl lg:text-[3rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-2">
+              Welcome back, {user.name.split(' ')[0]}!
+            </h1>
+          )}
+
+          {isPro ? (
+            <>
+              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-5">
+                Grow Your Business in <span className="text-[#E8701A] relative inline-block">
+                  Bihar
+                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
+                </span>
+              </h1>
+              <p className="text-base md:text-lg text-gray-700 mb-8 max-w-2xl font-medium leading-relaxed">
+                Find new projects, submit quotes, and manage your incoming leads directly from your dashboard.
+              </p>
+            </>
+          ) : (
+            <>
+              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-5">
+                Find & Hire The Best<br/>
+                Interior Experts in <span className="text-[#E8701A] relative inline-block">
+                  Bihar
+                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
+                </span>
+              </h1>
+              <p className="text-base md:text-lg text-gray-700 mb-8 max-w-2xl font-medium leading-relaxed">
+                From top-rated Interior Designers to skilled Contractors & Material Suppliers. Compare quotes and save up to 30% on your next home project.
+              </p>
+            </>
+          )}
 
           {/* 4 Value Props */}
           <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-8 bg-white/50 p-3 rounded-lg border border-gray-100 inline-flex w-fit backdrop-blur-sm shadow-sm">
@@ -214,74 +246,105 @@ export function Hero() {
               onClick={handleSearch}
               className="bg-[#0a1c3a] hover:bg-[#0a1c3a]/90 text-white font-semibold text-sm px-6 py-4 rounded-lg shadow-md transition flex items-center justify-center whitespace-nowrap h-full"
             >
-              SEARCH PROS <span className="ml-2">›</span>
+              {isPro ? "GO TO DASHBOARD" : "SEARCH PROS"} <span className="ml-2">›</span>
             </button>
           </div>
           
           {/* Popular Searches */}
-          <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
-            <span className="font-semibold text-gray-700 mr-2">Popular Searches:</span>
-            {["Interior Designer", "Modular Kitchen", "Painter", "False Ceiling", "Carpenter", "Tiles Supplier", "Architect"].map((term) => (
-              <Link 
-                key={term} 
-                href={`/professionals?search=${encodeURIComponent(term)}`}
-                className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-md cursor-pointer transition"
-              >
-                {term}
-              </Link>
-            ))}
-          </div>
+          {!isPro && (
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+              <span className="font-semibold text-gray-700 mr-2">Popular Searches:</span>
+              {["Interior Designer", "Modular Kitchen", "Painter", "False Ceiling", "Carpenter", "Tiles Supplier", "Architect"].map((term) => (
+                <Link 
+                  key={term} 
+                  href={`/professionals?search=${encodeURIComponent(term)}`}
+                  className="bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1.5 rounded-md cursor-pointer transition"
+                >
+                  {term}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Right Content - Lead Card */}
         <div className="w-full lg:w-[35%] max-w-sm mt-8 lg:mt-0">
           <div className="bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] overflow-hidden border border-gray-100">
-            {/* Header */}
-            <div className="bg-[#0a1c3a] text-white p-6">
-              <h3 className="text-xl font-bold mb-1">Post Your Requirement</h3>
-              <p className="text-sm text-white/80">Get Free Quotes from Experts</p>
-            </div>
-            {/* Body */}
-            <div className="p-6 space-y-5">
-              <div className="flex items-start">
-                <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
-                  <FileText className="w-4 h-4 text-[#E8701A]" />
+            {user ? (
+              <>
+                <div className="bg-[#0a1c3a] text-white p-6">
+                  <h3 className="text-xl font-bold mb-1">
+                    {isCustomer ? "Manage Your Projects" : `Welcome back, ${user.name.split(' ')[0]}!`}
+                  </h3>
+                  <p className="text-sm text-white/80">
+                    {isCustomer ? "View progress or post new requirements." : "Ready to find your next project?"}
+                  </p>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-sm text-gray-800">Share Your Requirement</h4>
+                <div className="p-6 space-y-4">
+                  <Link href="/dashboard" className="block w-full">
+                    <button className="w-full bg-slate-100 hover:bg-slate-200 text-[#0a1c3a] font-semibold py-3.5 rounded-lg transition flex items-center justify-center">
+                      <LayoutDashboard className="w-4 h-4 mr-2" /> Go to Dashboard
+                    </button>
+                  </Link>
+                  <Link href={isCustomer ? "/post-requirement" : "/dashboard"} className="block w-full">
+                    <button className="w-full bg-[#E8701A] hover:bg-[#E8701A]/90 text-white font-bold py-3.5 rounded-lg shadow-md transition flex items-center justify-center">
+                      {isCustomer ? (
+                        <><FileText className="w-4 h-4 mr-2" /> Post New Project</>
+                      ) : (
+                        <><SearchIcon className="w-4 h-4 mr-2" /> View Available Leads</>
+                      )}
+                    </button>
+                  </Link>
                 </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
-                  <ShieldCheck className="w-4 h-4 text-[#E8701A]" />
+              </>
+            ) : (
+              <>
+                <div className="bg-[#0a1c3a] text-white p-6">
+                  <h3 className="text-xl font-bold mb-1">Post Your Requirement</h3>
+                  <p className="text-sm text-white/80">Get Free Quotes from Experts</p>
                 </div>
-                <div>
-                  <h4 className="font-semibold text-sm text-gray-800">Receive Multiple Quotes</h4>
+                <div className="p-6 space-y-5">
+                  <div className="flex items-start">
+                    <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
+                      <FileText className="w-4 h-4 text-[#E8701A]" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-800">Share Your Requirement</h4>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
+                      <ShieldCheck className="w-4 h-4 text-[#E8701A]" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-800">Receive Multiple Quotes</h4>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
+                      <IndianRupee className="w-4 h-4 text-[#E8701A]" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-800">Compare & Save Money</h4>
+                    </div>
+                  </div>
+                  <div className="flex items-start">
+                    <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
+                      <CheckCircle2 className="w-4 h-4 text-[#E8701A]" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-800">Hire the Best Expert</h4>
+                    </div>
+                  </div>
+                  
+                  <Link href="/post-requirement" className="block w-full">
+                    <button className="w-full bg-[#E8701A] hover:bg-[#E8701A]/90 text-white font-bold py-3.5 rounded-lg shadow-md transition mt-4">
+                      POST NOW (It's Free)
+                    </button>
+                  </Link>
                 </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
-                  <IndianRupee className="w-4 h-4 text-[#E8701A]" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm text-gray-800">Compare & Save Money</h4>
-                </div>
-              </div>
-              <div className="flex items-start">
-                <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
-                  <CheckCircle2 className="w-4 h-4 text-[#E8701A]" />
-                </div>
-                <div>
-                  <h4 className="font-semibold text-sm text-gray-800">Hire the Best Expert</h4>
-                </div>
-              </div>
-              
-              <Link href="/post-requirement" className="block w-full">
-                <button className="w-full bg-[#E8701A] hover:bg-[#E8701A]/90 text-white font-bold py-3.5 rounded-lg shadow-md transition mt-4">
-                  POST NOW (It's Free)
-                </button>
-              </Link>
-            </div>
+              </>
+            )}
           </div>
         </div>
 

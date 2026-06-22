@@ -5,7 +5,7 @@ import { Hubs } from "@/components/home/Hubs";
 import { ActionBanner } from "@/components/home/ActionBanner";
 import { TrustFooter } from "@/components/home/TrustFooter";
 import { FeaturedProfessionals } from "@/components/home/FeaturedProfessionals";
-import Link from "next/link";
+import { MobileStickyCTA } from "@/components/home/MobileStickyCTA";
 
 export default function Home() {
   return (
@@ -17,15 +17,7 @@ export default function Home() {
       <Hubs />
       <ActionBanner />
       <TrustFooter />
-
-      {/* Sticky Mobile CTA */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 shadow-[0_-4px_10px_rgba(0,0,0,0.05)] z-50">
-        <Link href="/post-requirement">
-          <button className="w-full bg-[#E8701A] hover:bg-[#E8701A]/90 text-white font-bold py-3.5 rounded-lg shadow-md transition text-center">
-            Post Requirement (Free)
-          </button>
-        </Link>
-      </div>
+      <MobileStickyCTA />
     </div>
   );
 }
