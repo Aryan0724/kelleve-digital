@@ -46,7 +46,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     // TEMPORARY: Render Free Tier Migration Route
     Route::get('/setup-db-secret', function () {
         try {
-            \Illuminate\Support\Facades\Artisan::call('migrate:fresh', ['--force' => true]);
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
             \Illuminate\Support\Facades\Artisan::call('db:seed', ['--force' => true]);
             return "Database migrated and seeded successfully!";
         } catch (\Throwable $e) {
