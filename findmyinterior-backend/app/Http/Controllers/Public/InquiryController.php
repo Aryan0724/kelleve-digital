@@ -16,6 +16,10 @@ class InquiryController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        $request->merge([
+            'inquirable_type' => strtolower(str_replace('BuilderProject', 'builder', $request->inquirable_type))
+        ]);
+
         $data = $request->validate([
             'inquirable_type' => ['required', 'in:listing,builder,supplier,worker'],
             'inquirable_id'   => ['required', 'integer'],
@@ -43,10 +47,33 @@ class InquiryController extends Controller
             $parent = $inquiry->inquirable;
             if ($parent && $parent->user) {
                 $parent->user->notify(new InquiryReceivedNotification($inquiry));
+
+                // Also create a conversation if the user is logged in
+                if ($request->user()) {
+                    $conversation = \App\Models\Conversation::firstOrCreate(
+                        [
+                            'project_id' => null,
+                            'customer_id' => $request->user()->id,
+                            'vendor_id' => $parent->user->id,
+                        ],
+                        [
+                            'status' => 'active',
+                            'project_stage' => 'inquiry',
+                            'unlocked_at' => now(),
+                        ]
+                    );
+
+                    \App\Models\Message::create([
+                        'conversation_id' => $conversation->id,
+                        'sender_id' => $request->user()->id,
+                        'body' => "Inquiry regarding " . class_basename($parent) . ":\n\n" . $data['message'],
+                        'is_read' => false,
+                    ]);
+                }
             }
         } catch (\Throwable $e) {
             // Notification failure must never break the inquiry submission
-            \Log::error('Inquiry notification failed: ' . $e->getMessage());
+            \Illuminate\Support\Facades\Log::error('Inquiry logic failed: ' . $e->getMessage());
         }
 
         // Mark flags on inquiry

@@ -82,8 +82,7 @@ class ConversationController extends Controller
         // Create or get existing conversation
         $conversation = Conversation::firstOrCreate(
             [
-                'conversationable_type' => Requirement::class,
-                'conversationable_id' => $requirementId,
+                'project_id' => $requirementId,
                 'customer_id' => $customerId,
                 'vendor_id' => $vendorId,
             ],

@@ -90,9 +90,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::apiResource('projects', OpportunityProjectController::class);
     Route::apiResource('rfqs', RfqController::class);
     Route::apiResource('worker-jobs', JobController::class);
-    Route::get('shortlists', [\App\Http\Controllers\ShortlistController::class, 'index']);
-    Route::post('shortlists', [\App\Http\Controllers\ShortlistController::class, 'store']);
-    Route::delete('shortlists/{professional_id}', [\App\Http\Controllers\ShortlistController::class, 'destroy']);
+
     
     // Legacy Requirements (Masked for guests/free users, unmasked for premium/admin via Resource logic)
     Route::apiResource('requirements', RequirementController::class)->only(['index', 'show']);
@@ -152,6 +150,11 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('/saved-vendors/{vendor}', [\App\Http\Controllers\Api\V1\SaveController::class, 'saveVendor']);
         Route::delete('/saved-vendors/{vendor}', [\App\Http\Controllers\Api\V1\SaveController::class, 'unsaveVendor']);
         Route::get('/saved-vendors', [\App\Http\Controllers\Api\V1\SaveController::class, 'getSavedVendors']);
+
+        // Shortlists
+        Route::get('shortlists', [\App\Http\Controllers\ShortlistController::class, 'index']);
+        Route::post('shortlists', [\App\Http\Controllers\ShortlistController::class, 'store']);
+        Route::delete('shortlists/{professional_id}', [\App\Http\Controllers\ShortlistController::class, 'destroy']);
 
         // Messaging
         Route::get('/conversations', [\App\Http\Controllers\Api\V1\ConversationController::class, 'index']);
