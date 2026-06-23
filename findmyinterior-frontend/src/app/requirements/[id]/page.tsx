@@ -242,7 +242,7 @@ export default function RequirementDetail() {
                               View Photos ({displayImages.length})
                             </div>
                             <div className="absolute bottom-3 right-3 flex gap-1.5 z-10">
-                              {displayImages.map((_, idx) => (
+                              {displayImages.map((_: any, idx: number) => (
                                 <button
                                   key={idx}
                                   onClick={(e) => {

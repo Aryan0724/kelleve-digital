@@ -3,6 +3,7 @@
 import { CheckCircle2, Award, XCircle, IndianRupee, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 
 export function BidComparisonMatrix({ bids, onAward }: { bids: any[], onAward: (bidId: number) => void }) {
   const router = useRouter();
