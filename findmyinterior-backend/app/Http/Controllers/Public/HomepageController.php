@@ -42,8 +42,21 @@ class HomepageController extends Controller
 
         $featuredListings = Listing::active()
             ->featured()
+            ->join('users', 'users.id', '=', 'listings.user_id')
+            ->select('listings.*')
             ->with(['category'])
-            ->latest()
+            ->orderByRaw("
+                CASE users.verification_level
+                    WHEN 'elite_professional' THEN 4
+                    WHEN 'trusted_professional' THEN 3
+                    WHEN 'verified_business' THEN 2
+                    WHEN 'basic_member' THEN 1
+                    ELSE 0
+                END DESC
+            ")
+            ->orderByDesc('users.trust_score')
+            ->orderByDesc('users.profile_completion_score')
+            ->latest('listings.created_at')
             ->take(8)
             ->get();
 

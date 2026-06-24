@@ -25,6 +25,9 @@ class User extends Authenticatable
         'verification_level',
         'is_active',
         'is_verified',
+        'profile_completion_score',
+        'trust_score',
+        'is_verified_business',
         'daily_notification_limit',
         'primary_role_id',
     ];
@@ -37,6 +40,10 @@ class User extends Authenticatable
     protected $casts = [];
 
     // ─── Relationships ────────────────────────────────────────────────────────
+    public function documents(): HasMany
+    {
+        return $this->hasMany(UserDocument::class);
+    }
 
     public function primaryRole(): BelongsTo
     {

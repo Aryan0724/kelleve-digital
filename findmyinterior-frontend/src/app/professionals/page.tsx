@@ -92,10 +92,14 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                   </div>
                   <CardContent className="p-5 flex-1">
                     <div className="flex justify-between items-start mb-2">
-                      <h3 className="font-bold text-lg text-slate-900 line-clamp-1 group-hover:text-orange-600 transition-colors">
-                        {listing.title}
-                      </h3>
-                      {listing.is_verified && <ShieldCheck className="h-5 w-5 text-green-500 flex-shrink-0 ml-2" />}
+                      <div className="flex items-center gap-2">
+                        <h3 className="font-bold text-lg text-slate-900 line-clamp-1 group-hover:text-orange-600 transition-colors">
+                          {listing.title}
+                        </h3>
+                        {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 flex-shrink-0" title="Elite Professional">Elite</Badge>}
+                        {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 flex-shrink-0" title="Trusted Professional">Trusted</Badge>}
+                        {(listing.verification_level === 'verified_business' || listing.is_verified) && <ShieldCheck className="h-5 w-5 text-green-500 flex-shrink-0" title="Verified Business" />}
+                      </div>
                     </div>
                     
                     <div className="flex items-center text-sm text-slate-500 mb-4">
@@ -103,14 +107,20 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                       <span className="line-clamp-1">{listing.city}, {listing.district}</span>
                     </div>
 
-                    <div className="flex items-center gap-1 mb-4">
+                    <div className="flex items-center gap-1 mb-4 w-full">
                       <div className="flex text-amber-400">
                         {[...Array(5)].map((_, i) => (
                           <Star key={i} className={`h-4 w-4 ${i < Math.floor(listing.avg_rating) ? 'fill-current' : 'text-slate-200'}`} />
                         ))}
                       </div>
                       <span className="text-sm font-semibold text-slate-700 ml-1">{listing.avg_rating.toFixed(1)}</span>
-                      <span className="text-sm text-slate-400 ml-1">({listing.review_count} reviews)</span>
+                      <span className="text-sm text-slate-400 ml-1">({listing.review_count})</span>
+                      
+                      {listing.trust_score > 0 && (
+                        <div className="ml-auto text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                          Trust: {listing.trust_score}/100
+                        </div>
+                      )}
                     </div>
                   </CardContent>
                   <CardFooter className="p-5 pt-0 border-t border-slate-50 mt-auto">

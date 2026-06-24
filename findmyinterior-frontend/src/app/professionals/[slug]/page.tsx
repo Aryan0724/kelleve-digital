@@ -73,18 +73,34 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                 <div>
                   <div className="flex items-center gap-2 mb-2">
                     <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>
-                    {listing.is_verified && <span title="Verified Business"><ShieldCheck className="h-8 w-8 text-green-500 flex-shrink-0" /></span>}
+                    {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 ml-2" title="Elite Professional">Elite Professional</Badge>}
+                    {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 ml-2" title="Trusted Professional">Trusted Professional</Badge>}
+                    {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business"><ShieldCheck className="h-8 w-8 text-green-500 flex-shrink-0 ml-2" /></span>}
                   </div>
                   <div className="flex items-center text-slate-500 mb-2">
                     <MapPin className="h-4 w-4 mr-1" /> {listing.address}, {listing.city}, {listing.district}
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     <Badge variant="secondary">{listing.category?.name}</Badge>
                     <div className="flex items-center">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1" />
                       <span className="font-semibold text-slate-900 mr-1">{listing.avg_rating.toFixed(1)}</span>
                       <span className="text-slate-500 text-sm">({listing.review_count} reviews)</span>
                     </div>
+                    {listing.trust_score > 0 && (
+                      <div className="flex items-center">
+                        <span className="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-1 rounded-full border border-slate-200">
+                          Trust Score: {listing.trust_score}/100
+                        </span>
+                      </div>
+                    )}
+                    {listing.profile_completion_score > 0 && (
+                      <div className="flex items-center">
+                        <span className="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-1 rounded-full border border-slate-200">
+                          Profile: {listing.profile_completion_score}%
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

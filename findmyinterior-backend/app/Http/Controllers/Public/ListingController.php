@@ -43,17 +43,32 @@ class ListingController extends Controller
             $query->where('avg_rating', '>=', $request->min_rating);
         }
 
+        // Join users table to sort by trust metrics
+        $query->join('users', 'users.id', '=', 'listings.user_id')
+              ->select('listings.*');
+
         // Sorting
         match ($request->get('sort', 'featured')) {
-            'rating'  => $query->orderByDesc('avg_rating'),
-            'newest'  => $query->orderByDesc('created_at'),
-            'popular' => $query->orderByDesc('views_count'),
+            'rating'  => $query->orderByDesc('listings.avg_rating'),
+            'newest'  => $query->orderByDesc('listings.created_at'),
+            'popular' => $query->orderByDesc('listings.views_count'),
             default   => $query
-                ->orderByRaw('CASE WHEN sponsored_until > CURRENT_TIMESTAMP THEN 1 ELSE 0 END DESC')
-                ->orderByDesc('sponsored_rank')
-                ->orderByDesc('is_featured')
-                ->orderByDesc('is_premium')
-                ->orderByDesc('avg_rating'),
+                ->orderByRaw('CASE WHEN listings.sponsored_until > CURRENT_TIMESTAMP THEN 1 ELSE 0 END DESC')
+                ->orderByDesc('listings.sponsored_rank')
+                ->orderByDesc('listings.is_featured')
+                ->orderByDesc('listings.is_premium')
+                ->orderByRaw("
+                    CASE users.verification_level
+                        WHEN 'elite_professional' THEN 4
+                        WHEN 'trusted_professional' THEN 3
+                        WHEN 'verified_business' THEN 2
+                        WHEN 'basic_member' THEN 1
+                        ELSE 0
+                    END DESC
+                ")
+                ->orderByDesc('users.trust_score')
+                ->orderByDesc('users.profile_completion_score')
+                ->orderByDesc('listings.avg_rating'),
         };
 
         $listings = $query->paginate($request->get('per_page', 12));

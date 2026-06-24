@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { VerificationAdminPanel } from "@/components/admin/VerificationAdminPanel";
 import {
   CheckCircle,
   ClipboardList,
@@ -273,59 +274,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === "verifications" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Verification Queue</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {pendingVerifications.length === 0 ? (
-                <EmptyState text="No pending listings need review." />
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-left text-sm">
-                    <thead className="bg-slate-50 text-slate-500">
-                      <tr>
-                        <th className="px-4 py-3">Business</th>
-                        <th className="px-4 py-3">City</th>
-                        <th className="px-4 py-3">Owner</th>
-                        <th className="px-4 py-3 text-right">Action</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {pendingVerifications.map((item: any) => (
-                        <tr key={item.id} className="border-b">
-                          <td className="px-4 py-4 font-medium">{item.title}</td>
-                          <td className="px-4 py-4">{item.city}</td>
-                          <td className="px-4 py-4">{item.user?.email || "Unknown"}</td>
-                          <td className="px-4 py-4">
-                            <div className="flex justify-end gap-2">
-                              <Button
-                                size="sm"
-                                onClick={() => runAction(`approve-listing-${item.id}`, () => api.patch(`/admin/listings/${item.id}/verify`))}
-                                disabled={busyId !== null}
-                                className="bg-green-600 hover:bg-green-700"
-                              >
-                                <CheckCircle className="h-4 w-4 mr-1" /> Approve
-                              </Button>
-                              <Button
-                                size="sm"
-                                variant="outline"
-                                onClick={() => runAction(`reject-listing-${item.id}`, () => api.patch(`/admin/listings/${item.id}/reject`))}
-                                disabled={busyId !== null}
-                                className="text-red-600 hover:text-red-700"
-                              >
-                                <XCircle className="h-4 w-4 mr-1" /> Reject
-                              </Button>
-                            </div>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </CardContent>
-          </Card>
+          <VerificationAdminPanel />
         )}
 
         {activeTab === "users" && (

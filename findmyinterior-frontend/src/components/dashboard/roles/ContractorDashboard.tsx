@@ -5,13 +5,14 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Truck, Wrench, Wallet, User, LogOut } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Truck, Wrench, Wallet, User, LogOut, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { WalletTab } from "@/components/dashboard/WalletTab";
 import { ProfileTab } from "@/components/dashboard/ProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import Link from "next/link";
 
 export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
@@ -97,6 +98,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
                 {renderSidebarButton("subcontract_requests", <Wrench className="h-5 w-5" />, "Subcontract Requests")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
+                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification & Trust")}
                 {renderSidebarButton("profile", <User className="h-5 w-5" />, "Contractor Profile")}
               </div>
             </div>
@@ -115,6 +117,8 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             )}
 
             {activeTab === 'wallet' && <WalletTab />}
+
+            {activeTab === 'verification' && <VerificationTab />}
 
             {activeTab === 'profile' && <ProfileTab />}
 

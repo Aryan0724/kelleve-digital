@@ -190,6 +190,10 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
 
         Route::apiResource('worker-jobs', \App\Http\Controllers\Api\V1\JobController::class);
         Route::post('worker-jobs/{id}/progress', [\App\Http\Controllers\Api\V1\JobController::class, 'updateProgress']);
+
+        // Verification & Trust
+        Route::get('/verification/status', [\App\Http\Controllers\Api\V1\VerificationController::class, 'status']);
+        Route::post('/verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
     });
 
     // ─── Payments (Protected) ─────────────────────────────────────────────
@@ -212,6 +216,13 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('listings/{id}/reject', [AdminController::class, 'rejectListing']);
         Route::patch('listings/{id}/feature', [AdminController::class, 'featureListing']);
         
+        // Trust & Verifications Admin
+        Route::get('verifications', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'index']);
+        Route::patch('verifications/documents/{id}/approve', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'approveDocument']);
+        Route::patch('verifications/documents/{id}/reject', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'rejectDocument']);
+        Route::patch('verifications/users/{id}/approve-business', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'approveBusiness']);
+        Route::patch('verifications/users/{id}/revoke-business', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'revokeBusiness']);
+
         Route::get('reviews/pending', [AdminController::class, 'pendingReviews']);
         Route::patch('reviews/{id}/approve', [AdminController::class, 'approveReview']);
         Route::delete('reviews/{id}', [AdminController::class, 'deleteReview']);

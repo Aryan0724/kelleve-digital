@@ -5,12 +5,13 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Gavel, CheckCircle2, MessageSquare, User, LogOut, Briefcase } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, CheckCircle2, User, LogOut, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { ProfileTab } from "@/components/dashboard/ProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+import { VerificationTab } from "@/components/dashboard/VerificationTab";
 
 export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -71,6 +72,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
                 {renderSidebarButton("won_projects", <CheckCircle2 className="h-5 w-5" />, "Active & Completed Jobs")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification & Trust")}
                 {renderSidebarButton("profile", <User className="h-5 w-5" />, "Worker Profile")}
               </div>
             </div>
@@ -89,6 +91,8 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
             )}
 
             {activeTab === 'profile' && <ProfileTab />}
+
+            {activeTab === 'verification' && <VerificationTab />}
 
             {activeTab === 'messages' && (
               <Card>

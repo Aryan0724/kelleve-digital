@@ -60,7 +60,12 @@ export default function ConversationPage() {
   const fetchMessages = async (isPolling = false) => {
     try {
       const res = await api.get(`/conversations/${params.id}/messages`);
-      setMessages(res.data);
+      setMessages(prev => {
+        if (isPolling && prev.length === res.data.length) {
+          return prev;
+        }
+        return res.data;
+      });
     } catch (err) {
       console.error("Failed to load messages", err);
     }
