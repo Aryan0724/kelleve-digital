@@ -22,7 +22,7 @@ interface Conversation {
     id: number;
     name: string;
   };
-  conversationable: {
+  project?: {
     id: number;
     title: string;
     budget_min: string;
@@ -162,30 +162,31 @@ export default function ConversationPage() {
         </div>
       </div>
 
-      {/* Requirement Context Banner */}
-      <div className="bg-orange-50 border-b shrink-0">
-        <div className="container mx-auto px-4 py-3 max-w-4xl">
-          <div className="flex items-start gap-3">
-            <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full text-sm">
-              <div>
-                <span className="text-orange-900/60 block text-xs font-semibold uppercase tracking-wider">Project</span>
-                <span className="font-medium text-slate-900">{conversation.conversationable?.title}</span>
-              </div>
-              <div>
-                <span className="text-orange-900/60 block text-xs font-semibold uppercase tracking-wider">Budget</span>
-                <span className="font-medium text-slate-900">₹{conversation.conversationable?.budget_min || '0'} - ₹{conversation.conversationable?.budget_max || '0'}</span>
-              </div>
-              <div>
-                <span className="text-orange-900/60 block text-xs font-semibold uppercase tracking-wider">Status</span>
-                <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white text-slate-700 border border-slate-200 capitalize">
-                  {conversation.conversationable?.status}
-                </span>
+        {conversation.project && (
+          <div className="bg-orange-50 border-b shrink-0">
+            <div className="container mx-auto px-4 py-3 max-w-4xl">
+              <div className="flex items-start gap-3">
+                <Info className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-2 w-full text-sm">
+                  <div>
+                    <span className="text-orange-900/60 block text-xs font-semibold uppercase tracking-wider">Project</span>
+                    <span className="font-medium text-slate-900">{conversation.project.title}</span>
+                  </div>
+                  <div>
+                    <span className="text-orange-900/60 block text-xs font-semibold uppercase tracking-wider">Budget</span>
+                    <span className="font-medium text-slate-900">₹{conversation.project.budget_min || '0'} - ₹{conversation.project.budget_max || '0'}</span>
+                  </div>
+                  <div>
+                    <span className="text-orange-900/60 block text-xs font-semibold uppercase tracking-wider">Status</span>
+                    <span className="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-white text-slate-700 border border-slate-200 capitalize">
+                      {conversation.project.status}
+                    </span>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
+        )}
 
       {/* Chat Area */}
       <div className="flex-1 overflow-y-auto bg-slate-50/50 p-4">

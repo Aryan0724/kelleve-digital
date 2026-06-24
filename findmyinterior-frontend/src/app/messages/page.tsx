@@ -32,7 +32,7 @@ interface Conversation {
     id: number;
     name: string;
   };
-  conversationable: {
+  project?: {
     id: number;
     title: string;
   };
@@ -116,7 +116,7 @@ export default function InboxPage() {
                         <div className="flex justify-between items-start mb-1">
                           <div>
                             <h3 className="font-bold text-slate-900 truncate">
-                              {conv.conversationable?.title}
+                              {conv.project?.title || "Direct Inquiry"}
                             </h3>
                             <div className="text-sm font-medium text-slate-700">
                               {otherUser?.name || "User"}
