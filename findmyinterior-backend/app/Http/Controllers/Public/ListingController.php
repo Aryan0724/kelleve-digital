@@ -75,10 +75,19 @@ class ListingController extends Controller
      */
     public function show(Request $request, string $slug): JsonResponse
     {
-        $listing = Listing::active()
-            ->where('slug', $slug)
-            ->with(['category', 'gallery', 'approvedReviews.user', 'user'])
-            ->firstOrFail();
+        $query = Listing::active()
+            ->with(['category', 'gallery', 'approvedReviews.user', 'user']);
+
+        if (is_numeric($slug)) {
+            $query->where(function($q) use ($slug) {
+                $q->where('id', $slug)
+                  ->orWhere('user_id', $slug);
+            });
+        } else {
+            $query->where('slug', $slug);
+        }
+
+        $listing = $query->firstOrFail();
 
         $listing->incrementViews();
 
