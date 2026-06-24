@@ -145,7 +145,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
 
             {activeTab === 'wallet' && <WalletTab />}
 
-            {activeTab === 'verification' && <VerificationTab />}
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
 
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
 

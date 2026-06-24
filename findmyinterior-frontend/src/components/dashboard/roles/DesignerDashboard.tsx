@@ -142,7 +142,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
             {activeTab === 'wallet' && <WalletTab />}
 
-            {activeTab === 'verification' && <VerificationTab />}
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
 
             {activeTab === 'profile' && <ProfileTab />}
 

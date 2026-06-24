@@ -92,7 +92,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
 
             {activeTab === 'profile' && <ProfileTab />}
 
-            {activeTab === 'verification' && <VerificationTab />}
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
 
             {activeTab === 'messages' && (
               <Card>
