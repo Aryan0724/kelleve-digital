@@ -52,10 +52,13 @@ export function ProfileTab() {
   };
 
   const handleSave = async () => {
-    if (!listing) return;
     setSaving(true);
     try {
-      await api.put(`/user/listings/${listing.id}`, formData);
+      if (listing) {
+        await api.put(`/user/listings/${listing.id}`, formData);
+      } else {
+        await api.post(`/user/listings`, formData);
+      }
       alert("Profile updated successfully!");
       fetchListings();
     } catch (e) {
@@ -66,16 +69,6 @@ export function ProfileTab() {
   };
 
   if (loading) return <div>Loading profile...</div>;
-
-  if (!listing) {
-    return (
-      <Card>
-        <CardContent className="p-6 text-center text-slate-500">
-          No business profile found. Please contact support.
-        </CardContent>
-      </Card>
-    );
-  }
 
   return (
     <Card>
