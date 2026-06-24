@@ -21,7 +21,7 @@ class ConversationController extends Controller
         $user = $request->user();
         
         $conversations = Conversation::with([
-            'conversationable', 
+            'project', 
             'customer', 
             'vendor',
             'messages' => function($query) {
@@ -104,7 +104,7 @@ class ConversationController extends Controller
         $user = $request->user();
         
         $conversation = Conversation::with([
-            'conversationable', 
+            'project', 
             'customer', 
             'vendor'
         ])
