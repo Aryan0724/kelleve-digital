@@ -94,14 +94,8 @@ export function Navbar() {
         <div className="container mx-auto flex items-center justify-between gap-4">
           
           {/* Logo */}
-          <Link href="/" className="flex flex-col flex-shrink-0 group">
-            <div className="flex items-center text-[#0a1c3a] font-black text-2xl tracking-tighter">
-              <span className="text-[#E8701A] mr-1.5 text-3xl transform transition-transform group-hover:scale-110 duration-300">⌂</span>
-              FIND MY INTERIOR
-            </div>
-            <div className="text-[0.65rem] tracking-[0.25em] text-gray-500 font-bold mt-0.5 opacity-80 group-hover:opacity-100 transition-opacity">
-              DREAM • DESIGN • DELIVER
-            </div>
+          <Link href="/" className="flex items-center flex-shrink-0 group">
+            <img src="/logo.jpg" alt="Find My Interior" className="h-14 w-auto transform transition-transform group-hover:scale-105 duration-300" />
           </Link>
 
           {/* Center Search Container */}
