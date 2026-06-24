@@ -19,7 +19,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState(() => {
-    if (user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level)) {
+    if (user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "")) {
       return "verification";
     }
     return "overview";

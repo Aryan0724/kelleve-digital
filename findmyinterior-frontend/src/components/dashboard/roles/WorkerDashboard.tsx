@@ -17,7 +17,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState(() => {
-    if (user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level)) {
+    if (user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "")) {
       return "verification";
     }
     return "available_leads";
