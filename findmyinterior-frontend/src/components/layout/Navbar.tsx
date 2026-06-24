@@ -94,8 +94,8 @@ export function Navbar() {
         <div className="container mx-auto flex items-center justify-between gap-4">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0 group">
-            <img src="/logo.jpg" alt="Find My Interior" className="h-14 w-auto transform transition-transform group-hover:scale-105 duration-300" />
+          <Link href="/" className="flex items-center flex-shrink-0 group py-2">
+            <img src="/logo.jpg" alt="Find My Interior" className="h-20 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300" />
           </Link>
 
           {/* Center Search Container */}
@@ -133,11 +133,25 @@ export function Navbar() {
             
             <div className="w-px h-6 bg-gray-200 mx-2"></div>
             
-            <Link href={isAuthenticated ? "/dashboard?tab=bids_received" : "/post-requirement"}>
-              <button className="bg-white border-2 border-[#0a1c3a] text-[#0a1c3a] hover:bg-[#0a1c3a] hover:text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center">
-                COMPARE BIDS
-              </button>
-            </Link>
+            {(!user || ["homeowner", "customer"].includes(user?.role || "")) ? (
+              <Link href={isAuthenticated ? "/dashboard?tab=bids_received" : "/post-requirement"}>
+                <button className="bg-white border-2 border-[#0a1c3a] text-[#0a1c3a] hover:bg-[#0a1c3a] hover:text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
+                  COMPARE BIDS
+                </button>
+              </Link>
+            ) : ["skilled_worker", "worker"].includes(user?.role || "") ? (
+              <Link href="/dashboard">
+                <button className="bg-white border-2 border-[#0a1c3a] text-[#0a1c3a] hover:bg-[#0a1c3a] hover:text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
+                  SEARCH JOBS
+                </button>
+              </Link>
+            ) : (
+              <Link href="/dashboard">
+                <button className="bg-white border-2 border-[#0a1c3a] text-[#0a1c3a] hover:bg-[#0a1c3a] hover:text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
+                  APPLY FOR PROJECTS
+                </button>
+              </Link>
+            )}
             
             <Link href="/post-requirement">
               <button className="bg-gradient-to-r from-[#E8701A] to-[#f08535] hover:from-[#c25a12] hover:to-[#E8701A] text-white flex items-center px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 h-full">

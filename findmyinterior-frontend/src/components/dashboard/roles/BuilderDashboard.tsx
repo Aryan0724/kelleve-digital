@@ -14,16 +14,13 @@ import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import Link from "next/link";
+import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 
 export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState(() => {
-    if (user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "")) {
-      return "verification";
-    }
-    return "overview";
-  });
+  const isUnverified = user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
+  const [activeTab, setActiveTab] = useState("overview");
 
   const handleLogout = () => {
     logout();
@@ -106,6 +103,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
           </div>
 
           <div className="lg:col-span-3 space-y-6">
+            <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} />
             {activeTab === 'overview' && (
               <Card>
                 <CardHeader className="flex flex-row justify-between items-center">
