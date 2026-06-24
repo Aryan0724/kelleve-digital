@@ -98,7 +98,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                         </h3>
                         {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 flex-shrink-0" title="Elite Professional">Elite</Badge>}
                         {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 flex-shrink-0" title="Trusted Professional">Trusted</Badge>}
-                        {(listing.verification_level === 'verified_business' || listing.is_verified) && <ShieldCheck className="h-5 w-5 text-green-500 flex-shrink-0" title="Verified Business" />}
+                        {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business" className="flex-shrink-0"><ShieldCheck className="h-5 w-5 text-green-500" /></span>}
                       </div>
                     </div>
                     
