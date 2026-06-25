@@ -13,6 +13,7 @@ type User = {
   verification_level?: string;
   trust_score?: number;
   profile_completion_score?: number;
+  isAdmin?: boolean;
 };
 
 interface AuthState {
