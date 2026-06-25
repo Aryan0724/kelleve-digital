@@ -49,11 +49,12 @@ class InquiryController extends Controller
                 $parent->user->notify(new InquiryReceivedNotification($inquiry));
 
                 // Also create a conversation if the user is logged in
-                if ($request->user()) {
+                $user = auth('sanctum')->user();
+                if ($user) {
                     $conversation = \App\Models\Conversation::firstOrCreate(
                         [
                             'project_id' => null,
-                            'customer_id' => $request->user()->id,
+                            'customer_id' => $user->id,
                             'vendor_id' => $parent->user->id,
                         ],
                         [
@@ -65,7 +66,7 @@ class InquiryController extends Controller
 
                     \App\Models\Message::create([
                         'conversation_id' => $conversation->id,
-                        'sender_id' => $request->user()->id,
+                        'sender_id' => $user->id,
                         'body' => "Inquiry regarding " . class_basename($parent) . ":\n\n" . $data['message'],
                         'is_read' => false,
                     ]);

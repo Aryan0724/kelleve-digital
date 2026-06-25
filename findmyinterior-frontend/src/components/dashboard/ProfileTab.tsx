@@ -11,29 +11,38 @@ export function ProfileTab() {
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState<any>({});
 
-  const completionScore = Object.values(formData).filter((val) => {
+  const [categories, setCategories] = useState<any[]>([]);
+
+  const completionScore = Math.min(100, Math.round((Object.values(formData).filter((val) => {
     if (typeof val === 'string') return val.trim().length > 0;
     if (typeof val === 'number') return val > 0;
     return false;
-  }).length * 10; // Simple mock calculation
+  }).length / 12) * 100)); // 12 is the total number of fields including category_id
 
-  const fetchListings = async () => {
+  const fetchData = async () => {
     try {
-      const res = await api.get("/user/listings");
-      if (res.data.data.length > 0) {
-        setListing(res.data.data[0]);
+      const [listingsRes, categoriesRes] = await Promise.all([
+        api.get("/user/listings"),
+        api.get("/categories")
+      ]);
+      
+      setCategories(categoriesRes.data || []);
+
+      if (listingsRes.data.data.length > 0) {
+        setListing(listingsRes.data.data[0]);
         setFormData({
-          title: res.data.data[0].title,
-          tagline: res.data.data[0].tagline || "",
-          description: res.data.data[0].description || "",
-          phone: res.data.data[0].phone || "",
-          city: res.data.data[0].city || "",
-          district: res.data.data[0].district || "",
-          years_experience: res.data.data[0].years_experience || 0,
-          gst_number: res.data.data[0].gst_number || "",
-          pan_number: res.data.data[0].pan_number || "",
-          address: res.data.data[0].address || "",
-          website: res.data.data[0].website || "",
+          title: listingsRes.data.data[0].title,
+          tagline: listingsRes.data.data[0].tagline || "",
+          description: listingsRes.data.data[0].description || "",
+          phone: listingsRes.data.data[0].phone || "",
+          city: listingsRes.data.data[0].city || "",
+          district: listingsRes.data.data[0].district || "",
+          years_experience: listingsRes.data.data[0].years_experience || 0,
+          gst_number: listingsRes.data.data[0].gst_number || "",
+          pan_number: listingsRes.data.data[0].pan_number || "",
+          address: listingsRes.data.data[0].address || "",
+          website: listingsRes.data.data[0].website || "",
+          category_id: listingsRes.data.data[0].category?.id || "",
         });
       }
     } catch (e) {
@@ -44,7 +53,7 @@ export function ProfileTab() {
   };
 
   useEffect(() => {
-    fetchListings();
+    fetchData();
   }, []);
 
   const handleChange = (e: any) => {
@@ -60,7 +69,7 @@ export function ProfileTab() {
         await api.post(`/user/listings`, formData);
       }
       alert("Profile updated successfully!");
-      fetchListings();
+      fetchData();
     } catch (e) {
       alert("Failed to update profile.");
     } finally {
@@ -91,9 +100,25 @@ export function ProfileTab() {
         </div>
       </CardHeader>
       <CardContent className="space-y-6">
+        {!listing && (
+          <div>
+            <label className="block text-sm font-medium mb-1">Business Category</label>
+            <select 
+              name="category_id" 
+              value={formData.category_id || ""} 
+              onChange={handleChange} 
+              className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="">Select a Category</option>
+              {categories.map((c: any) => (
+                <option key={c.id} value={c.id}>{c.name}</option>
+              ))}
+            </select>
+          </div>
+        )}
         <div>
           <label className="block text-sm font-medium mb-1">Business Name / Title</label>
-          <Input name="title" value={formData.title} onChange={handleChange} />
+          <Input name="title" value={formData.title || ""} onChange={handleChange} />
         </div>
         <div>
           <label className="block text-sm font-medium mb-1">Tagline</label>
