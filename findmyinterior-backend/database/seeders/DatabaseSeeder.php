@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             ReviewSeeder::class,
             BlogSeeder::class,
             SeoPageSeeder::class,
+            MockUserSeeder::class,   // 95 realistic mock professional accounts
         ]);
     }
 }

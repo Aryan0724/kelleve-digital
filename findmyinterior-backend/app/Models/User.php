@@ -24,6 +24,7 @@ class User extends Authenticatable
         'avatar',
         'verification_level',
         'is_active',
+        'is_mock',
         'is_verified',
         'profile_completion_score',
         'trust_score',

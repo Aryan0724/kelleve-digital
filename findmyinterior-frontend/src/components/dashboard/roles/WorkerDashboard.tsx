@@ -16,7 +16,6 @@ import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const isUnverified = user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
   const [activeTab, setActiveTab] = useState("available_leads");
 
   const handleLogout = () => {
@@ -81,20 +80,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
 
           <div className="lg:col-span-3 space-y-6">
             <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} />
-            {activeTab === 'available_leads' && (
-              isUnverified ? (
-                <div className="space-y-6 relative">
-                  <div className="z-20 relative">
-                    <VerificationTab onSwitchTab={setActiveTab} profileData={data} />
-                  </div>
-                  <div className="opacity-30 pointer-events-none relative z-10 select-none blur-sm">
-                    <AvailableLeadsTab leads={data?.recommended_leads} />
-                  </div>
-                </div>
-              ) : (
-                <AvailableLeadsTab leads={data?.recommended_leads} />
-              )
-            )}
+            {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             {activeTab === 'unlocked_leads' && <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />}
             
             {activeTab === 'bids_submitted' && (
