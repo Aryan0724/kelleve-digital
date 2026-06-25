@@ -16,8 +16,8 @@ class DatabaseExplorerController extends Controller
      */
     public function tables(): JsonResponse
     {
-        // For MySQL/PostgreSQL
-        $tables = Schema::getConnection()->getDoctrineSchemaManager()->listTableNames();
+        // For MySQL/PostgreSQL/SQLite in Laravel 11
+        $tables = array_column(Schema::getTables(), 'name');
 
         return response()->json([
             'success' => true,
