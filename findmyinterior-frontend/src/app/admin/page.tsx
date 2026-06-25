@@ -66,7 +66,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
 
-  const isAdmin = user?.role === "admin";
+  const isAdmin = user?.isAdmin || user?.role === "admin";
 
   const fetchDashboard = useCallback(async () => {
     const res = await api.get("/admin/dashboard");

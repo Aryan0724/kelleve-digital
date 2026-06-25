@@ -27,7 +27,8 @@ import {
   MessageCircle,
   LayoutDashboard,
   LogOut,
-  MessageSquare
+  MessageSquare,
+  ShieldAlert
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationDropdown } from "./NotificationDropdown";
@@ -73,6 +74,12 @@ export function Navbar() {
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Logout</span>
               </button>
+              {(user?.isAdmin || user?.role === 'admin') && (
+                <Link href="/admin" className="hover:text-white flex items-center space-x-1">
+                  <ShieldAlert className="w-3.5 h-3.5 text-red-400" />
+                  <span className="text-red-400">Admin Panel</span>
+                </Link>
+              )}
             </>
           ) : (
             <>
