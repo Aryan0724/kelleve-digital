@@ -263,6 +263,7 @@ class MockUserSeeder extends Seeder
                 'state'            => 'Bihar',
                 'address'          => 'Plot ' . rand(1, 999) . ', ' . $city . ', Bihar',
                 'years_experience' => $yearsExp,
+                'budget_tier'      => ['Under ₹50,000', '₹50,000 - ₹2 Lakhs', '₹2 Lakhs - ₹10 Lakhs', '₹10 Lakhs+'][rand(0, 3)],
                 'team_size'        => rand(2, 25),
                 'cover_image'      => "https://picsum.photos/seed/{$seed}/800/400",
                 'status'           => 'active',

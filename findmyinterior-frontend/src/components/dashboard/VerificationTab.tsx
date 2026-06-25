@@ -76,7 +76,10 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
   const hasPhone = !!user?.phone;
   const hasDesc = !!profileData?.listing?.description;
   const hasCity = !!profileData?.listing?.city;
-  const isProfileComplete = hasPhone && hasDesc && hasCity && hasListing;
+  const checks = [hasListing, hasPhone, hasDesc, hasCity];
+  const completedChecks = checks.filter(Boolean).length;
+  const completionPercentage = (completedChecks / checks.length) * 100;
+  const isProfileComplete = completionPercentage >= 50;
 
   // Check if all required docs are at least pending or approved
   const requiredDocsSubmitted = REQUIRED_DOCS.every(doc => {
@@ -122,7 +125,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
           <Card className={isProfileComplete ? "border-green-100 bg-green-50/30" : "border-indigo-200 shadow-md"}>
             <CardHeader className="pb-3">
               <CardTitle className="text-xl flex justify-between items-center">
-                <span>Business Profile Completion</span>
+                <span>Business Profile Completion ({Math.round(completionPercentage)}%)</span>
                 {isProfileComplete && <Badge className="bg-green-500">Completed</Badge>}
               </CardTitle>
               <CardDescription>We need basic details about your business before you can apply.</CardDescription>

@@ -152,6 +152,12 @@ export function Navbar() {
                   SEARCH JOBS
                 </button>
               </Link>
+            ) : ["admin"].includes(user?.role || "") ? (
+              <Link href="/admin">
+                <button className="bg-white border-2 border-[#0a1c3a] text-[#0a1c3a] hover:bg-[#0a1c3a] hover:text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
+                  ADMIN PANEL
+                </button>
+              </Link>
             ) : (
               <Link href="/dashboard">
                 <button className="bg-white border-2 border-[#0a1c3a] text-[#0a1c3a] hover:bg-[#0a1c3a] hover:text-white text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">

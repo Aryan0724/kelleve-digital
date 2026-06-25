@@ -30,6 +30,7 @@ class BuilderController extends Controller
         }
 
         $builders = $query
+            ->orderByDesc('is_verified')
             ->orderByDesc('is_featured')
             ->orderByDesc('avg_rating')
             ->paginate($request->get('per_page', 12));

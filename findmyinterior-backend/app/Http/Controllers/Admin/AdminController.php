@@ -89,23 +89,35 @@ class AdminController extends Controller
      */
     public function users(Request $request): JsonResponse
     {
-        $query = User::query();
+        $query = User::with('roles:id,slug,name')->withCount(['listings', 'submittedBids']);
 
         if ($request->filled('role')) {
-            $query->where('role', $request->role);
+            $query->whereHas('roles', fn($q) => $q->where('slug', $request->role));
         }
         if ($request->filled('search')) {
             $query->where(fn($q) => $q->where('name', 'LIKE', "%{$request->search}%")
                 ->orWhere('email', 'LIKE', "%{$request->search}%")
                 ->orWhere('phone', 'LIKE', "%{$request->search}%"));
         }
+        if ($request->filled('filter')) {
+            if ($request->filter === 'mock') {
+                $query->where('is_mock', true);
+            } elseif ($request->filter === 'real') {
+                $query->where('is_mock', false);
+            }
+        }
 
-        $users = $query->latest()->paginate(15);
+        $users = $query->latest()->paginate(20);
 
         return response()->json([
             'success' => true,
             'data'    => $users->items(),
-            'meta'    => ['total' => $users->total(), 'last_page' => $users->lastPage()],
+            'meta'    => [
+                'total'      => $users->total(),
+                'last_page'  => $users->lastPage(),
+                'mock_count' => User::where('is_mock', true)->count(),
+                'real_count' => User::where('is_mock', false)->count(),
+            ],
         ]);
     }
 
@@ -535,6 +547,49 @@ class AdminController extends Controller
             'success' => true,
             'data' => $blogs->items(),
             'meta' => ['total' => $blogs->total()]
+        ]);
+    }
+
+    // ─── Mock User Management ──────────────────────────────────────────────────
+
+    /**
+     * DELETE /api/v1/admin/users/{id}
+     */
+    public function deleteUser(int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        // Safety: cannot delete admins or self
+        if ($user->isAdmin()) {
+            return response()->json(['success' => false, 'message' => 'Cannot delete admin accounts.'], 403);
+        }
+
+        // Cascade delete related records
+        $user->listings()->forceDelete();
+        $user->tokens()->delete();
+        $user->forceDelete();
+
+        return response()->json(['success' => true, 'message' => 'User and all associated data deleted permanently.']);
+    }
+
+    /**
+     * DELETE /api/v1/admin/users/mock/purge
+     * Deletes ALL mock users from the database.
+     */
+    public function purgeMockUsers(): JsonResponse
+    {
+        $mockUsers = User::where('is_mock', true)->get();
+        $count = $mockUsers->count();
+
+        foreach ($mockUsers as $user) {
+            $user->listings()->forceDelete();
+            $user->tokens()->delete();
+            $user->forceDelete();
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => "{$count} mock users and their data have been permanently deleted.",
         ]);
     }
 }

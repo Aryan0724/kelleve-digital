@@ -60,8 +60,11 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           <div className="lg:col-span-1 space-y-4">
             <Card>
               <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400">
-                  {user?.name?.charAt(0)}
+                <div className="h-20 w-20 rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
+                  {user?.avatar
+                    ? <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
+                    : <span>{user?.name?.charAt(0)}</span>
+                  }
                 </div>
                 <h3 className="font-bold text-lg">{user?.name}</h3>
                 <Badge className="mt-2 capitalize mb-4" variant="default">Interior Designer</Badge>

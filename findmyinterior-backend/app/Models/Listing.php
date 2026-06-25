@@ -106,7 +106,10 @@ class Listing extends Model
 
     public function scopeSearch($query, string $term)
     {
-        return $query->whereFullText(['title', 'description'], $term);
+        return $query->where(function ($q) use ($term) {
+            $q->where('title', 'like', "%{$term}%")
+              ->orWhere('description', 'like', "%{$term}%");
+        });
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

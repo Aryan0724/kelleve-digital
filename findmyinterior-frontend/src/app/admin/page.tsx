@@ -63,8 +63,10 @@ export default function AdminDashboard() {
   const [plans, setPlans] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
   const [search, setSearch] = useState("");
+  const [userFilter, setUserFilter] = useState<"all" | "mock" | "real">("all");
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
+  const [usersMeta, setUsersMeta] = useState<any>({});
 
   const isAdmin = user?.isAdmin || user?.role === "admin";
 
@@ -74,9 +76,15 @@ export default function AdminDashboard() {
   }, []);
 
   const fetchUsers = useCallback(async () => {
-    const res = await api.get("/admin/users", { params: { search: search || undefined } });
+    const res = await api.get("/admin/users", {
+      params: {
+        search: search || undefined,
+        filter: userFilter !== "all" ? userFilter : undefined,
+      },
+    });
     setUsers(res.data.data || []);
-  }, [search]);
+    setUsersMeta(res.data.meta || {});
+  }, [search, userFilter]);
 
   const fetchRequirements = useCallback(async () => {
     const res = await api.get("/admin/requirements");
@@ -280,33 +288,106 @@ export default function AdminDashboard() {
         {activeTab === "users" && (
           <Card>
             <CardHeader>
-              <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-                <CardTitle>User Management</CardTitle>
-                <Input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Search name, email, or phone"
-                  className="md:max-w-xs"
-                />
+              <div className="flex flex-col gap-3">
+                <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+                  <div>
+                    <CardTitle>User Management</CardTitle>
+                    <div className="flex items-center gap-2 mt-1 text-sm text-slate-500">
+                      <span className="bg-slate-100 px-2 py-0.5 rounded font-medium">{usersMeta.real_count ?? "—"} Real</span>
+                      <span className="bg-orange-50 text-orange-700 px-2 py-0.5 rounded font-medium">{usersMeta.mock_count ?? "—"} Mock</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <Input
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder="Search name, email, phone"
+                      className="md:max-w-48 h-8 text-sm"
+                    />
+                    {/* Filter pills */}
+                    {(["all", "real", "mock"] as const).map((f) => (
+                      <button
+                        key={f}
+                        onClick={() => setUserFilter(f)}
+                        className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
+                          userFilter === f
+                            ? f === "mock" ? "bg-orange-500 text-white" : "bg-indigo-600 text-white"
+                            : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        }`}
+                      >
+                        {f.charAt(0).toUpperCase() + f.slice(1)}
+                      </button>
+                    ))}
+                    {/* Purge mock users */}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-red-600 border-red-200 hover:bg-red-50 text-xs h-8"
+                      disabled={busyId === "purge-mock"}
+                      onClick={() => {
+                        if (!confirm(`Delete ALL ${usersMeta.mock_count} mock users permanently? This cannot be undone.`)) return;
+                        runAction("purge-mock", () => api.delete("/admin/users/mock/purge"));
+                      }}
+                    >
+                      🗑 Purge All Mock
+                    </Button>
+                  </div>
+                </div>
               </div>
             </CardHeader>
             <CardContent>
               <AdminTable
-                headers={["User", "Role", "Verified", "Active", "Action"]}
+                headers={["User", "Role", "Verified", "Status", "Actions"]}
                 rows={users.map((item) => [
-                  <div key="user">
-                    <div className="font-semibold">{item.name}</div>
-                    <div className="text-slate-500">{item.email}</div>
+                  <div key="user" className="flex items-center gap-2">
+                    <div className="w-8 h-8 rounded-full bg-slate-200 overflow-hidden shrink-0 flex items-center justify-center text-xs font-bold text-slate-500">
+                      {item.avatar
+                        ? <img src={item.avatar} alt={item.name} className="w-full h-full object-cover" />
+                        : item.name?.charAt(0)}
+                    </div>
+                    <div>
+                      <div className="font-semibold text-sm flex items-center gap-1.5">
+                        {item.name}
+                        {item.is_mock && (
+                          <span className="bg-orange-100 text-orange-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">MOCK</span>
+                        )}
+                      </div>
+                      <div className="text-slate-400 text-xs">{item.email}</div>
+                    </div>
                   </div>,
-                  <Badge key="role" variant="outline" className="capitalize">{item.role || "customer"}</Badge>,
-                  <Badge key="verified" variant={item.is_verified ? "default" : "secondary"}>{item.verification_level || "unverified"}</Badge>,
-                  <Badge key="active" variant={item.is_active ? "default" : "secondary"}>{item.is_active ? "Active" : "Disabled"}</Badge>,
-                  <div key="actions" className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline" onClick={() => runAction(`verify-user-${item.id}`, () => api.patch(`/admin/users/${item.id}/verify`))}>
-                      <ShieldCheck className="h-4 w-4 mr-1" /> {item.is_verified ? "Unverify" : "Verify"}
+                  <div key="role" className="flex flex-wrap gap-1">
+                    {(item.roles || []).map((r: any) => (
+                      <Badge key={r.id} variant="outline" className="capitalize text-xs">{r.name || r.slug}</Badge>
+                    ))}
+                    {(!item.roles || item.roles.length === 0) && (
+                      <Badge variant="outline" className="capitalize text-xs">customer</Badge>
+                    )}
+                  </div>,
+                  <Badge key="verified" variant={item.verification_level === "verified_business" ? "default" : "secondary"} className="text-xs">
+                    {item.verification_level?.replace("_", " ") || "basic"}
+                  </Badge>,
+                  <Badge key="active" variant={item.is_active ? "default" : "secondary"} className="text-xs">
+                    {item.is_active ? "Active" : "Disabled"}
+                  </Badge>,
+                  <div key="actions" className="flex justify-end gap-1.5 flex-wrap">
+                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => runAction(`verify-user-${item.id}`, () => api.patch(`/admin/users/${item.id}/verify`))}>
+                      <ShieldCheck className="h-3 w-3 mr-1" />{item.is_verified ? "Unverify" : "Verify"}
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => runAction(`active-user-${item.id}`, () => api.patch(`/admin/users/${item.id}/toggle-active`))}>
+                    <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => runAction(`active-user-${item.id}`, () => api.patch(`/admin/users/${item.id}/toggle-active`))}>
+                      {item.is_active ? <XCircle className="h-3 w-3 mr-1" /> : <CheckCircle className="h-3 w-3 mr-1" />}
                       {item.is_active ? "Disable" : "Enable"}
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs text-red-600 border-red-200 hover:bg-red-50"
+                      disabled={busyId === `delete-user-${item.id}`}
+                      onClick={() => {
+                        if (!confirm(`Permanently delete ${item.name}? This cannot be undone.`)) return;
+                        runAction(`delete-user-${item.id}`, () => api.delete(`/admin/users/${item.id}`));
+                      }}
+                    >
+                      Delete
                     </Button>
                   </div>,
                 ])}

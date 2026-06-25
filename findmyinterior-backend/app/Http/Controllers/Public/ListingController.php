@@ -42,6 +42,9 @@ class ListingController extends Controller
         if ($request->filled('min_rating')) {
             $query->where('avg_rating', '>=', $request->min_rating);
         }
+        if ($request->filled('budget') && $request->budget !== 'All Budget') {
+            $query->where('budget_tier', $request->budget);
+        }
 
         // Join users table to sort by trust metrics
         $query->join('users', 'users.id', '=', 'listings.user_id')
@@ -56,6 +59,7 @@ class ListingController extends Controller
                 ->orderByRaw('CASE WHEN listings.sponsored_until > CURRENT_TIMESTAMP THEN 1 ELSE 0 END DESC')
                 ->orderByDesc('listings.sponsored_rank')
                 ->orderByDesc('listings.is_featured')
+                ->orderByDesc('listings.is_verified')
                 ->orderByDesc('listings.is_premium')
                 ->orderByRaw("
                     CASE users.verification_level

@@ -37,6 +37,7 @@ class WorkerController extends Controller
         }
 
         $workers = $query
+            ->orderByDesc('is_verified')
             ->orderByDesc('is_featured')
             ->orderByDesc('is_available')
             ->orderByDesc('avg_rating')

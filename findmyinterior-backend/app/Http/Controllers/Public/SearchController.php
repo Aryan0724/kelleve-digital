@@ -39,6 +39,7 @@ class SearchController extends Controller
                 Listing::active()
                     ->search($term)
                     ->with(['category'])
+                    ->orderByDesc('is_verified')
                     ->take(8)
                     ->get()
             );
@@ -48,6 +49,7 @@ class SearchController extends Controller
             $results['workers'] = WorkerResource::collection(
                 Worker::active()
                     ->search($term)
+                    ->orderByDesc('is_verified')
                     ->take(6)
                     ->get()
             );
@@ -57,6 +59,7 @@ class SearchController extends Controller
             $results['builders'] = BuilderResource::collection(
                 Builder::active()
                     ->where('company_name', 'LIKE', "%{$term}%")
+                    ->orderByDesc('is_verified')
                     ->take(4)
                     ->get()
             );
@@ -66,6 +69,7 @@ class SearchController extends Controller
             $results['suppliers'] = SupplierResource::collection(
                 Supplier::active()
                     ->where('company_name', 'LIKE', "%{$term}%")
+                    ->orderByDesc('is_verified')
                     ->take(4)
                     ->get()
             );

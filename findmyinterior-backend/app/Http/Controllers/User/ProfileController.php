@@ -27,6 +27,33 @@ class ProfileController extends Controller
     }
 
     /**
+     * POST /api/v1/user/avatar
+     * Upload and store a profile picture.
+     */
+    public function uploadAvatar(Request $request): JsonResponse
+    {
+        $request->validate([
+            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
+        ]);
+
+        $user = $request->user();
+        $file = $request->file('avatar');
+        $filename = 'avatar_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+
+        // Store in public/avatars — served statically by Laravel
+        $path = $file->storeAs('avatars', $filename, 'public');
+        $url  = asset('storage/' . $path);
+
+        $user->update(['avatar' => $url]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Avatar updated.',
+            'avatar'  => $url,
+        ]);
+    }
+
+    /**
      * PUT /api/v1/user/profile
      */
     public function update(Request $request): JsonResponse

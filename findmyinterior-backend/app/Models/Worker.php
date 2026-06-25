@@ -83,7 +83,11 @@ class Worker extends Model
 
     public function scopeSearch($query, string $term)
     {
-        return $query->whereFullText(['name', 'skill', 'bio'], $term);
+        return $query->where(function ($q) use ($term) {
+            $q->where('name', 'like', "%{$term}%")
+              ->orWhere('skill', 'like', "%{$term}%")
+              ->orWhere('bio', 'like', "%{$term}%");
+        });
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────

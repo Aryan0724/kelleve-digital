@@ -105,6 +105,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         Route::get('profile', [ProfileController::class, 'show']);
         Route::put('profile', [ProfileController::class, 'update']);
+        Route::post('avatar', [ProfileController::class, 'uploadAvatar']);
         Route::put('change-password', [ProfileController::class, 'changePassword']);
         
         // Listing management for businesses
@@ -210,6 +211,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('users', [AdminController::class, 'users']);
         Route::patch('users/{id}/toggle-active', [AdminController::class, 'toggleUserActive']);
         Route::patch('users/{id}/verify', [AdminController::class, 'verifyUser']);
+        Route::delete('users/{id}', [AdminController::class, 'deleteUser']);
+        Route::delete('users/mock/purge', [AdminController::class, 'purgeMockUsers']);
         
         Route::get('listings', [AdminController::class, 'listings']);
         Route::patch('listings/{id}/verify', [AdminController::class, 'verifyListing']);
