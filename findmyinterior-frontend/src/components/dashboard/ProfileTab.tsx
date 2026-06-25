@@ -70,8 +70,13 @@ export function ProfileTab() {
       }
       alert("Profile updated successfully!");
       fetchData();
-    } catch (e) {
-      alert("Failed to update profile.");
+    } catch (e: any) {
+      if (e.response?.data?.errors) {
+        const errorMessages = Object.values(e.response.data.errors).flat().join("\\n");
+        alert(`Validation Error:\\n${errorMessages}`);
+      } else {
+        alert(e.response?.data?.message || "Failed to update profile.");
+      }
     } finally {
       setSaving(false);
     }
