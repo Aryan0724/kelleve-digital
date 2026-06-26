@@ -7,11 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, MessageSquare, Search, Gavel, CheckCircle2, User, LogOut, ShieldCheck, Briefcase } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
-import { ProfileTab } from "@/components/dashboard/ProfileTab";
+import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
-import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -75,14 +74,13 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
                 {renderSidebarButton("won_projects", <CheckCircle2 className="h-5 w-5" />, "Active & Completed Jobs")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification & Trust")}
-                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Worker Profile")}
+                                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Complete Profile")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} />
+            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} />}
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             {activeTab === 'unlocked_leads' && <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />}
             
@@ -94,10 +92,9 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
               <MyBidsTab bids={data?.submitted_bids || []} title="My Jobs" showAwardedOnly={true} />
             )}
 
-            {activeTab === 'profile' && <ProfileTab />}
+            {activeTab === 'profile' && <CompleteProfileTab />}
 
-            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
-
+            
             {activeTab === 'messages' && (
               <Card>
                 <CardContent className="py-16 text-center">

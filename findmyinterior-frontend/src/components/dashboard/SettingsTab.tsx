@@ -9,7 +9,7 @@ import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
 export function SettingsTab() {
-  const { user, setUser } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: user?.name || "",
@@ -27,7 +27,7 @@ export function SettingsTab() {
     setLoading(true);
     try {
       const res = await api.put("/user/profile", formData);
-      setUser(res.data.user);
+      updateUser(res.data.user);
       alert("Profile updated successfully!");
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to update profile.");

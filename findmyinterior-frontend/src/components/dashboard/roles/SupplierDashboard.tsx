@@ -8,11 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { Search, Gavel, CheckCircle2, MessageSquare, Wallet, User, LogOut, Package, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { WalletTab } from "@/components/dashboard/WalletTab";
-import { ProfileTab } from "@/components/dashboard/ProfileTab";
+import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
-import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 
@@ -97,14 +96,13 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("orders", <CheckCircle2 className="h-5 w-5" />, "Orders")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification & Trust")}
-                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Product Catalogue")}
+                                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Complete Profile")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} />
+            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} />}
             {activeTab === 'available_leads' && (
               isUnverified ? (
                 <div className="space-y-6 relative">
@@ -131,9 +129,8 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
             {activeTab === 'wallet' && <WalletTab />}
 
-            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
-
-            {activeTab === 'profile' && <ProfileTab />}
+            
+            {activeTab === 'profile' && <CompleteProfileTab />}
 
             {activeTab === 'messages' && (
               <Card>

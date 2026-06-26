@@ -28,7 +28,7 @@ const ROLE_CONFIG: Record<string, {
     icon: Paintbrush,
     color: "from-violet-900 to-indigo-900",
     ctas: [
-      { label: "Browse All Projects", href: "/requirements", primary: true },
+      { label: "Browse All Projects", href: "/dashboard", primary: true },
       { label: "Go to Dashboard", href: "/dashboard" },
     ],
     feedTitle: "Open Interior Design Projects",
@@ -40,7 +40,7 @@ const ROLE_CONFIG: Record<string, {
     icon: Paintbrush,
     color: "from-violet-900 to-indigo-900",
     ctas: [
-      { label: "Browse All Projects", href: "/requirements", primary: true },
+      { label: "Browse All Projects", href: "/dashboard", primary: true },
       { label: "Go to Dashboard", href: "/dashboard" },
     ],
     feedTitle: "Open Interior Projects",
@@ -52,8 +52,8 @@ const ROLE_CONFIG: Record<string, {
     icon: HardHat,
     color: "from-orange-900 to-amber-800",
     ctas: [
-      { label: "View Open Projects", href: "/requirements", primary: true },
-      { label: "My Dashboard", href: "/dashboard" },
+      { label: "View Open Projects", href: "/dashboard", primary: true },
+      { label: "My Workspace", href: "/dashboard" },
     ],
     feedTitle: "Open Construction & Renovation Projects",
     feedEmptyText: "No open projects in your area right now.",
@@ -64,8 +64,8 @@ const ROLE_CONFIG: Record<string, {
     icon: Building,
     color: "from-slate-800 to-slate-700",
     ctas: [
-      { label: "View Projects", href: "/requirements", primary: true },
-      { label: "My Dashboard", href: "/dashboard" },
+      { label: "View Projects", href: "/dashboard", primary: true },
+      { label: "My Workspace", href: "/dashboard" },
     ],
     feedTitle: "Open Architecture Projects",
     feedEmptyText: "No open projects right now.",
@@ -76,7 +76,7 @@ const ROLE_CONFIG: Record<string, {
     icon: Building,
     color: "from-blue-900 to-blue-800",
     ctas: [
-      { label: "View Requirements", href: "/requirements", primary: true },
+      { label: "View Requirements", href: "/dashboard", primary: true },
       { label: "My Portal", href: "/dashboard" },
     ],
     feedTitle: "Open Building Requirements",
@@ -88,7 +88,7 @@ const ROLE_CONFIG: Record<string, {
     icon: Truck,
     color: "from-green-900 to-emerald-800",
     ctas: [
-      { label: "Browse Open RFQs", href: "/requirements", primary: true },
+      { label: "Browse Open RFQs", href: "/dashboard", primary: true },
       { label: "My Dashboard", href: "/dashboard" },
     ],
     feedTitle: "Open Material RFQs",
@@ -100,7 +100,7 @@ const ROLE_CONFIG: Record<string, {
     icon: Truck,
     color: "from-green-900 to-emerald-800",
     ctas: [
-      { label: "Browse Open RFQs", href: "/requirements", primary: true },
+      { label: "Browse Open RFQs", href: "/dashboard", primary: true },
       { label: "My Dashboard", href: "/dashboard" },
     ],
     feedTitle: "Open Material RFQs",
@@ -358,7 +358,7 @@ export function RoleBasedHomepage() {
 
           <div className="flex items-center justify-between mb-4">
             <h3 className="text-base font-bold text-slate-800">{config.feedTitle}</h3>
-            <Link href="/requirements" className="text-sm text-orange-600 font-semibold hover:text-orange-700 flex items-center gap-1">
+            <Link href="/dashboard" className="text-sm text-orange-600 font-semibold hover:text-orange-700 flex items-center gap-1">
               View All <ChevronRight className="w-4 h-4" />
             </Link>
           </div>
