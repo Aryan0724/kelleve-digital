@@ -5,8 +5,10 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User as UserIcon, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { SettingsTab } from "@/components/dashboard/SettingsTab";
+import { VerificationTab } from "@/components/dashboard/VerificationTab";
 
 export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -66,6 +68,8 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 {renderSidebarButton("bids_received", <Gavel className="h-5 w-5" />, "Received Bids")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("saved", <Star className="h-5 w-5" />, "Saved Professionals")}
+                {renderSidebarButton("profile", <UserIcon className="h-5 w-5" />, "My Profile")}
+                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
               </div>
             </div>
           </div>
@@ -210,6 +214,9 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 </CardContent>
               </Card>
             )}
+
+            {activeTab === 'profile' && <SettingsTab />}
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
           </div>
         </div>
       </div>

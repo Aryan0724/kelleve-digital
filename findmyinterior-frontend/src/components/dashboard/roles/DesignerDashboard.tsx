@@ -8,11 +8,10 @@ import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { WalletTab } from "@/components/dashboard/WalletTab";
-import { ProfileTab } from "@/components/dashboard/ProfileTab";
+import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
-import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 
@@ -99,14 +98,13 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification & Trust")}
-                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Portfolio")}
+                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Complete Profile")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} />
+            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} />}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card>
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
@@ -147,9 +145,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
             {activeTab === 'wallet' && <WalletTab />}
 
-            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
-
-            {activeTab === 'profile' && <ProfileTab />}
+            {activeTab === 'profile' && <CompleteProfileTab />}
 
             {activeTab === 'messages' && (
               <Card>
