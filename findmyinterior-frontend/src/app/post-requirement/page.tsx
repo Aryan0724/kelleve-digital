@@ -307,7 +307,7 @@ export default function PostRequirementPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="skill_required">Skill Required</Label>
-                      <Select value={formData.skill_required} onValueChange={(v) => setFormData({...formData, skill_required: v})}>
+                      <Select value={formData.skill_required || ""} onValueChange={(v) => setFormData({...formData, skill_required: v || ""})}>
                         <SelectTrigger id="skill_required">
                           <SelectValue placeholder="Select a skill" />
                         </SelectTrigger>
