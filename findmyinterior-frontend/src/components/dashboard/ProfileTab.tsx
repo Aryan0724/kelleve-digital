@@ -42,9 +42,7 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
     try {
       const form = new FormData();
       form.append("avatar", file);
-      const res = await api.post("/user/avatar", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await api.post("/user/avatar", form);
       // Update global user store
       if (user) updateUser({ ...user, avatar: res.data.avatar });
       setPreview(res.data.avatar);

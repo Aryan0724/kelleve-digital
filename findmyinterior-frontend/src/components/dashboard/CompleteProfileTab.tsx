@@ -41,9 +41,7 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
     try {
       const form = new FormData();
       form.append("avatar", file);
-      const res = await api.post("/user/avatar", form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const res = await api.post("/user/avatar", form);
       if (user) updateUser({ ...user, avatar: res.data.avatar });
       setPreview(res.data.avatar);
       setSuccess(true);
@@ -347,9 +345,7 @@ export function CompleteProfileTab() {
     form.append("document_type", docType);
 
     try {
-      await api.post("/verification/upload", form, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
+      await api.post("/verification/upload", form);
       alert("Document uploaded successfully and is pending review.");
       fetchData();
     } catch (err: any) {
