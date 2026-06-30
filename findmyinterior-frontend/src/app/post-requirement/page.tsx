@@ -64,6 +64,7 @@ export default function PostRequirementPage() {
     project_scale: "",
     project_location: ""
   });
+  const [imageFile, setImageFile] = useState<File | null>(null);
 
   useEffect(() => {
     setMounted(true);
@@ -141,7 +142,22 @@ export default function PostRequirementPage() {
       if (oppDef.type === 'rfqs') endpoint = `/rfqs`;
       if (oppDef.type === 'worker-jobs') endpoint = `/worker-jobs`;
 
-      await api.post(endpoint, payload);
+      const formDataPayload = new FormData();
+      Object.keys(payload).forEach(key => {
+        if (payload[key] !== undefined && payload[key] !== null) {
+          formDataPayload.append(key, payload[key]);
+        }
+      });
+
+      if (imageFile) {
+        formDataPayload.append('image', imageFile);
+      }
+
+      await api.post(endpoint, formDataPayload, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      });
       const oppDefSearch = OPPORTUNITY_TYPES.find(t => t.id === selectedType);
       router.push(`/professionals?search=${encodeURIComponent(oppDefSearch?.label || '')}`);
 
@@ -182,6 +198,8 @@ export default function PostRequirementPage() {
                   <p className="text-sm text-slate-500">Post a request for {opp.label.toLowerCase()}</p>
                 </div>
               ))}
+
+
             </div>
           )}
 
@@ -289,7 +307,23 @@ export default function PostRequirementPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="skill_required">Skill Required</Label>
-                      <Input id="skill_required" placeholder="e.g. Electrician, Painter" value={formData.skill_required} onChange={(e) => setFormData({...formData, skill_required: e.target.value})} />
+                      <Select value={formData.skill_required} onValueChange={(v) => setFormData({...formData, skill_required: v})}>
+                        <SelectTrigger id="skill_required">
+                          <SelectValue placeholder="Select a skill" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Electrician">Electrician</SelectItem>
+                          <SelectItem value="Plumber">Plumber</SelectItem>
+                          <SelectItem value="Carpenter">Carpenter</SelectItem>
+                          <SelectItem value="Painter">Painter</SelectItem>
+                          <SelectItem value="Mason">Mason</SelectItem>
+                          <SelectItem value="HVAC Technician">HVAC Technician</SelectItem>
+                          <SelectItem value="Welder">Welder</SelectItem>
+                          <SelectItem value="Tiler">Tiler</SelectItem>
+                          <SelectItem value="General Helper">General Helper</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="number_of_workers">Number of Workers</Label>
@@ -347,6 +381,22 @@ export default function PostRequirementPage() {
                   <Label htmlFor="district">District / Area</Label>
                   <Input required id="district" value={formData.district} onChange={(e) => setFormData({...formData, district: e.target.value})} />
                 </div>
+              </div>
+
+              {/* Image Upload for all types */}
+              <div className="space-y-2 mt-6 p-4 border rounded-lg bg-slate-50">
+                <Label htmlFor="image" className="font-semibold text-slate-700 block mb-1">Add a Photo (Optional)</Label>
+                <span className="text-sm text-slate-500 block mb-2">Upload a photo to give professionals a better idea of what you need.</span>
+                <Input 
+                  id="image" 
+                  type="file" 
+                  accept="image/*"
+                  onChange={(e) => {
+                    if (e.target.files && e.target.files.length > 0) {
+                      setImageFile(e.target.files[0]);
+                    }
+                  }} 
+                />
               </div>
             </div>
           )}
