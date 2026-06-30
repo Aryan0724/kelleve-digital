@@ -36,6 +36,7 @@ export default function CompareBidsPage() {
   const [error, setError] = useState("");
   
   const [selectedBid, setSelectedBid] = useState<number | null>(null);
+  const [messaging, setMessaging] = useState<number | null>(null);
 
   const fetchBids = async () => {
     try {
