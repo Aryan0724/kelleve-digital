@@ -49,6 +49,14 @@ class JobController extends Controller
             'status' => 'open'
         ]);
 
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = 'job_' . $job->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('requirements', $filename, 'public');
+            $job->image = asset('storage/' . $path);
+            $job->save();
+        }
+
         return response()->json(['status' => 'success', 'data' => $job], 201);
     }
 

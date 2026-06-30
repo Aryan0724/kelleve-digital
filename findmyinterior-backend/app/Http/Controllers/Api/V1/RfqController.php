@@ -50,6 +50,14 @@ class RfqController extends Controller
             'status' => 'open'
         ]);
 
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+            $filename = 'rfq_' . $rfq->id . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $path = $file->storeAs('requirements', $filename, 'public');
+            $rfq->image = asset('storage/' . $path);
+            $rfq->save();
+        }
+
         return response()->json(['status' => 'success', 'data' => $rfq], 201);
     }
 
