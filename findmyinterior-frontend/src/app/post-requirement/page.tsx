@@ -159,6 +159,7 @@ export default function PostRequirementPage() {
         }
       });
       const oppDefSearch = OPPORTUNITY_TYPES.find(t => t.id === selectedType);
+      alert("Opportunity posted successfully!");
       router.push(`/professionals?search=${encodeURIComponent(oppDefSearch?.label || '')}`);
 
     } catch (err: any) {
