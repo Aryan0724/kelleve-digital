@@ -66,14 +66,20 @@ class BidService
         $data['status'] = 'pending';
         
         return DB::transaction(function () use ($data) {
-            $bid = Bid::create($data);
+            $bid = Bid::updateOrCreate(
+                [
+                    'requirement_id'   => $data['requirement_id'],
+                    'professional_id'  => $data['professional_id'],
+                ],
+                $data
+            );
             
             // Emit Event
             event(new \App\Events\BidSubmitted($bid));
             
             // Log to activity timeline
             DB::table('activity_logs')->insert([
-                'subject_type' => 'App\\Models\\Requirement',
+                'subject_type' => $data['requirement_type_class'] ?? 'App\\Models\\Requirement',
                 'subject_id' => $data['requirement_id'],
                 'user_id' => $data['professional_id'],
                 'event_type' => 'Bid Submitted',
@@ -83,7 +89,8 @@ class BidService
             ]);
             
             // Notify Customer
-            $requirement = Requirement::find($data['requirement_id']);
+            $modelClass = $data['requirement_type_class'] ?? 'App\\Models\\Requirement';
+            $requirement = $modelClass::find($data['requirement_id']);
             if ($requirement && $requirement->user_id) {
                 $customer = User::find($requirement->user_id);
                 if ($customer) {
@@ -98,7 +105,13 @@ class BidService
 
             // Update Requirement Status if it's open
             if ($requirement && $requirement->status === 'open') {
-                $requirement->update(['status' => 'bidding']);
+                if ($modelClass === 'App\\Models\\Requirement') {
+                    $requirement->update(['status' => 'bidding']);
+                } else if ($modelClass === 'App\\Models\\Rfq') {
+                    $requirement->update(['status' => 'receiving_quotes']);
+                } else if ($modelClass === 'App\\Models\\WorkerJob') {
+                    $requirement->update(['status' => 'receiving_applications']);
+                }
             }
             
             return $bid;
@@ -131,7 +144,7 @@ class BidService
             
             // Log Timeline
             DB::table('activity_logs')->insert([
-                'subject_type' => 'App\\Models\\Requirement',
+                'subject_type' => $requirement->getMorphClass(),
                 'subject_id' => $requirement->id,
                 'user_id' => $customer->id,
                 'event_type' => 'Bid Shortlisted',
@@ -159,43 +172,61 @@ class BidService
             
             // Mark all other bids as rejected
             Bid::where('requirement_id', $bid->requirement_id)
+                ->where('requirement_type', $bid->requirement_type)
                 ->where('id', '!=', $bid->id)
                 ->update(['status' => 'rejected']);
             
             $requirement = $bid->requirement;
-            $requirement->update(['status' => 'awarded']);
             
-            // Create the Project Record
-            $project = Project::create([
-                'requirement_id' => $requirement->id,
-                'winning_bid_id' => $bid->id,
-                'client_id' => $customer->id,
-                'professional_id' => $bid->professional_id,
-                'status' => 'awarded',
-                'started_at' => now(),
-            ]);
+            // Update the requirement model based on its type
+            if ($requirement instanceof \App\Models\Project || $requirement instanceof \App\Models\Requirement) {
+                $requirement->update([
+                    'status' => 'awarded',
+                    'winning_bid_id' => $bid->id,
+                    'professional_id' => $bid->professional_id,
+                    'started_at' => now(),
+                ]);
+            } else if ($requirement instanceof \App\Models\Rfq) {
+                $requirement->update([
+                    'status' => 'awarded',
+                    'winning_quote_id' => $bid->id,
+                    'supplier_id' => $bid->professional_id,
+                ]);
+            } else if ($requirement instanceof \App\Models\WorkerJob) {
+                $requirement->update([
+                    'status' => 'awarded',
+                    'winning_application_id' => $bid->id,
+                    'worker_id' => $bid->professional_id,
+                ]);
+            }
             
-            // 5. Create Conversation
-            $conversation = \App\Models\Conversation::create([
-                'project_id' => $project->id,
-                'customer_id' => $project->client_id,
-                'vendor_id' => $project->professional_id,
-                'status' => 'active',
-                'project_stage' => 'awarded',
-                'unlocked_at' => now(),
-            ]);
+            // 5. Create or retrieve Conversation (safe upsert to avoid unique constraint crashes)
+            $morphType = class_basename($requirement);
+            \App\Models\Conversation::updateOrCreate(
+                [
+                    'project_id'  => $requirement->id,
+                    'customer_id' => $requirement->user_id,
+                    'vendor_id'   => $bid->professional_id,
+                ],
+                [
+                    'project_type'  => $morphType,
+                    'status'        => 'active',
+                    'project_stage' => 'awarded',
+                    'unlocked_at'   => now(),
+                ]
+            );
             
             // Notify Professional via Event
-            event(new \App\Events\ProjectAwarded($project));
+            event(new \App\Events\ProjectAwarded($requirement));
             
             // Log Timeline to new activity_logs
             DB::table('activity_logs')->insert([
                 'user_id' => $customer->id,
-                'subject_type' => 'App\\Models\\Requirement',
+                'subject_type' => $requirement->getMorphClass(),
                 'subject_id' => $requirement->id,
                 'event_type' => 'Project Awarded',
                 'description' => "Customer awarded the project to " . ($bid->company_name ?? 'a professional') . ".",
-                'properties' => json_encode(['bid_id' => $bid->id, 'project_id' => $project->id]),
+                'properties' => json_encode(['bid_id' => $bid->id, 'project_id' => $requirement->id]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -207,40 +238,40 @@ class BidService
     /**
      * Mark a requirement as completed
      */
-    public function completeRequirement(Requirement $requirement, User $customer): bool
+    public function completeRequirement($requirement, User $customer): bool
     {
         return DB::transaction(function () use ($requirement, $customer) {
-            $requirement->update(['status' => 'completed']);
+            // Update the requirement based on type
+            if ($requirement instanceof \App\Models\Project || $requirement instanceof \App\Models\Requirement) {
+                $requirement->update(['status' => 'completed', 'completed_at' => now()]);
+            } else if ($requirement instanceof \App\Models\Rfq) {
+                $requirement->update(['status' => 'fulfilled']);
+            } else if ($requirement instanceof \App\Models\WorkerJob) {
+                $requirement->update(['status' => 'completed']);
+            }
             
             // Update the awarded bid
             $awardedBid = Bid::where('requirement_id', $requirement->id)
-                ->where('status', 'awarded')
+                ->where('requirement_type', class_basename($requirement))
+                ->where('status', 'accepted')
                 ->first();
                 
             if ($awardedBid) {
                 $awardedBid->update(['status' => 'completed']);
                 
-                // Update the project
-                \App\Models\Project::where('winning_bid_id', $awardedBid->id)
-                    ->update(['status' => 'completed', 'completed_at' => now()]);
-                
                 // Update vendor metrics (projects completed)
                 $vendorMetric = \App\Models\VendorMetric::firstOrCreate(
-                    ['user_id' => $awardedBid->professional_id],
-                    ['response_rate' => 100, 'avg_rating' => 5.0, 'total_reviews' => 0, 'projects_completed' => 0]
+                    ['vendor_id' => $awardedBid->professional_id],
+                    ['response_count' => 0, 'review_count' => 0, 'projects_completed' => 0]
                 );
                 $vendorMetric->increment('projects_completed');
                 
-                // Get project to emit event
-                $project = \App\Models\Project::where('winning_bid_id', $awardedBid->id)->first();
-                if ($project) {
-                    event(new \App\Events\ProjectCompleted($project));
-                }
+                event(new \App\Events\ProjectCompleted($requirement));
             }
             
             // Log Timeline
             DB::table('activity_logs')->insert([
-                'subject_type' => 'App\\Models\\Requirement',
+                'subject_type' => $requirement->getMorphClass(),
                 'subject_id' => $requirement->id,
                 'user_id' => $customer->id,
                 'event_type' => 'Project Completed',

@@ -24,6 +24,10 @@ class RfqController extends Controller
             'district' => 'required|string',
             'opportunity_type' => 'required|string',
             'requirement_type' => 'required|string',
+            'budget' => 'nullable|numeric',
+            'quantity' => 'nullable|string',
+            'material_type' => 'nullable|string',
+            'delivery_location' => 'nullable|string',
         ]);
 
         $oppType = OpportunityType::where('type', $validated['requirement_type'])->first();
@@ -36,6 +40,11 @@ class RfqController extends Controller
             'district' => $validated['district'],
             'opportunity_type' => $validated['opportunity_type'],
             'requirement_type' => $validated['requirement_type'],
+            'budget_min' => $validated['budget'] ?? null,
+            'budget_max' => $validated['budget'] ?? null,
+            'quantity' => $validated['quantity'] ?? null,
+            'material_type' => $validated['material_type'] ?? null,
+            'delivery_location' => $validated['delivery_location'] ?? $validated['city'],
             'creator_role' => Auth::check() ? Auth::user()->roles->first()->slug ?? 'homeowner' : 'homeowner',
             'target_roles' => $oppType ? $oppType->target_roles : ['supplier'],
             'status' => 'open'

@@ -39,7 +39,10 @@ export default function CompareBidsPage() {
 
   const fetchBids = async () => {
     try {
-      const res = await api.get(`/requirements/${reqId}/bids/compare`);
+      const searchParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+      const rType = searchParams.get("requirement_type") || "";
+      const typeStr = rType ? `?requirement_type=${rType}` : '';
+      const res = await api.get(`/requirements/${reqId}/bids/compare${typeStr}`);
       setBids(res.data.comparison_matrix);
     } catch (err: any) {
       console.error(err);
@@ -49,12 +52,14 @@ export default function CompareBidsPage() {
     }
   };
 
-  const [messaging, setMessaging] = useState<number | null>(null);
+  const searchParams = new URLSearchParams(typeof window !== "undefined" ? window.location.search : "");
+  const reqType = searchParams.get("requirement_type") || "";
 
   const handleMessage = async (vendorId: number) => {
     setMessaging(vendorId);
     try {
-      const res = await api.post(`/requirements/${reqId}/conversations`, { vendor_id: vendorId });
+      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+      const res = await api.post(`/requirements/${reqId}/conversations${typeStr}`, { vendor_id: vendorId });
       router.push(`/messages/${res.data.id}`);
     } catch (err: any) {
       console.error(err);

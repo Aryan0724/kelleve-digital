@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->integer('daily_notification_limit')->default(10)->after('status');
+            $table->integer('daily_notification_limit')->default(10)->after('is_active');
         });
     }
 

@@ -105,9 +105,96 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                 </div>
               </div>
 
-              <div className="prose max-w-none">
+              <div className="prose max-w-none mb-6">
                 <h3 className="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">About Us</h3>
                 <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">{listing.description}</p>
+              </div>
+              
+              {/* Advanced Fields */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t">
+                {/* Business Specific Details */}
+                {['builder', 'supplier', 'material_supplier'].includes(listing.category?.slug) && (
+                  <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
+                    {listing.years_experience > 0 && (
+                      <div>
+                        <div className="text-xs text-slate-500 font-semibold mb-1">Established</div>
+                        <div className="text-sm font-bold text-slate-900">{new Date().getFullYear() - listing.years_experience} ({listing.years_experience} Years)</div>
+                      </div>
+                    )}
+                    {listing.team_size && (
+                      <div>
+                        <div className="text-xs text-slate-500 font-semibold mb-1">Company Size</div>
+                        <div className="text-sm font-bold text-slate-900">{listing.team_size} Employees</div>
+                      </div>
+                    )}
+                    {listing.gst_number && (
+                      <div>
+                        <div className="text-xs text-slate-500 font-semibold mb-1">GSTIN</div>
+                        <div className="text-sm font-bold text-slate-900">{listing.gst_number}</div>
+                      </div>
+                    )}
+                    {listing.budget_tier && (
+                      <div>
+                        <div className="text-xs text-slate-500 font-semibold mb-1">Pricing Tier</div>
+                        <div className="text-sm font-bold text-slate-900">{listing.budget_tier}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {listing.services && listing.services.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                      {['supplier', 'material_supplier'].includes(listing.category?.slug) ? 'Product Categories' : 'Services Offered'}
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {listing.services.map((svc: string, i: number) => (
+                        <span key={i} className="px-3 py-1 bg-slate-100 text-slate-700 text-xs rounded-full font-medium">{svc}</span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+                
+                {listing.achievements && listing.achievements.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900 mb-3">
+                      {['builder'].includes(listing.category?.slug) ? 'Completed Projects' : 'Key Achievements'}
+                    </h3>
+                    <ul className="list-disc pl-4 space-y-1">
+                      {listing.achievements.map((ach: string, i: number) => (
+                        <li key={i} className="text-sm text-slate-600">{ach}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+                
+                {listing.languages && listing.languages.length > 0 && !['supplier', 'material_supplier'].includes(listing.category?.slug) && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-slate-900 mb-3">Languages Spoken</h3>
+                    <div className="text-sm text-slate-600">
+                      {listing.languages.join(", ")}
+                    </div>
+                  </div>
+                )}
+                
+                {(listing.availability || listing.response_time) && (
+                  <div className="space-y-3">
+                    {listing.availability && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-slate-900 mb-1">
+                          {['supplier', 'material_supplier'].includes(listing.category?.slug) ? 'Supply Capacity' : 'Availability'}
+                        </h3>
+                        <div className="text-sm text-slate-600">{listing.availability}</div>
+                      </div>
+                    )}
+                    {listing.response_time && (
+                      <div>
+                        <h3 className="text-sm font-semibold text-slate-900 mb-1">Typical Response Time</h3>
+                        <div className="text-sm text-slate-600">{listing.response_time}</div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
             </div>
 
@@ -126,7 +213,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
             )}
 
             {/* Reviews Section */}
-            <ReviewSection reviews={listing.reviews || []} reviewableType="listing" reviewableId={listing.id} />
+            <ReviewSection reviews={listing.reviews || []} reviewableType="listing" reviewableId={listing.id} professionalId={listing.user_id} />
           </div>
 
           {/* Sidebar Area */}

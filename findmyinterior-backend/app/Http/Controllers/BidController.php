@@ -106,7 +106,7 @@ class BidController extends Controller
      */
     public function myBids(Request $request): JsonResponse
     {
-        $bids = Bid::with('requirement.city', 'requirement.category')
+        $bids = Bid::with('requirement.category')
                    ->where('professional_id', Auth::id())
                    ->latest()
                    ->get();

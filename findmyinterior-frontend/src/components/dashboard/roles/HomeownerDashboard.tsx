@@ -9,11 +9,15 @@ import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User as UserIcon, 
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
+import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
+import Link from "next/link";
 
 export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = () => {
     logout();
@@ -54,8 +58,11 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
           <div className="lg:col-span-1 space-y-4">
             <Card>
               <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400">
-                  {user?.name?.charAt(0)}
+                <div className="h-20 w-20 rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
+                  {user?.avatar
+                    ? <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
+                    : <span>{user?.name?.charAt(0)}</span>
+                  }
                 </div>
                 <h3 className="font-bold text-lg">{user?.name}</h3>
                 <Badge className="mt-2 capitalize mb-4" variant="secondary">Homeowner</Badge>
@@ -64,70 +71,225 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
 
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
-                {renderSidebarButton("overview", <LayoutDashboard className="h-5 w-5" />, "My Projects")}
-                {renderSidebarButton("bids_received", <Gavel className="h-5 w-5" />, "Received Bids")}
+                {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
+                {renderSidebarButton("projects", <LayoutDashboard className="h-5 w-5" />, "My Projects")}
+                {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Bids")}
+                {renderSidebarButton("shortlisted", <Star className="h-5 w-5" />, "Shortlisted Professionals")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                {renderSidebarButton("saved", <Star className="h-5 w-5" />, "Saved Professionals")}
-                {renderSidebarButton("profile", <UserIcon className="h-5 w-5" />, "My Profile")}
-                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
+                {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
+                {renderSidebarButton("profile", <UserIcon className="h-5 w-5" />, "Profile")}
+                {renderSidebarButton("settings", <UserIcon className="h-5 w-5" />, "Settings")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab === 'overview' && (
+            {activeTab === 'dashboard' && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+                <Card>
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="text-sm font-medium text-slate-500 mb-1">Active Projects</div>
+                    <div className="text-2xl font-bold text-slate-900">{data?.projects?.filter((p:any) => p.status === 'in_progress').length || 0}</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="text-sm font-medium text-slate-500 mb-1">Open Requirements</div>
+                    <div className="text-2xl font-bold text-slate-900">{data?.projects?.filter((p:any) => p.status === 'open').length || 0}</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="text-sm font-medium text-slate-500 mb-1">Received Bids</div>
+                    <div className="text-2xl font-bold text-slate-900">{data?.received_bids?.length || 0}</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="text-sm font-medium text-slate-500 mb-1">Unread Messages</div>
+                    <div className="text-2xl font-bold text-slate-900">{data?.unread_messages || 0}</div>
+                  </CardContent>
+                </Card>
+                <Card>
+                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
+                    <div className="text-sm font-medium text-slate-500 mb-1">Completed Projects</div>
+                    <div className="text-2xl font-bold text-slate-900">{data?.projects?.filter((p:any) => p.status === 'completed').length || 0}</div>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {(activeTab === 'dashboard' || activeTab === 'projects') && (
               <Card>
                 <CardHeader className="flex flex-row justify-between items-center">
                   <CardTitle>My Projects</CardTitle>
                   <Button onClick={() => router.push("/post-requirement")} size="sm" className="bg-orange-600 hover:bg-orange-700">Post New</Button>
                 </CardHeader>
                 <CardContent>
-                  {data?.projects && data.projects.length > 0 ? (
-                    <div className="space-y-4">
-                      {data.projects.map((req: any) => (
-                        <div key={req.id} className="p-4 border rounded-lg bg-slate-50 flex justify-between flex-col md:flex-row gap-4">
-                            <div>
-                              <div className="flex items-start gap-3 mb-2">
-                                <span className="font-semibold text-slate-900">{req.title}</span>
-                                <Badge variant={req.status === 'open' ? 'default' : 'secondary'}>{req.status}</Badge>
+                  {((data?.projects || []).concat(data?.rfqs || []).concat(data?.jobs || [])).length > 0 ? (
+                    <div className="space-y-4 mt-4">
+                      {((data?.projects || []).concat(data?.rfqs || []).concat(data?.jobs || [])).map((req: any) => (
+                        <div key={req.id + (req.material_type ? '-rfq' : req.skill_required ? '-job' : '-proj')} className="flex flex-col md:flex-row justify-between p-4 border rounded-xl hover:shadow-md transition-shadow bg-white">
+                            <div className="flex-1 mb-4 md:mb-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-semibold text-lg text-slate-900">{req.title || req.material_type || req.skill_required}</h4>
+                                <Badge variant="outline" className="bg-slate-100">{req.status}</Badge>
+                                {req.material_type && <Badge variant="secondary">Material RFQ</Badge>}
+                                {req.skill_required && <Badge variant="secondary">Worker Job</Badge>}
                               </div>
-                              <p className="text-slate-600 text-sm line-clamp-2">{req.description}</p>
+                              <div className="text-sm text-slate-500 mb-2 flex items-center gap-4">
+                                <span>{req.city}</span>
+                                <span>•</span>
+                                <span>{req.created_at ? new Date(req.created_at).toLocaleDateString() : 'Recent'}</span>
+                              </div>
+                              <p className="text-slate-600 text-sm line-clamp-2">{req.description || `Required: ${req.quantity || req.number_of_workers}`}</p>
                             </div>
                             <div className="flex flex-col gap-2 shrink-0">
-                              <Button onClick={() => router.push(`/requirements/${req.id}`)} variant="outline">View Detail</Button>
+                              <Button onClick={() => router.push(`/requirements/${req.id}?type=${req._type || 'project'}`)} variant="outline" size="sm">View Detail</Button>
+                              
+                              {(req.status === 'awarded' || req.status === 'in_progress') && (
+                                <Button 
+                                  size="sm" 
+                                  className="bg-green-600 hover:bg-green-700"
+                                  onClick={async () => {
+                                    try {
+                                      const reqType = req._type || 'project';
+                                      await import('@/lib/api').then(m => m.default.patch(`/requirements/${req.id}/complete?requirement_type=${reqType}`));
+                                      alert("Project marked as completed!");
+                                      fetchDashboard();
+                                    } catch (err: any) {
+                                      alert(err.response?.data?.message || "Failed to complete project");
+                                    }
+                                  }}
+                                >
+                                  Mark Completed
+                                </Button>
+                              )}
+                              
+                              {req.status === 'completed' && (
+                                <Button 
+                                  size="sm" 
+                                  className="bg-blue-600 hover:bg-blue-700"
+                                  onClick={() => {
+                                    if(req.professional_id) {
+                                      setReviewModal({ isOpen: true, professionalId: req.professional_id, requirementId: req.id });
+                                    } else {
+                                        alert("Cannot find awarded professional details. Please contact support.");
+                                    }
+                                  }}
+                                >
+                                  Leave Review
+                                </Button>
+                              )}
                             </div>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
-                      <LayoutDashboard className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">No active projects</h3>
-                      <p className="text-slate-500 mb-6 max-w-md mx-auto">
-                        You haven't posted any projects yet.
-                      </p>
+                    <div className="text-center py-12 bg-slate-50 border rounded-lg text-slate-500">
+                      You haven't posted any projects yet.
+                      <div className="mt-4">
+                        <Link href="/post-requirement">
+                          <Button className="bg-orange-600 hover:bg-orange-700">Post a Project</Button>
+                        </Link>
+                      </div>
                     </div>
                   )}
                 </CardContent>
               </Card>
             )}
 
-            {activeTab === 'bids_received' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Received Bids</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  {data?.received_bids && data.received_bids.length > 0 ? (
-                    <div className="space-y-4">
-                      {data.received_bids.map((bid: any) => (
-                        <div key={bid.id} className="p-4 border rounded-lg bg-slate-50">
-                          <div className="flex justify-between items-start mb-2">
-                            <span className="font-semibold text-slate-900">Bid from: {bid.professional?.name || 'Professional'}</span>
-                            <div className="flex gap-2">
-                              <Button 
-                                variant="outline" 
-                                size="sm" 
+            {activeTab === 'bids' && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xl font-bold text-slate-900">Received Bids</h2>
+                  <span className="text-sm text-slate-500">{data?.received_bids?.length || 0} total</span>
+                </div>
+                {data?.received_bids && data.received_bids.length > 0 ? (
+                  <div className="space-y-4">
+                    {data.received_bids.map((bid: any) => (
+                      <div key={bid.id} className="bg-white border rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                        {/* Top bar — which requirement */}
+                        <div className="px-5 py-3 bg-slate-50 border-b flex items-center justify-between gap-2 flex-wrap">
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
+                              bid.requirement_type === 'Skilled Labour Job'
+                                ? 'bg-orange-100 text-orange-700'
+                                : bid.requirement_type === 'RFQ'
+                                  ? 'bg-blue-100 text-blue-700'
+                                  : 'bg-indigo-100 text-indigo-700'
+                            }`}>
+                              {bid.requirement_type}
+                            </span>
+                            <span className="font-semibold text-slate-800 text-sm truncate max-w-xs">
+                              {bid.requirement_title}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <span className={`text-xs font-bold px-2.5 py-1 rounded-full border ${
+                              bid.is_awarded
+                                ? 'bg-green-50 border-green-200 text-green-700'
+                                : bid.status === 'pending'
+                                  ? 'bg-yellow-50 border-yellow-200 text-yellow-700'
+                                  : 'bg-slate-100 border-slate-200 text-slate-600'
+                            }`}>
+                              {bid.is_awarded ? '✓ Awarded' : bid.status}
+                            </span>
+                            <span className="text-xs text-slate-400">{bid.created_at}</span>
+                          </div>
+                        </div>
+
+                        {/* Body */}
+                        <div className="p-5">
+                          <div className="flex items-start gap-4">
+                            {/* Avatar */}
+                            <div className="h-12 w-12 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold text-lg shrink-0 overflow-hidden">
+                              {bid.professional?.avatar
+                                ? <img src={bid.professional.avatar} alt={bid.professional?.name} className="w-full h-full object-cover" />
+                                : bid.professional?.name?.charAt(0) || '?'
+                              }
+                            </div>
+
+                            {/* Info */}
+                            <div className="flex-1 min-w-0">
+                              <div className="font-bold text-slate-900">{bid.professional?.name || 'Professional'}</div>
+                              <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-slate-500 mt-0.5">
+                                {bid.professional?.skill && <span>🔧 {bid.professional.skill}</span>}
+                                {bid.professional?.city && <span>📍 {bid.professional.city}</span>}
+                                {bid.professional?.experience_years && <span>⏱ {bid.professional.experience_years} yrs exp</span>}
+                                {bid.professional?.avg_rating > 0 && <span>⭐ {bid.professional.avg_rating}/5</span>}
+                              </div>
+
+                              {bid.proposal_message && (
+                                <p className="mt-3 text-sm text-slate-600 bg-slate-50 border rounded-lg p-3 leading-relaxed">
+                                  {bid.proposal_message}
+                                </p>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Stats row */}
+                          <div className="mt-4 flex flex-wrap gap-4 pt-4 border-t">
+                            <div className="text-center">
+                              <div className="text-xs text-slate-500 mb-0.5">Bid Amount</div>
+                              <div className="text-lg font-bold text-orange-600">₹{Number(bid.amount || 0).toLocaleString('en-IN')}</div>
+                            </div>
+                            {bid.timeline_days && (
+                              <div className="text-center">
+                                <div className="text-xs text-slate-500 mb-0.5">Timeline</div>
+                                <div className="font-semibold text-slate-800">{bid.timeline_days} days</div>
+                              </div>
+                            )}
+                            {bid.smart_bid_score > 0 && (
+                              <div className="text-center">
+                                <div className="text-xs text-slate-500 mb-0.5">Smart Score</div>
+                                <div className="font-semibold text-indigo-600">{bid.smart_bid_score} / 100</div>
+                              </div>
+                            )}
+                            <div className="ml-auto flex gap-2 items-end flex-wrap">
+                              <Button
+                                variant="outline"
+                                size="sm"
                                 onClick={async () => {
                                   try {
                                     await import('@/lib/api').then(m => m.default.post('/shortlists', { professional_id: bid.professional?.id }));
@@ -138,42 +300,43 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                                   }
                                 }}
                               >
-                                Shortlist
+                                ★ Shortlist
                               </Button>
-                              <Button size="sm" className="bg-orange-600 hover:bg-orange-700">Award Project</Button>
+                              {!bid.is_awarded && (
+                                <Button
+                                  size="sm"
+                                  className="bg-orange-600 hover:bg-orange-700"
+                                  onClick={async () => {
+                                    try {
+                                      await import('@/lib/api').then(m => m.default.patch(`/bids/${bid.id}/award`));
+                                      alert("Awarded successfully!");
+                                      fetchDashboard();
+                                    } catch (err: any) {
+                                      alert(err.response?.data?.message || "Failed to award");
+                                    }
+                                  }}
+                                >
+                                  Award Job
+                                </Button>
+                              )}
                             </div>
                           </div>
-                          <div className="flex gap-6 my-3">
-                            <div>
-                              <div className="text-xs text-slate-500">Amount</div>
-                              <div className="font-bold text-orange-600">₹{bid.amount}</div>
-                            </div>
-                          </div>
-                          <p className="text-slate-600 text-sm bg-white p-3 rounded border">{bid.proposal}</p>
                         </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
-                      <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                      <h3 className="text-lg font-medium text-slate-900 mb-2">No Bids Yet</h3>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
+                    <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">No Bids Yet</h3>
+                    <p className="text-slate-500 text-sm">When professionals apply for your jobs, their bids will appear here.</p>
+                  </div>
+                )}
+              </div>
             )}
 
-            {activeTab === 'messages' && (
-              <Card>
-                <CardContent className="py-16 text-center">
-                  <MessageSquare className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-slate-900 mb-4">Go to your Messages Hub</h3>
-                  <Button onClick={() => router.push('/messages')} className="bg-[#0a1c3a]">Open Messenger</Button>
-                </CardContent>
-              </Card>
-            )}
 
-            {activeTab === 'saved' && (
+            {activeTab === 'shortlisted' && (
               <Card>
                 <CardHeader>
                   <CardTitle>Shortlisted Professionals</CardTitle>
@@ -215,11 +378,45 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
               </Card>
             )}
 
-            {activeTab === 'profile' && <SettingsTab />}
-            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
+            {activeTab === 'messages' && (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <MessageSquare className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-4">Go to your Messages Hub</h3>
+                  <Button onClick={() => router.push('/messages')} className="bg-[#0a1c3a]">Open Messenger</Button>
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'reviews' && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Reviews</CardTitle>
+                </CardHeader>
+                <CardContent className="py-16 text-center">
+                  <Star className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">No Reviews Yet</h3>
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'profile' && <CompleteProfileTab />}
+            {activeTab === 'settings' && <SettingsTab />}
           </div>
         </div>
       </div>
+      
+      {reviewModal.isOpen && (
+        <LeaveReviewModal
+          isOpen={reviewModal.isOpen}
+          onClose={() => setReviewModal({ ...reviewModal, isOpen: false })}
+          professionalId={reviewModal.professionalId}
+          requirementId={reviewModal.requirementId}
+          onSuccess={() => {
+            fetchDashboard();
+          }}
+        />
+      )}
     </div>
   );
 }

@@ -22,11 +22,45 @@ class Project extends Model
         'name', 'phone', 'email',
         'opportunity_type', 'requirement_type', 'creator_role',
         'target_roles', 'project_category', 'budget_tier',
+        'professional_id', 'winning_bid_id', 'started_at', 'completed_at'
     ];
 
     protected $casts = [
         'target_roles' => 'array',
     ];
+
+    protected $appends = ['formatted_budget', 'unlock_price_display', 'timeline'];
+
+    public function getFormattedBudgetAttribute()
+    {
+        if ($this->budget_max) {
+            return '₹' . number_format($this->budget_max);
+        }
+        return 'Not specified';
+    }
+
+    public function getUnlockPriceDisplayAttribute()
+    {
+        return '₹' . number_format(config('marketplace.unlock_fee', 49.00));
+    }
+
+    public function activityLogs()
+    {
+        return $this->morphMany(\App\Models\ActivityLog::class, 'subject');
+    }
+
+    public function getTimelineAttribute()
+    {
+        return $this->activityLogs()->orderBy('created_at', 'desc')->get()->map(function($log) {
+            return [
+                'title' => $log->event_type,
+                'description' => $log->description,
+                'date' => $log->created_at->format('Y-m-d H:i:s'),
+                'icon' => 'Clock', // Default icon
+                'color' => 'text-slate-500' // Default color
+            ];
+        });
+    }
 
     protected static function booted()
     {

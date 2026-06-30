@@ -21,9 +21,15 @@ class Listing extends Model
         'years_experience', 'team_size', 'status', 'is_premium', 'is_featured', 'is_verified',
         'gst_number', 'pan_number', 'budget_tier',
         'phone_clicks', 'whatsapp_clicks', 'website_clicks',
+        'services', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
     ];
 
-    protected $casts = [];
+    protected $casts = [
+        'services' => 'array',
+        'achievements' => 'array',
+        'languages' => 'array',
+        'social_links' => 'array',
+    ];
 
     // ─── Relationships ────────────────────────────────────────────────────────
 

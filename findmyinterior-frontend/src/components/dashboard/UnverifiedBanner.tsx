@@ -5,14 +5,14 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { Button } from "@/components/ui/button";
 
-export function UnverifiedBanner({ onVerifyClick }: { onVerifyClick: () => void }) {
+export function UnverifiedBanner({ onVerifyClick, hasPendingVerification }: { onVerifyClick: () => void, hasPendingVerification?: boolean }) {
   const { user } = useAuthStore();
 
   if (!user) return null;
 
   const isVerified = ["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
 
-  if (isVerified) return null;
+  if (isVerified || hasPendingVerification) return null;
 
   return (
     <Alert variant="destructive" className="bg-red-50 border-red-200 text-red-900 mb-6 flex flex-col md:flex-row items-center justify-between">

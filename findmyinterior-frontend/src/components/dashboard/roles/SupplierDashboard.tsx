@@ -11,9 +11,10 @@ import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
-import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+// import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
+import { VerificationTab } from "@/components/dashboard/VerificationTab";
 
 export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -60,8 +61,11 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
           <div className="lg:col-span-1 space-y-4">
             <Card>
               <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400">
-                  {user?.name?.charAt(0)}
+                <div className="h-20 w-20 rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
+                  {user?.avatar
+                    ? <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
+                    : <span>{user?.name?.charAt(0)}</span>
+                  }
                 </div>
                 <h3 className="font-bold text-lg">{user?.name}</h3>
                 <Badge className="mt-2 capitalize mb-4" variant="default">Material Supplier</Badge>
@@ -90,19 +94,22 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
-                {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Incoming RFQs")}
-                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Contacts")}
+                {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "RFQs")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Submitted Quotes")}
                 {renderSidebarButton("orders", <CheckCircle2 className="h-5 w-5" />, "Orders")}
+                {renderSidebarButton("catalogue", <Package className="h-5 w-5" />, "Catalogue")}
+                {renderSidebarButton("products", <Package className="h-5 w-5" />, "Products")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Complete Profile")}
+                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
+                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
+                {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} />}
+            {activeTab !== 'business_profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('business_profile')} hasPendingVerification={data?.user?.has_pending_verification} />}
             {activeTab === 'available_leads' && (
               isUnverified ? (
                 <div className="space-y-6 relative">
@@ -117,20 +124,49 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 <AvailableLeadsTab leads={data?.recommended_leads} />
               )
             )}
-            {activeTab === 'unlocked_leads' && <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />}
             
-            {activeTab === 'bids_submitted' && (
-              <MyBidsTab bids={data?.submitted_bids || []} title="My Submitted Quotes" showAwardedOnly={false} />
-            )}
-
-            {activeTab === 'orders' && (
-              <MyBidsTab bids={data?.submitted_bids || []} title="Won Orders" showAwardedOnly={true} />
-            )}
-
+            {activeTab === 'bids_submitted' && <MyBidsTab bids={data?.submitted_bids || []} />}
             {activeTab === 'wallet' && <WalletTab />}
 
-            
-            {activeTab === 'profile' && <CompleteProfileTab />}
+            {activeTab === 'orders' && (
+              <MyBidsTab bids={data?.submitted_bids || []} title="My Orders (Won Bids)" showAwardedOnly={true} />
+            )}
+
+            {activeTab === 'catalogue' && (
+              <Card>
+                <CardHeader><CardTitle>Catalogue</CardTitle></CardHeader>
+                <CardContent className="py-16 text-center text-slate-500">
+                  <Package className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  Your catalogue is empty.
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'products' && (
+              <Card>
+                <CardHeader><CardTitle>Products</CardTitle></CardHeader>
+                <CardContent className="py-16 text-center text-slate-500">
+                  <Package className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  No products added yet.
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'subscription' && (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <Wallet className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">Subscription Details</h3>
+                  <p className="text-slate-500 mb-4">You are currently on the {data?.user?.subscription || "Free Plan"}</p>
+                  <Link href="/pricing">
+                    <Button>Upgrade Plan</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'business_profile' && <CompleteProfileTab />}
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
 
             {activeTab === 'messages' && (
               <Card>

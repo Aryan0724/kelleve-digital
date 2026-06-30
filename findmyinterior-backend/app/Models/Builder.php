@@ -19,9 +19,14 @@ class Builder extends Model
         'phone', 'email', 'website', 'city', 'district',
         'rera_number', 'established_year',
         'total_projects', 'delivered_projects',
+        'services', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
     ];
 
     protected $casts = [
+        'services' => 'array',
+        'achievements' => 'array',
+        'languages' => 'array',
+        'social_links' => 'array',
     ];
 
     // ─── Relationships ────────────────────────────────────────────────────────

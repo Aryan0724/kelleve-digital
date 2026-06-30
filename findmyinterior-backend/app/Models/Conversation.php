@@ -11,6 +11,7 @@ class Conversation extends Model
 
     protected $fillable = [
         'project_id',
+        'project_type',
         'customer_id',
         'vendor_id',
         'status',
@@ -38,7 +39,7 @@ class Conversation extends Model
 
     public function project()
     {
-        return $this->belongsTo(Project::class);
+        return $this->morphTo(__FUNCTION__, 'project_type', 'project_id');
     }
 
     public function customer()

@@ -6,45 +6,86 @@ import Link from "next/link";
 import {
   MapPin, Briefcase, ShieldCheck, Wallet, ChevronRight,
   FileText, Search, HardHat, Truck, Building, Paintbrush,
-  ArrowRight, Star, IndianRupee, Clock, Users, TrendingUp
+  ArrowRight, Star, IndianRupee, Clock, Users, TrendingUp,
+  MessageSquare, PenTool, Home, LayoutDashboard, ClipboardList
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
 
 // ─── Role Config ────────────────────────────────────────────────────────────
 
-const ROLE_CONFIG: Record<string, {
-  greeting: string;
-  tagline: string;
-  icon: any;
-  color: string;
-  ctas: { label: string; href: string; primary?: boolean }[];
-  feedTitle: string;
-  feedEmptyText: string;
-}> = {
+const ROLE_CONFIG: Record<string, any> = {
+  homeowner: {
+    greeting: "Welcome back",
+    tagline: "Post a requirement and receive multiple quotes from verified professionals.",
+    icon: Home,
+    color: "from-[#0a1c3a] to-[#1a2c5a]",
+    ctas: [
+      { label: "Post New Requirement", href: "/post-requirement", primary: true },
+      { label: "Compare Bids", href: "/dashboard" },
+    ],
+    quickCards: [
+      { label: "Active Projects", key: "total_projects", icon: Briefcase, href: "/dashboard" },
+      { label: "Received Bids", key: "received_bids_count", icon: FileText, href: "/dashboard" },
+      { label: "Unread Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Professionals near you", key: "featured_listings", type: "listing" },
+    ]
+  },
+  customer: {
+    greeting: "Welcome back",
+    tagline: "Post a requirement and receive multiple quotes from verified professionals.",
+    icon: Home,
+    color: "from-[#0a1c3a] to-[#1a2c5a]",
+    ctas: [
+      { label: "Post New Requirement", href: "/post-requirement", primary: true },
+      { label: "Compare Bids", href: "/dashboard" },
+    ],
+    quickCards: [
+      { label: "Active Projects", key: "total_projects", icon: Briefcase, href: "/dashboard" },
+      { label: "Received Bids", key: "received_bids_count", icon: FileText, href: "/dashboard" },
+      { label: "Unread Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Professionals near you", key: "featured_listings", type: "listing" },
+    ]
+  },
   interior_designer: {
-    greeting: "Your Next Project Is Waiting",
+    greeting: "Find new clients today.",
     tagline: "Browse open interior design projects in your city and submit your best bid.",
     icon: Paintbrush,
     color: "from-violet-900 to-indigo-900",
     ctas: [
-      { label: "Browse All Projects", href: "/dashboard", primary: true },
-      { label: "Go to Dashboard", href: "/dashboard" },
+      { label: "Browse Projects", href: "/projects", primary: true },
+      { label: "Update Portfolio", href: "/dashboard" },
     ],
-    feedTitle: "Open Interior Design Projects",
-    feedEmptyText: "No open projects right now. Check back soon!",
+    quickCards: [
+      { label: "Recommended Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Portfolio Views", key: "total_views", icon: TrendingUp, href: "/dashboard" },
+      { label: "Unread Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Projects matching skills", key: "recommended_leads", type: "lead", empty: "No projects matching your skills right now." },
+    ]
   },
   interior_company: {
-    greeting: "Your Next Project Is Waiting",
+    greeting: "Find new clients today.",
     tagline: "Browse open interior design projects in your city and submit your best bid.",
     icon: Paintbrush,
     color: "from-violet-900 to-indigo-900",
     ctas: [
-      { label: "Browse All Projects", href: "/dashboard", primary: true },
-      { label: "Go to Dashboard", href: "/dashboard" },
+      { label: "Browse Projects", href: "/projects", primary: true },
+      { label: "Update Portfolio", href: "/dashboard" },
     ],
-    feedTitle: "Open Interior Projects",
-    feedEmptyText: "No open projects right now.",
+    quickCards: [
+      { label: "Recommended Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Portfolio Views", key: "total_views", icon: TrendingUp, href: "/dashboard" },
+      { label: "Unread Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Projects matching skills", key: "recommended_leads", type: "lead", empty: "No projects matching your skills right now." },
+    ]
   },
   contractor: {
     greeting: "Find Construction Projects Near You",
@@ -52,11 +93,18 @@ const ROLE_CONFIG: Record<string, {
     icon: HardHat,
     color: "from-orange-900 to-amber-800",
     ctas: [
-      { label: "View Open Projects", href: "/dashboard", primary: true },
-      { label: "My Workspace", href: "/dashboard" },
+      { label: "Browse Projects", href: "/projects", primary: true },
+      { label: "Create Labour Request", href: "/post-requirement" },
     ],
-    feedTitle: "Open Construction & Renovation Projects",
-    feedEmptyText: "No open projects in your area right now.",
+    quickCards: [
+      { label: "New Client Leads", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Project Updates", key: "total_inquiries", icon: ClipboardList, href: "/dashboard" },
+      { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Recommended Projects", key: "recommended_leads", type: "lead", empty: "No projects matching your skills right now." },
+      { title: "Nearby Suppliers", key: "featured_suppliers", type: "supplier", empty: "No suppliers near you." }
+    ]
   },
   architect: {
     greeting: "Discover Architecture Projects",
@@ -64,11 +112,17 @@ const ROLE_CONFIG: Record<string, {
     icon: Building,
     color: "from-slate-800 to-slate-700",
     ctas: [
-      { label: "View Projects", href: "/dashboard", primary: true },
+      { label: "View Projects", href: "/projects", primary: true },
       { label: "My Workspace", href: "/dashboard" },
     ],
-    feedTitle: "Open Architecture Projects",
-    feedEmptyText: "No open projects right now.",
+    quickCards: [
+      { label: "Recommended Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Portfolio Views", key: "total_views", icon: TrendingUp, href: "/dashboard" },
+      { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Open Architecture Projects", key: "recommended_leads", type: "lead", empty: "No open projects right now." },
+    ]
   },
   builder: {
     greeting: "Scale Your Development Business",
@@ -76,35 +130,54 @@ const ROLE_CONFIG: Record<string, {
     icon: Building,
     color: "from-blue-900 to-blue-800",
     ctas: [
-      { label: "View Requirements", href: "/dashboard", primary: true },
-      { label: "My Portal", href: "/dashboard" },
+      { label: "Create Builder Project", href: "/post-requirement", primary: true },
+      { label: "Request Contractors", href: "/post-requirement" },
     ],
-    feedTitle: "Open Building Requirements",
-    feedEmptyText: "No open building requirements right now.",
+    quickCards: [
+      { label: "Active Projects", key: "total_projects", icon: Building, href: "/dashboard" },
+      { label: "Contractor Requests", key: "total_inquiries", icon: HardHat, href: "/dashboard" },
+      { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Top Contractors", key: "featured_contractors", type: "listing", empty: "No top contractors found." },
+      { title: "Top Suppliers", key: "featured_suppliers", type: "supplier", empty: "No top suppliers found." }
+    ]
   },
   supplier: {
     greeting: "Connect with Buyers Directly",
-    tagline: "Respond to material RFQs and grow your supply business across Bihar.",
+    tagline: "Respond to material RFQs and grow your supply business.",
     icon: Truck,
     color: "from-green-900 to-emerald-800",
     ctas: [
-      { label: "Browse Open RFQs", href: "/dashboard", primary: true },
-      { label: "My Dashboard", href: "/dashboard" },
+      { label: "Browse Open RFQs", href: "/rfqs", primary: true },
+      { label: "Upload Product", href: "/dashboard" },
     ],
-    feedTitle: "Open Material RFQs",
-    feedEmptyText: "No open RFQs right now.",
+    quickCards: [
+      { label: "Open RFQs", key: "recommended_leads_count", icon: Search, href: "/rfqs" },
+      { label: "Quotes Pending", key: "total_inquiries", icon: ClipboardList, href: "/dashboard" },
+      { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Open Material RFQs", key: "recommended_leads", type: "lead", empty: "No open RFQs right now." },
+    ]
   },
   material_supplier: {
     greeting: "Connect with Buyers Directly",
-    tagline: "Respond to material RFQs and grow your supply business across Bihar.",
+    tagline: "Respond to material RFQs and grow your supply business.",
     icon: Truck,
     color: "from-green-900 to-emerald-800",
     ctas: [
-      { label: "Browse Open RFQs", href: "/dashboard", primary: true },
-      { label: "My Dashboard", href: "/dashboard" },
+      { label: "Browse Open RFQs", href: "/rfqs", primary: true },
+      { label: "Upload Product", href: "/dashboard" },
     ],
-    feedTitle: "Open Material RFQs",
-    feedEmptyText: "No open RFQs right now.",
+    quickCards: [
+      { label: "Open RFQs", key: "recommended_leads_count", icon: Search, href: "/rfqs" },
+      { label: "Quotes Pending", key: "total_inquiries", icon: ClipboardList, href: "/dashboard" },
+      { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Open Material RFQs", key: "recommended_leads", type: "lead", empty: "No open RFQs right now." },
+    ]
   },
   worker: {
     greeting: "Find Daily Work Near You",
@@ -112,11 +185,17 @@ const ROLE_CONFIG: Record<string, {
     icon: Briefcase,
     color: "from-rose-900 to-red-800",
     ctas: [
-      { label: "Browse Job Listings", href: "/workers", primary: true },
-      { label: "My Dashboard", href: "/dashboard" },
+      { label: "Browse Jobs", href: "/jobs", primary: true },
+      { label: "Update Availability", href: "/dashboard" },
     ],
-    feedTitle: "Available Job Listings in Your Area",
-    feedEmptyText: "No open jobs right now. Check back soon!",
+    quickCards: [
+      { label: "Nearby Jobs", key: "recommended_leads_count", icon: Search, href: "/jobs" },
+      { label: "Applied Jobs", key: "submitted_bids_count", icon: ClipboardList, href: "/dashboard" },
+      { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Available Job Listings in Your Area", key: "recommended_leads", type: "lead", empty: "No open jobs right now." },
+    ]
   },
   skilled_worker: {
     greeting: "Find Daily Work Near You",
@@ -124,44 +203,42 @@ const ROLE_CONFIG: Record<string, {
     icon: Briefcase,
     color: "from-rose-900 to-red-800",
     ctas: [
-      { label: "Browse Job Listings", href: "/workers", primary: true },
-      { label: "My Dashboard", href: "/dashboard" },
+      { label: "Browse Jobs", href: "/jobs", primary: true },
+      { label: "Update Availability", href: "/dashboard" },
     ],
-    feedTitle: "Available Job Listings in Your Area",
-    feedEmptyText: "No open jobs right now.",
+    quickCards: [
+      { label: "Nearby Jobs", key: "recommended_leads_count", icon: Search, href: "/jobs" },
+      { label: "Applied Jobs", key: "submitted_bids_count", icon: ClipboardList, href: "/dashboard" },
+      { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
+    ],
+    feeds: [
+      { title: "Available Job Listings in Your Area", key: "recommended_leads", type: "lead", empty: "No open jobs right now." },
+    ]
   },
-  homeowner: {
-    greeting: "Welcome back",
-    tagline: "Post a requirement and receive multiple quotes from verified professionals.",
-    icon: FileText,
-    color: "from-[#0a1c3a] to-[#1a2c5a]",
+  business: {
+    greeting: "Manage Your Business",
+    tagline: "Find leads, manage your profile, and grow your revenue.",
+    icon: Briefcase,
+    color: "from-slate-900 to-slate-800",
     ctas: [
-      { label: "Post New Project", href: "/post-requirement", primary: true },
-      { label: "View My Projects", href: "/dashboard" },
+      { label: "Go to Dashboard", href: "/dashboard", primary: true },
+      { label: "Update Profile", href: "/dashboard" },
     ],
-    feedTitle: "Featured Professionals Near You",
-    feedEmptyText: "",
-  },
-  customer: {
-    greeting: "Welcome back",
-    tagline: "Post a requirement and receive multiple quotes from verified professionals.",
-    icon: FileText,
-    color: "from-[#0a1c3a] to-[#1a2c5a]",
-    ctas: [
-      { label: "Post New Project", href: "/post-requirement", primary: true },
-      { label: "View My Projects", href: "/dashboard" },
+    quickCards: [
+      { label: "New Leads", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Profile Views", key: "total_views", icon: TrendingUp, href: "/dashboard" },
+      { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
     ],
-    feedTitle: "Featured Professionals Near You",
-    feedEmptyText: "",
-  },
+    feeds: [
+      { title: "Recommended Leads", key: "recommended_leads", type: "lead", empty: "No new leads right now." },
+    ]
+  }
 };
 
 // ─── Feed Card ────────────────────────────────────────────────────────────────
 
-function FeedCard({ item, role }: { item: any; role: string }) {
+function LeadCard({ item, role }: { item: any; role: string }) {
   const isWorkerJob = role === "worker" || role === "skilled_worker";
-  const isRFQ = role === "supplier" || role === "material_supplier";
-
   return (
     <div className="bg-white border border-slate-100 rounded-xl p-4 hover:shadow-md transition-all hover:-translate-y-0.5 group">
       <div className="flex justify-between items-start gap-3">
@@ -204,7 +281,7 @@ function FeedCard({ item, role }: { item: any; role: string }) {
             </span>
           )}
         </div>
-        <Link href={`/requirements/${item.id}`}>
+        <Link href={`/requirements/${item.id}?type=${item.material_type ? 'rfq' : item.skill_required ? 'job' : 'project'}`}>
           <button className="text-xs text-orange-600 font-semibold flex items-center hover:text-orange-700 transition-colors">
             View <ChevronRight className="w-3 h-3 ml-0.5" />
           </button>
@@ -214,39 +291,59 @@ function FeedCard({ item, role }: { item: any; role: string }) {
   );
 }
 
+function ListingCard({ item }: { item: any }) {
+  return (
+    <div className="bg-white border border-slate-100 rounded-xl p-4 hover:shadow-md transition-all group flex gap-4 items-center">
+      <div className="w-16 h-16 rounded-lg bg-slate-100 flex-shrink-0 overflow-hidden">
+        {item.image_url ? (
+           <img src={item.image_url} alt={item.business_name} className="w-full h-full object-cover" />
+        ) : (
+           <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-xl">{item.business_name?.charAt(0)}</div>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <h4 className="font-semibold text-slate-900 text-sm line-clamp-1 group-hover:text-orange-600 transition-colors">
+          {item.business_name}
+        </h4>
+        <div className="flex items-center gap-1 mt-1">
+          <Star className="w-3 h-3 text-orange-500 fill-orange-500" />
+          <span className="text-xs font-bold">{item.rating || '4.5'}</span>
+          <span className="text-xs text-slate-400">({item.review_count || 0} reviews)</span>
+        </div>
+        <div className="flex flex-wrap gap-2 mt-2">
+           <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{item.category?.name || "Professional"}</span>
+        </div>
+      </div>
+      <Link href={`/professionals/${item.slug}`}>
+        <button className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-orange-600 group-hover:bg-orange-50 transition-colors">
+          <ChevronRight className="w-4 h-4" />
+        </button>
+      </Link>
+    </div>
+  );
+}
+
 // ─── Stats Row ────────────────────────────────────────────────────────────────
 
-function QuickStats({ data, role }: { data: any; role: string }) {
-  const stats = [];
-
-  if (data?.user?.wallet_balance !== undefined) {
-    stats.push({ label: "Wallet", value: `₹${data.user.wallet_balance}`, icon: Wallet, href: "/dashboard" });
-  }
-  if (data?.total_views !== undefined) {
-    stats.push({ label: "Profile Views", value: data.total_views, icon: TrendingUp, href: "/dashboard" });
-  }
-  if (data?.submitted_bids?.length !== undefined) {
-    stats.push({ label: "Active Bids", value: data.submitted_bids.length, icon: FileText, href: "/dashboard" });
-  }
-  if (data?.recommended_leads?.length !== undefined) {
-    stats.push({ label: "Available Leads", value: data.recommended_leads.length, icon: Search, href: "/dashboard" });
-  }
-
-  if (stats.length === 0) return null;
+function QuickStats({ stats, config }: { stats: any; config: any }) {
+  if (!config.quickCards || config.quickCards.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-      {stats.slice(0, 4).map((s, i) => (
-        <Link key={i} href={s.href}>
-          <div className="bg-white border border-slate-100 rounded-xl p-3 hover:shadow-sm hover:border-orange-200 transition-all cursor-pointer">
-            <div className="flex items-center gap-2 mb-1">
-              <s.icon className="w-3.5 h-3.5 text-orange-500" />
-              <span className="text-xs text-slate-500">{s.label}</span>
+    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+      {config.quickCards.map((s: any, i: number) => {
+        const Icon = s.icon;
+        return (
+          <Link key={i} href={s.href}>
+            <div className="bg-white border border-slate-100 rounded-xl p-4 hover:shadow-sm hover:border-orange-200 transition-all cursor-pointer h-full flex flex-col justify-between">
+              <div className="flex items-center gap-2 mb-3">
+                <Icon className="w-4 h-4 text-orange-500" />
+                <span className="text-xs font-medium text-slate-500">{s.label}</span>
+              </div>
+              <div className="text-2xl font-bold text-slate-900">{stats[s.key] ?? 0}</div>
             </div>
-            <div className="text-lg font-bold text-slate-900">{s.value}</div>
-          </div>
-        </Link>
-      ))}
+          </Link>
+        )
+      })}
     </div>
   );
 }
@@ -257,6 +354,7 @@ export function RoleBasedHomepage() {
   const { user } = useAuthStore();
   const router = useRouter();
   const [dashData, setDashData] = useState<any>(null);
+  const [homeData, setHomeData] = useState<any>(null);
   const [loading, setLoading] = useState(false);
 
   // Determine effective role
@@ -268,32 +366,54 @@ export function RoleBasedHomepage() {
     const priority = [
       "interior_designer", "interior_company", "contractor", "architect",
       "builder", "supplier", "material_supplier", "worker", "skilled_worker",
-      "homeowner", "customer"
+      "homeowner", "customer", "business"
     ];
     return priority.find((r) => roles.includes(r)) ?? user.role ?? "customer";
   })();
 
-  const config = effectiveRole ? ROLE_CONFIG[effectiveRole] : null;
+  const config = effectiveRole && ROLE_CONFIG[effectiveRole] ? ROLE_CONFIG[effectiveRole] : ROLE_CONFIG["customer"];
 
   useEffect(() => {
     if (!user || !config) return;
     setLoading(true);
-    api
-      .get("/user/dashboard")
-      .then((r) => setDashData(r.data.data))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    
+    Promise.all([
+      api.get("/user/dashboard").catch(() => null),
+      api.get("/homepage").catch(() => null)
+    ]).then(([dashRes, homeRes]) => {
+      if (dashRes) setDashData(dashRes.data.data);
+      if (homeRes) setHomeData(homeRes.data.data);
+      setLoading(false);
+    });
   }, [user]);
 
   if (!user || !config) return null;
 
   const Icon = config.icon;
   const firstName = user.name?.split(" ")[0] ?? "there";
-  const leads: any[] = dashData?.recommended_leads ?? [];
-  const isCustomerRole = effectiveRole === "homeowner" || effectiveRole === "customer";
+  
+  // Prepare stats
+  const stats = {
+    total_projects: dashData?.total_projects ?? 0,
+    received_bids_count: dashData?.received_bids?.length ?? 0,
+    unread_messages: dashData?.user?.unread_messages_count ?? 0,
+    recommended_leads_count: dashData?.recommended_leads?.length ?? 0,
+    total_views: dashData?.total_views ?? 0,
+    total_inquiries: dashData?.total_inquiries ?? 0,
+    submitted_bids_count: dashData?.submitted_bids?.length ?? 0,
+  };
+
+  // Prepare feed data sources
+  const dataSources: Record<string, any[]> = {
+    recommended_leads: dashData?.recommended_leads ?? [],
+    featured_listings: homeData?.featured_listings ?? [],
+    featured_contractors: (homeData?.featured_listings ?? []).filter((l: any) => l.category?.slug === 'contractor'),
+    featured_architects: (homeData?.featured_listings ?? []).filter((l: any) => l.category?.slug === 'architect'),
+    featured_suppliers: homeData?.featured_suppliers ?? [],
+  };
 
   return (
-    <div className="w-full bg-slate-50 border-b">
+    <div className="w-full bg-slate-50 min-h-screen pb-12">
       {/* ─── Personalized Hero ──────────────────────────────────── */}
       <div className={`w-full bg-gradient-to-r ${config.color} text-white`}>
         <div className="container mx-auto px-4 py-10 md:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -313,7 +433,7 @@ export function RoleBasedHomepage() {
             </h2>
             <p className="text-white/75 text-sm md:text-base max-w-lg">{config.tagline}</p>
             <div className="flex flex-wrap items-center gap-3 mt-5">
-              {config.ctas.map((cta) => (
+              {config.ctas.map((cta: any) => (
                 <Link key={cta.label} href={cta.href}>
                   <button
                     className={`flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
@@ -351,42 +471,51 @@ export function RoleBasedHomepage() {
         </div>
       </div>
 
-      {/* ─── Feed ───────────────────────────────────────────────── */}
-      {!isCustomerRole && (
-        <div className="container mx-auto px-4 py-6">
-          {dashData && <QuickStats data={dashData} role={effectiveRole!} />}
+      <div className="container mx-auto px-4 py-8">
+        <QuickStats stats={stats} config={config} />
 
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="text-base font-bold text-slate-800">{config.feedTitle}</h3>
-            <Link href="/dashboard" className="text-sm text-orange-600 font-semibold hover:text-orange-700 flex items-center gap-1">
-              View All <ChevronRight className="w-4 h-4" />
-            </Link>
-          </div>
+        {config.feeds?.map((feed: any, idx: number) => {
+          const items = dataSources[feed.key] || [];
+          
+          return (
+            <div key={idx} className="mb-10">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-bold text-slate-800">{feed.title}</h3>
+                <Link href={feed.type === 'listing' ? '/professionals' : feed.type === 'supplier' ? '/materials' : '/dashboard'} className="text-sm text-orange-600 font-semibold hover:text-orange-700 flex items-center gap-1">
+                  View All <ChevronRight className="w-4 h-4" />
+                </Link>
+              </div>
 
-          {loading ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {[1, 2, 3, 4].map((i) => (
-                <div key={i} className="bg-white border border-slate-100 rounded-xl p-4 animate-pulse">
-                  <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
-                  <div className="h-3 bg-slate-100 rounded w-full mb-3" />
-                  <div className="h-3 bg-slate-100 rounded w-1/2" />
+              {loading ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {[1, 2, 3].map((i) => (
+                    <div key={i} className="bg-white border border-slate-100 rounded-xl p-4 animate-pulse">
+                      <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
+                      <div className="h-3 bg-slate-100 rounded w-full mb-3" />
+                      <div className="h-3 bg-slate-100 rounded w-1/2" />
+                    </div>
+                  ))}
                 </div>
-              ))}
+              ) : items.length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {items.slice(0, 6).map((item: any, i: number) => (
+                    feed.type === 'lead' ? (
+                      <LeadCard key={item.id || i} item={item} role={effectiveRole!} />
+                    ) : (
+                      <ListingCard key={item.id || i} item={item} />
+                    )
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-10 text-slate-400 bg-white rounded-xl border border-slate-100">
+                  <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                  <p className="text-sm">{feed.empty || "No items to show."}</p>
+                </div>
+              )}
             </div>
-          ) : leads.length > 0 ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {leads.slice(0, 6).map((item) => (
-                <FeedCard key={item.id} item={item} role={effectiveRole!} />
-              ))}
-            </div>
-          ) : (
-            <div className="text-center py-10 text-slate-400 bg-white rounded-xl border border-slate-100">
-              <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="text-sm">{config.feedEmptyText}</p>
-            </div>
-          )}
-        </div>
-      )}
+          );
+        })}
+      </div>
     </div>
   );
 }

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ContactUnlock extends Model
 {
-    protected $fillable = ['user_id', 'requirement_id', 'payment_id'];
+    protected $fillable = ['user_id', 'requirement_id', 'requirement_type', 'payment_id'];
 
     // ─── Relationships ────────────────────────────────────────────────────────
 
@@ -16,9 +16,9 @@ class ContactUnlock extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function requirement(): BelongsTo
+    public function requirement()
     {
-        return $this->belongsTo(Requirement::class);
+        return $this->morphTo(__FUNCTION__, 'requirement_type', 'requirement_id');
     }
 
     public function payment(): BelongsTo

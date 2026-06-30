@@ -5,15 +5,16 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
-import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+// import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
+import { VerificationTab } from "@/components/dashboard/VerificationTab";
 
 export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -93,18 +94,22 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Projects")}
-                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Contacts")}
-                {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Submitted Bids")}
+                {renderSidebarButton("recommended_projects", <Search className="h-5 w-5" />, "Recommended Projects")}
+                {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "My Bids")}
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
+                {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Complete Profile")}
+                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
+                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
+                {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} />}
+            {activeTab !== 'business_profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('business_profile')} hasPendingVerification={data?.user?.has_pending_verification} />}
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card>
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
@@ -133,19 +138,75 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             </div>
             
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
-            {activeTab === 'unlocked_leads' && <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />}
+            {activeTab === 'recommended_projects' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
             {activeTab === 'bids_submitted' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Submitted Bids" showAwardedOnly={false} />
             )}
 
             {activeTab === 'won_projects' && (
-              <MyBidsTab bids={data?.submitted_bids || []} title="Won Projects" showAwardedOnly={true} />
+              <MyBidsTab bids={data?.submitted_bids || []} title="Won Projects" statuses={['accepted', 'awarded', 'completed']} />
+            )}
+
+            {activeTab === 'portfolio' && (
+              <Card>
+                <CardHeader><CardTitle>Portfolio</CardTitle></CardHeader>
+                <CardContent className="py-16 text-center text-slate-500">
+                  <Paintbrush className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  Your portfolio is currently empty. Upload projects to attract more clients.
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'reviews' && (
+              <Card>
+                <CardHeader><CardTitle>Reviews</CardTitle></CardHeader>
+                <CardContent>
+                  {data?.recent_reviews && data.recent_reviews.length > 0 ? (
+                    <div className="space-y-4">
+                      {data.recent_reviews.map((review: any) => (
+                        <div key={review.id} className="border-b last:border-0 pb-4 last:pb-0">
+                          <div className="flex justify-between items-center mb-2">
+                            <div className="font-medium">{review.user?.name || "Customer"}</div>
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`h-4 w-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-300"}`} />
+                              ))}
+                            </div>
+                          </div>
+                          {review.title && <h4 className="font-medium text-sm text-slate-800 mb-1">{review.title}</h4>}
+                          <p className="text-slate-600 text-sm">{review.body}</p>
+                          <div className="text-xs text-slate-400 mt-2">{review.created_at}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-16 text-center text-slate-500">
+                      <Star className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      No reviews yet. Complete projects to receive client reviews.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )}
 
             {activeTab === 'wallet' && <WalletTab />}
 
-            {activeTab === 'profile' && <CompleteProfileTab />}
+            {activeTab === 'subscription' && (
+              <Card>
+                <CardContent className="py-16 text-center">
+                  <Wallet className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">Subscription Details</h3>
+                  <p className="text-slate-500 mb-4">You are currently on the {data?.user?.subscription || "Free Plan"}</p>
+                  <Link href="/pricing">
+                    <Button>Upgrade Plan</Button>
+                  </Link>
+                </CardContent>
+              </Card>
+            )}
+
+            {activeTab === 'business_profile' && <CompleteProfileTab />}
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
 
             {activeTab === 'messages' && (
               <Card>

@@ -167,13 +167,18 @@ class RequirementController extends Controller
      */
     public function updateStatus(Request $request, int $id): JsonResponse
     {
-        $requirement = Requirement::findOrFail($id);
-        if ($request->user()->id !== $requirement->user_id && $request->user()->role !== 'admin') {
+        $type = $request->query('requirement_type', 'project');
+        $modelClass = \App\Models\Requirement::class;
+        if ($type === 'rfq') $modelClass = \App\Models\Rfq::class;
+        if ($type === 'job') $modelClass = \App\Models\WorkerJob::class;
+
+        $requirement = $modelClass::findOrFail($id);
+        if ($request->user()->id !== $requirement->user_id && !$request->user()->isAdmin()) {
             abort(403, 'Unauthorized action.');
         }
 
         $data = $request->validate([
-            'status' => ['required', 'in:open,closed,fulfilled'],
+            'status' => ['required', 'in:open,closed,fulfilled,bidding,receiving_quotes,receiving_applications,shortlisted,awarded,in_progress,completed'],
         ]);
 
         $requirement->update(['status' => $data['status']]);

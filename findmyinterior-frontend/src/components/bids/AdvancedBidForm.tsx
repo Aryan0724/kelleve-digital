@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Upload } from "lucide-react";
 
-export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: number, onSuccess: () => void }) {
+export function AdvancedBidForm({ requirementId, requirementType = 'project', onSuccess }: { requirementId: number, requirementType?: string, onSuccess: () => void }) {
   const { token, user } = useAuthStore();
   const [loading, setLoading] = useState(false);
   const [portfolioFiles, setPortfolioFiles] = useState<File[]>([]);
@@ -73,6 +73,7 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
     try {
       const bidPayload = {
         requirement_id: requirementId,
+        requirement_type: requirementType,
         estimated_cost: Number(formData.amount),
         timeline_days: Number(formData.timeline_days),
         warranty_months: Number(formData.warranty_months) || 0,
@@ -105,7 +106,11 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
     <form onSubmit={submitBid} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Estimated Cost (₹) *</Label>
+          <Label>
+            {requirementType === 'rfq' ? 'Total Quote Amount (₹) *' : 
+             requirementType === 'job' ? 'Daily Rate (₹) *' : 
+             'Estimated Cost (₹) *'}
+          </Label>
           <Input 
             type="number" 
             name="amount"
@@ -113,11 +118,15 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
             min="1"
             value={formData.amount}
             onChange={handleChange}
-            placeholder="e.g. 500000"
+            placeholder={requirementType === 'job' ? "e.g. 800" : "e.g. 500000"}
           />
         </div>
         <div className="space-y-2">
-          <Label>Timeline (Days) *</Label>
+          <Label>
+            {requirementType === 'rfq' ? 'Delivery Time (Days) *' : 
+             requirementType === 'job' ? 'Availability (Days) *' : 
+             'Timeline (Days) *'}
+          </Label>
           <Input 
             type="number" 
             name="timeline_days"
@@ -125,43 +134,48 @@ export function AdvancedBidForm({ requirementId, onSuccess }: { requirementId: n
             min="1"
             value={formData.timeline_days}
             onChange={handleChange}
-            placeholder="e.g. 45"
+            placeholder={requirementType === 'rfq' ? "e.g. 7" : "e.g. 45"}
           />
         </div>
-        <div className="space-y-2">
-          <Label>Warranty (Months)</Label>
-          <Input 
-            type="number" 
-            name="warranty_months"
-            min="0"
-            value={formData.warranty_months}
-            onChange={handleChange}
-            placeholder="e.g. 12"
-          />
-        </div>
+        
+        {requirementType !== 'job' && requirementType !== 'rfq' && (
+          <div className="space-y-2">
+            <Label>Warranty (Months)</Label>
+            <Input 
+              type="number" 
+              name="warranty_months"
+              min="0"
+              value={formData.warranty_months}
+              onChange={handleChange}
+              placeholder="e.g. 12"
+            />
+          </div>
+        )}
       </div>
 
-      <div className="space-y-3">
-        <Label className="text-base font-semibold">Inclusions</Label>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <div className="flex items-center space-x-2">
-            <Checkbox id="material_included" checked={formData.material_included} onCheckedChange={(c) => handleToggle("material_included", c === true)} />
-            <Label htmlFor="material_included" className="font-normal text-sm">Material Included</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox id="labour_included" checked={formData.labour_included} onCheckedChange={(c) => handleToggle("labour_included", c === true)} />
-            <Label htmlFor="labour_included" className="font-normal text-sm">Labour Included</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox id="design_included" checked={formData.design_included} onCheckedChange={(c) => handleToggle("design_included", c === true)} />
-            <Label htmlFor="design_included" className="font-normal text-sm">Design Included</Label>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Checkbox id="supervision_included" checked={formData.supervision_included} onCheckedChange={(c) => handleToggle("supervision_included", c === true)} />
-            <Label htmlFor="supervision_included" className="font-normal text-sm">Supervision Included</Label>
+      {requirementType !== 'job' && requirementType !== 'rfq' && (
+        <div className="space-y-3">
+          <Label className="text-base font-semibold">Inclusions</Label>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <div className="flex items-center space-x-2">
+              <Checkbox id="material_included" checked={formData.material_included} onCheckedChange={(c) => handleToggle("material_included", c === true)} />
+              <Label htmlFor="material_included" className="font-normal text-sm">Material Included</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="labour_included" checked={formData.labour_included} onCheckedChange={(c) => handleToggle("labour_included", c === true)} />
+              <Label htmlFor="labour_included" className="font-normal text-sm">Labour Included</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="design_included" checked={formData.design_included} onCheckedChange={(c) => handleToggle("design_included", c === true)} />
+              <Label htmlFor="design_included" className="font-normal text-sm">Design Included</Label>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Checkbox id="supervision_included" checked={formData.supervision_included} onCheckedChange={(c) => handleToggle("supervision_included", c === true)} />
+              <Label htmlFor="supervision_included" className="font-normal text-sm">Supervision Included</Label>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
       <div className="space-y-3">
         <Label className="text-base font-semibold">Portfolio Evidence (Optional)</Label>

@@ -189,7 +189,7 @@ export function ProfileTab() {
   const fetchData = async () => {
     try {
       const [listingsRes, categoriesRes] = await Promise.all([
-        api.get("/user/listings"),
+        api.get("/user/listings").catch(() => ({ data: { data: [] } })),
         api.get("/categories"),
       ]);
       setCategories(categoriesRes.data || []);

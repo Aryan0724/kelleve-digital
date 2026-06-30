@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, MessageSquare, Search, Gavel, CheckCircle2, User, LogOut, ShieldCheck, Briefcase } from "lucide-react";
@@ -10,8 +10,9 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
-import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
+import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { Star } from "lucide-react";
 export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
@@ -70,31 +71,67 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Jobs")}
-                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Contacts")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
-                {renderSidebarButton("won_projects", <CheckCircle2 className="h-5 w-5" />, "Active & Completed Jobs")}
+                {renderSidebarButton("active_jobs", <CheckCircle2 className="h-5 w-5" />, "Active Jobs")}
+                {renderSidebarButton("completed_jobs", <CheckCircle2 className="h-5 w-5" />, "Completed Jobs")}
+                {renderSidebarButton("ratings", <Star className="h-5 w-5" />, "Ratings")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Complete Profile")}
+                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
+                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Profile")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} />}
+            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} hasPendingVerification={data?.user?.has_pending_verification} />}
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
-            {activeTab === 'unlocked_leads' && <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />}
             
             {activeTab === 'bids_submitted' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Job Applications" showAwardedOnly={false} />
             )}
 
-            {activeTab === 'won_projects' && (
-              <MyBidsTab bids={data?.submitted_bids || []} title="My Jobs" showAwardedOnly={true} />
+            {activeTab === 'active_jobs' && (
+              <MyBidsTab bids={data?.submitted_bids || []} title="Active Jobs" statuses={['accepted', 'awarded', 'in_progress']} />
+            )}
+
+            {activeTab === 'completed_jobs' && (
+              <MyBidsTab bids={data?.submitted_bids || []} title="Completed Jobs" statuses={['completed']} />
+            )}
+
+            {activeTab === 'ratings' && (
+              <Card>
+                <CardHeader><CardTitle>Ratings</CardTitle></CardHeader>
+                <CardContent>
+                  {data?.recent_reviews && data.recent_reviews.length > 0 ? (
+                    <div className="space-y-4">
+                      {data.recent_reviews.map((review: any) => (
+                        <div key={review.id} className="border-b last:border-0 pb-4 last:pb-0">
+                          <div className="flex justify-between items-center mb-2">
+                            <div className="font-medium">{review.user?.name || "Customer"}</div>
+                            <div className="flex">
+                              {[...Array(5)].map((_, i) => (
+                                <Star key={i} className={`h-4 w-4 ${i < review.rating ? "fill-amber-400 text-amber-400" : "text-slate-300"}`} />
+                              ))}
+                            </div>
+                          </div>
+                          {review.title && <h4 className="font-medium text-sm text-slate-800 mb-1">{review.title}</h4>}
+                          <p className="text-slate-600 text-sm">{review.body}</p>
+                          <div className="text-xs text-slate-400 mt-2">{review.created_at}</div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="py-16 text-center text-slate-500">
+                      <Star className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      No ratings yet.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
             )}
 
             {activeTab === 'profile' && <CompleteProfileTab />}
-
-            
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'messages' && (
               <Card>
                 <CardContent className="py-16 text-center">

@@ -28,7 +28,7 @@ class ProfessionalProfileController extends Controller
             $profile = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
             $type = 'listing';
         } elseif ($role === 'worker') {
-            $profile = Worker::where('user_id', $user->id)->with(['reviews', 'jobs'])->first();
+            $profile = Worker::where('user_id', $user->id)->with(['reviews'])->first();
             $type = 'worker';
         } elseif ($role === 'supplier') {
             $profile = Supplier::where('user_id', $user->id)->with(['reviews', 'catalog'])->first();
@@ -72,6 +72,12 @@ class ProfessionalProfileController extends Controller
                 'gst_number'       => ['nullable', 'string', 'max:50'],
                 'pan_number'       => ['nullable', 'string', 'max:50'],
                 'category_id'      => ['nullable', 'exists:categories,id'],
+                'services'         => ['nullable', 'array'],
+                'achievements'     => ['nullable', 'array'],
+                'availability'     => ['nullable', 'string', 'max:255'],
+                'response_time'    => ['nullable', 'string', 'max:255'],
+                'languages'        => ['nullable', 'array'],
+                'social_links'     => ['nullable', 'array'],
             ]);
 
             $profile = Listing::firstOrNew(['user_id' => $user->id]);
@@ -94,6 +100,13 @@ class ProfessionalProfileController extends Controller
                 'phone'            => ['required', 'string', 'max:20'],
                 'city'             => ['required', 'string', 'max:100'],
                 'district'         => ['required', 'string', 'max:100'],
+                'address'          => ['nullable', 'string'],
+                'services'         => ['nullable', 'array'],
+                'achievements'     => ['nullable', 'array'],
+                'availability'     => ['nullable', 'string', 'max:255'],
+                'response_time'    => ['nullable', 'string', 'max:255'],
+                'languages'        => ['nullable', 'array'],
+                'social_links'     => ['nullable', 'array'],
             ]);
 
             $profile = Worker::firstOrNew(['user_id' => $user->id]);
@@ -115,6 +128,12 @@ class ProfessionalProfileController extends Controller
                 'address'          => ['nullable', 'string'],
                 'gst_number'       => ['nullable', 'string', 'max:50'],
                 'pan_number'       => ['nullable', 'string', 'max:50'],
+                'services'         => ['nullable', 'array'],
+                'achievements'     => ['nullable', 'array'],
+                'availability'     => ['nullable', 'string', 'max:255'],
+                'response_time'    => ['nullable', 'string', 'max:255'],
+                'languages'        => ['nullable', 'array'],
+                'social_links'     => ['nullable', 'array'],
             ]);
 
             $profile = Supplier::firstOrNew(['user_id' => $user->id]);
@@ -138,6 +157,12 @@ class ProfessionalProfileController extends Controller
                 'gst_number'       => ['nullable', 'string', 'max:50'],
                 'pan_number'       => ['nullable', 'string', 'max:50'],
                 'total_projects'   => ['nullable', 'integer'],
+                'services'         => ['nullable', 'array'],
+                'achievements'     => ['nullable', 'array'],
+                'availability'     => ['nullable', 'string', 'max:255'],
+                'response_time'    => ['nullable', 'string', 'max:255'],
+                'languages'        => ['nullable', 'array'],
+                'social_links'     => ['nullable', 'array'],
             ]);
 
             $profile = Builder::firstOrNew(['user_id' => $user->id]);

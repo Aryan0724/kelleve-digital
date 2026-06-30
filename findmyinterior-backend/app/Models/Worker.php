@@ -17,10 +17,15 @@ class Worker extends Model
         'name', 'slug', 'avatar', 'phone', 'city', 'district',
         'skill', 'skills_tags', 'experience_years', 'daily_rate',
         'is_available', 'bio',
+        'services', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
     ];
 
     protected $casts = [
         'skills_tags' => 'array',
+        'services' => 'array',
+        'achievements' => 'array',
+        'languages' => 'array',
+        'social_links' => 'array',
     ];
     // ─── Relationships ────────────────────────────────────────────────────────
 

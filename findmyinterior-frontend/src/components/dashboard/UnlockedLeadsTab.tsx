@@ -22,10 +22,11 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
   const [messaging, setMessaging] = useState<number | null>(null);
   const router = useRouter();
 
-  const handleMessage = async (requirementId: number) => {
+  const handleMessage = async (requirementId: number, reqType?: string) => {
     setMessaging(requirementId);
     try {
-      const res = await api.post(`/requirements/${requirementId}/conversations`);
+      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+      const res = await api.post(`/requirements/${requirementId}/conversations${typeStr}`);
       router.push(`/messages/${res.data.id}`);
     } catch (err: any) {
       console.error(err);
@@ -119,12 +120,12 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                         {biddingId === unlock.requirement.id ? "Cancel Bid" : "Submit Bid"}
                       </Button>
                     )}
-                    <Button 
-                      variant="outline" 
-                      className="w-full"
-                      onClick={() => handleMessage(unlock.requirement.id)}
-                      disabled={messaging === unlock.requirement.id}
-                    >
+                      <Button 
+                        size="sm" 
+                        variant="outline" 
+                        onClick={() => handleMessage(unlock.requirement.id, unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project'))}
+                        disabled={messaging === unlock.requirement.id}
+                      >
                       <MessageSquare className="w-4 h-4 mr-2" /> 
                       {messaging === unlock.requirement.id ? "Opening..." : "Message Customer"}
                     </Button>

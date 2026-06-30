@@ -1,11 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
 import { 
-  Lock, Phone, Mail, CheckCircle, IndianRupee, Clock, Building2, Eye, Users, 
+  Lock, Phone, Mail, CheckCircle, CheckCircle2, IndianRupee, Clock, Building2, Eye, Users, User,
   MapPin, Home, Maximize, Calendar, ShieldCheck, Flame, Star, ChevronLeft, 
   ChevronRight, Gavel, Upload, Image as ImageIcon, Briefcase, FileText, MessageCircle
 } from "lucide-react";
@@ -17,6 +17,7 @@ import { BidComparisonMatrix } from "@/components/bids/BidComparisonMatrix";
 export default function RequirementDetail() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, token } = useAuthStore();
   
   const [requirement, setRequirement] = useState<any>(null);
@@ -31,12 +32,20 @@ export default function RequirementDetail() {
   const [showUnlockModal, setShowUnlockModal] = useState(false);
   const [unlockLoading, setUnlockLoading] = useState(false);
 
+  const reqType = searchParams?.get('type') || 'project';
+  const getEndpoint = (id: string, suffix: string = '') => {
+    let base = `/requirements/${id}`;
+    if (reqType === 'rfq') base = `/rfqs/${id}`;
+    if (reqType === 'job') base = `/worker-jobs/${id}`; // assuming this route returns bids too
+    return base + suffix;
+  };
+
   useEffect(() => {
     const fetchReq = async () => {
       try {
-        const res = await api.get(`/requirements/${params.id}`);
+        const res = await api.get(getEndpoint(params.id as string));
         setRequirement(res.data.data);
-        setIsUnlocked(res.data.meta?.is_unlocked || false);
+        setIsUnlocked(res.data.data?.is_unlocked || false);
       } catch (e) {
         console.error(e);
       } finally {
@@ -44,21 +53,22 @@ export default function RequirementDetail() {
       }
     };
     fetchReq();
-  }, [params.id]);
+  }, [params.id, reqType]);
 
   useEffect(() => {
     if (!requirement || !user) return;
     if (user.id === requirement.user_id || user.role === 'admin') {
-      api.get(`/requirements/${params.id}/recommendations`).then(res => {
+      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+      api.get(`/requirements/${params.id}/recommendations${typeStr}`).then(res => {
         setRecommendations(res.data.data);
-      }).catch(console.error);
+      }).catch(err => console.error("Recommendations fetch error:", err));   
       
-      api.get(`/requirements/${params.id}/bids`).then(res => {
+      api.get(`/requirements/${params.id}/bids${typeStr}`).then(res => {
         // Fallback for different API responses
         setBids(res.data.data || res.data || []);
       }).catch(console.error);
     }
-  }, [requirement?.id, user?.id]);
+  }, [requirement?.id, user?.id, reqType]);
 
   const handleAwardBid = async (bidId: number) => {
     try {
@@ -73,7 +83,8 @@ export default function RequirementDetail() {
 
   const inviteToBid = async (vendorId: number) => {
     try {
-      await api.post(`/requirements/${params.id}/invite-vendor`, { vendor_id: vendorId });
+      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+      await api.post(`/requirements/${params.id}/invite-vendor${typeStr}`, { vendor_id: vendorId });
       alert("Vendor invited successfully!");
       setRecommendations(prev => prev.map(r => r.vendor_id === vendorId ? { ...r, invited_at: new Date().toISOString() } : r));
     } catch (e) {
@@ -88,12 +99,13 @@ export default function RequirementDetail() {
     }
     setUnlockLoading(true);
     try {
-      await api.post(`/requirements/${params.id}/unlock`);
+      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+      await api.post(`/requirements/${params.id}/unlock${typeStr}`);
       setIsUnlocked(true);
       alert("Contact unlocked successfully!");
       setShowUnlockModal(false);
       // Refresh to get the actual contact details
-      const res = await api.get(`/requirements/${params.id}`);
+      const res = await api.get(getEndpoint(params.id as string));
       setRequirement(res.data.data);
     } catch (err: any) {
       if (err.response?.status === 402 || err.response?.data?.message?.includes('balance')) {
@@ -111,7 +123,9 @@ export default function RequirementDetail() {
   if (!requirement) return <div className="p-20 text-center">Requirement not found.</div>;
 
   const isProfessional = user && user.role !== 'customer';
-  const isOwner = user && user.id === requirement.user_id;
+  const isOwner = user?.id === requirement?.user_id;
+  const isWorker = user?.roles?.some((r: any) => r.slug === 'worker') || user?.role === 'worker';
+  const displayUnlockPrice = isWorker ? "Free" : (requirement?.unlock_price_display || "Price");
 
   return (
     <div className="bg-[#f8f9fa] min-h-screen pb-10">
@@ -153,7 +167,8 @@ export default function RequirementDetail() {
                     onClick={async () => {
                       if (confirm("Are you sure you want to close this requirement? Professionals will no longer be able to bid on it.")) {
                         try {
-                          await api.patch(`/requirements/${requirement.id}/status`, { status: 'closed' });
+                          const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+                          await api.patch(`/requirements/${requirement.id}/status${typeStr}`, { status: 'closed' });
                           setRequirement({ ...requirement, status: 'closed' });
                         } catch(e) {
                           alert("Failed to close requirement.");
@@ -171,7 +186,8 @@ export default function RequirementDetail() {
                     className="ml-auto text-green-600 border-green-600 hover:bg-green-50" 
                     onClick={async () => {
                       try {
-                        await api.patch(`/requirements/${requirement.id}/status`, { status: 'open' });
+                        const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+                        await api.patch(`/requirements/${requirement.id}/status${typeStr}`, { status: 'open' });
                         setRequirement({ ...requirement, status: 'open' });
                       } catch(e) {
                         alert("Failed to reopen requirement.");
@@ -186,10 +202,62 @@ export default function RequirementDetail() {
             
             <div className="flex flex-wrap items-center gap-6 text-sm text-slate-700 font-medium">
               <span className="flex items-center gap-1.5"><MapPin className="w-4 h-4" /> {requirement.city}, {requirement.district}</span>
-              <span className="flex items-center gap-1.5"><Home className="w-4 h-4" /> {requirement.project_type || "Residential"}</span>
-              <span className="flex items-center gap-1.5"><Maximize className="w-4 h-4" /> Area: 1450 Sq.ft.</span>
-              <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> Budget: {requirement.formatted_budget}</span>
+              
+              {reqType === 'project' && (
+                <>
+                  <span className="flex items-center gap-1.5"><Home className="w-4 h-4" /> {requirement.project_type || "Residential"}</span>
+                  <span className="flex items-center gap-1.5"><Maximize className="w-4 h-4" /> Area: {requirement.area || "Not specified"}</span>
+                  <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> Budget: {requirement.formatted_budget}</span>
+                </>
+              )}
+              
+              {reqType === 'job' && (
+                <>
+                  <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> Role: {requirement.skills_required || "Worker"}</span>
+                  <span className="flex items-center gap-1.5"><Clock className="w-4 h-4" /> Duration: {requirement.duration || "Not specified"}</span>
+                  <span className="flex items-center gap-1.5"><IndianRupee className="w-4 h-4" /> Rate: {requirement.daily_rate ? `₹${requirement.daily_rate}/day` : "Not specified"}</span>
+                </>
+              )}
+              
+              {reqType === 'rfq' && (
+                <>
+                  <span className="flex items-center gap-1.5"><Building2 className="w-4 h-4" /> Material: {requirement.category || "General"}</span>
+                  <span className="flex items-center gap-1.5"><Briefcase className="w-4 h-4" /> Budget: {requirement.formatted_budget}</span>
+                </>
+              )}
             </div>
+            
+            {/* Completion Status Section */}
+            {requirement.status === 'completed' && (
+              <div className="mt-6 bg-green-50 border border-green-200 rounded-xl p-4 flex items-start gap-4">
+                <div className="bg-green-100 p-2 rounded-full">
+                  <CheckCircle2 className="w-6 h-6 text-green-700" />
+                </div>
+                <div>
+                  <h4 className="font-semibold text-green-900">Project Completed</h4>
+                  <div className="text-sm text-green-800 mt-1 flex flex-col sm:flex-row gap-2 sm:gap-6">
+                    {requirement.completed_at && (
+                      <span className="flex items-center gap-1.5">
+                        <Calendar className="w-4 h-4" /> 
+                        Completed on {new Date(requirement.completed_at).toLocaleDateString()}
+                      </span>
+                    )}
+                    {(() => {
+                      const awardedBid = bids?.find((b: any) => b.is_awarded || b.status === 'accepted' || b.status === 'completed');
+                      if (awardedBid?.professional) {
+                        return (
+                          <span className="flex items-center gap-1.5">
+                            <Users className="w-4 h-4" /> 
+                            Completed by <span className="font-semibold">{awardedBid.professional.name}</span>
+                          </span>
+                        );
+                      }
+                      return null;
+                    })()}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -262,38 +330,41 @@ export default function RequirementDetail() {
                   })()}
                 </div>
 
-                {/* Project Details List */}
+                {/* Details List */}
                 <div className="border border-slate-100 rounded-xl p-5 bg-white shadow-sm">
-                  <h3 className="font-bold text-lg text-slate-900 mb-4 border-l-4 border-[#ff6b00] pl-2">Project Details</h3>
+                  <h3 className="font-bold text-lg text-slate-900 mb-4 border-l-4 border-[#ff6b00] pl-2">
+                    {reqType === 'job' ? 'Job Requirements' : reqType === 'rfq' ? 'Material Details' : 'Project Details'}
+                  </h3>
                   <ul className="space-y-3 text-sm text-slate-700">
-                    <li className="flex gap-2">
-                      <span className="text-[#ff6b00] mt-1">•</span>
-                      <span><span className="font-medium">Site Condition:</span> Under Construction</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-[#ff6b00] mt-1">•</span>
-                      <span><span className="font-medium">Property Type:</span> Apartment</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-[#ff6b00] mt-1">•</span>
-                      <span><span className="font-medium">Possession:</span> Aug 2025</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-[#ff6b00] mt-1">•</span>
-                      <span><span className="font-medium">Design Style:</span> Modern</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-[#ff6b00] mt-1">•</span>
-                      <span><span className="font-medium">Work Type:</span> Full Home Interior</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-[#ff6b00] mt-1">•</span>
-                      <span><span className="font-medium">Rooms:</span> 3 Bedrooms, 1 Living, 1 Kitchen</span>
-                    </li>
-                    <li className="flex gap-2">
-                      <span className="text-[#ff6b00] mt-1">•</span>
-                      <span><span className="font-medium">Additional:</span> Wardrobes, TV Unit, False Ceiling</span>
-                    </li>
+                    {reqType === 'project' && (
+                      <>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Site Condition:</span> {requirement.site_condition || "Not specified"}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Property Type:</span> {requirement.project_type || "Not specified"}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Possession:</span> {requirement.possession_timeline || "Not specified"}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Design Style:</span> {requirement.design_style || "Not specified"}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Work Type:</span> {requirement.work_type || "Not specified"}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Rooms:</span> {requirement.rooms || "Not specified"}</span></li>
+                        {requirement.additional_requirements && (
+                          <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Additional:</span> {requirement.additional_requirements}</span></li>
+                        )}
+                      </>
+                    )}
+                    
+                    {reqType === 'job' && (
+                      <>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Skill Required:</span> {requirement.skills_required || "General Worker"}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Expected Duration:</span> {requirement.duration || "Not specified"}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Budget / Rate:</span> {requirement.formatted_budget}</span></li>
+                      </>
+                    )}
+                    
+                    {reqType === 'rfq' && (
+                      <>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Material Category:</span> {requirement.category || "Not specified"}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Quantity Required:</span> {requirement.quantity || "Not specified"} {requirement.unit || ""}</span></li>
+                        <li className="flex gap-2"><span className="text-[#ff6b00] mt-1">•</span><span><span className="font-medium">Delivery Required By:</span> {requirement.expected_delivery_date || "Not specified"}</span></li>
+                      </>
+                    )}
                   </ul>
                 </div>
               </div>
@@ -307,13 +378,15 @@ export default function RequirementDetail() {
                 </div>
                 <div className="flex flex-col items-center justify-center text-center border-r border-slate-100">
                   <Eye className="w-6 h-6 text-[#0b1b36] mb-1" />
-                  <span className="font-extrabold text-xl text-slate-900">{requirement.views_count || 15}</span>
+                  <span className="font-extrabold text-xl text-slate-900">{requirement.views_count || 0}</span>
                   <span className="text-xs text-slate-500 font-medium leading-tight">Times<br/>Viewed</span>
                 </div>
                 <div className="flex flex-col items-center justify-center text-center border-r border-slate-100">
                   <Calendar className="w-6 h-6 text-[#ff6b00] mb-1" />
-                  <span className="font-extrabold text-xl text-slate-900">30 May 2025</span>
-                  <span className="text-xs text-slate-500 font-medium leading-tight">Project<br/>Deadline</span>
+                  <span className="font-extrabold text-xl text-slate-900 line-clamp-1 overflow-hidden" title={requirement.possession_timeline || requirement.expected_delivery_date || requirement.duration || "Not specified"}>
+                    {requirement.possession_timeline || requirement.expected_delivery_date || requirement.duration || "N/A"}
+                  </span>
+                  <span className="text-xs text-slate-500 font-medium leading-tight">Expected<br/>Timeline</span>
                 </div>
                 <div className="flex flex-col items-center justify-center text-center">
                   <ShieldCheck className="w-6 h-6 text-[#ff6b00] mb-1" />
@@ -346,7 +419,7 @@ export default function RequirementDetail() {
                         <Star className="w-3 h-3 fill-current" />
                         <Star className="w-3 h-3 fill-current" />
                         <Star className="w-3 h-3 fill-current" />
-                        <span className="text-[10px] text-slate-500 ml-1">4.8 (23 Reviews)</span>
+                        <span className="text-[10px] text-slate-500 ml-1">{requirement.user?.vendorMetric?.rating_average || 5.0} ({requirement.user?.vendorMetric?.reviews_count || 0} Reviews)</span>
                       </div>
                     </div>
                   </div>
@@ -404,96 +477,147 @@ export default function RequirementDetail() {
             <div className="space-y-4">
               
               {/* Unlock Contact Block */}
-              <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-6 relative overflow-hidden">
-                <div className="flex justify-between items-start mb-2">
-                  <div>
-                    <h2 className="text-[#15803d] font-black text-xl">UNLOCK CONTACT</h2>
-                    <p className="text-slate-700 text-sm font-medium">
-                      {isOwner ? "Your Contact Details" : "Get Client Contact Number"}
-                    </p>
-                  </div>
-                  <div className="w-12 h-12 bg-[#16a34a] rounded-full flex items-center justify-center relative shadow-sm">
-                    <Phone className="w-5 h-5 text-white" />
-                    <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
-                      <Lock className="w-3 h-3 text-[#16a34a]" />
+              {!isOwner && (
+                <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-6 relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-2">
+                    <div>
+                      <h2 className="text-[#15803d] font-black text-xl">UNLOCK CONTACT</h2>
+                      <p className="text-slate-700 text-sm font-medium">
+                        Get Client Contact Number
+                      </p>
+                    </div>
+                    <div className="w-12 h-12 bg-[#16a34a] rounded-full flex items-center justify-center relative shadow-sm">
+                      <Phone className="w-5 h-5 text-white" />
+                      <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5 shadow-sm">
+                        <Lock className="w-3 h-3 text-[#16a34a]" />
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {isOwner || isUnlocked || user?.role === 'admin' ? (
-                  <div className="mt-4 bg-white rounded-lg p-4 border border-green-200 shadow-sm text-center">
-                    <div className="text-2xl font-black text-slate-900 tracking-wider mb-1">{requirement.phone}</div>
-                    <div className="text-sm text-slate-600 font-medium">{requirement.email || "No email provided"}</div>
-                    <div className="mt-3 text-xs font-bold text-green-700 bg-green-100 py-1.5 rounded flex items-center justify-center gap-1">
-                      <CheckCircle className="w-4 h-4" /> Contact Unlocked
-                    </div>
-                    <div className="flex items-center gap-2 mb-2">
-                      <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                        {isOwner ? "Your Contact Details" : "Contact Details"}
-                      </span>
-                    </div>
-                    
-                    {!isOwner && (
-                      <>
-                        <p className="text-sm text-slate-700 mb-5 leading-relaxed">
-                          Unlock & connect directly with the client to discuss the project.
-                        </p>
-                        <Button 
-                          onClick={async () => {
-                            try {
-                              const res = await api.post(`/requirements/${requirement.id}/conversations`);
-                              router.push(`/messages/${res.data.id}`);
-                            } catch (err: any) {
-                              alert(err.response?.data?.message || "Failed to start conversation.");
-                            }
-                          }}
-                          className="w-full bg-[#0b1b36] hover:bg-slate-800 text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
-                        >
-                          <MessageCircle className="w-5 h-5" /> Message Client
-                        </Button>
-                      </>
-                    )}
-                    {isOwner && (
+                  {isUnlocked || user?.role === 'admin' ? (
+                    <div className="mt-4 bg-white rounded-lg p-4 border border-green-200 shadow-sm text-center">
+                      <div className="text-2xl font-black text-slate-900 tracking-wider mb-1">{requirement.phone}</div>
+                      <div className="text-sm text-slate-600 font-medium">{requirement.email || "No email provided"}</div>
+                      <div className="mt-3 text-xs font-bold text-green-700 bg-green-100 py-1.5 rounded flex items-center justify-center gap-1">
+                        <CheckCircle className="w-4 h-4" /> Contact Unlocked
+                      </div>
+                      <div className="flex items-center gap-2 mb-2">
+                        <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
+                          Contact Details
+                        </span>
+                      </div>
+                      
+                      <p className="text-sm text-slate-700 mb-5 leading-relaxed">
+                        Unlock & connect directly with the client to discuss the project.
+                      </p>
                       <Button 
-                        onClick={() => router.push("/dashboard?tab=bids_received")}
-                        className="w-full mt-4 bg-[#0a1c3a] hover:bg-slate-800 text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
+                        onClick={async () => {
+                          try {
+                            const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+                            const res = await api.post(`/requirements/${requirement.id}/conversations${typeStr}`);
+                            router.push(`/messages/${res.data.id}`);
+                          } catch (err: any) {
+                            alert(err.response?.data?.message || "Failed to start conversation.");
+                          }
+                        }}
+                        className="w-full bg-[#0b1b36] hover:bg-slate-800 text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
                       >
-                        <Users className="w-5 h-5" /> View Received Bids
+                        <MessageCircle className="w-5 h-5" /> Message Client
                       </Button>
-                    )}
-                  </div>
-                ) : (
-                  <>
-                    <div className="mt-4 mb-2 flex items-baseline">
-                      <span className="text-4xl font-black text-[#16a34a]">{requirement.unlock_price_display || "Price"}</span>
-                      <span className="text-slate-600 font-bold ml-1">/unlock</span>
                     </div>
-                    
-                    <p className="text-sm text-slate-700 mb-5 leading-relaxed">
-                      Unlock & connect directly with the client to discuss the project.
-                    </p>
+                  ) : (
+                    <>
+                      <div className="mt-4 mb-2 flex items-baseline">
+                        <span className="text-4xl font-black text-[#16a34a]">{displayUnlockPrice}</span>
+                        {!isWorker && <span className="text-slate-600 font-bold ml-1">/unlock</span>}
+                      </div>
+                      
+                      <p className="text-sm text-slate-700 mb-5 leading-relaxed">
+                        Unlock & connect directly with the client to discuss the project.
+                      </p>
 
-                    <Button 
-                      onClick={() => setShowUnlockModal(true)}
-                      className="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
-                    >
-                      <Lock className="w-4 h-4" /> UNLOCK NOW
-                    </Button>
-                  </>
-                )}
-              </div>
+                      <Button 
+                        onClick={() => setShowUnlockModal(true)}
+                        className="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
+                      >
+                        <Lock className="w-4 h-4" /> UNLOCK NOW
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Context Aware Action Block */}
               {isOwner ? (
                 <div className="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
-                  <h2 className="font-bold text-xl text-slate-900 mb-4 border-l-4 border-[#0b1b36] pl-2">Received Bids</h2>
-                  <p className="text-sm text-slate-600 mb-4">Compare bids from professionals and award the project.</p>
-                  {bids.length > 0 ? (
-                    <BidComparisonMatrix bids={bids} onAward={handleAwardBid} />
+                  {['awarded', 'in_progress', 'completed'].includes(requirement.status) ? (
+                    <>
+                      <h2 className="font-bold text-xl text-slate-900 mb-4 border-l-4 border-green-600 pl-2">
+                        {requirement.status === 'completed' ? 'Completed By' : 'Awarded Professional'}
+                      </h2>
+                      <p className="text-sm text-slate-600 mb-4">
+                        {requirement.status === 'completed' ? 'This project was successfully completed by:' : 'This project has been awarded to the following professional.'}
+                      </p>
+                      
+                      {(() => {
+                        const awardedBid = bids.find((b: any) => b.is_awarded || b.status === 'accepted' || b.status === 'completed');
+                        if (awardedBid?.professional) {
+                          return (
+                            <div className="flex flex-col md:flex-row gap-4 border border-slate-100 rounded-xl p-4 bg-slate-50 items-center">
+                              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                                {awardedBid.professional.avatar ? (
+                                  <img src={awardedBid.professional.avatar} alt={awardedBid.professional.name} className="w-full h-full object-cover" />
+                                ) : (
+                                  <span className="font-bold text-slate-400 text-xl">{awardedBid.professional.name?.charAt(0) || 'V'}</span>
+                                )}
+                              </div>
+                              <div className="flex-1 text-center md:text-left">
+                                <h3 className="font-bold text-lg text-slate-800">{awardedBid.professional.name}</h3>
+                                <div className="text-sm text-slate-500 font-medium">
+                                  Winning Bid Amount: ₹{Number(awardedBid.amount).toLocaleString('en-IN')}
+                                </div>
+                                <div className="text-xs text-slate-400 mt-1">Awarded on {new Date(awardedBid.updated_at || awardedBid.created_at).toLocaleDateString()}</div>
+                              </div>
+                              <div className="shrink-0 flex flex-col gap-2">
+                                <Button 
+                                  onClick={async () => {
+                                    try {
+                                      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+                                      const res = await api.post(`/requirements/${requirement.id}/conversations${typeStr}`, { vendor_id: awardedBid.professional_id });
+                                      router.push(`/messages/${res.data.id}`);
+                                    } catch (err: any) {
+                                      alert("Failed to start conversation.");
+                                    }
+                                  }}
+                                  className="bg-[#0b1b36] hover:bg-slate-800 text-white"
+                                >
+                                  <MessageCircle className="w-4 h-4 mr-2" /> Message
+                                </Button>
+                                <Button 
+                                  onClick={() => router.push(`/professionals/${awardedBid.professional_id}`)}
+                                  variant="outline"
+                                >
+                                  <User className="w-4 h-4 mr-2" /> View Profile
+                                </Button>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return <div className="p-4 text-center text-slate-500 border border-dashed rounded-lg">Professional details not available.</div>;
+                      })()}
+                    </>
                   ) : (
-                    <div className="text-center p-6 bg-slate-50 rounded border border-dashed border-slate-300">
-                      <p className="text-slate-500 font-medium">No bids received yet.</p>
-                    </div>
+                    <>
+                      <h2 className="font-bold text-xl text-slate-900 mb-4 border-l-4 border-[#0b1b36] pl-2">Received Bids</h2>
+                      <p className="text-sm text-slate-600 mb-4">Compare bids from professionals and award the project.</p>
+                      {bids.length > 0 ? (
+                        <BidComparisonMatrix bids={bids} onAward={handleAwardBid} reqType={reqType} />
+                      ) : (
+                        <div className="text-center p-6 bg-slate-50 rounded border border-dashed border-slate-300">
+                          <p className="text-slate-500 font-medium">No bids received yet.</p>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               ) : (
@@ -508,21 +632,37 @@ export default function RequirementDetail() {
                     </div>
                   </div>
 
-                  <div className="flex items-end gap-1 mb-6 justify-center">
-                    <span className="text-4xl font-black text-[#ff6b00]">{requirement.unlock_price_display || "Price"}</span>
-                    <span className="text-slate-500 font-bold mb-1">/unlock</span>
-                  </div>
-                  
-                  <p className="text-sm text-slate-700 mb-5 leading-relaxed">
-                    Place your quote, showcase your profile & win this project.
-                  </p>
+                  {requirement?.has_bid ? (
+                    <div className="mt-6 text-center">
+                      <div className="text-green-600 font-bold mb-4 flex items-center justify-center gap-2">
+                        <CheckCircle className="w-5 h-5" /> Bid Submitted Successfully!
+                      </div>
+                      <p className="text-sm text-slate-600 mb-5">
+                        You can now message the client directly to discuss the project.
+                      </p>
+                      <Button disabled className="w-full bg-slate-100 text-slate-500 font-bold h-12 text-base rounded-md flex gap-2">
+                        <CheckCircle className="w-4 h-4" /> BID SENT
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="flex items-end gap-1 mb-6 justify-center mt-4">
+                        <span className="text-4xl font-black text-[#ff6b00]">{displayUnlockPrice}</span>
+                        {!isWorker && <span className="text-slate-500 font-bold mb-1">/unlock</span>}
+                      </div>
+                      
+                      <p className="text-sm text-slate-700 mb-5 leading-relaxed text-center">
+                        Place your quote, showcase your profile & win this project.
+                      </p>
 
-                  <Button 
-                    onClick={() => setShowBidForm(true)}
-                    className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
-                  >
-                    <Upload className="w-4 h-4" /> PLACE BID NOW
-                  </Button>
+                      <Button 
+                        onClick={() => setShowBidForm(true)}
+                        className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
+                      >
+                        <Upload className="w-4 h-4" /> PLACE BID NOW
+                      </Button>
+                    </>
+                  )}
                 </div>
               )}
 
@@ -573,7 +713,7 @@ export default function RequirementDetail() {
             </div>
             <div className="p-6 space-y-4">
               <p className="text-slate-600 mb-6 leading-relaxed">
-                A fee of <span className="font-bold text-slate-900">{requirement.unlock_price_display || "Price"}</span> will be deducted from your wallet to instantly unlock the client's phone number and email.
+                A fee of <span className="font-bold text-slate-900">{displayUnlockPrice}</span> will be deducted from your wallet to instantly unlock the client's phone number and email.
               </p>
               
               <div className="flex gap-3 pt-2">
@@ -602,7 +742,8 @@ export default function RequirementDetail() {
             </div>
             <div className="p-6">
               <AdvancedBidForm 
-                requirementId={requirement.id} 
+                requirementId={requirement.id}
+                requirementType={reqType} 
                 onSuccess={() => {
                   setShowBidForm(false);
                   // Refresh bids if needed

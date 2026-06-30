@@ -31,6 +31,7 @@ const tabs: { id: AdminTab; label: string }[] = [
   { id: "database", label: "Database Explorer" },
   { id: "verifications", label: "Verifications" },
   { id: "users", label: "Users" },
+  { id: "listings", label: "Business Listings" },
   { id: "requirements", label: "Requirements" },
   { id: "reviews", label: "Reviews" },
   { id: "payments", label: "Payments" },
@@ -52,6 +53,7 @@ export default function AdminDashboard() {
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
   const [dashboard, setDashboard] = useState<any>(null);
   const [users, setUsers] = useState<any[]>([]);
+  const [listings, setListings] = useState<any[]>([]);
   const [requirements, setRequirements] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
@@ -85,6 +87,13 @@ export default function AdminDashboard() {
     setUsers(res.data.data || []);
     setUsersMeta(res.data.meta || {});
   }, [search, userFilter]);
+
+  const fetchListings = useCallback(async () => {
+    try {
+      const res = await api.get("/admin/listings");
+      setListings(res.data.data || []);
+    } catch (e) {}
+  }, []);
 
   const fetchRequirements = useCallback(async () => {
     const res = await api.get("/admin/requirements");
@@ -147,11 +156,11 @@ export default function AdminDashboard() {
   const refreshAll = useCallback(async () => {
     setLoading(true);
     try {
-      await Promise.all([fetchDashboard(), fetchUsers(), fetchRequirements(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchInquiries(), fetchBlogs(), fetchPlans(), fetchCategories()]);
+      await Promise.all([fetchDashboard(), fetchUsers(), fetchListings(), fetchRequirements(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchInquiries(), fetchBlogs(), fetchPlans(), fetchCategories()]);
     } finally {
       setLoading(false);
     }
-  }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers, fetchDbTables, fetchInquiries, fetchBlogs, fetchPlans, fetchCategories]);
+  }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers, fetchListings, fetchDbTables, fetchInquiries, fetchBlogs, fetchPlans, fetchCategories]);
 
   useEffect(() => {
     if (!token || !isAdmin) {
@@ -388,6 +397,46 @@ export default function AdminDashboard() {
                       }}
                     >
                       Delete
+                    </Button>
+                  </div>,
+                ])}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "listings" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Business & Professional Listings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AdminTable
+                headers={["Business Name", "Category", "Verification", "Views / Leads", "Action"]}
+                rows={listings.map((item) => [
+                  <div key="name">
+                    <div className="font-semibold flex items-center gap-2">
+                      {item.company_name || item.name}
+                      {item.is_featured && <Badge className="bg-amber-500 text-[10px] px-1 py-0 h-4">Featured</Badge>}
+                    </div>
+                    <div className="text-slate-500 text-sm">by {item.user?.name}</div>
+                  </div>,
+                  <div key="category" className="capitalize">
+                    {item.category?.name || item.role}
+                    <div className="text-xs text-slate-400">{item.city}</div>
+                  </div>,
+                  <Badge key="status" variant={item.is_verified ? "default" : "secondary"}>
+                    {item.is_verified ? "Verified" : "Pending"}
+                  </Badge>,
+                  <div key="metrics" className="text-sm">
+                    {item.view_count || 0} / {item.lead_count || 0}
+                  </div>,
+                  <div key="actions" className="flex justify-end gap-2">
+                    <Button size="sm" variant="outline" onClick={() => runAction(`feat-list-${item.id}`, () => api.patch(`/admin/listings/${item.id}/feature`))}>
+                      <Star className="h-3 w-3 mr-1" />{item.is_featured ? "Unfeature" : "Feature"}
+                    </Button>
+                    <Button size="sm" onClick={() => runAction(`verify-list-${item.id}`, () => api.patch(`/admin/listings/${item.id}/verify`))} className={item.is_verified ? "bg-red-600 hover:bg-red-700" : "bg-green-600 hover:bg-green-700"}>
+                      {item.is_verified ? "Unverify" : "Verify"}
                     </Button>
                   </div>,
                 ])}

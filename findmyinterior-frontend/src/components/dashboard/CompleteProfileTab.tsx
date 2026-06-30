@@ -129,12 +129,60 @@ function Field({ label, icon: Icon, children }: { label: string; icon: any; chil
   );
 }
 
-const REQUIRED_DOCS = [
-  { id: "gst_certificate", label: "GST Certificate", requiredFor: "Business" },
-  { id: "pan_card", label: "PAN Card", requiredFor: "Business" },
-  { id: "business_logo", label: "Business Logo", requiredFor: "Business" },
-  { id: "business_image", label: "Office/Business Image", requiredFor: "Business" },
-];
+const getRequiredDocsForRole = (role: string) => {
+  switch (role) {
+    case 'interior_designer':
+    case 'interior_company':
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "pan_card", label: "PAN Card" },
+        { id: "owner_photo", label: "Owner Photograph" },
+        { id: "office_image", label: "Office Photograph" },
+      ];
+    case 'contractor':
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "pan_card", label: "PAN Card" },
+        { id: "owner_photo", label: "Owner Photograph" },
+        { id: "office_image", label: "Office Images" },
+        { id: "business_registration", label: "Business Registration" },
+      ];
+    case 'architect':
+      return [
+        { id: "registration_certificate", label: "Registration Certificate" },
+        { id: "owner_photo", label: "Identity Document" },
+        { id: "office_image", label: "Office Images" },
+      ];
+    case 'builder':
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "company_registration", label: "Company Registration" },
+        { id: "owner_photo", label: "Owner Identity" },
+        { id: "office_image", label: "Office Images" },
+      ];
+    case 'supplier':
+    case 'material_supplier':
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "business_registration", label: "Business Registration" },
+        { id: "owner_photo", label: "Owner Identity" },
+        { id: "warehouse_image", label: "Warehouse Images" },
+      ];
+    case 'worker':
+    case 'skilled_worker':
+      return [
+        { id: "aadhaar", label: "Aadhaar Card" },
+        { id: "self_photo", label: "Self Photograph" },
+        { id: "skill_photo", label: "Skill Photograph" },
+      ];
+    default:
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "pan_card", label: "PAN Card" },
+        { id: "business_image", label: "Office/Business Image" },
+      ];
+  }
+};
 
 // ─── Main Component ───────────────────────────────────────────────────────────
 
@@ -151,8 +199,8 @@ export function CompleteProfileTab() {
   const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
 
   const role = user?.role || 'homeowner';
-  const isBusiness = ['interior_designer', 'contractor', 'architect', 'supplier', 'builder'].includes(role);
-  const isWorker = role === 'worker';
+  const isBusiness = ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business'].includes(role);
+  const isWorker = ['worker', 'skilled_worker'].includes(role);
 
   // Completion score calculation
   const fieldsToCheck = [
@@ -173,7 +221,7 @@ export function CompleteProfileTab() {
     try {
       // Parallel fetch profile data and verification status
       const [profileRes, verifRes] = await Promise.all([
-        api.get("/user/professional-profile"),
+        api.get("/user/professional-profile").catch(() => ({ data: { data: null, type: null } })),
         api.get("/verification/status").catch(() => ({ data: { data: null } }))
       ]);
 
@@ -212,9 +260,26 @@ export function CompleteProfileTab() {
           // Supplier / Builder specific
           company_name: data.company_name || "",
           total_projects: data.total_projects || "",
+
+          // New Advanced Fields
+          services: data.services ? data.services.join(", ") : "",
+          achievements: data.achievements ? data.achievements.join(", ") : "",
+          availability: data.availability || "",
+          response_time: data.response_time || "",
+          languages: data.languages ? data.languages.join(", ") : "",
+          facebook: data.social_links?.facebook || "",
+          instagram: data.social_links?.instagram || "",
+          linkedin: data.social_links?.linkedin || "",
         });
       } else {
-        setFormData({ phone: user?.phone || "" });
+        setFormData({ 
+          phone: user?.phone || "",
+          city: "", district: "", address: "",
+          title: "", company_name: "", tagline: "", description: "", website: "", years_experience: "", team_size: "",
+          gst_number: "", pan_number: "",
+          skill: "", experience_years: "", daily_rate: "", bio: "", total_projects: "",
+          services: "", achievements: "", availability: "", response_time: "", languages: "", facebook: "", instagram: "", linkedin: ""
+        });
       }
     } catch (e) {
       console.error(e);
@@ -241,7 +306,19 @@ export function CompleteProfileTab() {
 
       // Then update professional profile if applicable
       if (isBusiness || isWorker) {
-        await api.put(`/user/professional-profile`, formData);
+        const payload = {
+          ...formData,
+          name: user?.name || "Professional",
+          services: formData.services ? formData.services.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+          achievements: formData.achievements ? formData.achievements.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+          languages: formData.languages ? formData.languages.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+          social_links: {
+            facebook: formData.facebook,
+            instagram: formData.instagram,
+            linkedin: formData.linkedin,
+          }
+        };
+        await api.put(`/user/professional-profile`, payload);
       }
       
       setSaved(true);
@@ -292,7 +369,8 @@ export function CompleteProfileTab() {
 
   const docs = verificationData?.documents || [];
   const getDocStatus = (type: string) => docs.find((d: any) => d.document_type === type);
-  const requiredDocsSubmitted = REQUIRED_DOCS.every(doc => ['pending', 'approved'].includes(getDocStatus(doc.id)?.status));
+  const requiredDocs = getRequiredDocsForRole(role);
+  const requiredDocsSubmitted = requiredDocs.every(doc => ['pending', 'approved'].includes(getDocStatus(doc.id)?.status));
 
   return (
     <div className="space-y-6 max-w-4xl mx-auto">
@@ -359,7 +437,24 @@ export function CompleteProfileTab() {
                 <>
                   <div className="border-t pt-6 mt-6 grid grid-cols-1 md:grid-cols-3 gap-6">
                     <Field label="Primary Skill" icon={Briefcase}>
-                      <Input name="skill" value={formData.skill} onChange={handleChange} placeholder="e.g. Electrician, Carpenter" />
+                      <select name="skill" value={formData.skill || ''} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                        <option value="">Select a Skill</option>
+                        <option value="Carpenter">Carpenter</option>
+                        <option value="Electrician">Electrician</option>
+                        <option value="Plumber">Plumber</option>
+                        <option value="Painter">Painter</option>
+                        <option value="Mason">Mason / Bricklayer</option>
+                        <option value="Tile & Marble Setter">Tile & Marble Setter</option>
+                        <option value="POP / False Ceiling Expert">POP / False Ceiling Expert</option>
+                        <option value="Welder / Fabricator">Welder / Fabricator</option>
+                        <option value="Glass Worker">Glass Worker</option>
+                        <option value="HVAC Technician">HVAC Technician</option>
+                        <option value="Upholsterer">Upholsterer</option>
+                        <option value="Waterproofing Expert">Waterproofing Expert</option>
+                        <option value="Civil Worker">Civil Worker</option>
+                        <option value="Deep Cleaning Expert">Deep Cleaning Expert</option>
+                        <option value="General Helper / Labour">General Helper / Labour</option>
+                      </select>
                     </Field>
                     <Field label="Years Experience" icon={Star}>
                       <Input name="experience_years" type="number" value={formData.experience_years} onChange={handleChange} placeholder="e.g. 5" />
@@ -417,6 +512,56 @@ export function CompleteProfileTab() {
                 </>
               )}
 
+              {/* Advanced Professional Details */}
+              {(isBusiness || isWorker) && (
+                <div className="border-t pt-6 mt-6 space-y-6">
+                  <h4 className="text-sm font-bold text-slate-900 mb-2">Advanced Details</h4>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <Field label="Services Offered (Comma Separated)" icon={Briefcase}>
+                      <Input name="services" value={formData.services} onChange={handleChange} placeholder="e.g. Modular Kitchen, False Ceiling" />
+                    </Field>
+                    <Field label="Key Achievements (Comma Separated)" icon={Star}>
+                      <Input name="achievements" value={formData.achievements} onChange={handleChange} placeholder="e.g. 50+ Projects Completed" />
+                    </Field>
+                    
+                    <Field label="Availability" icon={CheckCircle2}>
+                      <select name="availability" value={formData.availability} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                        <option value="">Select Availability</option>
+                        <option value="Immediate">Immediate</option>
+                        <option value="Within 1 Week">Within 1 Week</option>
+                        <option value="Next Month">Next Month</option>
+                        <option value="Currently Unavailable">Currently Unavailable</option>
+                      </select>
+                    </Field>
+                    <Field label="Response Time" icon={Phone}>
+                      <select name="response_time" value={formData.response_time} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50">
+                        <option value="">Select Response Time</option>
+                        <option value="Within 1 Hour">Within 1 Hour</option>
+                        <option value="Within 24 Hours">Within 24 Hours</option>
+                        <option value="1-3 Days">1-3 Days</option>
+                      </select>
+                    </Field>
+                    
+                    <Field label="Languages Spoken (Comma Separated)" icon={Globe}>
+                      <Input name="languages" value={formData.languages} onChange={handleChange} placeholder="e.g. English, Hindi" />
+                    </Field>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-4 rounded-lg">
+                    <Field label="Facebook Link" icon={Globe}>
+                      <Input name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/..." />
+                    </Field>
+                    <Field label="Instagram Link" icon={Globe}>
+                      <Input name="instagram" value={formData.instagram} onChange={handleChange} placeholder="https://instagram.com/..." />
+                    </Field>
+                    <Field label="LinkedIn Link" icon={Globe}>
+                      <Input name="linkedin" value={formData.linkedin} onChange={handleChange} placeholder="https://linkedin.com/..." />
+                    </Field>
+                  </div>
+                </div>
+              )}
+
               <div className="flex justify-end pt-4 border-t mt-6">
                 <Button onClick={handleSave} disabled={saving} className="bg-indigo-600 hover:bg-indigo-700 min-w-[140px]">
                   {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
@@ -449,7 +594,7 @@ export function CompleteProfileTab() {
                 )}
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {REQUIRED_DOCS.map(doc => {
+                  {requiredDocs.map(doc => {
                     const currentDoc = getDocStatus(doc.id);
                     return (
                       <div key={doc.id} className={`border rounded-lg p-4 flex flex-col justify-between ${currentDoc?.status === 'approved' ? 'bg-green-50/50 border-green-200' : ''}`}>

@@ -6,12 +6,60 @@ import { CheckCircle2, ShieldAlert, ShieldCheck, UploadCloud, XCircle, AlertCirc
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
-const REQUIRED_DOCS = [
-  { id: "gst_certificate", label: "GST Certificate", requiredFor: "Business" },
-  { id: "pan_card", label: "PAN Card", requiredFor: "Business" },
-  { id: "business_logo", label: "Business Logo", requiredFor: "Business" },
-  { id: "business_image", label: "Office/Business Image", requiredFor: "Business" },
-];
+const getRequiredDocsForRole = (role: string) => {
+  switch (role) {
+    case 'interior_designer':
+    case 'interior_company':
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "pan_card", label: "PAN Card" },
+        { id: "owner_photo", label: "Owner Photograph" },
+        { id: "office_image", label: "Office Photograph" },
+      ];
+    case 'contractor':
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "pan_card", label: "PAN Card" },
+        { id: "owner_photo", label: "Owner Photograph" },
+        { id: "office_image", label: "Office Images" },
+        { id: "business_registration", label: "Business Registration" },
+      ];
+    case 'architect':
+      return [
+        { id: "registration_certificate", label: "Registration Certificate" },
+        { id: "owner_photo", label: "Identity Document" },
+        { id: "office_image", label: "Office Images" },
+      ];
+    case 'builder':
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "company_registration", label: "Company Registration" },
+        { id: "owner_photo", label: "Owner Identity" },
+        { id: "office_image", label: "Office Images" },
+      ];
+    case 'supplier':
+    case 'material_supplier':
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "business_registration", label: "Business Registration" },
+        { id: "owner_photo", label: "Owner Identity" },
+        { id: "warehouse_image", label: "Warehouse Images" },
+      ];
+    case 'worker':
+    case 'skilled_worker':
+      return [
+        { id: "aadhaar", label: "Aadhaar Card" },
+        { id: "self_photo", label: "Self Photograph" },
+        { id: "skill_photo", label: "Skill Photograph" },
+      ];
+    default:
+      return [
+        { id: "gst_certificate", label: "GST Certificate" },
+        { id: "pan_card", label: "PAN Card" },
+        { id: "business_image", label: "Office/Business Image" },
+      ];
+  }
+};
 
 const OPTIONAL_DOCS = [
   { id: "portfolio_document", label: "Portfolio (PDF)", requiredFor: "Trusted" },
@@ -22,11 +70,36 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState<string | null>(null);
   const { user } = useAuthStore();
+  const currentRole = user?.role || 'homeowner';
+  const isBusiness = ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business'].includes(currentRole);
+  const isWorker = ['worker', 'skilled_worker'].includes(currentRole);
+
+  const [profileCompletion, setProfileCompletion] = useState(0);
 
   const fetchStatus = async () => {
     try {
-      const res = await api.get("/verification/status");
-      setData(res.data.data);
+      const [verifRes, profileRes] = await Promise.all([
+        api.get("/verification/status"),
+        api.get("/user/professional-profile").catch(() => ({ data: { data: null } }))
+      ]);
+      setData(verifRes.data?.data);
+
+      const pData = profileRes.data?.data;
+
+      let fieldsToCheck = [user?.phone];
+      if (pData) {
+        fieldsToCheck = [user?.phone || pData.phone, pData.city, pData.district, pData.address];
+        if (isBusiness) {
+          fieldsToCheck.push(pData.title || pData.company_name, pData.description || pData.tagline);
+        }
+        if (isWorker) {
+          fieldsToCheck.push(pData.skill, pData.experience_years, pData.daily_rate);
+        }
+      }
+      
+      const filledFields = fieldsToCheck.filter((v) => v && String(v).trim().length > 0).length;
+      const score = fieldsToCheck.length === 0 ? 100 : Math.min(100, Math.round((filledFields / fieldsToCheck.length) * 100));
+      setProfileCompletion(score);
     } catch (e) {
       console.error(e);
     } finally {
@@ -72,17 +145,12 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
   const getDocStatus = (type: string) => docs.find((d: any) => d.document_type === type);
 
   // Profile Validation Check
-  const hasListing = !!profileData?.listing;
-  const hasPhone = !!user?.phone;
-  const hasDesc = !!profileData?.listing?.description;
-  const hasCity = !!profileData?.listing?.city;
-  const checks = [hasListing, hasPhone, hasDesc, hasCity];
-  const completedChecks = checks.filter(Boolean).length;
-  const completionPercentage = (completedChecks / checks.length) * 100;
+  const completionPercentage = profileCompletion;
   const isProfileComplete = completionPercentage >= 50;
 
-  // Check if all required docs are at least pending or approved
-  const requiredDocsSubmitted = REQUIRED_DOCS.every(doc => {
+  const role = user?.role || 'homeowner';
+  const requiredDocs = getRequiredDocsForRole(role);
+  const requiredDocsSubmitted = requiredDocs.every(doc => {
     const status = getDocStatus(doc.id)?.status;
     return status === 'pending' || status === 'approved';
   });
@@ -95,10 +163,12 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
       {/* Header */}
       <div className="text-center bg-gradient-to-br from-[#0a1c3a] to-indigo-900 rounded-xl p-8 text-white shadow-lg">
         <ShieldCheck className="w-16 h-16 mx-auto mb-4 text-green-400" />
-        <h2 className="text-3xl font-bold mb-2">Formal Business Verification</h2>
+        <h2 className="text-3xl font-bold mb-2">
+          {isBusiness ? "Formal Business Verification" : "Professional Verification"}
+        </h2>
         <p className="text-indigo-100 max-w-xl mx-auto">
           Applying for verification is the best way to build trust with customers. 
-          Verified businesses rank higher in search results and receive a dedicated badge.
+          {isBusiness ? " Verified businesses" : " Verified professionals"} rank higher in search results and receive a dedicated badge.
         </p>
         
         <div className="mt-6 flex justify-center gap-4">
@@ -125,7 +195,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
           <Card className={isProfileComplete ? "border-green-100 bg-green-50/30" : "border-indigo-200 shadow-md"}>
             <CardHeader className="pb-3">
               <CardTitle className="text-xl flex justify-between items-center">
-                <span>Business Profile Completion ({Math.round(completionPercentage)}%)</span>
+                <span>Profile Completion ({Math.round(completionPercentage)}%)</span>
                 {isProfileComplete && <Badge className="bg-green-500">Completed</Badge>}
               </CardTitle>
               <CardDescription>We need basic details about your business before you can apply.</CardDescription>
@@ -135,7 +205,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
                 <div className="bg-orange-50 border border-orange-100 p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div>
                     <h4 className="font-semibold text-orange-900 flex items-center"><AlertCircle className="w-4 h-4 mr-2" /> Action Required</h4>
-                    <p className="text-sm text-orange-800 mt-1">Your business profile is incomplete. Please add your Phone, Location, and Business Description in the Profile tab.</p>
+                    <p className="text-sm text-orange-800 mt-1">Your profile is incomplete. Please add your Phone, Location, and other details in the Profile tab.</p>
                   </div>
                   {onSwitchTab && (
                     <Button onClick={() => onSwitchTab('profile')} className="bg-orange-600 hover:bg-orange-700 whitespace-nowrap">
@@ -173,7 +243,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
               )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {REQUIRED_DOCS.map(doc => {
+                {requiredDocs.map(doc => {
                   const currentDoc = getDocStatus(doc.id);
                   return (
                     <div key={doc.id} className={`border rounded-lg p-4 flex flex-col justify-between ${currentDoc?.status === 'approved' ? 'bg-green-50/50 border-green-200' : ''}`}>

@@ -21,12 +21,15 @@ class UnlockService
     /**
      * Unlock a customer's contact for a specific requirement using the wallet.
      */
-    public function unlockContact(User $vendor, Requirement $requirement): array
+    public function unlockContact(User $vendor, $requirement): array
     {
+        $requirementType = $requirement->getMorphClass();
+
         // 1. Check if already unlocked
         $existing = DB::table('contact_unlocks')
             ->where('user_id', $vendor->id)
             ->where('requirement_id', $requirement->id)
+            ->where('requirement_type', $requirementType)
             ->first();
             
         if ($existing) {
@@ -44,14 +47,14 @@ class UnlockService
         // 2. Fetch the fee from configuration (Placeholder: using static 49 for now, ideally config('marketplace.unlock_fee', 49))
         $fee = config('marketplace.unlock_fee', 49.00);
 
-        return DB::transaction(function () use ($vendor, $requirement, $fee) {
+        return DB::transaction(function () use ($vendor, $requirement, $requirementType, $fee) {
             // 3. Deduct from wallet
             $this->walletService->deduct(
                 $vendor,
                 $fee,
                 "Unlocked contact for requirement ID: {$requirement->id}",
                 [
-                    'reference_type' => 'App\\Models\\Requirement',
+                    'reference_type' => $requirementType,
                     'reference_id' => $requirement->id
                 ]
             );
@@ -60,13 +63,14 @@ class UnlockService
             DB::table('contact_unlocks')->insert([
                 'user_id' => $vendor->id,
                 'requirement_id' => $requirement->id,
+                'requirement_type' => $requirementType,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
             
             // Log Timeline
             DB::table('activity_timelines')->insert([
-                'entity_type' => 'App\\Models\\Requirement',
+                'entity_type' => $requirementType,
                 'entity_id' => $requirement->id,
                 'user_id' => $vendor->id,
                 'action' => 'contact_unlocked',

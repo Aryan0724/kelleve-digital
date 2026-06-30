@@ -3,19 +3,22 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\Bid;
-use App\Models\Requirement;
+use \App\Models\Bid;
+use \App\Models\Requirement;
 use App\Services\BidService;
+use App\Services\WalletService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
 class BidController extends Controller
 {
     private BidService $bidService;
+    private WalletService $walletService;
 
-    public function __construct(BidService $bidService)
+    public function __construct(BidService $bidService, WalletService $walletService)
     {
         $this->bidService = $bidService;
+        $this->walletService = $walletService;
     }
 
     /**
@@ -28,7 +31,8 @@ class BidController extends Controller
         }
 
         $validated = $request->validate([
-            'requirement_id' => 'required|exists:projects,id',
+            'requirement_id' => 'required|integer',
+            'requirement_type' => 'required|string|in:project,rfq,job',
             'estimated_cost' => 'required|numeric|min:0',
             'timeline_days' => 'required|integer|min:1',
             'warranty_months' => 'nullable|integer|min:0',
@@ -40,6 +44,20 @@ class BidController extends Controller
             'proposal_message' => 'required|string|max:1000',
         ]);
 
+        $modelClass = \App\Models\Requirement::class;
+        $morphType = 'Project'; // Must match morphMap in AppServiceProvider
+        if ($validated['requirement_type'] === 'rfq') {
+            $modelClass = \App\Models\Rfq::class;
+            $morphType = 'Rfq';
+        }
+        if ($validated['requirement_type'] === 'job') {
+            $modelClass = \App\Models\WorkerJob::class;
+            $morphType = 'WorkerJob';
+        }
+        
+        $validated['requirement_type'] = $morphType; // override for DB
+        $validated['requirement_type_class'] = $modelClass;
+
         // Attempt to auto-fill business details from the user's listing
         $listing = \App\Models\Listing::where('user_id', $request->user()->id)->first();
         
@@ -48,6 +66,32 @@ class BidController extends Controller
         $validated['category'] = collect($request->user()->roles)->first() ?? 'Professional';
         $validated['experience_years'] = $listing ? $listing->years_experience : 0;
         $validated['previous_projects_count'] = 0; // Default or calculate from won bids
+
+        // Check and deduct wallet fee (except for workers)
+        $userRoles = $request->user()->roles->pluck('slug')->toArray();
+        $isWorker = in_array('worker', $userRoles);
+        
+        $fee = config('marketplace.bid_fee', 10.00); // flat ₹10 fee
+        
+        if (!$isWorker && $fee > 0) {
+            $balance = $this->walletService->getBalance($request->user());
+            if ($balance < $fee) {
+                return response()->json([
+                    'message' => "Insufficient wallet balance to submit bid. Please recharge ₹{$fee}."
+                ], 402); // 402 Payment Required
+            }
+            
+            try {
+                $this->walletService->deduct(
+                    $request->user(), 
+                    $fee, 
+                    "Fee for submitting bid on requirement #{$validated['requirement_id']}",
+                    ['reference_type' => $morphType, 'reference_id' => $validated['requirement_id']]
+                );
+            } catch (\Exception $e) {
+                return response()->json(['message' => 'Failed to process bid fee: ' . $e->getMessage()], 400);
+            }
+        }
 
         $bid = $this->bidService->submitBid($request->user()->id, $validated);
 
@@ -75,7 +119,18 @@ class BidController extends Controller
      */
     public function indexForRequirement(Request $request, int $requirementId): JsonResponse
     {
-        $requirement = Requirement::findOrFail($requirementId);
+        $type = $request->query('requirement_type', 'project');
+        $modelClasses = [\App\Models\Requirement::class, \App\Models\Project::class, 'Project', 'Requirement'];
+        
+        if ($type === 'rfq') {
+            $modelClasses = [\App\Models\Rfq::class, 'Rfq'];
+            $requirement = \App\Models\Rfq::findOrFail($requirementId);
+        } else if ($type === 'job') {
+            $modelClasses = [\App\Models\WorkerJob::class, 'WorkerJob'];
+            $requirement = \App\Models\WorkerJob::findOrFail($requirementId);
+        } else {
+            $requirement = \App\Models\Requirement::findOrFail($requirementId);
+        }
         
         // Authorization logic here (ideally via Policy)
         if ($requirement->user_id !== $request->user()->id && !$request->user()->hasRole('admin')) {
@@ -84,6 +139,7 @@ class BidController extends Controller
 
         $bids = Bid::with('professional')
             ->where('requirement_id', $requirementId)
+            ->whereIn('requirement_type', $modelClasses)
             ->orderByDesc('smart_bid_score')
             ->get();
 
@@ -95,7 +151,18 @@ class BidController extends Controller
      */
     public function compare(Request $request, int $requirementId): JsonResponse
     {
-        $requirement = Requirement::findOrFail($requirementId);
+        $type = $request->query('requirement_type', 'project');
+        $modelClasses = [\App\Models\Requirement::class, \App\Models\Project::class, 'Project', 'Requirement'];
+        
+        if ($type === 'rfq') {
+            $modelClasses = [\App\Models\Rfq::class, 'Rfq'];
+            $requirement = \App\Models\Rfq::findOrFail($requirementId);
+        } else if ($type === 'job') {
+            $modelClasses = [\App\Models\WorkerJob::class, 'WorkerJob'];
+            $requirement = \App\Models\WorkerJob::findOrFail($requirementId);
+        } else {
+            $requirement = \App\Models\Requirement::findOrFail($requirementId);
+        }
         
         // Authorization
         if ($requirement->user_id !== $request->user()->id && !$request->user()->hasRole('admin')) {
@@ -104,6 +171,7 @@ class BidController extends Controller
 
         $bids = Bid::with(['professional.vendorMetrics'])
             ->where('requirement_id', $requirementId)
+            ->whereIn('requirement_type', $modelClasses)
             ->orderByDesc('smart_bid_score')
             ->get();
 
@@ -187,7 +255,12 @@ class BidController extends Controller
      */
     public function complete(Request $request, int $requirementId): JsonResponse
     {
-        $requirement = Requirement::findOrFail($requirementId);
+        $type = $request->query('requirement_type', 'project');
+        $modelClass = \App\Models\Requirement::class;
+        if ($type === 'rfq') $modelClass = \App\Models\Rfq::class;
+        if ($type === 'job') $modelClass = \App\Models\WorkerJob::class;
+        
+        $requirement = $modelClass::findOrFail($requirementId);
         
         if ($requirement->user_id !== $request->user()->id) {
             return response()->json(['message' => 'Unauthorized'], 403);

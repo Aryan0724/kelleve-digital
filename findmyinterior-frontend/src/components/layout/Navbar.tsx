@@ -32,6 +32,7 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationDropdown } from "./NotificationDropdown";
+import { SmartSearch } from "./SmartSearch";
 
 export function Navbar() {
   const { user, logout } = useAuthStore();
@@ -106,28 +107,7 @@ export function Navbar() {
           </Link>
 
           {/* Center Search Container */}
-          <form onSubmit={handleSearch} className="hidden lg:flex flex-1 max-w-2xl items-center bg-gray-50/80 backdrop-blur-sm border border-gray-200 rounded-xl p-1.5 shadow-inner transition-all duration-300 focus-within:bg-white focus-within:shadow-md focus-within:border-orange-200">
-            <div className="flex items-center px-4 border-r border-gray-300 min-w-[130px] cursor-pointer hover:bg-gray-100/50 rounded-l-lg transition-colors py-1">
-              <MapPin className="w-4 h-4 text-[#E8701A] mr-2" />
-              <span className="text-sm font-semibold text-gray-700">Patna</span>
-              <ChevronDown className="w-4 h-4 text-gray-400 ml-auto" />
-            </div>
-            <div className="flex-1 px-4">
-              <input 
-                type="text" 
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search services, professionals, projects, suppliers..." 
-                className="w-full bg-transparent text-sm font-medium outline-none text-gray-800 placeholder:text-gray-400 placeholder:font-normal"
-              />
-            </div>
-            <button type="submit" className="flex items-center px-4 border-l border-transparent min-w-[120px] cursor-pointer bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white rounded-lg py-2 transition-all duration-300 transform shadow-sm hover:shadow-md">
-              <div className="flex items-center justify-center w-full">
-                <Search className="w-4 h-4 mr-2" />
-                <span className="text-sm font-bold tracking-wide">SEARCH</span>
-              </div>
-            </button>
-          </form>
+          <SmartSearch />
 
           {/* Right Action Buttons */}
           <div className="hidden xl:flex items-center space-x-3">

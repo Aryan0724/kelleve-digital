@@ -7,19 +7,19 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Building, Wallet, User, LogOut, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
-import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
+import { VerificationTab } from "@/components/dashboard/VerificationTab";
 
 export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const isUnverified = user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
-  const [activeTab, setActiveTab] = useState("overview");
+  const [activeTab, setActiveTab] = useState("projects");
 
   const handleLogout = () => {
     logout();
@@ -60,8 +60,11 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
           <div className="lg:col-span-1 space-y-4">
             <Card>
               <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 rounded-full bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400">
-                  {user?.name?.charAt(0)}
+                <div className="h-20 w-20 rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
+                  {user?.avatar
+                    ? <img src={user.avatar} alt={user?.name} className="w-full h-full object-cover" />
+                    : <span>{user?.name?.charAt(0)}</span>
+                  }
                 </div>
                 <h3 className="font-bold text-lg">{user?.name}</h3>
                 <Badge className="mt-2 capitalize mb-4" variant="default">Builder & Developer</Badge>
@@ -90,66 +93,123 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
 
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
-                {renderSidebarButton("overview", <Building className="h-5 w-5" />, "My Projects")}
-                {renderSidebarButton("contractor_reqs", <HardHat className="h-5 w-5" />, "Post RFQs")}
-                {renderSidebarButton("bids_received", <Gavel className="h-5 w-5" />, "Received Bids & Quotes")}
+                {renderSidebarButton("projects", <Building className="h-5 w-5" />, "Projects")}
+                {renderSidebarButton("possession_projects", <Building className="h-5 w-5" />, "Possession Projects")}
+                {renderSidebarButton("contractor_requests", <HardHat className="h-5 w-5" />, "Contractor Requests")}
+                {renderSidebarButton("interior_requests", <Search className="h-5 w-5" />, "Interior Requests")}
+                {renderSidebarButton("supplier_requests", <Search className="h-5 w-5" />, "Supplier Requests")}
+                {renderSidebarButton("worker_requests", <User className="h-5 w-5" />, "Worker Requests")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Complete Profile")}
+                {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
+                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} />}
-            {activeTab === 'overview' && (
+            {activeTab !== 'verification' && activeTab !== 'business_profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} hasPendingVerification={data?.user?.has_pending_verification} />}
+            {activeTab === 'projects' && (
               <Card>
                 <CardHeader className="flex flex-row justify-between items-center">
                   <CardTitle>My Building Projects</CardTitle>
                   <Button onClick={() => router.push("/post-requirement")} size="sm" className="bg-orange-600 hover:bg-orange-700">New Project</Button>
                 </CardHeader>
                 <CardContent>
-                  <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
-                    <Building className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No active projects</h3>
-                    <p className="text-slate-500 mb-6 max-w-md mx-auto">
-                      Create your first building or development project.
-                    </p>
-                  </div>
+                  {((data?.projects || []).concat(data?.rfqs || []).concat(data?.jobs || [])).length > 0 ? (
+                    <div className="space-y-4 mt-4">
+                      {((data?.projects || []).concat(data?.rfqs || []).concat(data?.jobs || [])).map((req: any) => (
+                        <div key={req.id + (req.material_type ? '-rfq' : req.skill_required ? '-job' : '-proj')} className="flex flex-col md:flex-row justify-between p-4 border rounded-xl hover:shadow-md transition-shadow bg-white">
+                            <div className="flex-1 mb-4 md:mb-0">
+                              <div className="flex items-center gap-2 mb-1">
+                                <h4 className="font-semibold text-lg text-slate-900">{req.title || req.material_type || req.skill_required}</h4>
+                                <Badge variant="outline" className="bg-slate-100">{req.status}</Badge>
+                                {req.material_type && <Badge variant="secondary">Material RFQ</Badge>}
+                                {req.skill_required && <Badge variant="secondary">Worker Job</Badge>}
+                              </div>
+                              <div className="text-sm text-slate-500 mb-2 flex items-center gap-4">
+                                <span>{req.city}</span>
+                                <span>•</span>
+                                <span>{req.created_at ? new Date(req.created_at).toLocaleDateString() : 'Recent'}</span>
+                              </div>
+                              <p className="text-slate-600 text-sm line-clamp-2">{req.description || `Required: ${req.quantity || req.number_of_workers}`}</p>
+                            </div>
+                            <div className="flex flex-col gap-2 shrink-0">
+                              <Button onClick={() => router.push(`/requirements/${req.id}?type=${req.material_type ? 'rfq' : req.skill_required ? 'job' : 'project'}`)} variant="outline" size="sm">View Detail</Button>
+                              
+                              {(req.status === 'awarded' || req.status === 'in_progress') && (
+                                <Button 
+                                  size="sm" 
+                                  className="bg-green-600 hover:bg-green-700"
+                                  onClick={async () => {
+                                    try {
+                                      const reqType = req.material_type ? 'rfq' : req.skill_required ? 'job' : 'project';
+                                      await import('@/lib/api').then(m => m.default.patch(`/requirements/${req.id}/complete?requirement_type=${reqType}`));
+                                      alert("Project marked as completed!");
+                                      fetchDashboard();
+                                    } catch (err: any) {
+                                      alert(err.response?.data?.message || "Failed to complete project");
+                                    }
+                                  }}
+                                >
+                                  Mark Completed
+                                </Button>
+                              )}
+                              
+                              {req.status === 'completed' && (
+                                <Button 
+                                  size="sm" 
+                                  className="bg-blue-600 hover:bg-blue-700"
+                                  onClick={() => {
+                                    // Usually reviews are done on the vendor profile.
+                                    alert("Review feature is available in the Professional's profile.");
+                                    if(req.professional_id) {
+                                       router.push(`/professionals/${req.professional_id}`);
+                                    }
+                                  }}
+                                >
+                                  Leave Review
+                                </Button>
+                              )}
+                            </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
+                      <Building className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                      <h3 className="text-lg font-medium text-slate-900 mb-2">No active projects</h3>
+                      <p className="text-slate-500 mb-6 max-w-md mx-auto">
+                        Create your first building or development project.
+                      </p>
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
 
-            {activeTab === 'contractor_reqs' && (
+            {activeTab === 'possession_projects' && (
+              <Card>
+                <CardHeader><CardTitle>Possession Projects</CardTitle></CardHeader>
+                <CardContent className="py-16 text-center text-slate-500">
+                  <Building className="h-12 w-12 text-slate-300 mx-auto mb-4" />
+                  No possession projects currently.
+                </CardContent>
+              </Card>
+            )}
+
+            {['contractor_requests', 'interior_requests', 'supplier_requests', 'worker_requests'].includes(activeTab) && (
               <Card>
                 <CardContent className="py-16 text-center">
                   <HardHat className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-slate-900 mb-2">Need Contractors or Materials?</h3>
-                  <Button onClick={() => router.push('/post-requirement')} className="bg-orange-600">Post RFQ or Job</Button>
+                  <h3 className="text-lg font-medium text-slate-900 mb-2">Manage Requests</h3>
+                  <p className="text-slate-500 mb-6 max-w-md mx-auto">Post requirements to find the best professionals.</p>
+                  <Button onClick={() => router.push('/post-requirement')} className="bg-orange-600">Post New Request</Button>
                 </CardContent>
               </Card>
             )}
 
-            {activeTab === 'bids_received' && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Received Quotes & Bids</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
-                    <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No Bids Yet</h3>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {activeTab === 'wallet' && <WalletTab />}
-
-            
-            {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
-
-            {activeTab === 'profile' && <CompleteProfileTab />}
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
+            {activeTab === 'business_profile' && <CompleteProfileTab />}
 
             {activeTab === 'messages' && (
               <Card>

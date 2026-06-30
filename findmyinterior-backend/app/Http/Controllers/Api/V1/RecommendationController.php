@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Requirement;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\User;
 
@@ -14,13 +15,19 @@ class RecommendationController extends Controller
      * GET /api/v1/requirements/{id}/recommendations
      * Returns the top pre-calculated vendor recommendations for a requirement.
      */
-    public function index(int $requirementId): JsonResponse
+    public function index(Request $request, int $requirementId): JsonResponse
     {
-        $requirement = Requirement::findOrFail($requirementId);
+        $type = $request->query('requirement_type', 'project');
+        $modelClass = \App\Models\Requirement::class;
+        if ($type === 'rfq') $modelClass = \App\Models\Rfq::class;
+        if ($type === 'job') $modelClass = \App\Models\WorkerJob::class;
+        
+        $requirement = $modelClass::findOrFail($requirementId);
 
         // Fetch recommendations from DB
         $recs = DB::table('requirement_recommendations')
             ->where('requirement_id', $requirementId)
+            ->where('requirement_type', $modelClass)
             ->orderByDesc('match_score')
             ->get();
 

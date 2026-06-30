@@ -30,29 +30,140 @@ class DashboardController extends Controller
                 'subscription' => $user->activeSubscription?->plan?->name ?? 'Basic (Free)',
                 'wallet_balance' => \Illuminate\Support\Facades\DB::table('wallets')->where('user_id', $user->id)->value('balance') ?? 0.0,
                 'unread_messages_count' => $unreadCustomer + $unreadVendor,
+                'has_pending_verification' => \App\Models\UserDocument::where('user_id', $user->id)->where('status', 'pending')->exists(),
             ],
         ];
 
         $userRoles = $user->roles->pluck('slug')->toArray();
         $isHomeowner = in_array('homeowner', $userRoles) || in_array('customer', $userRoles);
         
-        // Homeowner / Customer — show their posted projects and shortlists
-        if ($isHomeowner) {
-            $data['projects'] = \App\Models\Project::where('user_id', $user->id)->latest()->get();
-            $data['total_projects'] = \App\Models\Project::where('user_id', $user->id)->count();
+        // Fetch projects posted by this user (Homeowners, Builders, etc.)
+        $data['projects'] = \App\Models\Project::where('user_id', $user->id)
+            ->with(['bids' => function($q) {
+                $q->where(function($q2) {
+                    $q2->where('is_awarded', true)
+                       ->orWhereIn('status', ['accepted', 'completed']);
+                });
+            }])
+            ->latest()->get()->map(function($p) {
+                $awardedBid = $p->bids->first();
+                $p->professional_id = $awardedBid?->professional_id ?? $p->winning_bid_id ? \App\Models\Bid::find($p->winning_bid_id)?->professional_id : null;
+                $p->_type = 'project';
+                return $p;
+            });
             
-            // Get all bids received on their projects (requires bid table update to polymorphic or mapping, but for now fallback)
-            $data['received_bids'] = \App\Models\Bid::with(['professional'])
-                ->whereIn('requirement_id', \App\Models\Project::where('user_id', $user->id)->pluck('id'))
-                ->latest()
-                ->get();
+        $data['rfqs'] = \App\Models\Rfq::where('user_id', $user->id)
+            ->with(['bids' => function($q) {
+                $q->where(function($q2) {
+                    $q2->where('is_awarded', true)
+                       ->orWhereIn('status', ['accepted', 'completed']);
+                });
+            }])
+            ->latest()->get()->map(function($r) {
+                $awardedBid = $r->bids->first();
+                $r->professional_id = $awardedBid?->professional_id ?? $r->supplier_id ?? null;
+                $r->_type = 'rfq';
+                return $r;
+            });
+            
+        $data['jobs'] = \App\Models\WorkerJob::where('user_id', $user->id)
+            ->with(['bids' => function($q) {
+                $q->where(function($q2) {
+                    $q2->where('is_awarded', true)
+                       ->orWhereIn('status', ['accepted', 'completed']);
+                });
+            }])
+            ->latest()->get()->map(function($j) {
+                $awardedBid = $j->bids->first();
+                $j->professional_id = $awardedBid?->professional_id ?? $j->worker_id ?? null;
+                $j->_type = 'job';
+                return $j;
+            });
+        
+        $data['total_projects'] = $data['projects']->count() + $data['rfqs']->count() + $data['jobs']->count();
+        
+        $projectIds = \App\Models\Requirement::where('user_id', $user->id)->pluck('id');
+        $rfqIds = \App\Models\Rfq::where('user_id', $user->id)->pluck('id');
+        $jobIds = \App\Models\WorkerJob::where('user_id', $user->id)->pluck('id');
 
-            // Shortlisted Professionals
-            $data['shortlisted_professionals'] = \App\Models\Shortlist::with(['professional'])
-                ->where('user_id', $user->id)
-                ->latest()
-                ->get();
-        }
+        $data['received_bids'] = \App\Models\Bid::with(['professional'])
+            ->where(function($query) use ($projectIds, $rfqIds, $jobIds) {
+                if ($projectIds->isNotEmpty()) {
+                    $query->orWhere(function($q) use ($projectIds) {
+                        $q->whereIn('requirement_type', ['Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project'])
+                          ->whereIn('requirement_id', $projectIds);
+                    });
+                }
+                if ($rfqIds->isNotEmpty()) {
+                    $query->orWhere(function($q) use ($rfqIds) {
+                        $q->whereIn('requirement_type', ['Rfq', 'App\Models\Rfq'])
+                          ->whereIn('requirement_id', $rfqIds);
+                    });
+                }
+                if ($jobIds->isNotEmpty()) {
+                    $query->orWhere(function($q) use ($jobIds) {
+                        $q->whereIn('requirement_type', ['WorkerJob', 'App\Models\WorkerJob'])
+                          ->whereIn('requirement_id', $jobIds);
+                    });
+                }
+            })
+            ->latest()
+            ->get()
+            ->map(function ($bid) {
+                // Resolve the requirement title and type label
+                $requirementTitle = 'Requirement #' . $bid->requirement_id;
+                $requirementTypeLabel = $bid->requirement_type;
+
+                if (in_array($bid->requirement_type, ['Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project'])) {
+                    $req = \App\Models\Requirement::find($bid->requirement_id);
+                    $requirementTitle = $req?->title ?? $requirementTitle;
+                    $requirementTypeLabel = 'Project';
+                } elseif (in_array($bid->requirement_type, ['Rfq', 'App\Models\Rfq'])) {
+                    $req = \App\Models\Rfq::find($bid->requirement_id);
+                    $requirementTitle = $req?->title ?? $requirementTitle;
+                    $requirementTypeLabel = 'RFQ';
+                } elseif (in_array($bid->requirement_type, ['WorkerJob', 'App\Models\WorkerJob'])) {
+                    $req = \App\Models\WorkerJob::find($bid->requirement_id);
+                    $requirementTitle = $req?->title ?? $requirementTitle;
+                    $requirementTypeLabel = 'Skilled Labour Job';
+                }
+
+                // Get worker/professional profile for extra info
+                $professional = $bid->professional;
+                $workerProfile = null;
+                if ($professional) {
+                    $workerProfile = \App\Models\Worker::where('user_id', $professional->id)->first();
+                }
+
+                return [
+                    'id'                  => $bid->id,
+                    'status'              => $bid->status,
+                    'amount'              => $bid->amount,
+                    'timeline_days'       => $bid->timeline_days,
+                    'proposal_message'    => $bid->proposal_message,
+                    'smart_bid_score'     => $bid->smart_bid_score,
+                    'is_awarded'          => $bid->is_awarded,
+                    'created_at'          => $bid->created_at?->diffForHumans(),
+                    'requirement_title'   => $requirementTitle,
+                    'requirement_type'    => $requirementTypeLabel,
+                    'requirement_id'      => $bid->requirement_id,
+                    'professional' => $professional ? [
+                        'id'     => $professional->id,
+                        'name'   => $professional->name,
+                        'email'  => $professional->email,
+                        'avatar' => $professional->avatar,
+                        'skill'  => $workerProfile?->skill ?? null,
+                        'city'   => $workerProfile?->city ?? null,
+                        'experience_years' => $workerProfile?->experience_years ?? null,
+                        'avg_rating'       => $workerProfile?->avg_rating ?? 0,
+                    ] : null,
+                ];
+            });
+
+        $data['shortlisted_professionals'] = \App\Models\Shortlist::with(['professional'])
+            ->where('user_id', $user->id)
+            ->latest()
+            ->get();
 
         // Professional logic
         $isProfessional = array_intersect(
@@ -104,14 +215,14 @@ class DashboardController extends Controller
             );
 
             // Fetch their submitted bids
-            $data['submitted_bids'] = \App\Models\Bid::with('requirement.city')
+            $data['submitted_bids'] = \App\Models\Bid::with('requirement')
                 ->where('professional_id', $user->id)
                 ->latest()
                 ->get();
                 
             // Fetch unlocked contacts
             $data['unlocked_contacts'] = $user->contactUnlocks()
-                ->with('requirement.city')
+                ->with('requirement')
                 ->latest()
                 ->get();
 

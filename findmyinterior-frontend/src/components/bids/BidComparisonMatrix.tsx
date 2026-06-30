@@ -5,12 +5,13 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 
-export function BidComparisonMatrix({ bids, onAward }: { bids: any[], onAward: (bidId: number) => void }) {
+export function BidComparisonMatrix({ bids, onAward, reqType }: { bids: any[], onAward: (bidId: number) => void, reqType?: string }) {
   const router = useRouter();
   
   const handleMessageVendor = async (vendorId: number) => {
     try {
-      const res = await api.post(`/requirements/${bids[0].requirement_id}/conversations`, { vendor_id: vendorId });
+      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+      const res = await api.post(`/requirements/${bids[0].requirement_id}/conversations${typeStr}`, { vendor_id: vendorId });
       router.push(`/messages/${res.data.id}`);
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to start conversation.");

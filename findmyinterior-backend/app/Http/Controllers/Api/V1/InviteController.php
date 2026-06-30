@@ -17,7 +17,12 @@ class InviteController extends Controller
             'vendor_id' => 'required|exists:users,id'
         ]);
 
-        $requirement = Requirement::findOrFail($id);
+        $type = $request->query('requirement_type', 'project');
+        $modelClass = \App\Models\Requirement::class;
+        if ($type === 'rfq') $modelClass = \App\Models\Rfq::class;
+        if ($type === 'job') $modelClass = \App\Models\WorkerJob::class;
+        
+        $requirement = $modelClass::findOrFail($id);
         $vendorId = $request->vendor_id;
 
         // Ensure only the requirement owner or admin can invite
@@ -28,6 +33,7 @@ class InviteController extends Controller
         // Update recommendation audit table
         $updated = DB::table('requirement_recommendations')
             ->where('requirement_id', $requirement->id)
+            ->where('requirement_type', $modelClass)
             ->where('vendor_id', $vendorId)
             ->update([
                 'invited_at' => now(),

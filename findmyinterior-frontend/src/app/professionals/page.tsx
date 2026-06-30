@@ -48,11 +48,11 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
         <form className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-            <Input name="search" defaultValue={resolvedSearchParams.search} placeholder="E.g. Modular Kitchen Designer" className="pl-10 h-12 text-base" />
+            <Input key={`search-${resolvedSearchParams.search || ''}`} name="search" defaultValue={resolvedSearchParams.search || ''} placeholder="E.g. Modular Kitchen Designer" className="pl-10 h-12 text-base" />
           </div>
           <div className="relative flex-1">
             <MapPin className="absolute left-3 top-3 h-5 w-5 text-slate-400" />
-            <Input name="city" defaultValue={resolvedSearchParams.city} placeholder="City (e.g. Patna)" className="pl-10 h-12 text-base" />
+            <Input key={`city-${resolvedSearchParams.city || ''}`} name="city" defaultValue={resolvedSearchParams.city || ''} placeholder="City (e.g. Patna)" className="pl-10 h-12 text-base" />
           </div>
           <Button type="submit" size="lg" className="h-12 px-8 bg-orange-600 hover:bg-orange-700">Search</Button>
         </form>

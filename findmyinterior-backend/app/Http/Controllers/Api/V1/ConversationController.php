@@ -9,10 +9,18 @@ use App\Models\Conversation;
 use App\Models\Requirement;
 use App\Models\ContactUnlock;
 use App\Models\Bid;
+use App\Services\WalletService;
 use Illuminate\Support\Facades\DB;
 
 class ConversationController extends Controller
 {
+    private WalletService $walletService;
+
+    public function __construct(WalletService $walletService)
+    {
+        $this->walletService = $walletService;
+    }
+
     /**
      * List user's active conversations.
      */
@@ -42,7 +50,20 @@ class ConversationController extends Controller
     public function store(Request $request, $requirementId)
     {
         $user = $request->user();
-        $requirement = Requirement::findOrFail($requirementId);
+        
+        $type = $request->query('requirement_type', 'project');
+        $modelClass = \App\Models\Requirement::class;
+        $morphType = 'Project';
+        if ($type === 'rfq') {
+            $modelClass = \App\Models\Rfq::class;
+            $morphType = 'Rfq';
+        }
+        if ($type === 'job') {
+            $modelClass = \App\Models\WorkerJob::class;
+            $morphType = 'WorkerJob';
+        }
+        
+        $requirement = $modelClass::findOrFail($requirementId);
         
         // Determine roles
         $customerId = $requirement->user_id;
@@ -55,41 +76,104 @@ class ConversationController extends Controller
             $vendorId = $user->id;
         }
         
-        // Authorization: Customer <-> Bidder OR Unlocked Vendor only
+        // Authorization: Customer <-> Bidder OR Unlocked Vendor
+        // Build all possible morph type strings for this requirement type
+        $morphVariants = [$modelClass, $morphType];
+        if ($morphType === 'WorkerJob') {
+            $morphVariants[] = 'App\\Models\\WorkerJob';
+        } elseif ($morphType === 'Rfq') {
+            $morphVariants[] = 'App\\Models\\Rfq';
+        } else {
+            // Project / Requirement
+            $morphVariants[] = 'Requirement';
+            $morphVariants[] = 'App\\Models\\Requirement';
+            $morphVariants[] = 'Project';
+        }
+        $morphVariants = array_unique($morphVariants);
+
         $isUnlocked = ContactUnlock::where('requirement_id', $requirementId)
+            ->whereIn('requirement_type', $morphVariants)
             ->where('user_id', $vendorId)
             ->exists();
-            
+
         $bid = Bid::where('requirement_id', $requirementId)
+            ->whereIn('requirement_type', $morphVariants)
             ->where('professional_id', $vendorId)
             ->first();
-            
-        $isBidder = $bid !== null;
-        $isAwarded = $isBidder && $bid->status === 'awarded';
-            
-        if ($user->id === $customerId) {
-            // Customer -> Professional: Professional submitted bid OR Customer awarded the bid (which implies isBidder)
-            if (!$isBidder) {
-                return response()->json(['message' => 'Unauthorized to message. Vendor must submit a bid first.'], 403);
+
+        $isBidder   = $bid !== null;
+        $isAwarded  = $isBidder && ($bid->status === 'awarded' || $bid->is_awarded);
+
+        // Awarded status always grants messaging from BOTH sides — free
+        if ($isAwarded) {
+            // Fall through
+        } elseif ($user->id === $customerId) {
+            // Customer → Professional: professional must have submitted a bid OR be shortlisted
+            $isShortlisted = \App\Models\Shortlist::where('user_id', $customerId)
+                ->where('professional_id', $vendorId)
+                ->exists();
+            if (!$isBidder && !$isShortlisted) {
+                return response()->json(['message' => 'Vendor must submit a bid or be shortlisted first.'], 403);
             }
         } else {
-            // Professional -> Customer: Lead unlocked OR bid submitted
+            // Professional → Customer
             if (!$isUnlocked && !$isBidder) {
-                return response()->json(['message' => 'Unauthorized to message. You must unlock the lead or submit a bid first.'], 403);
+                // Has no relationship to this requirement at all
+                return response()->json(['message' => 'You must submit a bid or unlock this lead before messaging.'], 403);
+            }
+
+            if (!$isUnlocked && $isBidder) {
+                // Bidder but not awarded and not unlocked → charge unlock fee
+                $userRoles    = $user->roles->pluck('slug')->toArray();
+                $isWorker     = in_array('worker', $userRoles) || in_array('skilled_worker', $userRoles);
+                $unlockFee    = config('marketplace.unlock_fee', 49.00);
+
+                if (!$isWorker && $unlockFee > 0) {
+                    $balance = $this->walletService->getBalance($user);
+                    if ($balance < $unlockFee) {
+                        return response()->json([
+                            'message'     => "Insufficient wallet balance to message this client. A ₹{$unlockFee} messaging unlock fee is required. Please top up your wallet.",
+                            'requires_payment' => true,
+                            'unlock_fee'  => $unlockFee,
+                        ], 402);
+                    }
+
+                    // Deduct fee & create unlock record in a transaction
+                    DB::transaction(function () use ($user, $requirement, $morphType, $unlockFee) {
+                        $this->walletService->deduct(
+                            $user,
+                            $unlockFee,
+                            "Messaging unlock fee for requirement #{$requirement->id}",
+                            ['reference_type' => $morphType, 'reference_id' => $requirement->id]
+                        );
+
+                        DB::table('contact_unlocks')->insertOrIgnore([
+                            'user_id'          => $user->id,
+                            'requirement_id'   => $requirement->id,
+                            'requirement_type' => $requirement->getMorphClass(),
+                            'created_at'       => now(),
+                            'updated_at'       => now(),
+                        ]);
+                    });
+
+                    $isUnlocked = true; // now unlocked — proceed
+                }
+                // Workers fall through for free
             }
         }
         
-        // Create or get existing conversation
-        $conversation = Conversation::firstOrCreate(
+        // Create or get existing conversation — key on the actual DB unique constraint
+        $conversation = Conversation::updateOrCreate(
             [
-                'project_id' => $requirementId,
+                'project_id'  => $requirementId,
                 'customer_id' => $customerId,
-                'vendor_id' => $vendorId,
+                'vendor_id'   => $vendorId,
             ],
             [
-                'status' => 'active',
+                'project_type'  => $morphType,
+                'status'        => 'active',
                 'project_stage' => 'initiated',
-                'unlocked_at' => $isUnlocked ? now() : null,
+                'unlocked_at'   => $isUnlocked ? now() : null,
             ]
         );
         

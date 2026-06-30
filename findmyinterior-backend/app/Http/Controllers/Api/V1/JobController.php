@@ -24,9 +24,15 @@ class JobController extends Controller
             'district' => 'required|string',
             'opportunity_type' => 'required|string',
             'requirement_type' => 'required|string',
+            'daily_rate' => 'nullable|numeric',
+            'budget' => 'nullable|numeric',
+            'duration' => 'nullable|string',
         ]);
 
         $oppType = OpportunityType::where('type', $validated['requirement_type'])->first();
+
+        // Also capture budget if sent instead of daily_rate
+        $rate = $validated['daily_rate'] ?? $validated['budget'] ?? null;
 
         $job = WorkerJob::create([
             'user_id' => Auth::id() ?? 1,
@@ -36,6 +42,8 @@ class JobController extends Controller
             'district' => $validated['district'],
             'opportunity_type' => $validated['opportunity_type'],
             'requirement_type' => $validated['requirement_type'],
+            'daily_rate' => $rate,
+            'duration' => $validated['duration'] ?? null,
             'creator_role' => Auth::check() ? Auth::user()->roles->first()->slug ?? 'homeowner' : 'homeowner',
             'target_roles' => $oppType ? $oppType->target_roles : ['worker', 'contractor'],
             'status' => 'open'

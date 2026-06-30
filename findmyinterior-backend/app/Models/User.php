@@ -40,6 +40,13 @@ class User extends Authenticatable
 
     protected $casts = [];
 
+    protected $appends = ['role'];
+
+    public function getRoleAttribute()
+    {
+        return $this->roles->first()?->slug ?? 'customer';
+    }
+
     // ─── Relationships ────────────────────────────────────────────────────────
     public function documents(): HasMany
     {

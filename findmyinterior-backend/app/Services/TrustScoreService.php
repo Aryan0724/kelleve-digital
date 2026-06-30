@@ -50,30 +50,33 @@ class TrustScoreService
             $score += 10;
         }
 
-        $listing = $user->listing;
-        if ($listing) {
+        $profile = $user->listing ?? $user->worker ?? $user->builder ?? $user->supplier;
+        if ($profile) {
             // Address (5%)
-            if (!empty($listing->address) || !empty($listing->city)) {
+            if (!empty($profile->address) || !empty($profile->city)) {
                 $score += 5;
             }
 
             // Description (5%)
-            if (!empty($listing->description)) {
+            $desc = $profile->description ?? $profile->tagline ?? $profile->bio ?? '';
+            if (!empty($desc)) {
                 $score += 5;
             }
 
-            // Website (5%)
-            if (!empty($listing->website)) {
+            // Website (5%) (Workers might not have a website field, but if it exists we count it)
+            if (!empty($profile->website)) {
                 $score += 5;
             }
 
             // Experience (5%)
-            if (!empty($listing->years_experience)) {
+            $exp = $profile->years_experience ?? $profile->experience_years ?? null;
+            if (!empty($exp)) {
                 $score += 5;
             }
 
             // Reviews (10%)
-            if ($listing->review_count > 0) {
+            $reviews = $profile->review_count ?? $profile->approvedReviews()->count() ?? 0;
+            if ($reviews > 0) {
                 $score += 10;
             }
         }
@@ -138,21 +141,28 @@ class TrustScoreService
         }
 
         $hasTrustedDocs = in_array('portfolio_document', $approvedDocs) || in_array('work_history', $approvedDocs);
-        
+
         if ($level === 'verified_business' && $hasTrustedDocs) {
-            // Also requires 5+ portfolio projects, we can check listing galleries here
-            // Assuming we check $user->listing->galleries()->count() >= 5
-            $galleryCount = $user->listing ? $user->listing->galleries()->count() : 0;
-            
-            if ($galleryCount >= 5) {
+            // Also requires 5+ portfolio projects, we can check galleries here
+            $profile = $user->listing ?? $user->worker ?? $user->builder ?? $user->supplier;
+            $galleryCount = 0;
+            if ($profile && method_exists($profile, 'galleries')) {
+                $galleryCount = $profile->galleries()->count();
+            }
+            // Fallback for workers/builders who might have uploaded 'portfolio_document' directly
+            if ($galleryCount >= 5 || in_array('portfolio_document', $approvedDocs)) {
                 $level = 'trusted_professional'; // Corresponds to Level 2
             }
         }
 
         if ($level === 'trusted_professional') {
             // Elite requires Reviews, Completed Projects, High Rating
-            $listing = $user->listing;
-            if ($listing && $listing->review_count >= 5 && $listing->avg_rating >= 4.0) {
+            $profile = $user->listing ?? $user->worker ?? $user->builder ?? $user->supplier;
+            
+            $reviewCount = $profile->review_count ?? ($profile ? $profile->approvedReviews()->count() : 0);
+            $avgRating = $profile->avg_rating ?? ($profile ? $profile->approvedReviews()->avg('rating') : 0);
+
+            if ($profile && $reviewCount >= 5 && $avgRating >= 4.0) {
                 $level = 'elite_professional'; // Corresponds to Level 3
             }
         }
@@ -186,19 +196,21 @@ class TrustScoreService
         $trustScore += $levelScores[$verificationLevel] ?? ($legacyMap[$verificationLevel] ?? 0);
 
         // Reviews (25%)
-        $listing = $user->listing;
-        if ($listing) {
-            $ratingScore = min(25, ($listing->avg_rating / 5) * 25);
+        $profile = $user->listing ?? $user->worker ?? $user->builder ?? $user->supplier;
+        if ($profile) {
+            $avgRating = $profile->avg_rating ?? $profile->approvedReviews()->avg('rating') ?? 0;
+            $ratingScore = min(25, ($avgRating / 5) * 25);
             $trustScore += $ratingScore;
         }
 
         // Project Success (25%)
         // Could be based on completed requirements, bids awarded, etc.
-        // For now, base it on the number of successful jobs or a flat 10 for having a listing
-        if ($listing) {
+        // For now, base it on the number of successful jobs or a flat 10 for having a profile
+        if ($profile) {
              // Mock logic: 15 base + 10 if they have over 5 reviews
+             $reviewCount = $profile->review_count ?? $profile->approvedReviews()->count() ?? 0;
              $projectScore = 15;
-             if ($listing->review_count >= 5) {
+             if ($reviewCount >= 5) {
                  $projectScore += 10;
              }
              $trustScore += $projectScore;

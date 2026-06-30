@@ -27,7 +27,7 @@ export function SettingsTab() {
     setLoading(true);
     try {
       const res = await api.put("/user/profile", formData);
-      updateUser(res.data.user);
+      updateUser(res.data.data);
       alert("Profile updated successfully!");
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to update profile.");

@@ -14,11 +14,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 const OPPORTUNITY_TYPES = [
   { id: "interior_design", label: "Interior Design", type: "projects" },
   { id: "construction", label: "Construction", type: "projects" },
-  { id: "architect", label: "Architect", type: "projects" },
+  { id: "architect", label: "Architecture", type: "projects" },
   { id: "renovation", label: "Renovation", type: "projects" },
   { id: "furniture", label: "Furniture", type: "projects" },
   { id: "materials", label: "Materials", type: "rfqs" },
   { id: "workers", label: "Workers", type: "worker-jobs" },
+  { id: "builder_project", label: "Builder Project", type: "builder-projects" },
 ];
 
 export default function PostRequirementPage() {
@@ -56,7 +57,12 @@ export default function PostRequirementPage() {
     // Job specific
     skill_required: "",
     number_of_workers: "",
-    duration: ""
+    duration: "",
+
+    // Builder specific
+    project_name: "",
+    project_scale: "",
+    project_location: ""
   });
 
   useEffect(() => {
@@ -98,22 +104,35 @@ export default function PostRequirementPage() {
       };
 
       // Map wizard fields to the generic JSON meta column 'details' or direct columns 
-      // based on the new Sprint A structure (we will send it as 'details' json or just append to description for now if backend doesn't accept details)
-      // Wait, Sprint A added opportunity_type, requirement_type, budget_tier, project_category.
-      // We will map this:
-      payload.opportunity_type = oppDef.type === "projects" ? "PROJECT" : (oppDef.type === "rfqs" ? "RFQ" : "JOB");
+      payload.opportunity_type = oppDef.type === "projects" ? "PROJECT" : (oppDef.type === "rfqs" ? "RFQ" : (oppDef.type === "builder-projects" ? "BUILDER_PROJECT" : "JOB"));
       payload.requirement_type = selectedType.toUpperCase();
       
       let detailsText = "";
       if (['interior_design', 'renovation', 'architect', 'furniture'].includes(selectedType)) {
         detailsText = `Property Type: ${formData.property_type}\nArea: ${formData.area}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}\nStyle: ${formData.style_preferences}`;
         payload.project_category = formData.property_type;
+        payload.project_type = formData.property_type;
+        payload.area = formData.area;
+        payload.budget = formData.budget;
+        payload.possession_timeline = formData.timeline;
+        payload.design_style = formData.style_preferences;
       } else if (selectedType === 'construction') {
         detailsText = `Plot Size: ${formData.plot_size}\nStage: ${formData.construction_stage}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}`;
+        payload.area = formData.plot_size;
+        payload.budget = formData.budget;
+        payload.site_condition = formData.construction_stage;
+        payload.possession_timeline = formData.timeline;
       } else if (selectedType === 'materials') {
         detailsText = `Material Type: ${formData.material_type}\nQuantity: ${formData.quantity}\nRequired Date: ${formData.required_date}`;
+        payload.category = formData.material_type;
+        payload.quantity = formData.quantity;
+        payload.expected_delivery_date = formData.required_date;
       } else if (selectedType === 'workers') {
         detailsText = `Skill Required: ${formData.skill_required}\nNumber of Workers: ${formData.number_of_workers}\nDuration: ${formData.duration}`;
+        payload.skills_required = formData.skill_required;
+        payload.duration = formData.duration;
+      } else if (selectedType === 'builder_project') {
+        detailsText = `Project Name: ${formData.project_name}\nScale: ${formData.project_scale}\nLocation: ${formData.project_location}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}`;
       }
       
       payload.description = `${formData.description}\n\n[Details]\n${detailsText}`;
@@ -280,6 +299,35 @@ export default function PostRequirementPage() {
                   <div className="space-y-2">
                     <Label htmlFor="duration">Estimated Duration</Label>
                     <Input id="duration" placeholder="e.g. 3 Days" value={formData.duration} onChange={(e) => setFormData({...formData, duration: e.target.value})} />
+                  </div>
+                </>
+              )}
+
+              {selectedType === 'builder_project' && (
+                <>
+                  <div className="space-y-2">
+                    <Label htmlFor="project_name">Project Name</Label>
+                    <Input id="project_name" placeholder="e.g. Sunrise Apartments" value={formData.project_name} onChange={(e) => setFormData({...formData, project_name: e.target.value})} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="project_scale">Project Scale</Label>
+                      <Input id="project_scale" placeholder="e.g. 50 Units, 10 Floors" value={formData.project_scale} onChange={(e) => setFormData({...formData, project_scale: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="project_location">Location Details</Label>
+                      <Input id="project_location" placeholder="e.g. Main Road, Block B" value={formData.project_location} onChange={(e) => setFormData({...formData, project_location: e.target.value})} />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="budget">Estimated Budget</Label>
+                      <Input id="budget" placeholder="e.g. ₹5 Crores" value={formData.budget} onChange={(e) => setFormData({...formData, budget: e.target.value})} />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="timeline">Timeline</Label>
+                      <Input id="timeline" placeholder="e.g. 2 Years" value={formData.timeline} onChange={(e) => setFormData({...formData, timeline: e.target.value})} />
+                    </div>
                   </div>
                 </>
               )}

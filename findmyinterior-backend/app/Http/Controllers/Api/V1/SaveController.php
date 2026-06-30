@@ -12,21 +12,38 @@ class SaveController extends Controller
 {
     public function saveProject(Request $request, int $requirementId): JsonResponse
     {
+        $type = $request->query('requirement_type', 'project');
+        $morphType = 'Project';
+        if ($type === 'rfq') $morphType = 'Rfq';
+        if ($type === 'job') $morphType = 'WorkerJob';
+
         $saved = SavedProject::firstOrCreate([
             'user_id' => $request->user()->id,
-            'requirement_id' => $requirementId
+            'requirement_id' => $requirementId,
+            'requirement_type' => $morphType,
         ]);
 
-        return response()->json(['success' => true, 'message' => 'Project saved']);
+        return response()->json([
+            'message' => 'Requirement saved successfully',
+            'saved' => $saved
+        ]);
     }
 
     public function unsaveProject(Request $request, int $requirementId): JsonResponse
     {
+        $type = $request->query('requirement_type', 'project');
+        $morphType = 'Project';
+        if ($type === 'rfq') $morphType = 'Rfq';
+        if ($type === 'job') $morphType = 'WorkerJob';
+
         SavedProject::where('user_id', $request->user()->id)
             ->where('requirement_id', $requirementId)
+            ->where('requirement_type', $morphType)
             ->delete();
 
-        return response()->json(['success' => true, 'message' => 'Project unsaved']);
+        return response()->json([
+            'message' => 'Requirement unsaved successfully'
+        ]);
     }
 
     public function getSavedProjects(Request $request): JsonResponse

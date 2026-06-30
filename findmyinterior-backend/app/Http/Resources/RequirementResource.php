@@ -10,11 +10,20 @@ class RequirementResource extends JsonResource
     public function toArray(Request $request): array
     {
         $user = $request->user('sanctum');
+        
+        $hasBid = false;
+        if ($user) {
+            $hasBid = \App\Models\Bid::where('requirement_id', $this->id)
+                ->where('professional_id', $user->id)
+                ->exists();
+        }
+        
         $canSeeContact = $user && (
             $user->id === $this->user_id ||
             $user->isAdmin() || 
             $user->hasPremiumSubscription() || 
-            $user->hasUnlockedRequirement($this->id)
+            $user->hasUnlockedRequirement($this->id) ||
+            $hasBid
         );
 
         return [
@@ -23,6 +32,7 @@ class RequirementResource extends JsonResource
             'title'          => $this->title,
             'description'    => $this->description,
             'project_type'   => $this->project_type,
+            'has_bid'        => $hasBid,
             'category'       => new CategoryResource($this->whenLoaded('category')),
             'budget_min'     => $this->budget_min,
             'budget_max'     => $this->budget_max,
@@ -38,6 +48,7 @@ class RequirementResource extends JsonResource
             'phone'          => $canSeeContact ? $this->phone : '+91 ***** *****',
             'email'          => $canSeeContact ? $this->email : null,
             'is_unlocked'    => $canSeeContact,
+            'timeline'       => $this->timeline ?? [],
             'created_at'     => $this->created_at?->diffForHumans(),
         ];
     }

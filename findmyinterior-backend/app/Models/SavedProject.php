@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SavedProject extends Model
 {
-    protected $fillable = ['user_id', 'requirement_id'];
+    protected $fillable = ['user_id', 'requirement_id', 'requirement_type'];
 
     public function user()
     {
@@ -15,6 +15,6 @@ class SavedProject extends Model
 
     public function requirement()
     {
-        return $this->belongsTo(Requirement::class);
+        return $this->morphTo();
     }
 }

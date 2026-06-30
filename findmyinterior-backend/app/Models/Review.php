@@ -20,6 +20,9 @@ class Review extends Model
         'body',
         'role_of_reviewer',
         'is_approved',
+        'user_id',
+        'reviewable_type',
+        'reviewable_id',
     ];
 
     protected $casts = [];
@@ -39,6 +42,11 @@ class Review extends Model
     public function reviewedUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'reviewed_user_id');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 
     // ─── Scopes ───────────────────────────────────────────────────────────────

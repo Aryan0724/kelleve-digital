@@ -7,7 +7,7 @@ import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 
-export default function ReviewSection({ reviews, reviewableType, reviewableId }: { reviews: any[], reviewableType: string, reviewableId: number }) {
+export default function ReviewSection({ reviews, reviewableType, reviewableId, professionalId }: { reviews: any[], reviewableType: string, reviewableId: number, professionalId?: number }) {
   const { user, token } = useAuthStore();
   const [rating, setRating] = useState(5);
   const [body, setBody] = useState("");
@@ -27,6 +27,7 @@ export default function ReviewSection({ reviews, reviewableType, reviewableId }:
       await api.post("/user/reviews", {
         reviewable_type: reviewableType.toLowerCase(),
         reviewable_id: reviewableId,
+        professional_id: professionalId,
         rating,
         body,
       });

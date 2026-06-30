@@ -18,9 +18,14 @@ class Supplier extends Model
         'company_name', 'slug', 'tagline', 'logo', 'cover_image',
         'phone', 'email', 'website', 'city', 'district',
         'gst_number', 'business_type',
+        'services', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
     ];
 
     protected $casts = [
+        'services' => 'array',
+        'achievements' => 'array',
+        'languages' => 'array',
+        'social_links' => 'array',
     ];
 
     // ─── Relationships ────────────────────────────────────────────────────────

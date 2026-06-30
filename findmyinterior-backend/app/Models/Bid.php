@@ -13,6 +13,7 @@ class Bid extends Model
 
     protected $fillable = [
         'requirement_id',
+        'requirement_type',
         'professional_id',
         'amount',
         'timeline_days',
@@ -38,9 +39,9 @@ class Bid extends Model
         'smart_bid_score' => 'decimal:2',
     ];
 
-    public function requirement(): BelongsTo
+    public function requirement()
     {
-        return $this->belongsTo(Requirement::class);
+        return $this->morphTo(__FUNCTION__, 'requirement_type', 'requirement_id');
     }
 
     public function professional(): BelongsTo

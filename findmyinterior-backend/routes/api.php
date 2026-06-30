@@ -30,6 +30,23 @@ use App\Http\Controllers\Api\V1\Admin\RevenueController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
+// E2E Testing DB Reset
+// E2E Testing DB Reset
+Route::post('/e2e/reset', function () {
+    if (!app()->environment('testing')) {
+        // Fallback for when APP_ENV isn't perfectly set but we know it's a test run
+        if (env('DB_DATABASE') !== 'findmyinterior_testing') {
+            abort(403, 'Not in testing environment');
+        }
+    }
+    
+    \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
+        '--seeder' => 'Database\\Seeders\\E2ESeeder',
+        '--force' => true,
+    ]);
+    return response()->json(['message' => 'Database wiped and reseeded for E2E']);
+});
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -109,7 +126,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::put('change-password', [ProfileController::class, 'changePassword']);
         
         // Listing management for businesses
-        Route::middleware('role:business,builder,supplier,worker')->group(function () {
+        Route::middleware('role:business,builder,supplier,worker,skilled_worker,interior_designer,interior_company,contractor,architect,material_supplier')->group(function () {
             Route::get('listings', [ProfileController::class, 'listings']);
             Route::post('listings', [ProfileController::class, 'createListing']);
             Route::put('listings/{id}', [ProfileController::class, 'updateListing']);

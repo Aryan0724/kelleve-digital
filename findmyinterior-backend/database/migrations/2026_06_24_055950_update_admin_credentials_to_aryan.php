@@ -30,7 +30,7 @@ return new class extends Migration
                     'email' => 'Aryantiwari@findmyinterior.com',
                     'password' => Hash::make('findmyinterior'),
                     'role' => 'admin',
-                    'verification_level' => 'verified_business'
+                    'verification_level' => 'business_verified'
                 ]);
             }
         }

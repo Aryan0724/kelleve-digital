@@ -22,7 +22,12 @@ class UnlockController extends Controller
      */
     public function unlockContact(Request $request, int $requirementId): JsonResponse
     {
-        $requirement = Requirement::with('user')->findOrFail($requirementId);
+        $type = $request->query('requirement_type', 'project');
+        $modelClass = \App\Models\Requirement::class;
+        if ($type === 'rfq') $modelClass = \App\Models\Rfq::class;
+        if ($type === 'job') $modelClass = \App\Models\WorkerJob::class;
+        
+        $requirement = $modelClass::with('user')->findOrFail($requirementId);
         
         try {
             $result = $this->unlockService->unlockContact($request->user(), $requirement);

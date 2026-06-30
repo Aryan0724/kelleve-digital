@@ -9,23 +9,46 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import api from "@/lib/api";
 
-export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly = false }: { bids: any[], title?: string, showAwardedOnly?: boolean }) {
+export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly = false, statuses }: { bids: any[], title?: string, showAwardedOnly?: boolean, statuses?: string[] }) {
   
-  const filteredBids = showAwardedOnly 
-    ? bids.filter(b => b.status === 'awarded') 
-    : bids.filter(b => b.status !== 'awarded'); // Hide awarded from normal bids tab if we have a dedicated tab
+  const filteredBids = statuses 
+    ? bids.filter(b => statuses.includes(b.status))
+    : showAwardedOnly 
+      ? bids.filter(b => b.status === 'awarded' || b.status === 'completed') 
+      : bids.filter(b => b.status !== 'awarded' && b.status !== 'completed'); // Hide awarded from normal bids tab if we have a dedicated tab
 
   const router = useRouter();
   const [messaging, setMessaging] = useState<number | null>(null);
 
-  const handleMessage = async (requirementId: number) => {
-    setMessaging(requirementId);
+  const handleMessage = async (bid: any) => {
+    const reqId = bid.requirement_id;
+    const reqType = bid.requirement_type;
+
+    // Warn before charging if bid is not awarded
+    const isAwarded = bid.status === 'awarded' || bid.status === 'accepted' || bid.is_awarded === true;
+    if (!isAwarded) {
+      const confirmed = window.confirm(
+        "Sending a message to this client requires a ₹49 messaging unlock fee that will be deducted from your wallet. Proceed?"
+      );
+      if (!confirmed) return;
+    }
+
+    setMessaging(bid.id);
     try {
-      const res = await api.post(`/requirements/${requirementId}/conversations`);
+      let mappedType = 'project';
+      if (reqType && (reqType.toLowerCase().includes('rfq'))) mappedType = 'rfq';
+      if (reqType && (reqType.toLowerCase().includes('job') || reqType.toLowerCase().includes('workerjob'))) mappedType = 'job';
+      
+      const typeStr = `?requirement_type=${mappedType}`;
+      const res = await api.post(`/requirements/${reqId}/conversations${typeStr}`);
       router.push(`/messages/${res.data.id}`);
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to start conversation.");
+      if (err.response?.status === 402) {
+        alert(`💰 Insufficient Wallet Balance\n\n${err.response.data.message}\n\nPlease top up your wallet and try again.`);
+      } else {
+        alert(err.response?.data?.message || "Failed to start conversation.");
+      }
     } finally {
       setMessaging(null);
     }
@@ -37,8 +60,17 @@ export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly =
       case 'accepted': return <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200"><CheckCircle2 className="w-3 h-3 mr-1" /> Accepted (Awaiting Award)</Badge>;
       case 'rejected': return <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200"><XCircle className="w-3 h-3 mr-1" /> Rejected</Badge>;
       case 'awarded': return <Badge className="bg-orange-600 hover:bg-orange-700 text-white"><Trophy className="w-3 h-3 mr-1" /> Won Project!</Badge>;
+      case 'completed': return <Badge className="bg-green-600 hover:bg-green-700 text-white"><CheckCircle2 className="w-3 h-3 mr-1" /> Completed</Badge>;
       default: return <Badge variant="secondary">{status}</Badge>;
     }
+  };
+
+  const getQueryType = (type: string) => {
+    if (!type) return '';
+    const lower = type.toLowerCase();
+    if (lower.includes('rfq')) return '?type=rfq';
+    if (lower.includes('job')) return '?type=job';
+    return '';
   };
 
   return (
@@ -47,56 +79,69 @@ export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly =
         <CardTitle>{title}</CardTitle>
       </CardHeader>
       <CardContent>
-        {filteredBids && filteredBids.length > 0 ? (
+        {filteredBids.length > 0 ? (
           <div className="space-y-4">
             {filteredBids.map((bid: any) => (
-              <div key={bid.id} className={`p-4 border rounded-lg shadow-sm ${bid.status === 'awarded' ? 'bg-orange-50 border-orange-200' : 'bg-white'}`}>
-                <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
-                  <div className="flex-1">
-                    <div className="flex justify-between items-start mb-2">
-                      <div>
-                        <span className="font-semibold text-slate-900 text-lg">For: {bid.requirement?.title}</span>
-                        <div className="text-sm text-slate-500 mt-1">{bid.requirement?.city?.name} • Req Status: {bid.requirement?.status}</div>
-                      </div>
-                      {getStatusBadge(bid.status)}
-                    </div>
-                    
-                    <div className="flex gap-8 my-4 bg-slate-50 p-3 rounded-lg border">
-                      <div>
-                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">My Bid Amount</div>
-                        <div className="font-bold text-orange-600 text-lg">₹{bid.amount}</div>
-                      </div>
-                      <div>
-                        <div className="text-xs font-medium text-slate-500 uppercase tracking-wider mb-1">Timeline</div>
-                        <div className="font-bold text-slate-700 text-lg">{bid.timeline_days} Days</div>
-                      </div>
-                    </div>
-                    
+              <div key={bid.id} className="p-4 border rounded-lg bg-white shadow-sm flex flex-col md:flex-row justify-between gap-4 border-l-4 border-l-blue-500">
+                <div className="flex-1">
+                  <div className="flex justify-between items-start mb-2">
                     <div>
-                      <div className="text-xs font-medium text-slate-500 mb-1">My Proposal</div>
-                      <p className="text-slate-600 text-sm whitespace-pre-line">{bid.proposal}</p>
+                      <div className="flex items-center gap-2">
+                        <Badge variant="outline" className="text-[10px] uppercase font-bold tracking-wider text-blue-600 border-blue-200 bg-blue-50">
+                          {bid.requirement_type || 'Project'} Bid
+                        </Badge>
+                        <span className="text-xs text-slate-400 font-medium">
+                          Submitted on {new Date(bid.created_at).toLocaleDateString()}
+                        </span>
+                      </div>
+                      <h4 className="font-bold text-slate-900 text-lg mt-1">{bid.requirement?.title || "Untitled Project"}</h4>
                     </div>
+                    <Badge variant={bid.status === 'awarded' || bid.status === 'accepted' ? 'default' : bid.status === 'rejected' ? 'destructive' : 'secondary'} className={bid.status === 'awarded' || bid.status === 'accepted' ? 'bg-green-500 hover:bg-green-600' : ''}>
+                      {bid.status === 'accepted' ? 'awarded' : bid.status}
+                    </Badge>
                   </div>
                   
-                  <div className="shrink-0 pt-2 flex flex-col gap-2">
-                    <Link href={`/requirements/${bid.requirement?.id}`}>
-                      <Button variant="outline" size="sm" className="w-full">
-                        <ExternalLink className="w-4 h-4 mr-2" /> View Requirement
+                  <div className="flex flex-wrap items-center text-sm text-slate-500 mt-2 mb-3 gap-3">
+                    <span className="font-bold text-slate-900">Bid Amount: ₹{bid.amount}</span>
+                    <span>Timeline: {bid.timeline_days} days</span>
+                    {bid.warranty_months && <span>Warranty: {bid.warranty_months} months</span>}
+                  </div>
+                  
+                  <p className="text-slate-600 text-sm line-clamp-2">{bid.proposal_message}</p>
+
+                  {bid.status === 'completed' && (
+                    <div className="mt-3 bg-green-50 text-green-800 text-xs font-semibold px-3 py-2 rounded-md border border-green-200 flex items-center gap-2">
+                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                      Job successfully completed! 
+                      {bid.requirement?.completed_at && 
+                        <span className="font-normal text-green-700 ml-1">
+                          (Finished on {new Date(bid.requirement.completed_at).toLocaleDateString()})
+                        </span>
+                      }
+                    </div>
+                  )}
+                </div>
+                
+                <div className="flex flex-col gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 pl-0 md:pl-4 min-w-[150px] justify-center">
+                  {bid.requirement && (
+                    <Link href={`/requirements/${bid.requirement_id}${getQueryType(bid.requirement_type)}`}>
+                      <Button variant="outline" size="sm" className="w-full bg-slate-50 hover:bg-slate-100 shadow-sm border-slate-200 text-slate-700 font-medium">
+                        View Requirement
                       </Button>
                     </Link>
-                    {(bid.status === 'pending' || bid.status === 'awarded' || bid.status === 'accepted') && (
+                  )}
+                  {(bid.status === 'pending' || bid.status === 'awarded' || bid.status === 'accepted') && (
                       <Button 
                         variant="outline" 
                         size="sm" 
                         className="w-full text-slate-700"
-                        onClick={() => handleMessage(bid.requirement?.id)}
-                        disabled={messaging === bid.requirement?.id}
+                        onClick={() => handleMessage(bid)}
+                        disabled={messaging === bid.id}
                       >
                         <MessageSquare className="w-4 h-4 mr-2" /> 
-                        {messaging === bid.requirement?.id ? "Opening..." : "Message Customer"}
+                        {messaging === bid.id ? "Opening..." : "Message Customer"}
                       </Button>
                     )}
-                  </div>
                 </div>
               </div>
             ))}

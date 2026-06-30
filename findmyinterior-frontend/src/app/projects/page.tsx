@@ -1,100 +1,180 @@
-import Link from "next/link";
+"use client";
+
+import { useEffect, useState } from "react";
+import api from "@/lib/api";
+import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Search, MapPin, Building, Calendar } from "lucide-react";
+import { MapPin, Search, Filter, Home, LayoutDashboard, Compass, Ruler, ArrowRight, Clock } from "lucide-react";
+import Link from "next/link";
+import { Input } from "@/components/ui/input";
 
-async function getProjects(searchParams: any) {
-  try {
-    const cleanParams: Record<string, string> = {};
-    for (const key in searchParams) {
-      if (typeof searchParams[key] === 'string') {
-        cleanParams[key] = searchParams[key];
-      }
+export default function ProjectsPage() {
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchProjects();
+  }, []);
+
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const res = await api.get("/projects");
+      setProjects(res.data.data || []);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
     }
-    const params = new URLSearchParams(cleanParams).toString();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/builder-projects?${params}`, {
-      cache: 'no-store'
-    });
-    if (!res.ok) throw new Error('Failed to fetch');
-    return await res.json();
-  } catch (error) {
-    console.error(error);
-    return { data: [], meta: { current_page: 1, last_page: 1 } };
-  }
-}
-
-export default async function ProjectsPage({ searchParams }: { searchParams: Promise<any> }) {
-  const resolvedSearchParams = await searchParams;
-  const { data: projects, meta } = await getProjects(resolvedSearchParams);
+  };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8 text-center max-w-3xl mx-auto">
-        <h1 className="text-3xl md:text-5xl font-bold tracking-tight text-slate-900 mb-4">New Real Estate Projects</h1>
-        <p className="text-slate-500 text-lg mb-8">Discover under-construction and possession-ready flats, villas, and commercial spaces across Bihar.</p>
+    <div className="bg-slate-50 min-h-screen pb-16">
+      {/* Premium Hero Section */}
+      <div className="bg-gradient-to-r from-[#0a1c3a] to-[#1a2c5a] text-white py-16 lg:py-20 relative overflow-hidden">
+        {/* Subtle background pattern/glass effect */}
+        <div className="absolute inset-0 bg-[url('/pattern.svg')] opacity-5"></div>
+        <div className="absolute top-0 right-0 w-96 h-96 bg-[#E8701A] rounded-full mix-blend-multiply filter blur-3xl opacity-20 -translate-y-1/2 translate-x-1/2"></div>
         
-        <form className="flex flex-col md:flex-row gap-3 bg-white p-2 rounded-xl shadow-sm border max-w-2xl mx-auto">
-          <div className="relative flex-1">
-            <MapPin className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
-            <Input name="city" defaultValue={resolvedSearchParams.city} placeholder="Enter City..." className="pl-10 h-12 border-0 focus-visible:ring-0 shadow-none text-base" />
+        <div className="container mx-auto px-4 relative z-10 flex flex-col md:flex-row items-center justify-between gap-10">
+          <div className="flex-1 max-w-3xl">
+            <Badge className="bg-[#E8701A]/20 text-[#ff9d5c] hover:bg-[#E8701A]/30 border-none mb-4 px-3 py-1 text-xs font-bold tracking-wider">
+              NEW OPPORTUNITIES
+            </Badge>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-5 leading-tight text-white">
+              Client Projects & Tenders
+            </h1>
+            <p className="text-white/70 max-w-2xl text-lg leading-relaxed mb-8">
+              Discover high-value interior design, architecture, and construction projects posted directly by homeowners and businesses. Submit your best bid and grow your revenue.
+            </p>
+            <div className="flex flex-wrap items-center gap-4">
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm font-medium">
+                <Home className="w-4 h-4 text-[#ff9d5c]" /> <span>Residential & Commercial</span>
+              </div>
+              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm font-medium">
+                <Ruler className="w-4 h-4 text-[#ff9d5c]" /> <span>Renovations & Build</span>
+              </div>
+            </div>
           </div>
-          <div className="w-px bg-slate-200 hidden md:block" />
-          <div className="relative flex-1">
-            <Building className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
-            <select name="type" defaultValue={resolvedSearchParams.type} className="w-full h-12 pl-10 pr-4 bg-transparent border-0 focus:ring-0 text-base text-slate-600 appearance-none">
-              <option value="">All Property Types</option>
-              <option value="Residential">Residential</option>
-              <option value="Commercial">Commercial</option>
-              <option value="Villa">Villa/Independent House</option>
-            </select>
-          </div>
-          <Button type="submit" className="h-12 px-8 rounded-lg bg-orange-600 hover:bg-orange-700">Search</Button>
-        </form>
+        </div>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {projects.length > 0 ? projects.map((project: any) => (
-          <Link key={project.id} href={`/projects/${project.slug}`}>
-            <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-all border-slate-200 group">
-              <div className="relative h-56 w-full bg-slate-100 overflow-hidden">
-                {project.cover_image ? (
-                  <img src={project.cover_image} alt={project.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-slate-200">No Image</div>
-                )}
-                {project.is_possession_ready && (
-                  <Badge className="absolute top-3 left-3 bg-green-500 hover:bg-green-600 text-white border-0">Ready to Move</Badge>
-                )}
-              </div>
-              <CardContent className="p-5 flex-1 flex flex-col">
-                <div className="text-orange-600 font-bold text-xl mb-1">{project.formatted_price}</div>
-                <h3 className="font-bold text-lg text-slate-900 line-clamp-1 group-hover:text-orange-600 transition-colors mb-2">
-                  {project.title}
-                </h3>
-                
-                <div className="text-sm text-slate-500 mb-4 line-clamp-1">
-                  {project.bhk_options} • {project.location}, {project.city}
+      <div className="container mx-auto px-4 py-10 flex flex-col lg:flex-row gap-8 relative z-20 -mt-6">
+        {/* Filters Sidebar */}
+        <div className="w-full lg:w-80 shrink-0 space-y-6">
+          <Card className="p-6 border border-slate-200 shadow-xl shadow-slate-200/40 rounded-2xl bg-white sticky top-24">
+            <h3 className="font-bold flex items-center gap-2 mb-6 text-slate-800 text-lg border-b border-slate-100 pb-4">
+              <Filter className="w-5 h-5 text-[#E8701A]" /> Refine Projects
+            </h3>
+            <div className="space-y-5">
+              <div>
+                <label className="text-sm font-semibold mb-2 block text-slate-700">Project Type</label>
+                <div className="relative">
+                  <LayoutDashboard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input placeholder="e.g., Interior, Architecture..." className="pl-9 bg-slate-50 border-slate-200 focus:border-[#E8701A] focus:ring-[#E8701A]" />
                 </div>
+              </div>
+              <div>
+                <label className="text-sm font-semibold mb-2 block text-slate-700">Location</label>
+                <div className="relative">
+                  <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <Input placeholder="City or Pincode" className="pl-9 bg-slate-50 border-slate-200 focus:border-[#E8701A] focus:ring-[#E8701A]" />
+                </div>
+              </div>
+              <Button className="w-full bg-[#0a1c3a] hover:bg-[#1a2c5a] text-white font-bold h-12 rounded-xl transition-all shadow-md">
+                Find Projects
+              </Button>
+            </div>
+          </Card>
+        </div>
 
-                <div className="mt-auto pt-4 border-t border-slate-100 flex items-center justify-between text-sm text-slate-500">
-                  <span className="font-medium text-slate-900 truncate pr-2">By {project.builder?.company_name}</span>
-                  <div className="flex items-center whitespace-nowrap">
-                    <Calendar className="h-4 w-4 mr-1" />
-                    {project.possession_date || 'Ongoing'}
+        {/* Project List */}
+        <div className="flex-1 space-y-6">
+          <div className="flex items-center justify-between mb-2">
+            <h2 className="text-xl font-bold text-slate-800">
+              {loading ? "Loading..." : `${projects.length} Projects Found`}
+            </h2>
+          </div>
+
+          {loading ? (
+            <div className="text-center py-20 flex flex-col items-center bg-white rounded-2xl border border-slate-200 shadow-sm">
+              <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#E8701A] mb-4"></div>
+              <p className="text-slate-500 font-medium">Fetching the latest opportunities...</p>
+            </div>
+          ) : projects.length > 0 ? (
+            projects.map((req: any) => (
+              <div key={req.id} className="group bg-white rounded-2xl shadow-sm hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 border border-slate-200 flex flex-col md:flex-row gap-6 overflow-hidden">
+                
+                {/* Left visual indicator */}
+                <div className="hidden md:flex flex-col justify-center items-center bg-slate-50 border-r border-slate-100 p-6 min-w-[140px] group-hover:bg-[#E8701A]/5 transition-colors">
+                  <div className="w-12 h-12 rounded-full bg-white shadow-sm flex items-center justify-center mb-3">
+                    <Compass className="w-6 h-6 text-[#E8701A]" />
+                  </div>
+                  <div className="text-[10px] uppercase font-bold tracking-widest text-slate-500 text-center">
+                    {req.opportunity_type || "Project"}
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </Link>
-        )) : (
-          <div className="col-span-full py-20 text-center text-slate-500 bg-slate-50 rounded-xl border border-dashed">
-            No projects found matching your search criteria.
-          </div>
-        )}
+
+                {/* Main Content */}
+                <div className="flex-1 p-6 md:p-6 md:pl-0">
+                  <div className="flex justify-between items-start mb-2">
+                    <h4 className="font-bold text-slate-900 text-xl group-hover:text-[#E8701A] transition-colors">{req.title}</h4>
+                    <Badge variant="outline" className={`whitespace-nowrap px-3 py-1 font-semibold ${req.status === 'open' ? 'bg-green-50 text-green-700 border-green-200' : 'bg-slate-100 text-slate-700 border-slate-200'}`}>
+                      {req.status === 'open' ? 'Bidding Open' : req.status}
+                    </Badge>
+                  </div>
+                  
+                  <div className="flex flex-wrap items-center text-xs font-semibold text-slate-500 mb-4 gap-3">
+                    {req.city && (
+                      <span className="flex items-center">
+                        <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" /> 
+                        {typeof req.city === 'string' ? req.city : req.city.name}
+                      </span>
+                    )}
+                    <span className="flex items-center">
+                      <Clock className="w-3.5 h-3.5 mr-1 text-slate-400" /> 
+                      Posted {req.created_at ? new Date(req.created_at).toLocaleDateString() : 'Recently'}
+                    </span>
+                  </div>
+                  
+                  <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed mb-6">{req.description}</p>
+
+                  <div className="flex items-center gap-3">
+                     <span className="text-xs font-bold px-3 py-1.5 rounded-md bg-slate-100 text-slate-600">
+                        Client: <span className="capitalize">{req.creator_role?.replace('_', ' ') || 'Homeowner'}</span>
+                     </span>
+                  </div>
+                </div>
+                
+                {/* Action CTA Area */}
+                <div className="flex flex-col gap-4 bg-slate-50 md:bg-transparent p-6 md:w-[220px] md:border-l border-slate-100 justify-center">
+                  <div className="text-center md:text-right">
+                     <div className="text-xs text-slate-500 font-medium mb-1">Estimated Budget</div>
+                     <div className="font-extrabold text-slate-900 text-lg">
+                     {req.budget_min && req.budget_max ? `₹${(req.budget_min/1000).toFixed(0)}k - ₹${(req.budget_max/1000).toFixed(0)}k` : (req.budget ? `₹${req.budget}` : "Negotiable")}
+                     </div>
+                  </div>
+                  <Link href={`/requirements/${req.id}?type=project`} className="w-full">
+                    <Button className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white h-11 rounded-xl shadow-md font-bold transition-all flex items-center justify-center gap-2 group-hover:-translate-y-0.5">
+                      Submit Bid <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="text-center py-24 bg-white rounded-2xl border border-slate-200 shadow-sm">
+              <div className="bg-slate-50 w-24 h-24 rounded-full flex items-center justify-center mx-auto mb-6">
+                <Search className="w-10 h-10 text-slate-400" />
+              </div>
+              <h3 className="text-2xl font-bold text-slate-800 mb-3">No projects found</h3>
+              <p className="text-slate-500 max-w-md mx-auto text-lg">
+                There are currently no open projects matching your criteria. Check back later!
+              </p>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

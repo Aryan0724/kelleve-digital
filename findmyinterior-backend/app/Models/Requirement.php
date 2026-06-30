@@ -15,9 +15,9 @@ class Requirement extends Model
     protected $table = 'projects';
 
     protected $fillable = [
-        'user_id', 'category_id', 'city_id', 'district_id',
-        'title', 'description', 'project_type',
-        'budget_min', 'budget_max', 'status',
+        'user_id', 'category_id', 'sub_category_id', 'title', 'description', 
+        'budget_min', 'budget_max', 'timeline_days', 'status', 'city_id',
+        'professional_id', 'winning_bid_id', 'started_at', 'completed_at',
         'city', 'district',
         'name', 'phone', 'email',
         'opportunity_type', 'requirement_type', 'creator_role',
@@ -27,6 +27,8 @@ class Requirement extends Model
     protected $casts = [
         'target_roles' => 'array',
     ];
+
+    protected $appends = ['formatted_budget', 'unlock_price_display', 'timeline'];
 
     protected static function booted()
     {
@@ -117,13 +119,34 @@ class Requirement extends Model
         return $this->contactUnlocks()->where('user_id', $user->id)->exists();
     }
 
-    public function getFormattedBudgetAttribute(): string
+    public function getFormattedBudgetAttribute()
     {
-        if (!$this->budget_min && !$this->budget_max) {
-            return 'Flexible Budget';
+        if ($this->budget_max) {
+            return '₹' . number_format($this->budget_max);
         }
-        $min = '₹' . number_format($this->budget_min);
-        $max = '₹' . number_format($this->budget_max);
-        return "{$min} – {$max}";
+        return 'Not specified';
+    }
+
+    public function getUnlockPriceDisplayAttribute()
+    {
+        return '₹' . number_format(config('marketplace.unlock_fee', 49.00));
+    }
+
+    public function activityLogs()
+    {
+        return $this->morphMany(\App\Models\ActivityLog::class, 'subject');
+    }
+
+    public function getTimelineAttribute()
+    {
+        return $this->activityLogs()->orderBy('created_at', 'desc')->get()->map(function($log) {
+            return [
+                'title' => $log->event_type,
+                'description' => $log->description,
+                'date' => $log->created_at->format('Y-m-d H:i:s'),
+                'icon' => 'Clock', // Default icon
+                'color' => 'text-slate-500' // Default color
+            ];
+        });
     }
 }

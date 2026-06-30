@@ -106,9 +106,49 @@ class ListingController extends Controller
             $query->where('slug', $slug);
         }
 
-        $listing = $query->firstOrFail();
+        $listing = $query->first();
 
-        $listing->incrementViews();
+        if (!$listing && is_numeric($slug)) {
+            // If listing not found, check if it's a valid user id and generate a stub Listing
+            $user = \App\Models\User::with([
+                'worker.approvedReviews.user', 
+                'supplier.approvedReviews.user', 
+                'builder.approvedReviews.user'
+            ])->find($slug);
+            
+            if (!$user) {
+                abort(404);
+            }
+            
+            $listing = new Listing();
+            $listing->id = $user->id;
+            $listing->user_id = $user->id;
+            $listing->title = $user->name;
+            $listing->slug = (string)$user->id;
+            $listing->description = 'Profile pending completion.';
+            $listing->city = $user->worker?->city ?? $user->builder?->city ?? $user->supplier?->city ?? 'Unknown';
+            $listing->address = $user->worker?->address ?? null;
+            $listing->avg_rating = $user->worker?->avg_rating ?? $user->builder?->avg_rating ?? $user->supplier?->avg_rating ?? 0;
+            $listing->review_count = $user->worker?->review_count ?? $user->builder?->review_count ?? $user->supplier?->review_count ?? 0;
+            $listing->is_verified = false;
+            $listing->trust_score = $user->trust_score;
+            $listing->profile_completion_score = $user->profile_completion_score;
+            $listing->verification_level = $user->verification_level;
+            
+            $listing->setRelation('user', $user);
+            $listing->setRelation('category', new \App\Models\Category(['name' => 'Professional', 'slug' => 'professional']));
+            $listing->setRelation('gallery', collect());
+            
+            $reviews = $user->worker?->approvedReviews ?? 
+                       $user->builder?->approvedReviews ?? 
+                       $user->supplier?->approvedReviews ?? 
+                       collect();
+            $listing->setRelation('approvedReviews', $reviews);
+        } elseif (!$listing) {
+            abort(404);
+        } else {
+            $listing->incrementViews();
+        }
 
         return response()->json([
             'success' => true,

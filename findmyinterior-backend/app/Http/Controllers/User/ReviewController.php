@@ -40,14 +40,35 @@ class ReviewController extends Controller
         $body = $data['body'] ?? $data['review_text'] ?? '';
 
         if (!empty($data['professional_id'])) {
-            // Find the primary listing for this professional
+            // Resolve the reviewable entity from the professional's profile
+            // Priority: Listing → Worker → Supplier → Builder (based on their role)
             $listing = \App\Models\Listing::where('user_id', $data['professional_id'])->first();
             if ($listing) {
-                $reviewableType = \App\Models\Listing::class;
-                $reviewableId = $listing->id;
+                $reviewableType = $listing->getMorphClass();
+                $reviewableId   = $listing->id;
             } else {
-                // Fallback to reviewing the user directly if no listing exists
-                return response()->json(['success' => false, 'message' => 'Professional has no public listing to review.'], 404);
+                $worker = \App\Models\Worker::where('user_id', $data['professional_id'])->first();
+                if ($worker) {
+                    $reviewableType = $worker->getMorphClass();
+                    $reviewableId   = $worker->id;
+                } else {
+                    $supplier = \App\Models\Supplier::where('user_id', $data['professional_id'])->first();
+                    if ($supplier) {
+                        $reviewableType = $supplier->getMorphClass();
+                        $reviewableId   = $supplier->id;
+                    } else {
+                        $builder = \App\Models\Builder::where('user_id', $data['professional_id'])->first();
+                        if ($builder) {
+                            $reviewableType = $builder->getMorphClass();
+                            $reviewableId   = $builder->id;
+                        } else {
+                            // Final fallback: attach the review to the User model directly if they have no profiles
+                            $userModel = \App\Models\User::find($data['professional_id']);
+                            $reviewableType = $userModel ? $userModel->getMorphClass() : \App\Models\User::class;
+                            $reviewableId   = $data['professional_id'];
+                        }
+                    }
+                }
             }
         } else {
             $reviewableType = $morphMap[$data['reviewable_type']];

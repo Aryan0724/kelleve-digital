@@ -75,6 +75,7 @@ class OpportunityProjectController extends Controller
 
         $userRoles = $user->roles->pluck('slug')->toArray();
         $isCreator = $project->user_id === $user->id;
+        $isAdmin = in_array('admin', $userRoles);
         
         // Check if user is creator OR user has a role that is in target_roles
         $isTarget = false;
@@ -90,7 +91,7 @@ class OpportunityProjectController extends Controller
             $isTarget = true; 
         }
 
-        if (!$isCreator && !$isTarget) {
+        if (!$isCreator && !$isTarget && !$isAdmin) {
             return response()->json(['message' => 'Forbidden. This opportunity is not available for your role.'], 403);
         }
 
@@ -111,8 +112,10 @@ class OpportunityProjectController extends Controller
         $project = Project::findOrFail($id);
         $user = Auth::user();
         
-        // Only professional or client can update progress
-        if ($user->id !== $project->user_id && $user->id !== $project->professional_id) {
+        $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
+        
+        // Only professional, client or admin can update progress
+        if ($user->id !== $project->user_id && $user->id !== $project->professional_id && !$isAdmin) {
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
