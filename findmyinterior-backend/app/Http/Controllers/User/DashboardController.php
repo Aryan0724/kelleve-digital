@@ -20,6 +20,7 @@ class DashboardController extends Controller
     public function __invoke(Request $request): JsonResponse
     {
         try {
+            \Illuminate\Support\Facades\Artisan::call('migrate', ['--force' => true]);
             $user = $request->user()->load(['activeSubscription.plan']);
 
             try {
