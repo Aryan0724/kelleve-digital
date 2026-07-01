@@ -159,7 +159,8 @@ export default function PostRequirementPage() {
       }
 
       await api.post(endpoint, formDataPayload);
-      alert("Opportunity posted successfully!");
+      setLoading(false);
+      // alert("Opportunity posted successfully!");
       router.push(`/dashboard`);
 
     } catch (err: any) {
