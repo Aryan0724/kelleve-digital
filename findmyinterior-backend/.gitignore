@@ -25,3 +25,15 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Debug/test scripts (never commit these)
+test_*.php
+debug_*.php
+*_audit.php
+schema_export.php
+schema_output*.json
+output.txt
+FILLABLE_AUDIT.md
+generate_*.php
+read_log.php
+run_mig.php
