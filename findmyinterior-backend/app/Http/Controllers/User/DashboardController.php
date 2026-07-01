@@ -22,8 +22,14 @@ class DashboardController extends Controller
         try {
             $user = $request->user()->load(['activeSubscription.plan']);
 
-            $unreadCustomer = \App\Models\Conversation::where('customer_id', $user->id)->sum('customer_unread_count');
-            $unreadVendor = \App\Models\Conversation::where('vendor_id', $user->id)->sum('vendor_unread_count');
+            try {
+                $unreadCustomer = \App\Models\Conversation::where('customer_id', $user->id)->sum('customer_unread_count');
+                $unreadVendor = \App\Models\Conversation::where('vendor_id', $user->id)->sum('vendor_unread_count');
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Failed to sum unread messages: ' . $e->getMessage());
+                $unreadCustomer = 0;
+                $unreadVendor = 0;
+            }
 
             $data = [
                 'user' => [
