@@ -21,7 +21,7 @@ class NewLeadNotification extends Notification implements ShouldQueue
 
     public function via(object $notifiable): array
     {
-        return ['mail', 'database', WhatsAppChannel::class];
+        return ['database'];
     }
 
     public function toMail(object $notifiable): MailMessage
