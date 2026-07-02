@@ -488,7 +488,7 @@ export function CompleteProfileTab() {
                     <Field label={profileType === 'listing' ? "Business Name" : "Company Name"} icon={Briefcase}>
                       <Input required name={profileType === 'listing' ? "title" : "company_name"} value={profileType === 'listing' ? formData.title : formData.company_name} onChange={handleChange} placeholder="Your Business Name" />
                     </Field>
-                    <Field label="Tagline" icon={Building}>
+                    <Field label="Tagline" icon={Building2}>
                       <Input name="tagline" value={formData.tagline} onChange={handleChange} placeholder="e.g. Bihar's best interiors" />
                     </Field>
                   </div>
