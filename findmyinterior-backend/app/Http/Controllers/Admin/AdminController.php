@@ -34,11 +34,13 @@ class AdminController extends Controller
         $subRevenue = Payment::successful()->where('purpose', 'subscription')->sum('amount');
 
         // Top Professionals by leads unlocked/bids (using User relation count)
-        $topProfessionals = User::whereIn('role', ['business', 'worker', 'builder'])
+        $topProfessionals = User::whereHas('roles', function($q) {
+                $q->whereIn('slug', ['business', 'worker', 'builder']);
+            })
             ->withCount(['contactUnlocks', 'submittedBids'])
             ->orderByRaw('(contact_unlocks_count + submitted_bids_count) DESC')
             ->take(5)
-            ->get(['id', 'name', 'role']);
+            ->get(['id', 'name']);
 
         // Top Districts by Requirement volume
         $topDistricts = Requirement::select('district', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
@@ -52,7 +54,9 @@ class AdminController extends Controller
             'data'    => [
                 'stats' => [
                     'total_users'           => User::count(),
-                    'active_professionals'  => User::whereIn('role', ['business', 'worker', 'builder', 'supplier'])->where('is_active', true)->count(),
+                    'active_professionals'  => User::whereHas('roles', function($q) {
+                        $q->whereIn('slug', ['business', 'worker', 'builder', 'supplier']);
+                    })->where('is_active', true)->count(),
                     'total_requirements'    => Requirement::count(),
                     'total_bids'            => \App\Models\Bid::count(),
                     'open_requirements'     => Requirement::open()->count(),
@@ -67,7 +71,7 @@ class AdminController extends Controller
                 ],
                 'top_professionals' => $topProfessionals,
                 'top_districts' => $topDistricts,
-                'recent_users' => User::latest()->take(5)->get(['id', 'name', 'email', 'role', 'created_at']),
+                'recent_users' => User::with('roles:id,slug,name')->latest()->take(5)->get(['id', 'name', 'email', 'created_at']),
                 'recent_payments' => Payment::with('user:id,name,email')
                     ->latest()
                     ->take(5)

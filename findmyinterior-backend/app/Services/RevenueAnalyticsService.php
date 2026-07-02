@@ -80,12 +80,12 @@ class RevenueAnalyticsService
      */
     public function getFunnelMetrics(): array
     {
-        $totalRequirements = DB::table('requirements')->count();
+        $totalRequirements = DB::table('projects')->count();
         $requirementsWithBids = DB::table('bids')->distinct('requirement_id')->count('requirement_id');
         $totalBids = DB::table('bids')->count();
         $awardedBids = DB::table('bids')->where('status', 'awarded')->count();
-        $awardedRequirements = DB::table('requirements')->where('status', 'awarded')->count();
-        $completedRequirements = DB::table('requirements')->where('status', 'completed')->count();
+        $awardedRequirements = DB::table('projects')->where('status', 'awarded')->count();
+        $completedRequirements = DB::table('projects')->where('status', 'completed')->count();
 
         $leadToBidRate = $totalRequirements > 0
             ? round(($requirementsWithBids / $totalRequirements) * 100, 2)

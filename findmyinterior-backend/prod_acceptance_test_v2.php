@@ -324,15 +324,15 @@ if ($bidId) {
 // PHASE 8 — REVIEW
 // ──────────────────────────────────────────────────────────────
 echo "\n=== PHASE 8: REVIEW & TRUST SCORE ===\n";
-// POST /user/reviews — from homeowner
+// POST /user/reviews — from homeowner using professional_id + requirement_id
 if ($dUserId && $reqId) {
     $r = api('POST', "$BASE/user/reviews", [
-        'reviewed_user_id' => $dUserId,
-        'project_id'       => $reqId,
+        'professional_id'  => $dUserId,
+        'requirement_id'   => $reqId,
         'rating'           => 5,
         'body'             => 'Outstanding work. Highly recommended!',
     ], $hoToken);
-    check('Homeowner submits review', $r, 201, fn($j) => isset($j['data']));
+    check('Homeowner submits review', $r, 201, fn($j) => ($j['success'] ?? false) === true);
     
     // Check trust score updated
     sleep(2);

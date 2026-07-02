@@ -38,25 +38,25 @@ class VendorMetric extends Model
 
     public function getResponseRateAttribute()
     {
-        if ($this->messages_received === 0) return 0.0;
+        if (empty($this->messages_received)) return 0.0;
         return round(($this->messages_replied / $this->messages_received) * 100, 2);
     }
 
     public function getCompletionRateAttribute()
     {
-        if ($this->award_count === 0) return 0.0;
+        if (empty($this->award_count)) return 0.0;
         return round(($this->projects_completed / $this->award_count) * 100, 2);
     }
 
     public function getWinRateAttribute()
     {
-        if ($this->total_bids === 0) return 0.0;
+        if (empty($this->total_bids)) return 0.0;
         return round(($this->successful_bids / $this->total_bids) * 100, 2);
     }
 
     public function getRatingAverageAttribute()
     {
-        if ($this->review_count < 3) {
+        if (empty($this->review_count) || $this->review_count < 3) {
             // Cold-start protection: return platform average or default to 4.5
             return 4.5;
         }
@@ -65,7 +65,7 @@ class VendorMetric extends Model
 
     public function getAvgResponseMinutesAttribute()
     {
-        if ($this->response_count === 0) return 0;
+        if (empty($this->response_count)) return 0;
         return round($this->total_response_minutes / $this->response_count, 0);
     }
 }
