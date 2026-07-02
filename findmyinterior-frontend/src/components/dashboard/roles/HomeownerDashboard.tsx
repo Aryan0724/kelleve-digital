@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { handleLogoutAction } from "@/lib/auth";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
@@ -19,8 +20,8 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   const [activeTab, setActiveTab] = useState("dashboard");
   const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await handleLogoutAction();
     router.push("/login");
   };
 
@@ -144,7 +145,12 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                               <p className="text-slate-600 text-sm line-clamp-2">{req.description || `Required: ${req.quantity || req.number_of_workers}`}</p>
                             </div>
                             <div className="flex flex-col gap-2 shrink-0">
-                              <Button onClick={() => router.push(`/requirements/${req.id}?type=${req._type || 'project'}`)} variant="outline" size="sm">View Detail</Button>
+                              <div className="flex flex-wrap gap-2">
+                                <Button onClick={() => router.push(`/requirements/${req.id}?type=${req._type || 'project'}`)} variant="outline" size="sm">View Detail</Button>
+                                {(req.status === 'open' || req.status === 'posted') && (
+                                  <Button onClick={() => router.push(`/post-requirement?edit=${req.id}&type=${req._type || 'project'}`)} variant="secondary" size="sm">Edit</Button>
+                                )}
+                              </div>
                               
                               {(req.status === 'awarded' || req.status === 'in_progress') && (
                                 <Button 

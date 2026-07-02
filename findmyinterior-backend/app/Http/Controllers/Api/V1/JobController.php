@@ -98,6 +98,7 @@ class JobController extends Controller
 
         // Creator or admin can always see their own job
         if ($isCreator || $isAdmin) {
+            $job->is_unlocked = true;
             return $this->success($job);
         }
         
@@ -117,12 +118,22 @@ class JobController extends Controller
             return $this->error('Forbidden. This Job is not available for your role.', 403);
         }
 
+        $job->is_unlocked = $job->isUnlockedBy($user);
+        $job->has_bid = $job->bids()->where('professional_id', $user->id)->exists();
+
         return $this->success($job);
     }
 
     public function update(Request $request, string $id)
     {
         $job = WorkerJob::findOrFail($id);
+
+        $user = Auth::user();
+        $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
+        if ($user->id !== $job->user_id && !$isAdmin) {
+            return $this->error('Unauthorized', 403);
+        }
+
         $job->update($request->all());
         return $this->success($job, 'Job updated successfully');
     }
@@ -148,7 +159,15 @@ class JobController extends Controller
 
     public function destroy(string $id)
     {
-        WorkerJob::destroy($id);
+        $job = WorkerJob::findOrFail($id);
+
+        $user = Auth::user();
+        $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
+        if ($user->id !== $job->user_id && !$isAdmin) {
+            return $this->error('Unauthorized', 403);
+        }
+
+        $job->delete();
         return $this->success(null, 'Job deleted');
     }
 }

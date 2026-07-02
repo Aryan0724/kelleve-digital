@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Search, Gavel, CheckCircle2, MessageSquare, Wallet, User, LogOut, Package, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
@@ -22,8 +23,8 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
   const isUnverified = user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
   const [activeTab, setActiveTab] = useState("available_leads");
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await handleLogoutAction();
     router.push("/login");
   };
 

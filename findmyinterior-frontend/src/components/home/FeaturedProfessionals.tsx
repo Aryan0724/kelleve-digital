@@ -4,13 +4,13 @@ import { Star, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 
-export function FeaturedProfessionals() {
-  const pros = [
-    { name: "Rahul Sharma", role: "Interior Designer", rating: 4.9, reviews: 124, img: "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=150&h=150&fit=crop" },
-    { name: "Apex Builders", role: "Contractor", rating: 4.8, reviews: 89, img: "https://images.unsplash.com/photo-1504307651254-35680f356f12?w=150&h=150&fit=crop" },
-    { name: "Priya Singh", role: "Architect", rating: 5.0, reviews: 56, img: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&h=150&fit=crop" },
-    { name: "Vikas Modulars", role: "Modular Kitchen", rating: 4.7, reviews: 210, img: "https://images.unsplash.com/photo-1581092795360-fd1ca04f0952?w=150&h=150&fit=crop" },
-  ];
+export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
+  // Use passed data or empty array if not loaded yet
+  const displayPros = pros && pros.length > 0 ? pros.slice(0, 4) : [];
+
+  if (displayPros.length === 0) {
+    return null; // or a skeleton loader if preferred
+  }
 
   return (
     <section className="py-16 bg-gray-50">
@@ -26,24 +26,28 @@ export function FeaturedProfessionals() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {pros.map((pro, i) => (
-            <div key={i} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
+          {displayPros.map((pro, i) => (
+            <div key={pro.id || i} className="bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-md transition">
               <div className="flex items-center gap-4 mb-4">
-                <img src={pro.img} alt={pro.name} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100" />
-                <div>
-                  <h3 className="font-bold text-gray-900 flex items-center gap-1">
-                    {pro.name} <ShieldCheck className="w-4 h-4 text-blue-500" />
+                {pro.image_url ? (
+                  <img src={pro.image_url} alt={pro.business_name} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100" />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xl">{pro.business_name?.charAt(0)}</div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-1 line-clamp-1">
+                    {pro.business_name} <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
                   </h3>
-                  <p className="text-sm text-gray-500">{pro.role}</p>
+                  <p className="text-sm text-gray-500 line-clamp-1">{pro.category?.name || "Professional"}</p>
                 </div>
               </div>
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100">
                 <div className="flex items-center gap-1 text-sm font-medium text-gray-700">
                   <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  {pro.rating} <span className="text-gray-400 font-normal">({pro.reviews})</span>
+                  {pro.rating || "4.5"} <span className="text-gray-400 font-normal">({pro.review_count || 0})</span>
                 </div>
                 <div className="w-[100px]">
-                  <InquiryForm type="Listing" id={1} title={pro.name} />
+                  <InquiryForm type="Listing" id={pro.id || 1} title={pro.business_name} />
                 </div>
               </div>
             </div>

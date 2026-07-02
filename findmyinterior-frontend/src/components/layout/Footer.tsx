@@ -4,7 +4,7 @@ import { Globe, Mail, Phone, MapPin } from "lucide-react";
 export function Footer() {
   return (
     <footer className="bg-slate-900 py-12 text-slate-300">
-      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-5 gap-8">
 
         <div>
           <h2 className="text-2xl font-bold text-white mb-2">
@@ -60,6 +60,16 @@ export function Footer() {
               <MapPin className="h-4 w-4 shrink-0 text-orange-400" />
               Patna, Bihar 800001
             </li>
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="font-semibold text-white mb-4">Legal</h3>
+          <ul className="space-y-2 text-sm">
+            <li><Link href="/terms" className="hover:text-white transition-colors">Terms of Service</Link></li>
+            <li><Link href="/privacy" className="hover:text-white transition-colors">Privacy Policy</Link></li>
+            <li><Link href="/dispute-resolution" className="hover:text-white transition-colors">Dispute Resolution</Link></li>
+            <li><Link href="/compliance" className="hover:text-white transition-colors">Trust & Safety</Link></li>
           </ul>
         </div>
 

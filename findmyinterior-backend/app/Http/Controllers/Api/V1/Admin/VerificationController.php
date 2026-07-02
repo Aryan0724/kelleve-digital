@@ -50,7 +50,8 @@ class VerificationController extends Controller
         // Transform documents to include full URLs
         $users->getCollection()->transform(function ($user) {
             $user->documents->transform(function ($doc) {
-                $doc->url = Storage::disk(config('filesystems.default'))->url($doc->file_path);
+                // file_path is already a base64 data URI
+                $doc->url = $doc->file_path;
                 return $doc;
             });
             return $user;

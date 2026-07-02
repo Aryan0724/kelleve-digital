@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Building, Wallet, User, LogOut, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { handleLogoutAction } from "@/lib/auth";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
@@ -22,8 +23,8 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
   const isUnverified = user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
   const [activeTab, setActiveTab] = useState("projects");
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await handleLogoutAction();
     router.push("/login");
   };
 

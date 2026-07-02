@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+
+import { Suspense } from "react";
 
 const OPPORTUNITY_TYPES = [
   { id: "interior_design", label: "Interior Design", type: "projects" },
@@ -22,9 +24,12 @@ const OPPORTUNITY_TYPES = [
   { id: "builder_project", label: "Builder Project", type: "builder-projects" },
 ];
 
-export default function PostRequirementPage() {
+function PostRequirementContent() {
   const { user, token } = useAuthStore();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const editId = searchParams?.get("edit");
+  const editType = searchParams?.get("type") || "project";
   
   const [step, setStep] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -68,7 +73,93 @@ export default function PostRequirementPage() {
 
   useEffect(() => {
     setMounted(true);
-  }, []);
+    
+    if (editId) {
+      setLoading(true);
+      let fetchEndpoint = `/projects/${editId}`;
+      if (editType === 'rfq') fetchEndpoint = `/rfqs/${editId}`;
+      if (editType === 'job') fetchEndpoint = `/worker-jobs/${editId}`;
+
+      api.get(fetchEndpoint).then(res => {
+        const data = res.data.data;
+        let typeVal = "";
+        
+        if (editType === 'rfq') {
+          typeVal = "materials";
+          setFormData(prev => ({
+            ...prev,
+            title: data.title || "",
+            description: data.description?.split("\n\n[Details]")[0] || data.description || "",
+            city: data.city || "",
+            district: data.district || "",
+            material_type: data.category || "",
+            quantity: data.quantity || "",
+            required_date: data.expected_delivery_date || "",
+          }));
+        } else if (editType === 'job') {
+          typeVal = "workers";
+          setFormData(prev => ({
+            ...prev,
+            title: data.title || "",
+            description: data.description?.split("\n\n[Details]")[0] || data.description || "",
+            city: data.city || "",
+            district: data.district || "",
+            skill_required: data.skills_required || "",
+            duration: data.duration || "",
+          }));
+        } else {
+          // Projects
+          typeVal = data.requirement_type ? data.requirement_type.toLowerCase() : "interior_design";
+          if (typeVal === 'builder_project') {
+             setFormData(prev => ({
+              ...prev,
+              title: data.title || "",
+              description: data.description?.split("\n\n[Details]")[0] || data.description || "",
+              city: data.city || "",
+              district: data.district || "",
+              budget: data.budget || "",
+              project_name: data.project_name || "",
+              project_scale: data.project_scale || "",
+              project_location: data.project_location || "",
+              timeline: data.possession_timeline || "",
+            }));
+          } else if (typeVal === 'construction') {
+            setFormData(prev => ({
+              ...prev,
+              title: data.title || "",
+              description: data.description?.split("\n\n[Details]")[0] || data.description || "",
+              city: data.city || "",
+              district: data.district || "",
+              budget: data.budget || "",
+              plot_size: data.area || "",
+              construction_stage: data.site_condition || "",
+              timeline: data.possession_timeline || "",
+            }));
+          } else {
+            setFormData(prev => ({
+              ...prev,
+              title: data.title || "",
+              description: data.description?.split("\n\n[Details]")[0] || data.description || "",
+              city: data.city || "",
+              district: data.district || "",
+              budget: data.budget || "",
+              property_type: data.project_category || "",
+              area: data.area || "",
+              timeline: data.possession_timeline || "",
+              style_preferences: data.design_style || "",
+            }));
+          }
+        }
+        
+        setSelectedType(typeVal);
+        setStep(2);
+      }).catch(err => {
+        console.error("Failed to load requirement", err);
+      }).finally(() => {
+        setLoading(false);
+      });
+    }
+  }, [editId, editType]);
 
   const handleNext = () => {
     if (!selectedType) {
@@ -158,10 +249,16 @@ export default function PostRequirementPage() {
         formDataPayload.append('image', imageFile);
       }
 
-      // Let axios/browser set Content-Type with the correct multipart boundary automatically
-      await api.post(endpoint, formDataPayload, {
-        headers: { 'Content-Type': undefined },
-      });
+      if (editId) {
+        formDataPayload.append('_method', 'PUT');
+        await api.post(`${endpoint}/${editId}`, formDataPayload, {
+          headers: { 'Content-Type': undefined },
+        });
+      } else {
+        await api.post(endpoint, formDataPayload, {
+          headers: { 'Content-Type': undefined },
+        });
+      }
       setLoading(false);
       // Hard navigate so dashboard re-mounts and fetches fresh data
       window.location.href = '/dashboard';
@@ -203,8 +300,6 @@ export default function PostRequirementPage() {
                   <p className="text-sm text-slate-500">Post a request for {opp.label.toLowerCase()}</p>
                 </div>
               ))}
-
-
             </div>
           )}
 
@@ -547,12 +642,20 @@ export default function PostRequirementPage() {
                 Back
               </Button>
               <Button onClick={handleSubmit} disabled={loading} className="bg-orange-600 hover:bg-orange-700">
-                {loading ? "Posting..." : "Post Opportunity"}
+                {loading ? (editId ? "Updating..." : "Posting...") : (editId ? "Update Opportunity" : "Post Opportunity")}
               </Button>
             </>
           )}
         </CardFooter>
       </Card>
     </div>
+  );
+}
+
+export default function PostRequirementPage() {
+  return (
+    <Suspense fallback={<div className="p-20 text-center font-bold text-slate-500">Loading form...</div>}>
+      <PostRequirementContent />
+    </Suspense>
   );
 }

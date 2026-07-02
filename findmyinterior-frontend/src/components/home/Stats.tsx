@@ -1,31 +1,31 @@
 import { Users, Building, Smile, MapPin, Grid, HeadphonesIcon } from "lucide-react";
 
 export function Stats({ stats }: { stats?: any }) {
-  // Use provided stats or fallback to mockup defaults
+  // Use provided stats
   const displayStats = [
     {
       icon: <Users className="w-8 h-8 text-gray-400" strokeWidth={1.5} />,
-      value: stats?.verified_professionals ? `${stats.verified_professionals}+` : "1500+",
+      value: stats?.verified_professionals ? `${stats.verified_professionals}+` : "...",
       label: "Verified Professionals",
     },
     {
       icon: <Building className="w-8 h-8 text-gray-400" strokeWidth={1.5} />,
-      value: stats?.total_projects ? `${stats.total_projects}+` : "5000+",
+      value: stats?.total_projects ? `${stats.total_projects}+` : "...",
       label: "Projects Completed",
     },
     {
       icon: <Smile className="w-8 h-8 text-gray-400" strokeWidth={1.5} />,
-      value: stats?.happy_customers ? `${stats.happy_customers}+` : "10,000+",
+      value: stats?.happy_customers ? `${stats.happy_customers}+` : "...",
       label: "Happy Customers",
     },
     {
       icon: <MapPin className="w-8 h-8 text-gray-400" strokeWidth={1.5} />,
-      value: stats?.cities_covered ? `${stats.cities_covered}+` : "38+",
+      value: stats?.cities_covered ? `${stats.cities_covered}+` : "...",
       label: "Cities in Bihar",
     },
     {
       icon: <Grid className="w-8 h-8 text-gray-400" strokeWidth={1.5} />,
-      value: stats?.categories ? `${stats.categories}+` : "50+",
+      value: stats?.categories ? `${stats.categories}+` : "...",
       label: "Categories",
     },
     {

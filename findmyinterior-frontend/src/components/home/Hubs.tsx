@@ -1,7 +1,12 @@
 import Link from "next/link";
 import Image from "next/image";
 
-export function Hubs() {
+export function Hubs({ homeData }: { homeData?: any }) {
+  const firstProject = homeData?.upcoming_projects?.[0];
+  const firstPossession = homeData?.possession_projects?.[0];
+  const firstWorker = homeData?.featured_workers?.[0];
+  const firstSupplier = homeData?.featured_suppliers?.[0];
+
   const hubs = [
     {
       title: "LIVE PROJECTS MARKETPLACE",
@@ -10,12 +15,19 @@ export function Hubs() {
       buttonText: "VIEW PROJECTS",
       link: "/projects",
       image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=600&auto=format&fit=crop",
-      content: (
+      content: firstProject ? (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">3BHK Flat Interior</h4>
-          <p className="text-xs text-gray-500 mb-0.5">Patna, Bihar</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Budget: ₹8 - 10 Lakh</p>
-          <p className="text-xs text-gray-500">Interested: 12 Experts</p>
+          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstProject.title}</h4>
+          <p className="text-xs text-gray-500 mb-0.5 line-clamp-1">{firstProject.city}</p>
+          <p className="text-xs font-semibold text-gray-700 mb-0.5">Budget: ₹{firstProject.budget}</p>
+          <p className="text-xs text-gray-500">Live Requirement</p>
+        </>
+      ) : (
+        <>
+          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Live Requirements</h4>
+          <p className="text-xs text-gray-500 mb-0.5">Across Bihar</p>
+          <p className="text-xs font-semibold text-gray-700 mb-0.5">Multiple Budgets</p>
+          <p className="text-xs text-gray-500">Submit Quotes</p>
         </>
       ),
     },
@@ -25,28 +37,42 @@ export function Hubs() {
       buttonColor: "bg-blue-600 hover:bg-blue-700",
       buttonText: "VIEW PROJECT",
       link: "/projects?type=builder",
-      image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=600&auto=format&fit=crop",
-      content: (
+      image: firstProject?.images?.[0] || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=600&auto=format&fit=crop",
+      content: firstProject ? (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Skyline Residency</h4>
-          <p className="text-xs text-gray-500 mb-0.5">100 Flats Project</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Location: Patna</p>
+          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstProject.title}</h4>
+          <p className="text-xs text-gray-500 mb-0.5">{firstProject.builder?.business_name || "Top Builder"}</p>
+          <p className="text-xs font-semibold text-gray-700 mb-0.5">Location: {firstProject.city}</p>
+          <p className="text-xs text-gray-500">Requirements Available</p>
+        </>
+      ) : (
+        <>
+          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Builder Projects</h4>
+          <p className="text-xs text-gray-500 mb-0.5">Verified Builders</p>
+          <p className="text-xs font-semibold text-gray-700 mb-0.5">Major Cities</p>
           <p className="text-xs text-gray-500">Requirements Available</p>
         </>
       ),
     },
     {
-      title: "UPCOMING POSSESSION PROJECTS",
+      title: "UPCOMING POSSESSION",
       titleColor: "text-orange-600",
       buttonColor: "bg-orange-600 hover:bg-orange-700",
       buttonText: "VIEW PROJECTS",
       link: "/projects",
-      image: "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=600&auto=format&fit=crop",
-      content: (
+      image: firstPossession?.images?.[0] || "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=600&auto=format&fit=crop",
+      content: firstPossession ? (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">ABC Heights</h4>
-          <p className="text-xs text-gray-500 mb-0.5">200 Flats</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Possession: Jan 2027</p>
+          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstPossession.title}</h4>
+          <p className="text-xs text-gray-500 mb-0.5">{firstPossession.builder?.business_name || "Top Builder"}</p>
+          <p className="text-xs font-semibold text-gray-700 mb-0.5">Possession: {firstPossession.possession_date}</p>
+          <p className="text-xs text-gray-500">Interior Leads Expected</p>
+        </>
+      ) : (
+        <>
+          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Upcoming Flats</h4>
+          <p className="text-xs text-gray-500 mb-0.5">New Societies</p>
+          <p className="text-xs font-semibold text-gray-700 mb-0.5">Ready to Move</p>
           <p className="text-xs text-gray-500">Interior Leads Expected</p>
         </>
       ),
@@ -57,8 +83,13 @@ export function Hubs() {
       buttonColor: "bg-purple-700 hover:bg-purple-800",
       buttonText: "FIND WORKERS",
       link: "/workers",
-      image: "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=600&auto=format&fit=crop",
-      content: (
+      image: firstWorker?.image_url || "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=600&auto=format&fit=crop",
+      content: firstWorker ? (
+        <>
+          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstWorker.name}</h4>
+          <p className="text-xs text-gray-600 mt-1 leading-snug">Available {firstWorker.skills || "Worker"}</p>
+        </>
+      ) : (
         <>
           <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Find Verified<br/>Skilled Workers</h4>
           <p className="text-xs text-gray-600 mt-2 leading-snug">Carpenter, Electrician, Plumber, Painter & more</p>
@@ -71,8 +102,13 @@ export function Hubs() {
       buttonColor: "bg-teal-600 hover:bg-teal-700",
       buttonText: "FIND SUPPLIERS",
       link: "/materials",
-      image: "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=600&auto=format&fit=crop",
-      content: (
+      image: firstSupplier?.image_url || "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=600&auto=format&fit=crop",
+      content: firstSupplier ? (
+        <>
+          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstSupplier.business_name}</h4>
+          <p className="text-xs text-gray-600 mt-1 leading-snug">{firstSupplier.city}</p>
+        </>
+      ) : (
         <>
           <p className="text-xs text-gray-600 leading-snug">Tiles, Plywood, Hardware, Lighting, Sanitary, Kitchen Hardware & More</p>
         </>

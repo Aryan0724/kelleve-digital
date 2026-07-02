@@ -68,4 +68,15 @@ class Rfq extends Model
         return $this->hasMany(Bid::class, 'requirement_id')
             ->whereIn('requirement_type', ['Rfq', 'App\Models\Rfq']);
     }
+
+    public function contactUnlocks(): HasMany
+    {
+        return $this->hasMany(ContactUnlock::class, 'requirement_id')
+            ->whereIn('requirement_type', ['Rfq', 'App\Models\Rfq']);
+    }
+
+    public function isUnlockedBy(User $user): bool
+    {
+        return $this->contactUnlocks()->where('user_id', $user->id)->exists();
+    }
 }

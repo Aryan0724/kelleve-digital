@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
@@ -22,8 +23,8 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
   const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState("available_leads");
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await handleLogoutAction();
     router.push("/login");
   };
 

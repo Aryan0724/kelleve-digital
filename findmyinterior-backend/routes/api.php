@@ -55,6 +55,29 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         return response()->json(['status' => 'ok', 'database' => 'connected']);
     });
 
+    // ONE-TIME admin credential reset — secured by secret key
+    // REMOVE AFTER USE
+    Route::get('/system/admin-reset', function (\Illuminate\Http\Request $req) {
+        if ($req->query('key') !== 'fmi_reset_2025_xK9mP') {
+            return response()->json(['error' => 'Unauthorized'], 401);
+        }
+        $admin = \App\Models\User::whereHas('roles', function($q) {
+            $q->where('slug', 'admin');
+        })->first();
+        if (!$admin) {
+            return response()->json(['error' => 'No admin user found', 'users' => \App\Models\User::select(['id','email'])->limit(5)->get()], 404);
+        }
+        $admin->password = \Illuminate\Support\Facades\Hash::make('Admin@123!');
+        $admin->is_active = true;
+        $admin->save();
+        return response()->json([
+            'success'  => true,
+            'message'  => 'Admin password reset',
+            'email'    => $admin->email,
+            'new_pass' => 'Admin@123!',
+        ]);
+    });
+
     Route::get('/debug-logs', function (\Illuminate\Http\Request $request) {
         if ($request->query('key') !== 'aryan123') return response('Unauthorized', 401);
         $logPath = storage_path('logs/laravel.log');
@@ -160,6 +183,13 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('bids/{bid}/accept', [BidController::class, 'accept']);
         Route::patch('bids/{bid}/reject', [BidController::class, 'reject']);
         Route::patch('bids/{bid}/award', [BidController::class, 'award']);
+        Route::patch('requirements/{id}/accept-award', [BidController::class, 'acceptAward']);
+        
+        // Milestones
+        Route::get('requirements/{id}/milestones', [\App\Http\Controllers\Api\V1\MilestoneController::class, 'index']);
+        Route::post('requirements/{id}/milestones', [\App\Http\Controllers\Api\V1\MilestoneController::class, 'store']);
+        Route::patch('requirements/{id}/milestones/{milestoneId}', [\App\Http\Controllers\Api\V1\MilestoneController::class, 'update']);
+        Route::patch('requirements/{id}/milestones/{milestoneId}/pay', [\App\Http\Controllers\Api\V1\MilestoneController::class, 'markAsPaid']);
         
         // Wallet
         Route::get('wallet', [WalletController::class, 'index']);

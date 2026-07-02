@@ -103,6 +103,7 @@ class RfqController extends Controller
 
         // Creator or admin can always see their own RFQ
         if ($isCreator || $isAdmin) {
+            $rfq->is_unlocked = true;
             return $this->success($rfq);
         }
         
@@ -122,12 +123,22 @@ class RfqController extends Controller
             return $this->error('Forbidden. This RFQ is not available for your role.', 403);
         }
 
+        $rfq->is_unlocked = $rfq->isUnlockedBy($user);
+        $rfq->has_bid = $rfq->bids()->where('professional_id', $user->id)->exists();
+
         return $this->success($rfq);
     }
 
     public function update(Request $request, string $id)
     {
         $rfq = Rfq::findOrFail($id);
+
+        $user = Auth::user();
+        $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
+        if ($user->id !== $rfq->user_id && !$isAdmin) {
+            return $this->error('Unauthorized', 403);
+        }
+
         $rfq->update($request->all());
         return $this->success($rfq, 'RFQ updated successfully');
     }
@@ -153,7 +164,15 @@ class RfqController extends Controller
 
     public function destroy(string $id)
     {
-        Rfq::destroy($id);
+        $rfq = Rfq::findOrFail($id);
+
+        $user = Auth::user();
+        $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
+        if ($user->id !== $rfq->user_id && !$isAdmin) {
+            return $this->error('Unauthorized', 403);
+        }
+
+        $rfq->delete();
         return $this->success(null, 'RFQ deleted');
     }
 }

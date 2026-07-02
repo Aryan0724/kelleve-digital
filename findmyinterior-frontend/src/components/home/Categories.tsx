@@ -14,19 +14,25 @@ import {
 } from "lucide-react";
 
 export function Categories({ categories }: { categories?: any[] }) {
-  const staticServices = [
-    { name: "Interior Designers", icon: <Sofa className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "Architects", icon: <Building2 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "Civil Contractors", icon: <HardHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "Modular Kitchen", icon: <ChefHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "Painters", icon: <Paintbrush className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "Carpenters", icon: <Hammer className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "Electricians", icon: <Zap className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "Plumbers", icon: <Wrench className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "False Ceiling", icon: <Box className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "Flooring", icon: <Layers className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-    { name: "More Services", icon: <Grid3X3 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-  ];
+  // Map category slugs or names to icons
+  const getIcon = (name: string) => {
+    const slug = name.toLowerCase();
+    if (slug.includes("interior")) return <Sofa className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("architect")) return <Building2 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("contractor")) return <HardHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("kitchen")) return <ChefHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("paint")) return <Paintbrush className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("carpent")) return <Hammer className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("electric")) return <Zap className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("plumb")) return <Wrench className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("ceiling")) return <Box className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    if (slug.includes("floor")) return <Layers className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+    return <Grid3X3 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />;
+  };
+
+  const displayCategories = categories && categories.length > 0 
+    ? categories.slice(0, 11) 
+    : [];
 
   return (
     <section className="w-full bg-[#f8f9fa] py-8">
@@ -42,22 +48,35 @@ export function Categories({ categories }: { categories?: any[] }) {
         </div>
 
         {/* Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-between gap-4">
-          {staticServices.map((service, idx) => (
+        {displayCategories.length > 0 && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-between gap-4">
+            {displayCategories.map((category, idx) => (
+              <Link 
+                href={`/professionals?category=${category.slug || category.name.replace(/ /g, '-')}`}
+                key={category.id || idx}
+                className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 transition-all cursor-pointer xl:w-[calc(9.09%-12px)] min-w-[100px]"
+              >
+                <div className="bg-orange-50/50 p-3 rounded-full shrink-0">
+                  {getIcon(category.name)}
+                </div>
+                <span className="text-[10px] sm:text-xs font-bold text-center text-[#0a1c3a] leading-tight">
+                  {category.name}
+                </span>
+              </Link>
+            ))}
             <Link 
-              href={`/professionals?search=${service.name.replace(/ /g, '+')}`}
-              key={idx}
+              href="/professionals"
               className="bg-white border border-gray-200 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 transition-all cursor-pointer xl:w-[calc(9.09%-12px)] min-w-[100px]"
             >
               <div className="bg-orange-50/50 p-3 rounded-full shrink-0">
-                {service.icon}
+                <Grid3X3 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />
               </div>
               <span className="text-[10px] sm:text-xs font-bold text-center text-[#0a1c3a] leading-tight">
-                {service.name}
+                More Services
               </span>
             </Link>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );

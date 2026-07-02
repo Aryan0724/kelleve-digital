@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { 
   MapPin, 
@@ -40,6 +41,16 @@ export function Navbar() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState("");
 
+  const handleLogout = async () => {
+    try {
+      await api.post("/auth/logout");
+    } catch (err) {
+      console.error("Logout error", err);
+    }
+    logout();
+    router.push("/login");
+  };
+
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     if (searchQuery.trim()) {
@@ -71,7 +82,7 @@ export function Navbar() {
                 <LayoutDashboard className="w-3.5 h-3.5" />
                 <span>Dashboard</span>
               </Link>
-              <button onClick={logout} className="hover:text-white flex items-center space-x-1">
+              <button onClick={handleLogout} className="hover:text-white flex items-center space-x-1">
                 <LogOut className="w-3.5 h-3.5" />
                 <span>Logout</span>
               </button>

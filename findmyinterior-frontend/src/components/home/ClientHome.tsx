@@ -2,6 +2,7 @@
 
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useEffect, useState } from "react";
+import api from "@/lib/api";
 import { Hero } from "@/components/home/Hero";
 import { Stats } from "@/components/home/Stats";
 import { Categories } from "@/components/home/Categories";
@@ -15,9 +16,13 @@ import { RoleBasedHomepage } from "@/components/home/RoleBasedHomepage";
 export function ClientHome() {
   const { user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  const [homeData, setHomeData] = useState<any>(null);
 
   useEffect(() => {
     setMounted(true);
+    api.get("/homepage").then((res) => {
+      setHomeData(res.data.data);
+    }).catch(console.error);
   }, []);
 
   if (!mounted) {
@@ -31,10 +36,10 @@ export function ClientHome() {
   return (
     <>
       <Hero />
-      <Stats />
-      <FeaturedProfessionals />
-      <Categories />
-      <Hubs />
+      <Stats stats={homeData?.stats} />
+      <FeaturedProfessionals pros={homeData?.featured_listings} />
+      <Categories categories={homeData?.categories} />
+      <Hubs homeData={homeData} />
       <ActionBanner />
       <TrustFooter />
       <MobileStickyCTA />

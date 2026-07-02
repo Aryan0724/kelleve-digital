@@ -153,6 +153,11 @@ export default function RequirementDetail() {
               <span className="bg-[#4CAF50] text-white text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider">
                 {requirement.status === 'open' ? 'NEW PROJECT' : requirement.status.toUpperCase()}
               </span>
+              {requirement.payment_status && requirement.payment_status !== 'Unpaid' && (
+                <span className="bg-blue-600 text-white text-xs font-bold px-3 py-1 rounded-sm uppercase tracking-wider">
+                  {requirement.payment_status.toUpperCase()}
+                </span>
+              )}
               <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
                 {requirement.title}
                 <ShieldCheck className="w-6 h-6 text-[#ff6b00]" fill="#ff6b00" stroke="white" />
@@ -494,21 +499,21 @@ export default function RequirementDetail() {
                     </div>
                   </div>
 
-                  {isUnlocked || user?.role === 'admin' ? (
+                  {isUnlocked || user?.role === 'admin' || requirement?.has_bid ? (
                     <div className="mt-4 bg-white rounded-lg p-4 border border-green-200 shadow-sm text-center">
-                      <div className="text-2xl font-black text-slate-900 tracking-wider mb-1">{requirement.phone}</div>
-                      <div className="text-sm text-slate-600 font-medium">{requirement.email || "No email provided"}</div>
+                      {(isUnlocked || user?.role === 'admin') ? (
+                        <>
+                          <div className="text-2xl font-black text-slate-900 tracking-wider mb-1">{requirement.phone}</div>
+                          <div className="text-sm text-slate-600 font-medium">{requirement.email || "No email provided"}</div>
+                        </>
+                      ) : (
+                        <div className="text-sm text-slate-600 font-medium mb-2">Phone number hidden. Message to discuss further.</div>
+                      )}
                       <div className="mt-3 text-xs font-bold text-green-700 bg-green-100 py-1.5 rounded flex items-center justify-center gap-1">
-                        <CheckCircle className="w-4 h-4" /> Contact Unlocked
+                        <CheckCircle className="w-4 h-4" /> {isUnlocked || user?.role === 'admin' ? "Contact Unlocked" : "Messaging Unlocked"}
                       </div>
-                      <div className="flex items-center gap-2 mb-2">
-                        <span className="text-sm font-semibold text-slate-500 uppercase tracking-wider">
-                          Contact Details
-                        </span>
-                      </div>
-                      
-                      <p className="text-sm text-slate-700 mb-5 leading-relaxed">
-                        Unlock & connect directly with the client to discuss the project.
+                      <p className="text-sm text-slate-700 mb-5 leading-relaxed mt-4">
+                        Connect directly with the client to discuss the project.
                       </p>
                       <Button 
                         onClick={async () => {
@@ -563,43 +568,70 @@ export default function RequirementDetail() {
                         const awardedBid = bids.find((b: any) => b.is_awarded || b.status === 'accepted' || b.status === 'completed');
                         if (awardedBid?.professional) {
                           return (
-                            <div className="flex flex-col md:flex-row gap-4 border border-slate-100 rounded-xl p-4 bg-slate-50 items-center">
-                              <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
-                                {awardedBid.professional.avatar ? (
-                                  <img src={awardedBid.professional.avatar} alt={awardedBid.professional.name} className="w-full h-full object-cover" />
-                                ) : (
-                                  <span className="font-bold text-slate-400 text-xl">{awardedBid.professional.name?.charAt(0) || 'V'}</span>
-                                )}
-                              </div>
-                              <div className="flex-1 text-center md:text-left">
-                                <h3 className="font-bold text-lg text-slate-800">{awardedBid.professional.name}</h3>
-                                <div className="text-sm text-slate-500 font-medium">
-                                  Winning Bid Amount: ₹{Number(awardedBid.amount).toLocaleString('en-IN')}
+                            <div className="flex flex-col gap-4">
+                              <div className="flex flex-col md:flex-row gap-4 border border-slate-100 rounded-xl p-4 bg-slate-50 items-center">
+                                <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center overflow-hidden shrink-0 shadow-sm">
+                                  {awardedBid.professional.avatar ? (
+                                    <img src={awardedBid.professional.avatar} alt={awardedBid.professional.name} className="w-full h-full object-cover" />
+                                  ) : (
+                                    <span className="font-bold text-slate-400 text-xl">{awardedBid.professional.name?.charAt(0) || 'V'}</span>
+                                  )}
                                 </div>
-                                <div className="text-xs text-slate-400 mt-1">Awarded on {new Date(awardedBid.updated_at || awardedBid.created_at).toLocaleDateString()}</div>
+                                <div className="flex-1 text-center md:text-left">
+                                  <h3 className="font-bold text-lg text-slate-800">{awardedBid.professional.name}</h3>
+                                  <div className="text-sm text-slate-500 font-medium">
+                                    Winning Bid Amount: ₹{Number(awardedBid.amount).toLocaleString('en-IN')}
+                                  </div>
+                                  <div className="text-xs text-slate-400 mt-1">Awarded on {new Date(awardedBid.updated_at || awardedBid.created_at).toLocaleDateString()}</div>
+                                </div>
+                                <div className="shrink-0 flex flex-col gap-2">
+                                  <Button 
+                                    onClick={async () => {
+                                      try {
+                                        const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+                                        const res = await api.post(`/requirements/${requirement.id}/conversations${typeStr}`, { vendor_id: awardedBid.professional_id });
+                                        router.push(`/messages/${res.data.id}`);
+                                      } catch (err: any) {
+                                        alert("Failed to start conversation.");
+                                      }
+                                    }}
+                                    className="bg-[#0b1b36] hover:bg-slate-800 text-white"
+                                  >
+                                    <MessageCircle className="w-4 h-4 mr-2" /> Message
+                                  </Button>
+                                  <Button 
+                                    onClick={() => router.push(`/professionals/${awardedBid.professional_id}`)}
+                                    variant="outline"
+                                  >
+                                    <User className="w-4 h-4 mr-2" /> View Profile
+                                  </Button>
+                                </div>
                               </div>
-                              <div className="shrink-0 flex flex-col gap-2">
-                                <Button 
-                                  onClick={async () => {
-                                    try {
-                                      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
-                                      const res = await api.post(`/requirements/${requirement.id}/conversations${typeStr}`, { vendor_id: awardedBid.professional_id });
-                                      router.push(`/messages/${res.data.id}`);
-                                    } catch (err: any) {
-                                      alert("Failed to start conversation.");
-                                    }
-                                  }}
-                                  className="bg-[#0b1b36] hover:bg-slate-800 text-white"
-                                >
-                                  <MessageCircle className="w-4 h-4 mr-2" /> Message
-                                </Button>
-                                <Button 
-                                  onClick={() => router.push(`/professionals/${awardedBid.professional_id}`)}
-                                  variant="outline"
-                                >
-                                  <User className="w-4 h-4 mr-2" /> View Profile
-                                </Button>
-                              </div>
+
+                              {/* Customer Completion Button */}
+                              {requirement.status === 'in_progress' && (
+                                <div className="mt-4 p-4 border border-blue-200 bg-blue-50 rounded-xl text-center">
+                                  <h3 className="font-bold text-blue-900 mb-2">Project In Progress</h3>
+                                  <p className="text-sm text-blue-700 mb-4">The professional is working on this project. Once they finish, you can mark it as completed.</p>
+                                  <Button 
+                                    onClick={async () => {
+                                      if (confirm("Are you sure you want to mark this project as completed?")) {
+                                        try {
+                                          const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+                                          await api.patch(`/requirements/${requirement.id}/complete${typeStr}`);
+                                          alert("Project completed successfully!");
+                                          window.location.reload();
+                                        } catch (e) {
+                                          alert("Failed to complete project.");
+                                        }
+                                      }
+                                    }}
+                                    className="bg-green-600 hover:bg-green-700 text-white"
+                                  >
+                                    Mark as Completed
+                                  </Button>
+                                </div>
+                              )}
                             </div>
                           );
                         }
@@ -621,49 +653,122 @@ export default function RequirementDetail() {
                   )}
                 </div>
               ) : (
-                <div className="bg-[#fff7ed] border border-[#fed7aa] rounded-xl p-6 relative overflow-hidden">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h2 className="text-[#c2410c] font-black text-xl">BID FOR THIS PROJECT</h2>
-                      <p className="text-slate-700 text-sm font-medium">Send Quote & Get the Project</p>
-                    </div>
-                    <div className="w-12 h-12 bg-[#ff6b00] rounded-full flex items-center justify-center shadow-sm">
-                      <Gavel className="w-6 h-6 text-white" />
-                    </div>
-                  </div>
-
-                  {requirement?.has_bid ? (
-                    <div className="mt-6 text-center">
-                      <div className="text-green-600 font-bold mb-4 flex items-center justify-center gap-2">
-                        <CheckCircle className="w-5 h-5" /> Bid Submitted Successfully!
+                <>
+                  {/* Professional Award Action Block */}
+                  {requirement.status === 'awarded' && requirement.professional_id === user?.id && (
+                    <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-6 relative overflow-hidden mb-6">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h2 className="text-[#15803d] font-black text-xl">PROJECT AWARDED!</h2>
+                          <p className="text-slate-700 text-sm font-medium">Congratulations! You won this bid.</p>
+                        </div>
+                        <div className="w-12 h-12 bg-[#16a34a] rounded-full flex items-center justify-center shadow-sm">
+                          <CheckCircle className="w-6 h-6 text-white" />
+                        </div>
                       </div>
-                      <p className="text-sm text-slate-600 mb-5">
-                        You can now message the client directly to discuss the project.
+                      <p className="text-sm text-slate-600 mb-5 mt-2">
+                        Please review the project details. By accepting, you agree to start the project.
                       </p>
-                      <Button disabled className="w-full bg-slate-100 text-slate-500 font-bold h-12 text-base rounded-md flex gap-2">
-                        <CheckCircle className="w-4 h-4" /> BID SENT
-                      </Button>
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-baseline justify-center mb-4">
-                        <span className="text-3xl font-bold text-orange-600">{displayUnlockPrice}</span>
-                        {!isWorker && <span className="text-slate-500 font-bold mb-1">/unlock</span>}
-                      </div>
-                      
-                      <p className="text-sm text-slate-700 mb-5 leading-relaxed text-center">
-                        Place your quote, showcase your profile & win this project.
-                      </p>
-
                       <Button 
-                        onClick={() => setShowBidForm(true)}
-                        className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
+                        onClick={async () => {
+                          try {
+                            const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+                            await api.patch(`/requirements/${requirement.id}/accept-award${typeStr}`);
+                            alert("Project accepted! Status updated to In Progress.");
+                            window.location.reload();
+                          } catch (e: any) {
+                            alert(e.response?.data?.message || "Failed to accept project.");
+                          }
+                        }}
+                        className="w-full bg-[#16a34a] hover:bg-[#15803d] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
                       >
-                        <Upload className="w-4 h-4" /> PLACE BID NOW
+                        <CheckCircle className="w-5 h-5" /> ACCEPT PROJECT & START WORK
                       </Button>
-                    </>
+                    </div>
                   )}
-                </div>
+
+                  {['in_progress', 'completed'].includes(requirement.status) && (requirement.professional_id === user?.id || requirement.worker_id === user?.id || requirement.supplier_id === user?.id) && (
+                    <div className="bg-[#f0f9ff] border border-[#bae6fd] rounded-xl p-6 relative overflow-hidden mb-6">
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h2 className="text-[#0369a1] font-black text-xl uppercase">{requirement.status === 'completed' ? 'PROJECT COMPLETED' : 'PROJECT IN PROGRESS'}</h2>
+                          <p className="text-slate-700 text-sm font-medium">You are the official professional for this project.</p>
+                        </div>
+                        <div className="w-12 h-12 bg-[#0284c7] rounded-full flex items-center justify-center shadow-sm">
+                          <Briefcase className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+                      <Button 
+                        onClick={async () => {
+                          try {
+                            if (!user) return;
+                            const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+                            const res = await api.post(`/requirements/${requirement.id}/conversations${typeStr}`, { vendor_id: user.id });
+                            router.push(`/messages/${res.data.id}`);
+                          } catch (err: any) {
+                            alert("Failed to start conversation.");
+                          }
+                        }}
+                        className="w-full bg-[#0b1b36] hover:bg-slate-800 text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md mb-2"
+                      >
+                        <MessageCircle className="w-5 h-5" /> Message Client
+                      </Button>
+                      
+                      {requirement.status === 'in_progress' && (
+                        <div className="mt-4 p-4 bg-white border border-slate-200 rounded-lg text-sm text-slate-600">
+                          Complete the work and request the customer to mark the project as completed from their dashboard.
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* Standard Bid Block if not awarded to me */}
+                  {(!['awarded', 'in_progress', 'completed'].includes(requirement.status) || requirement.has_bid) && requirement.professional_id !== user?.id && requirement.worker_id !== user?.id && requirement.supplier_id !== user?.id && (
+                    <div className="bg-[#fff7ed] border border-[#fed7aa] rounded-xl p-6 relative overflow-hidden">
+                      <div className="flex justify-between items-start mb-2">
+                        <div>
+                          <h2 className="text-[#c2410c] font-black text-xl">BID FOR THIS PROJECT</h2>
+                          <p className="text-slate-700 text-sm font-medium">Send Quote & Get the Project</p>
+                        </div>
+                        <div className="w-12 h-12 bg-[#ff6b00] rounded-full flex items-center justify-center shadow-sm">
+                          <Gavel className="w-6 h-6 text-white" />
+                        </div>
+                      </div>
+
+                      {requirement?.has_bid ? (
+                        <div className="mt-6 text-center">
+                          <div className="text-green-600 font-bold mb-4 flex items-center justify-center gap-2">
+                            <CheckCircle className="w-5 h-5" /> Bid Submitted Successfully!
+                          </div>
+                          <p className="text-sm text-slate-600 mb-5">
+                            You can now message the client to discuss the project using the messaging box above.
+                          </p>
+                          <Button disabled className="w-full bg-slate-100 text-slate-500 font-bold h-12 text-base rounded-md flex gap-2">
+                            <CheckCircle className="w-4 h-4" /> BID SENT
+                          </Button>
+                        </div>
+                      ) : (
+                        <>
+                          <div className="flex items-baseline justify-center mb-4">
+                            <span className="text-3xl font-bold text-orange-600">{displayUnlockPrice}</span>
+                            {!isWorker && <span className="text-slate-500 font-bold mb-1">/unlock</span>}
+                          </div>
+                          
+                          <p className="text-sm text-slate-700 mb-5 leading-relaxed text-center">
+                            Place your quote, showcase your profile & win this project.
+                          </p>
+
+                          <Button 
+                            onClick={() => setShowBidForm(true)}
+                            className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
+                          >
+                            <Upload className="w-4 h-4" /> PLACE BID NOW
+                          </Button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </>
               )}
 
             </div>

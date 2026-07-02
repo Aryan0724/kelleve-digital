@@ -210,6 +210,11 @@ class BidController extends Controller
             return $this->error('Unauthorized', 403);
         }
 
+        $requirement = $bid->requirement;
+        if (in_array($requirement->status, ['awarded', 'in_progress', 'completed', 'fulfilled', 'expired', 'closed'])) {
+            return $this->error("Cannot shortlist bid for a requirement that is {$requirement->status}.", 400);
+        }
+
         $this->bidService->shortlistBid($bid, $request->user());
 
         return $this->success($bid->fresh(), 'Bid shortlisted successfully');
@@ -235,9 +240,58 @@ class BidController extends Controller
             return $this->error('Unauthorized', 403);
         }
 
+        $requirement = $bid->requirement;
+        if (in_array($requirement->status, ['awarded', 'in_progress', 'completed', 'fulfilled', 'expired', 'closed'])) {
+            return $this->error("Cannot award project that is already {$requirement->status}.", 400);
+        }
+
         $this->bidService->awardBid($bid, $request->user());
 
         return $this->success($bid->fresh(), 'Project awarded successfully');
+    }
+
+    /**
+     * Professional accepts the awarded project
+     */
+    public function acceptAward(Request $request, int $requirementId): JsonResponse
+    {
+        $type = $request->query('requirement_type', 'project');
+        $modelClass = \App\Models\Requirement::class;
+        if ($type === 'rfq') $modelClass = \App\Models\Rfq::class;
+        if ($type === 'job') $modelClass = \App\Models\WorkerJob::class;
+        
+        $requirement = $modelClass::findOrFail($requirementId);
+        
+        $professionalId = $requirement->professional_id ?? $requirement->worker_id ?? $requirement->supplier_id;
+
+        if ($professionalId !== $request->user()->id) {
+            return $this->error('Unauthorized', 403);
+        }
+
+        if ($requirement->status !== 'awarded') {
+            return $this->error("Cannot accept a project that is {$requirement->status}. Project must be 'awarded'.", 400);
+        }
+
+        // Project accepted, moves to In Progress
+        if ($modelClass === \App\Models\Requirement::class || $modelClass === \App\Models\Project::class) {
+            $requirement->update(['status' => 'in_progress']);
+        } else if ($modelClass === \App\Models\Rfq::class) {
+            $requirement->update(['status' => 'in_progress']);
+        } else if ($modelClass === \App\Models\WorkerJob::class) {
+            $requirement->update(['status' => 'in_progress']);
+        }
+
+        \Illuminate\Support\Facades\DB::table('activity_logs')->insert([
+            'subject_type' => $requirement->getMorphClass(),
+            'subject_id' => $requirement->id,
+            'user_id' => $request->user()->id,
+            'event_type' => 'Project Accepted',
+            'description' => "Professional accepted the awarded project. Work has begun.",
+            'created_at' => now(),
+            'updated_at' => now(),
+        ]);
+
+        return $this->success($requirement->fresh(), 'Project accepted successfully');
     }
 
     /**
@@ -254,6 +308,10 @@ class BidController extends Controller
         
         if ($requirement->user_id !== $request->user()->id) {
             return $this->error('Unauthorized', 403);
+        }
+
+        if ($requirement->status !== 'in_progress') {
+            return $this->error("Cannot complete a project that is {$requirement->status}. Project must be 'in_progress'.", 400);
         }
 
         $this->bidService->completeRequirement($requirement, $request->user());

@@ -7,6 +7,8 @@ use App\Events\ProjectAwarded;
 use App\Events\ProjectCompleted;
 use App\Events\ReviewSubmitted;
 use App\Notifications\MarketplaceNotification;
+use App\Notifications\BidAwardedNotification;
+use App\Notifications\ReviewReceivedNotification;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
 use App\Models\User;
@@ -17,11 +19,10 @@ class SendMarketplaceNotification
     {
         $professional = User::find($event->project->professional_id);
         if ($professional) {
-            $professional->notify(new MarketplaceNotification(
-                'project_awarded',
-                'You have been awarded a new project!',
-                ['project_id' => $event->project->id]
-            ));
+            $professional->notify(new BidAwardedNotification([
+                'title' => $event->project->title,
+                'project_id' => $event->project->id
+            ]));
         }
     }
 
@@ -41,23 +42,19 @@ class SendMarketplaceNotification
     {
         $reviewedUser = User::find($event->review->reviewed_user_id);
         if ($reviewedUser) {
-            $reviewedUser->notify(new MarketplaceNotification(
-                'review_received',
-                'You received a new ' . $event->review->rating . '-star review!',
-                ['project_id' => $event->review->project_id, 'review_id' => $event->review->id]
-            ));
+            // Load relationships if not loaded
+            $reviewer = User::find($event->review->reviewer_id);
+            $project = \App\Models\Project::find($event->review->project_id);
+            
+            $reviewedUser->notify(new ReviewReceivedNotification([
+                'reviewer_name' => $reviewer ? $reviewer->name : 'Someone',
+                'rating' => $event->review->rating,
+                'title' => $project ? $project->title : 'a project',
+                'project_id' => $event->review->project_id,
+                'review_id' => $event->review->id
+            ]));
         }
     }
 
-    public function handleBidSubmitted(BidSubmitted $event): void
-    {
-        $client = User::find($event->bid->requirement->user_id);
-        if ($client) {
-            $client->notify(new MarketplaceNotification(
-                'bid_received',
-                'You received a new bid for your requirement.',
-                ['bid_id' => $event->bid->id, 'requirement_id' => $event->bid->requirement_id]
-            ));
-        }
-    }
+    // handleBidSubmitted was removed to avoid duplicate notifications since BidService directly sends BidReceivedNotification.
 }

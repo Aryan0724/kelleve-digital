@@ -69,4 +69,15 @@ class WorkerJob extends Model
         return $this->hasMany(Bid::class, 'requirement_id')
             ->where('requirement_type', 'WorkerJob');
     }
+
+    public function contactUnlocks(): HasMany
+    {
+        return $this->hasMany(ContactUnlock::class, 'requirement_id')
+            ->whereIn('requirement_type', ['WorkerJob', 'App\Models\WorkerJob']);
+    }
+
+    public function isUnlockedBy(User $user): bool
+    {
+        return $this->contactUnlocks()->where('user_id', $user->id)->exists();
+    }
 }

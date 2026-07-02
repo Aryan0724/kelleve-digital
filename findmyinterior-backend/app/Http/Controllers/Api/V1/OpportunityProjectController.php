@@ -109,6 +109,7 @@ class OpportunityProjectController extends Controller
 
         // Creator can always see their own requirement
         if ($isCreator || $isAdmin) {
+            $requirement->is_unlocked = true;
             return $this->success($requirement);
         }
 
@@ -128,12 +129,22 @@ class OpportunityProjectController extends Controller
             return $this->error('Forbidden. This opportunity is not available for your role.', 403);
         }
 
+        $requirement->is_unlocked = $requirement->isUnlockedBy($user);
+        $requirement->has_bid = $requirement->bids()->where('professional_id', $user->id)->exists();
+
         return $this->success($requirement);
     }
 
     public function update(Request $request, string $id)
     {
         $requirement = Requirement::findOrFail($id);
+        
+        $user = Auth::user();
+        $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
+        if ($user->id !== $requirement->user_id && !$isAdmin) {
+            return $this->error('Unauthorized', 403);
+        }
+
         $requirement->update($request->all());
         return $this->success($requirement, 'Requirement updated successfully');
     }
@@ -177,7 +188,15 @@ class OpportunityProjectController extends Controller
 
     public function destroy(string $id)
     {
-        Requirement::destroy($id);
+        $requirement = Requirement::findOrFail($id);
+        
+        $user = Auth::user();
+        $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
+        if ($user->id !== $requirement->user_id && !$isAdmin) {
+            return $this->error('Unauthorized', 403);
+        }
+
+        $requirement->delete();
         return $this->success(null, 'Requirement deleted');
     }
 }

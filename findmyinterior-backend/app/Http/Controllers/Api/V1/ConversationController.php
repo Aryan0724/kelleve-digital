@@ -127,43 +127,9 @@ class ConversationController extends Controller
                 return response()->json(['message' => 'You must submit a bid or unlock this lead before messaging.'], 403);
             }
 
-            if (!$isUnlocked && $isBidder) {
-                // Bidder but not awarded and not unlocked → charge unlock fee
-                $userRoles    = $user->roles->pluck('slug')->toArray();
-                $isWorker     = in_array('worker', $userRoles) || in_array('skilled_worker', $userRoles);
-                $unlockFee    = $requirement->unlock_price !== null ? (float) $requirement->unlock_price : (float) config('marketplace.unlock_fee', 49.00);
-
-                if (!$isWorker && $unlockFee > 0) {
-                    $balance = $this->walletService->getBalance($user);
-                    if ($balance < $unlockFee) {
-                        return response()->json([
-                            'message'     => "Insufficient wallet balance to message this client. A ₹{$unlockFee} messaging unlock fee is required. Please top up your wallet.",
-                            'requires_payment' => true,
-                            'unlock_fee'  => $unlockFee,
-                        ], 402);
-                    }
-
-                    // Deduct fee & create unlock record in a transaction
-                    DB::transaction(function () use ($user, $requirement, $morphType, $unlockFee) {
-                        $this->walletService->deduct(
-                            $user,
-                            $unlockFee,
-                            "Messaging unlock fee for requirement #{$requirement->id}",
-                            ['reference_type' => $morphType, 'reference_id' => $requirement->id]
-                        );
-
-                        DB::table('contact_unlocks')->insertOrIgnore([
-                            'user_id'          => $user->id,
-                            'requirement_id'   => $requirement->id,
-                            'requirement_type' => $requirement->getMorphClass(),
-                            'created_at'       => now(),
-                            'updated_at'       => now(),
-                        ]);
-                    });
-
-                    $isUnlocked = true; // now unlocked — proceed
-                }
-                // Workers fall through for free
+            if (!$isUnlocked && $isBidder && !$isAwarded) {
+                // Bidder but not awarded and not unlocked → User already paid Bid Fee, so messaging is free.
+                $isUnlocked = true;
             }
         }
         

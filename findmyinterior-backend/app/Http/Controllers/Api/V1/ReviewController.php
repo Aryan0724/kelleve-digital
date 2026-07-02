@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Project;
 use App\Models\Review;
+use App\Models\User;
+use App\Services\VendorMetricService;
+use App\Services\TrustScoreService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -30,13 +33,13 @@ class ReviewController extends Controller
         $user = Auth::user();
         
         // 2. Validate user is part of the project
-        if ($user->id !== $project->client_id && $user->id !== $project->professional_id) {
+        if ($user->id !== $project->user_id && $user->id !== $project->professional_id) {
             return response()->json(['message' => 'Unauthorized to review this project.'], 403);
         }
         
         // Determine role and reviewed user
-        $roleOfReviewer = ($user->id === $project->client_id) ? 'homeowner' : 'professional';
-        $reviewedUserId = ($user->id === $project->client_id) ? $project->professional_id : $project->client_id;
+        $roleOfReviewer = ($user->id === $project->user_id) ? 'homeowner' : 'professional';
+        $reviewedUserId = ($user->id === $project->user_id) ? $project->professional_id : $project->user_id;
         
         // 3. Ensure no duplicate review
         $existingReview = Review::where('project_id', $project->id)
@@ -57,8 +60,18 @@ class ReviewController extends Controller
             'role_of_reviewer' => $roleOfReviewer,
             'is_approved' => true, // Auto-approve for now
         ]);
-        
-        // 5. Emit Event / Log Activity
+        // 5. Update Vendor Metrics if the reviewed user is a professional
+        if ($roleOfReviewer === 'homeowner') {
+            app(VendorMetricService::class)->recordReview($reviewedUserId, $request->rating);
+        }
+
+        // 6. Recalculate Trust Score for the reviewed user
+        $reviewedUser = User::find($reviewedUserId);
+        if ($reviewedUser) {
+            app(TrustScoreService::class)->recalculateForUser($reviewedUser);
+        }
+
+        // 7. Emit Event / Log Activity
         event(new \App\Events\ReviewSubmitted($review));
         
         \DB::table('activity_logs')->insert([

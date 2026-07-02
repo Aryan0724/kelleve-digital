@@ -5,22 +5,22 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, CheckCircle2, User, LogOut, ShieldCheck, Briefcase } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, CheckCircle2, User, LogOut, ShieldCheck, Briefcase, Star } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { handleLogoutAction } from "@/lib/auth";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
-import { Star } from "lucide-react";
 export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState("available_leads");
 
-  const handleLogout = () => {
-    logout();
+  const handleLogout = async () => {
+    await handleLogoutAction();
     router.push("/login");
   };
 
