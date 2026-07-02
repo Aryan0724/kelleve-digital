@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Camera, CheckCircle2, Loader2, ShieldCheck, Star, Upload,
-  User, Building2, MapPin, Phone, Globe, Briefcase, Users, Hash, Check, Lock, AlertCircle, XCircle, ShieldAlert, UploadCloud, ArrowRight
+  User, Building2, MapPin, Phone, Globe, Briefcase, Users, Hash, Check, Lock, AlertCircle, XCircle, ShieldAlert, UploadCloud, ArrowRight, UserCircle2
 } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
