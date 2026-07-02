@@ -376,7 +376,7 @@ export default function RequirementDetail() {
           })()}
 
               {/* Stats Row */}
-              <div className="grid grid-cols-4 gap-4 border border-slate-100 rounded-xl p-4 bg-white shadow-sm">
+              <div className="grid grid-cols-3 gap-4 border border-slate-100 rounded-xl p-4 bg-white shadow-sm">
                 <div className="flex flex-col items-center justify-center text-center border-r border-slate-100">
                   <Users className="w-6 h-6 text-[#ff6b00] mb-1" />
                   <span className="font-extrabold text-xl text-slate-900">{requirement.bids_count || 0}</span>
@@ -387,13 +387,13 @@ export default function RequirementDetail() {
                   <span className="font-extrabold text-xl text-slate-900">{requirement.views_count || 0}</span>
                   <span className="text-xs text-slate-500 font-medium leading-tight">Times<br/>Viewed</span>
                 </div>
-                <div className="flex flex-col items-center justify-center text-center border-r border-slate-100">
+                <div className="flex flex-col items-center justify-center text-center">
                   <Calendar className="w-6 h-6 text-[#ff6b00] mb-1" />
                   <span className="font-extrabold text-xl text-slate-900 line-clamp-1 overflow-hidden" title={requirement.possession_timeline || requirement.expected_delivery_date || requirement.duration || "Not specified"}>
                     {requirement.possession_timeline || requirement.expected_delivery_date || requirement.duration || "N/A"}
                   </span>
                   <span className="text-xs text-slate-500 font-medium leading-tight">Expected<br/>Timeline</span>
-
+                </div>
               </div>
 
               {/* About Client & Requirements */}
