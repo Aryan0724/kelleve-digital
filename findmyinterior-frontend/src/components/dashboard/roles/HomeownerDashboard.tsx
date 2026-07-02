@@ -72,7 +72,6 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
-                {renderSidebarButton("projects", <LayoutDashboard className="h-5 w-5" />, "My Projects")}
                 {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Bids")}
                 {renderSidebarButton("shortlisted", <Star className="h-5 w-5" />, "Shortlisted Professionals")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
@@ -119,7 +118,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
               </div>
             )}
 
-            {(activeTab === 'dashboard' || activeTab === 'projects') && (
+            {activeTab === 'dashboard' && (
               <Card>
                 <CardHeader className="flex flex-row justify-between items-center">
                   <CardTitle>My Projects</CardTitle>
@@ -252,7 +251,11 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
 
                             {/* Info */}
                             <div className="flex-1 min-w-0">
-                              <div className="font-bold text-slate-900">{bid.professional?.name || 'Professional'}</div>
+                              <div className="font-bold text-slate-900">
+                                <a href={`/professionals/${bid.professional?.id}`} target="_blank" rel="noreferrer" className="hover:text-orange-600 hover:underline">
+                                  {bid.professional?.name || 'Professional'}
+                                </a>
+                              </div>
                               <div className="flex flex-wrap gap-x-3 gap-y-0.5 text-sm text-slate-500 mt-0.5">
                                 {bid.professional?.skill && <span>🔧 {bid.professional.skill}</span>}
                                 {bid.professional?.city && <span>📍 {bid.professional.city}</span>}

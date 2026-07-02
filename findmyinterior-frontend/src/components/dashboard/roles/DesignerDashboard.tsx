@@ -94,7 +94,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Projects")}
-                {renderSidebarButton("recommended_projects", <Search className="h-5 w-5" />, "Recommended Projects")}
+                {renderSidebarButton("unlocked_leads", <UserIcon className="h-5 w-5" />, "Unlocked Leads")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "My Bids")}
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
@@ -138,7 +138,32 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             </div>
             
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
-            {activeTab === 'recommended_projects' && <AvailableLeadsTab leads={data?.recommended_leads} />}
+            
+            {activeTab === 'unlocked_leads' && (
+              <Card>
+                <CardHeader><CardTitle>Unlocked Leads (CRM)</CardTitle></CardHeader>
+                <CardContent>
+                  {data?.unlocked_contacts && data.unlocked_contacts.length > 0 ? (
+                    <div className="space-y-4 mt-4">
+                      {data.unlocked_contacts.map((contact: any) => (
+                        <div key={contact.id} className="p-4 border rounded-xl hover:shadow-md transition-shadow flex justify-between items-center bg-white">
+                          <div>
+                            <h4 className="font-bold text-lg mb-1">{contact.requirement?.title || contact.requirement?.material_type || contact.requirement?.skill_required || `Project #${contact.requirement_id}`}</h4>
+                            <div className="text-sm text-slate-500">Unlocked on: {new Date(contact.created_at).toLocaleDateString()}</div>
+                          </div>
+                          <Button size="sm" onClick={() => router.push(`/requirements/${contact.requirement_id}?type=${contact.requirement_type === 'Rfq' ? 'rfq' : contact.requirement_type === 'WorkerJob' ? 'job' : 'project'}`)} className="bg-orange-600 hover:bg-orange-700">View Project</Button>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl mt-4">
+                      <UserIcon className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                      You haven't unlocked any leads yet.
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            )}
             
             {activeTab === 'bids_submitted' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Submitted Bids" showAwardedOnly={false} />
@@ -154,6 +179,11 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 <CardContent className="py-16 text-center text-slate-500">
                   <Paintbrush className="h-12 w-12 text-slate-300 mx-auto mb-4" />
                   Your portfolio is currently empty. Upload projects to attract more clients.
+                  <div className="mt-6">
+                    <Button onClick={() => router.push('/dashboard/profile')} className="bg-indigo-600 hover:bg-indigo-700">
+                      Upload Portfolio
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}

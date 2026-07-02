@@ -235,13 +235,32 @@ export default function PostRequirementPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="area">Total Area (sq ft)</Label>
-                      <Input id="area" placeholder="e.g. 1500" value={formData.area} onChange={(e) => setFormData({...formData, area: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, area: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Area" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Under 500 sq ft">Under 500 sq ft</SelectItem>
+                          <SelectItem value="500 - 1000 sq ft">500 - 1000 sq ft</SelectItem>
+                          <SelectItem value="1000 - 2000 sq ft">1000 - 2000 sq ft</SelectItem>
+                          <SelectItem value="2000 - 5000 sq ft">2000 - 5000 sq ft</SelectItem>
+                          <SelectItem value="Above 5000 sq ft">Above 5000 sq ft</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="budget">Estimated Budget</Label>
-                      <Input id="budget" placeholder="e.g. ₹5 Lakhs" value={formData.budget} onChange={(e) => setFormData({...formData, budget: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, budget: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Budget" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Under ₹1 Lakh">Under ₹1 Lakh</SelectItem>
+                          <SelectItem value="₹1 - ₹5 Lakhs">₹1 - ₹5 Lakhs</SelectItem>
+                          <SelectItem value="₹5 - ₹10 Lakhs">₹5 - ₹10 Lakhs</SelectItem>
+                          <SelectItem value="₹10 - ₹25 Lakhs">₹10 - ₹25 Lakhs</SelectItem>
+                          <SelectItem value="₹25 - ₹50 Lakhs">₹25 - ₹50 Lakhs</SelectItem>
+                          <SelectItem value="Above ₹50 Lakhs">Above ₹50 Lakhs</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="timeline">Timeline</Label>
@@ -268,7 +287,16 @@ export default function PostRequirementPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="plot_size">Plot Size</Label>
-                      <Input id="plot_size" placeholder="e.g. 30x40" value={formData.plot_size} onChange={(e) => setFormData({...formData, plot_size: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, plot_size: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Plot Size" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="20x30">20x30</SelectItem>
+                          <SelectItem value="30x40">30x40</SelectItem>
+                          <SelectItem value="40x60">40x60</SelectItem>
+                          <SelectItem value="50x80">50x80</SelectItem>
+                          <SelectItem value="Other/Larger">Other/Larger</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="construction_stage">Current Stage</Label>
@@ -278,7 +306,16 @@ export default function PostRequirementPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="budget">Estimated Budget</Label>
-                      <Input id="budget" placeholder="e.g. ₹20 Lakhs" value={formData.budget} onChange={(e) => setFormData({...formData, budget: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, budget: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Budget" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Under ₹10 Lakhs">Under ₹10 Lakhs</SelectItem>
+                          <SelectItem value="₹10 - ₹25 Lakhs">₹10 - ₹25 Lakhs</SelectItem>
+                          <SelectItem value="₹25 - ₹50 Lakhs">₹25 - ₹50 Lakhs</SelectItem>
+                          <SelectItem value="₹50 Lakhs - ₹1 Crore">₹50 Lakhs - ₹1 Crore</SelectItem>
+                          <SelectItem value="Above ₹1 Crore">Above ₹1 Crore</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="timeline">Timeline</Label>
@@ -337,7 +374,15 @@ export default function PostRequirementPage() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="duration">Estimated Duration</Label>
-                    <Input id="duration" placeholder="e.g. 3 Days" value={formData.duration} onChange={(e) => setFormData({...formData, duration: e.target.value})} />
+                    <Select onValueChange={(val: any) => setFormData({...formData, duration: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1 - 3 Days">1 - 3 Days</SelectItem>
+                          <SelectItem value="1 Week">1 Week</SelectItem>
+                          <SelectItem value="2 - 3 Weeks">2 - 3 Weeks</SelectItem>
+                          <SelectItem value="1 Month+">1 Month+</SelectItem>
+                        </SelectContent>
+                    </Select>
                   </div>
                 </>
               )}
@@ -361,7 +406,15 @@ export default function PostRequirementPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="budget">Estimated Budget</Label>
-                      <Input id="budget" placeholder="e.g. ₹5 Crores" value={formData.budget} onChange={(e) => setFormData({...formData, budget: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, budget: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Budget" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Under ₹1 Crore">Under ₹1 Crore</SelectItem>
+                          <SelectItem value="₹1 - ₹5 Crores">₹1 - ₹5 Crores</SelectItem>
+                          <SelectItem value="₹5 - ₹10 Crores">₹5 - ₹10 Crores</SelectItem>
+                          <SelectItem value="Above ₹10 Crores">Above ₹10 Crores</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="timeline">Timeline</Label>

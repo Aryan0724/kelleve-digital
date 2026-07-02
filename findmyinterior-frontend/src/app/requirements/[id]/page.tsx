@@ -125,7 +125,7 @@ export default function RequirementDetail() {
   const isProfessional = user && user.role !== 'customer';
   const isOwner = user?.id === requirement?.user_id;
   const isWorker = user?.roles?.some((r: any) => r.slug === 'worker') || user?.role === 'worker';
-  const displayUnlockPrice = isWorker ? "Free" : (requirement?.unlock_price_display || "Price");
+  const displayUnlockPrice = isWorker ? "Free" : (requirement?.unlock_price ? `₹${requirement.unlock_price}` : "₹49");
 
   return (
     <div className="bg-[#f8f9fa] min-h-screen pb-10">
@@ -398,9 +398,9 @@ export default function RequirementDetail() {
                   <span className="text-xs text-slate-500 font-medium leading-tight">Expected<br/>Timeline</span>
                 </div>
                 <div className="flex flex-col items-center justify-center text-center">
-                  <ShieldCheck className="w-6 h-6 text-[#ff6b00] mb-1" />
-                  <span className="font-extrabold text-xl text-slate-900">Verified</span>
-                  <span className="text-xs text-slate-500 font-medium leading-tight">Phone & Property<br/>Verified</span>
+                  <ShieldCheck className={`w-6 h-6 mb-1 ${requirement.user?.verification_level && requirement.user.verification_level !== 'unverified' ? 'text-[#10b981]' : 'text-slate-400'}`} />
+                  <span className="font-extrabold text-xl text-slate-900">{requirement.user?.verification_level && requirement.user.verification_level !== 'unverified' ? 'Verified' : 'Unverified'}</span>
+                  <span className="text-xs text-slate-500 font-medium leading-tight">Phone & Property<br/>{requirement.user?.verification_level && requirement.user.verification_level !== 'unverified' ? 'Verified' : 'Status'}</span>
                 </div>
               </div>
 
@@ -417,7 +417,9 @@ export default function RequirementDetail() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-900">{requirement.name}</span>
-                        <span className="bg-[#10b981] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Verified</span>
+                        {requirement.user?.verification_level && requirement.user.verification_level !== 'unverified' && (
+                          <span className="bg-[#10b981] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Verified</span>
+                        )}
                       </div>
                       <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                         <MapPin className="w-3 h-3" /> {requirement.city}, {requirement.district}
@@ -655,8 +657,8 @@ export default function RequirementDetail() {
                     </div>
                   ) : (
                     <>
-                      <div className="flex items-end gap-1 mb-6 justify-center mt-4">
-                        <span className="text-4xl font-black text-[#ff6b00]">{displayUnlockPrice}</span>
+                      <div className="flex items-baseline justify-center mb-4">
+                        <span className="text-3xl font-bold text-orange-600">{displayUnlockPrice}</span>
                         {!isWorker && <span className="text-slate-500 font-bold mb-1">/unlock</span>}
                       </div>
                       
@@ -755,7 +757,7 @@ export default function RequirementDetail() {
                 requirementType={reqType} 
                 onSuccess={() => {
                   setShowBidForm(false);
-                  // Refresh bids if needed
+                  setRequirement({ ...requirement, has_bid: true });
                 }} 
               />
             </div>

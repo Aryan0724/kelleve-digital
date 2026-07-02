@@ -499,11 +499,11 @@ export function CompleteProfileTab() {
                   )}
                   
                   <div className="border-t pt-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-lg">
-                    <Field label="GST Number (Optional)" icon={Hash}>
-                      <Input name="gst_number" value={formData.gst_number} onChange={handleChange} placeholder="22AAAAA0000A1Z5" />
+                    <Field label="GST Number *" icon={Hash}>
+                      <Input name="gst_number" required value={formData.gst_number} onChange={handleChange} placeholder="22AAAAA0000A1Z5" />
                     </Field>
-                    <Field label="PAN Number (Optional)" icon={Hash}>
-                      <Input name="pan_number" value={formData.pan_number} onChange={handleChange} placeholder="ABCDE1234F" />
+                    <Field label="PAN Number *" icon={Hash}>
+                      <Input name="pan_number" required value={formData.pan_number} onChange={handleChange} placeholder="ABCDE1234F" />
                     </Field>
                   </div>
                 </>
@@ -515,11 +515,28 @@ export function CompleteProfileTab() {
                   <h4 className="text-sm font-bold text-slate-900 mb-2">Advanced Details</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Field label="Services Offered (Comma Separated)" icon={Briefcase}>
-                      <Input name="services" value={formData.services} onChange={handleChange} placeholder="e.g. Modular Kitchen, False Ceiling" />
+                    <Field label="Primary Service Offered" icon={Briefcase}>
+                      <select name="services" value={formData.services} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                        <option value="">Select Service</option>
+                        <option value="Complete Home Interior">Complete Home Interior</option>
+                        <option value="Modular Kitchen">Modular Kitchen</option>
+                        <option value="False Ceiling">False Ceiling</option>
+                        <option value="Wardrobe & Storage">Wardrobe & Storage</option>
+                        <option value="Painting & Decor">Painting & Decor</option>
+                        <option value="Plumbing & Electrical">Plumbing & Electrical</option>
+                        <option value="Flooring & Tiling">Flooring & Tiling</option>
+                        <option value="Civil Work">Civil Work</option>
+                      </select>
                     </Field>
-                    <Field label="Key Achievements (Comma Separated)" icon={Star}>
-                      <Input name="achievements" value={formData.achievements} onChange={handleChange} placeholder="e.g. 50+ Projects Completed" />
+                    <Field label="Key Achievements" icon={Star}>
+                      <select name="achievements" value={formData.achievements} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                        <option value="">Select Achievement</option>
+                        <option value="10+ Projects Completed">10+ Projects Completed</option>
+                        <option value="50+ Projects Completed">50+ Projects Completed</option>
+                        <option value="100+ Projects Completed">100+ Projects Completed</option>
+                        <option value="Award Winning Designer">Award Winning Designer</option>
+                        <option value="Top Rated Professional">Top Rated Professional</option>
+                      </select>
                     </Field>
                     
                     <Field label="Availability" icon={CheckCircle2}>
@@ -540,8 +557,18 @@ export function CompleteProfileTab() {
                       </select>
                     </Field>
                     
-                    <Field label="Languages Spoken (Comma Separated)" icon={Globe}>
-                      <Input name="languages" value={formData.languages} onChange={handleChange} placeholder="e.g. English, Hindi" />
+                    <Field label="Primary Language Spoken" icon={Globe}>
+                      <select name="languages" value={formData.languages} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+                        <option value="">Select Language</option>
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Marathi">Marathi</option>
+                        <option value="Gujarati">Gujarati</option>
+                        <option value="Tamil">Tamil</option>
+                        <option value="Telugu">Telugu</option>
+                        <option value="Kannada">Kannada</option>
+                        <option value="Bengali">Bengali</option>
+                      </select>
                     </Field>
                   </div>
                   

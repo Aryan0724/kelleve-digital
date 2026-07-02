@@ -452,13 +452,22 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <AdminTable
-                headers={["Requirement", "Customer", "Status", "Bids", "Action"]}
+                headers={["Requirement", "Customer", "Unlock Price", "Status", "Bids", "Action"]}
                 rows={requirements.map((item) => [
                   <div key="req">
                     <div className="font-semibold">{item.title}</div>
                     <div className="text-slate-500">{item.city}, {item.district}</div>
                   </div>,
                   <div key="customer">{item.user?.name || item.name || "Guest"}</div>,
+                  <div key="price" className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-700">₹{item.unlock_price || "49 (Def)"}</span>
+                    <Button size="sm" variant="ghost" className="h-6 w-6 p-0 text-slate-400 hover:text-indigo-600" onClick={() => {
+                      const p = prompt('Enter new Unlock Price (leave empty for default ₹49)', item.unlock_price || '');
+                      if (p !== null) {
+                        runAction(`price-req-${item.id}`, () => api.patch(`/admin/requirements/${item.id}/price`, { unlock_price: p || null }));
+                      }
+                    }}>✏️</Button>
+                  </div>,
                   <Badge key="status" variant={item.status === "open" ? "default" : item.status === "pending" ? "destructive" : "secondary"} className="capitalize">{item.status}</Badge>,
                   <div key="bids">{item.bids_count || 0}</div>,
                   <div key="actions" className="flex justify-end gap-2">

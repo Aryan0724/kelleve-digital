@@ -177,27 +177,6 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
         </div>
       )}
 
-      <div className="space-y-3">
-        <Label className="text-base font-semibold">Portfolio Evidence (Optional)</Label>
-        <Input type="file" multiple accept="image/*,.pdf" onChange={handlePortfolioUpload} className="cursor-pointer" />
-        {portfolioPreview.length > 0 && (
-          <div className="flex flex-wrap gap-2 mt-2">
-            {portfolioPreview.map((preview, index) => (
-              <div key={index} className="relative w-16 h-16 rounded border overflow-hidden">
-                {preview.startsWith('data:image') ? (
-                  <img src={preview} alt="preview" className="w-full h-full object-cover" />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-slate-100 text-xs text-center p-1">
-                    {preview}
-                  </div>
-                )}
-                <button type="button" onClick={() => removePortfolioFile(index)} className="absolute top-0 right-0 bg-red-500 text-white w-4 h-4 text-[10px] leading-none flex items-center justify-center">×</button>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
-
       <div className="space-y-2">
         <Label>Detailed Proposal *</Label>
         <Textarea 
@@ -211,7 +190,7 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
       </div>
 
       <Button type="submit" disabled={loading} className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-bold h-12 text-base">
-        {loading ? "Submitting..." : "Submit Formal Bid"}
+        {loading ? "Bid placing..." : "Submit Formal Bid"}
       </Button>
     </form>
   );

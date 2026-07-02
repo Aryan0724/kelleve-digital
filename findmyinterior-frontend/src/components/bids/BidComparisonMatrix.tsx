@@ -56,7 +56,11 @@ export function BidComparisonMatrix({ bids, onAward, reqType }: { bids: any[], o
                     )}
                   </div>
                   <div>
-                    <h3 className="font-bold text-slate-800 line-clamp-1">{professional?.name || 'Unknown Vendor'}</h3>
+                    <h3 className="font-bold text-slate-800 line-clamp-1">
+                      <a href={`/professionals/${professional?.id}`} target="_blank" rel="noreferrer" className="hover:text-[#ff6b00] hover:underline">
+                        {professional?.name || 'Unknown Vendor'}
+                      </a>
+                    </h3>
                     {professional?.verification_level === 'business_verified' && (
                       <div className="flex items-center gap-1 text-green-600 text-xs mt-0.5">
                         <CheckCircle2 className="w-3 h-3" /> Verified Business
@@ -131,7 +135,7 @@ export function BidComparisonMatrix({ bids, onAward, reqType }: { bids: any[], o
                 >
                   Award to {professional?.name?.split(' ')[0] || 'Vendor'}
                 </Button>
-                <Button variant="outline" onClick={() => handleMessageVendor(bid.vendor_id)}>
+                <Button variant="outline" onClick={() => handleMessageVendor(bid.professional_id)}>
                   <MessageSquare className="w-4 h-4 mr-2" /> Message
                 </Button>
               </div>
