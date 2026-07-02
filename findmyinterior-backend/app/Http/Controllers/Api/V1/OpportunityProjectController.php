@@ -91,14 +91,19 @@ class OpportunityProjectController extends Controller
 
         $user = Auth::user();
         
-        // Unauthenticated users get a basic public view (no contact masking needed here)
+        // Unauthenticated users get a basic public view
         if (!$user) {
+            $requirement->increment('views_count');
             return $this->success($requirement);
         }
 
         $userRoles = $user->roles->pluck('slug')->toArray();
         $isCreator = $requirement->user_id === $user->id;
         $isAdmin   = in_array('admin', $userRoles);
+
+        if (!$isCreator && !$isAdmin) {
+            $requirement->increment('views_count');
+        }
 
         // Creator can always see their own requirement
         if ($isCreator || $isAdmin) {

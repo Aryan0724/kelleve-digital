@@ -275,6 +275,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('requirements', [AdminController::class, 'requirements']);
         Route::patch('requirements/{id}/close', [AdminController::class, 'closeRequirement']);
         Route::patch('requirements/{id}/status', [AdminController::class, 'updateRequirementStatus']);
+        Route::patch('requirements/{id}/price', [AdminController::class, 'updateRequirementPrice']);
         Route::patch('requirements/{id}/approve', [AdminController::class, 'approveRequirement']);
         Route::patch('requirements/{id}/reject', [AdminController::class, 'rejectRequirement']);
 

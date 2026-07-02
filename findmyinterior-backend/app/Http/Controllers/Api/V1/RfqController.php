@@ -87,12 +87,17 @@ class RfqController extends Controller
         
         // Unauthenticated users get a basic public view
         if (!$user) {
+            $rfq->increment('views_count');
             return $this->success($rfq);
         }
 
         $userRoles = $user->roles->pluck('slug')->toArray();
         $isCreator = $rfq->user_id === $user->id;
         $isAdmin   = in_array('admin', $userRoles);
+
+        if (!$isCreator && !$isAdmin) {
+            $rfq->increment('views_count');
+        }
 
         // Creator or admin can always see their own RFQ
         if ($isCreator || $isAdmin) {

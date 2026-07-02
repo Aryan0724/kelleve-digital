@@ -378,6 +378,25 @@ class AdminController extends Controller
     }
 
     /**
+     * PATCH /api/v1/admin/requirements/{id}/price
+     */
+    public function updateRequirementPrice(Request $request, int $id): JsonResponse
+    {
+        $data = $request->validate([
+            'unlock_price' => ['nullable', 'numeric', 'min:0'],
+        ]);
+
+        $requirement = Requirement::findOrFail($id);
+        $requirement->update(['unlock_price' => $data['unlock_price']]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requirement unlock price updated.',
+            'data' => $requirement,
+        ]);
+    }
+
+    /**
      * PATCH /api/v1/admin/requirements/{id}/approve
      */
     public function approveRequirement(Request $request, int $id, \App\Services\RecommendationEngineService $recommendationEngine): JsonResponse

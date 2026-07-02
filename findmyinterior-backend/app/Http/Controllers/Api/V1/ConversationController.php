@@ -131,7 +131,7 @@ class ConversationController extends Controller
                 // Bidder but not awarded and not unlocked → charge unlock fee
                 $userRoles    = $user->roles->pluck('slug')->toArray();
                 $isWorker     = in_array('worker', $userRoles) || in_array('skilled_worker', $userRoles);
-                $unlockFee    = config('marketplace.unlock_fee', 49.00);
+                $unlockFee    = $requirement->unlock_price !== null ? (float) $requirement->unlock_price : (float) config('marketplace.unlock_fee', 49.00);
 
                 if (!$isWorker && $unlockFee > 0) {
                     $balance = $this->walletService->getBalance($user);
@@ -170,12 +170,12 @@ class ConversationController extends Controller
         // Create or get existing conversation — key on the actual DB unique constraint
         $conversation = Conversation::updateOrCreate(
             [
-                'project_id'  => $requirementId,
+                'conversationable_id'  => $requirementId,
                 'customer_id' => $customerId,
                 'vendor_id'   => $vendorId,
             ],
             [
-                'project_type'  => $morphType,
+                'conversationable_type'  => $morphType,
                 'status'        => 'active',
                 'project_stage' => 'initiated',
                 'unlocked_at'   => $isUnlocked ? now() : null,

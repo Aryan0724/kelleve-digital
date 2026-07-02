@@ -40,6 +40,7 @@ class RequirementResource extends JsonResource
             'city'           => $this->city,
             'district'       => $this->district,
             'status'         => $this->status,
+            'unlock_price'   => $this->unlock_price !== null ? (float) $this->unlock_price : null,
             'bids_count'     => $this->whenCounted('bids'),
             'views_count'    => $this->views_count ?? null,
             'image'          => $this->image,

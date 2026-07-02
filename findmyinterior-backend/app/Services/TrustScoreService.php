@@ -174,8 +174,9 @@ class TrustScoreService
     {
         $trustScore = 0;
 
-        // Profile Completion (25%)
-        $trustScore += ($completionScore / 100) * 25;
+        // Profile Completion (35%)
+        // Ensures that just completing the profile yields a decent score
+        $trustScore += ($completionScore / 100) * 35;
 
         // Verification Level (25%)
         $levelScores = [
@@ -203,15 +204,13 @@ class TrustScoreService
             $trustScore += $ratingScore;
         }
 
-        // Project Success (25%)
-        // Could be based on completed requirements, bids awarded, etc.
-        // For now, base it on the number of successful jobs or a flat 10 for having a profile
+        // Project Success / Profile Activity (15%)
+        // Give base 10 points just for having a profile
         if ($profile) {
-             // Mock logic: 15 base + 10 if they have over 5 reviews
              $reviewCount = $profile->review_count ?? $profile->approvedReviews()->count() ?? 0;
-             $projectScore = 15;
+             $projectScore = 10;
              if ($reviewCount >= 5) {
-                 $projectScore += 10;
+                 $projectScore += 5;
              }
              $trustScore += $projectScore;
         }

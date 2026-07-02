@@ -10,8 +10,8 @@ class Conversation extends Model
     use HasFactory;
 
     protected $fillable = [
-        'project_id',
-        'project_type',
+        'conversationable_id',
+        'conversationable_type',
         'customer_id',
         'vendor_id',
         'status',
@@ -39,7 +39,7 @@ class Conversation extends Model
 
     public function project()
     {
-        return $this->morphTo(__FUNCTION__, 'project_type', 'project_id');
+        return $this->morphTo('conversationable');
     }
 
     public function customer()

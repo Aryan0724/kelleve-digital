@@ -204,12 +204,12 @@ class BidService
             $morphType = class_basename($requirement);
             \App\Models\Conversation::updateOrCreate(
                 [
-                    'project_id'  => $requirement->id,
+                    'conversationable_id'  => $requirement->id,
+                    'conversationable_type' => 'App\\Models\\' . $morphType,
                     'customer_id' => $requirement->user_id,
                     'vendor_id'   => $bid->professional_id,
                 ],
                 [
-                    'project_type'  => $morphType,
                     'status'        => 'active',
                     'project_stage' => 'awarded',
                     'unlocked_at'   => now(),

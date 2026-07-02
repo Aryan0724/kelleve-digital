@@ -77,18 +77,22 @@ class JobController extends Controller
 
     public function show(string $id)
     {
-        $job = WorkerJob::with(['user', 'bids.professional'])->findOrFail($id);
-        
+        $job = WorkerJob::with(['user', 'category', 'applications.worker'])->findOrFail($id);
+
         $user = Auth::user();
         
-        // Unauthenticated users get a basic public view
         if (!$user) {
+            $job->increment('views_count');
             return $this->success($job);
         }
 
         $userRoles = $user->roles->pluck('slug')->toArray();
         $isCreator = $job->user_id === $user->id;
-        $isAdmin   = in_array('admin', $userRoles);
+        $isAdmin = in_array('admin', $userRoles);
+
+        if (!$isCreator && !$isAdmin) {
+            $job->increment('views_count');
+        }
 
         // Creator or admin can always see their own job
         if ($isCreator || $isAdmin) {
