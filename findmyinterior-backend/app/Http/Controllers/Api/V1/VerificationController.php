@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\UserDocument;
 use App\Services\TrustScoreService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+
 
 class VerificationController extends Controller
 {
@@ -34,12 +34,13 @@ class VerificationController extends Controller
                 'is_verified_business' => $user->is_verified_business,
                 'documents' => $user->documents->map(function ($doc) {
                     return [
-                        'id' => $doc->id,
-                        'document_type' => $doc->document_type,
-                        'file_path' => Storage::disk(config('filesystems.default'))->url($doc->file_path),
-                        'status' => $doc->status,
+                        'id'               => $doc->id,
+                        'document_type'    => $doc->document_type,
+                        // file_path is now a base64 data URI — it IS the URL
+                        'file_path'        => $doc->file_path,
+                        'status'           => $doc->status,
                         'rejection_reason' => $doc->rejection_reason,
-                        'created_at' => $doc->created_at,
+                        'created_at'       => $doc->created_at,
                     ];
                 })
             ]
@@ -65,8 +66,15 @@ class VerificationController extends Controller
         $file = $request->file('file');
         $documentType = $request->input('document_type');
 
-        // Store file abstractly (uses default filesystem disk e.g. local or s3)
-        $path = $file->store("verification_documents/{$user->id}", config('filesystems.default'));
+        // Convert to base64 data URI — stored directly in DB, no filesystem needed.
+        $mime = $file->getMimeType() ?: 'application/octet-stream';
+        if (str_contains($mime, 'pdf')) {
+            // PDF: store as base64 data URI directly
+            $dataUri = 'data:application/pdf;base64,' . base64_encode(file_get_contents($file->getRealPath()));
+        } else {
+            // Image: resize + compress then base64
+            $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1600, 85);
+        }
 
         // Check if user already has this document type (update it to pending)
         $document = UserDocument::where('user_id', $user->id)
@@ -74,13 +82,8 @@ class VerificationController extends Controller
             ->first();
 
         if ($document) {
-            // Delete old file if exists (optional, keeping storage clean)
-            if (Storage::disk(config('filesystems.default'))->exists($document->file_path)) {
-                Storage::disk(config('filesystems.default'))->delete($document->file_path);
-            }
-            
             $document->update([
-                'file_path' => $path,
+                'file_path' => $dataUri,
                 'status' => 'pending',
                 'rejection_reason' => null,
             ]);
@@ -88,12 +91,12 @@ class VerificationController extends Controller
             $document = UserDocument::create([
                 'user_id' => $user->id,
                 'document_type' => $documentType,
-                'file_path' => $path,
+                'file_path' => $dataUri,
                 'status' => 'pending',
             ]);
         }
 
-        // Recalculate score (it might not change immediately since document is pending, but keeps things synced)
+        // Recalculate score
         $this->trustScoreService->recalculateForUser($user);
 
         return response()->json([

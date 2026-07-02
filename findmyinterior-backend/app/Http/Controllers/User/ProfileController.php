@@ -38,18 +38,17 @@ class ProfileController extends Controller
 
         $user = $request->user();
         $file = $request->file('avatar');
-        $filename = 'avatar_' . $user->id . '_' . time() . '.' . $file->getClientOriginalExtension();
 
-        // Store in public/avatars — served statically by Laravel
-        $path = $file->storeAs('avatars', $filename, 'public');
-        $url  = asset('storage/' . $path);
+        // Convert to base64 data URI — stored directly in DB, no filesystem needed.
+        // Works on Render, Vercel, any ephemeral host.
+        $dataUri = \App\Helpers\ImageHelper::toBase64($file, 600, 82);
 
-        $user->update(['avatar' => $url]);
+        $user->update(['avatar' => $dataUri]);
 
         return response()->json([
             'success' => true,
             'message' => 'Avatar updated.',
-            'avatar'  => $url,
+            'avatar'  => $dataUri,
         ]);
     }
 

@@ -76,13 +76,10 @@ class OpportunityProjectController extends Controller
         ]);
 
         if ($request->hasFile('image')) {
-            $file     = $request->file('image');
-            $filename = 'req_' . $requirement->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path     = $file->storeAs('requirements', $filename, 'public');
-            \App\Models\RequirementImage::create([
-                'requirement_id' => $requirement->id,
-                'image_url'      => asset('storage/' . $path),
-            ]);
+            $file = $request->file('image');
+            $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
+            $requirement->image = $dataUri;
+            $requirement->save();
         }
 
         return $this->success($requirement, 'Requirement created successfully', 201);

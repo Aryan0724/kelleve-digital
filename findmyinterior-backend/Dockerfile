@@ -37,4 +37,4 @@ COPY docker/supervisord.conf /etc/supervisord.conf
 
 EXPOSE 80
 
-CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
+CMD ["sh", "-c", "php artisan storage:link --force 2>/dev/null || true && php artisan migrate --force && /usr/bin/supervisord -c /etc/supervisord.conf"]

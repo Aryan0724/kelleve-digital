@@ -72,9 +72,7 @@ class RfqController extends Controller
 
         if ($request->hasFile('image')) {
             $file = $request->file('image');
-            $filename = 'rfq_' . $rfq->id . '_' . time() . '.' . $file->getClientOriginalExtension();
-            $path = $file->storeAs('requirements', $filename, 'public');
-            $rfq->image = asset('storage/' . $path);
+            $rfq->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
             $rfq->save();
         }
 

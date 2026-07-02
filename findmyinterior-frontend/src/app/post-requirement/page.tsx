@@ -158,10 +158,13 @@ export default function PostRequirementPage() {
         formDataPayload.append('image', imageFile);
       }
 
-      await api.post(endpoint, formDataPayload);
+      // Let axios/browser set Content-Type with the correct multipart boundary automatically
+      await api.post(endpoint, formDataPayload, {
+        headers: { 'Content-Type': undefined },
+      });
       setLoading(false);
-      // alert("Opportunity posted successfully!");
-      router.push(`/dashboard`);
+      // Hard navigate so dashboard re-mounts and fetches fresh data
+      window.location.href = '/dashboard';
 
     } catch (err: any) {
       setError(err.response?.data?.message || "Failed to post opportunity");
