@@ -23,7 +23,7 @@ class Requirement extends Model
         'opportunity_type', 'requirement_type', 'creator_role',
         'target_roles', 'project_category', 'budget_tier',
         'project_type', 'image', 'district_id', 'awarded_vendor_id',
-        'awarded_bid_id', 'award_value', 'awarded_at',
+        'awarded_bid_id', 'award_value', 'awarded_at', 'unlock_price'
     ];
 
     protected $casts = [
@@ -133,7 +133,7 @@ class Requirement extends Model
 
     public function getUnlockPriceDisplayAttribute()
     {
-        return '₹' . number_format(config('marketplace.unlock_fee', 49.00));
+        return '₹' . number_format($this->unlock_price ?? config('marketplace.unlock_fee', 49.00));
     }
 
     public function activityLogs()

@@ -7,6 +7,7 @@ use App\Models\Builder;
 use App\Models\Listing;
 use App\Models\Supplier;
 use App\Models\Worker;
+use App\Services\TrustScoreService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -24,13 +25,13 @@ class ProfessionalProfileController extends Controller
         $profile = null;
         $type = null;
 
-        if (in_array($role, ['interior_designer', 'contractor', 'architect'])) {
+        if (in_array($role, ['interior_designer', 'interior_company', 'contractor', 'architect', 'business'])) {
             $profile = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
             $type = 'listing';
-        } elseif ($role === 'worker') {
+        } elseif (in_array($role, ['worker', 'skilled_worker'])) {
             $profile = Worker::where('user_id', $user->id)->with(['reviews'])->first();
             $type = 'worker';
-        } elseif ($role === 'supplier') {
+        } elseif (in_array($role, ['supplier', 'material_supplier'])) {
             $profile = Supplier::where('user_id', $user->id)->with(['reviews', 'catalog'])->first();
             $type = 'supplier';
         } elseif ($role === 'builder') {
@@ -57,12 +58,12 @@ class ProfessionalProfileController extends Controller
         $profile = null;
         $type = null;
 
-        if (in_array($role, ['interior_designer', 'contractor', 'architect'])) {
+        if (in_array($role, ['interior_designer', 'interior_company', 'contractor', 'architect', 'business'])) {
             $data = $request->validate([
                 'title'            => ['required', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
                 'description'      => ['required', 'string'],
-                'phone'            => ['required', 'string', 'max:20'],
+                'phone'            => ['nullable', 'string', 'max:20'],
                 'city'             => ['required', 'string', 'max:100'],
                 'district'         => ['required', 'string', 'max:100'],
                 'address'          => ['nullable', 'string'],
@@ -90,14 +91,14 @@ class ProfessionalProfileController extends Controller
             $profile->save();
             $type = 'listing';
 
-        } elseif ($role === 'worker') {
+        } elseif (in_array($role, ['worker', 'skilled_worker'])) {
             $data = $request->validate([
                 'name'             => ['required', 'string', 'max:255'],
                 'skill'            => ['required', 'string', 'max:255'],
-                'experience_years' => ['required', 'integer'],
-                'daily_rate'       => ['required', 'numeric'],
+                'experience_years' => ['nullable', 'integer'],
+                'daily_rate'       => ['nullable', 'numeric'],
                 'bio'              => ['nullable', 'string'],
-                'phone'            => ['required', 'string', 'max:20'],
+                'phone'            => ['nullable', 'string', 'max:20'],
                 'city'             => ['required', 'string', 'max:100'],
                 'district'         => ['required', 'string', 'max:100'],
                 'address'          => ['nullable', 'string'],
@@ -118,11 +119,11 @@ class ProfessionalProfileController extends Controller
             $profile->save();
             $type = 'worker';
 
-        } elseif ($role === 'supplier') {
+        } elseif (in_array($role, ['supplier', 'material_supplier'])) {
             $data = $request->validate([
                 'company_name'     => ['required', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
-                'phone'            => ['required', 'string', 'max:20'],
+                'phone'            => ['nullable', 'string', 'max:20'],
                 'city'             => ['required', 'string', 'max:100'],
                 'district'         => ['required', 'string', 'max:100'],
                 'address'          => ['nullable', 'string'],
@@ -150,7 +151,7 @@ class ProfessionalProfileController extends Controller
             $data = $request->validate([
                 'company_name'     => ['required', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
-                'phone'            => ['required', 'string', 'max:20'],
+                'phone'            => ['nullable', 'string', 'max:20'],
                 'city'             => ['required', 'string', 'max:100'],
                 'district'         => ['required', 'string', 'max:100'],
                 'address'          => ['nullable', 'string'],
@@ -174,11 +175,19 @@ class ProfessionalProfileController extends Controller
             }
             $profile->save();
             $type = 'builder';
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => 'Role not supported for professional profile.'
+            ], 403);
         }
+
+        // Recalculate trust score after profile update
+        app(TrustScoreService::class)->recalculateForUser($user);
 
         return response()->json([
             'success' => true,
-            'message' => 'Profile updated.',
+            'message' => 'Profile updated successfully.',
             'type'    => $type,
             'data'    => $profile,
         ]);

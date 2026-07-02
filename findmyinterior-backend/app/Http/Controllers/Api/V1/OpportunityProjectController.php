@@ -89,11 +89,12 @@ class OpportunityProjectController extends Controller
     {
         $requirement = Requirement::with(['user', 'bids.professional'])->findOrFail($id);
 
-        $user = Auth::user();
+        $user = Auth::guard('sanctum')->user();
         
         // Unauthenticated users get a basic public view
         if (!$user) {
             $requirement->increment('views_count');
+            $requirement->views_count = $requirement->views_count + 1;
             return $this->success($requirement);
         }
 
@@ -103,6 +104,7 @@ class OpportunityProjectController extends Controller
 
         if (!$isCreator && !$isAdmin) {
             $requirement->increment('views_count');
+            $requirement->views_count = $requirement->views_count + 1;
         }
 
         // Creator can always see their own requirement

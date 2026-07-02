@@ -293,18 +293,28 @@ export function CompleteProfileTab() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSave = async () => {
-    setSaving(true);
-    setSaved(false);
-    try {
-      // First update base user data if needed
-      if (formData.phone !== user?.phone) {
+    const handleSave = async () => {
+      if (isBusiness) {
+        if (formData.gst_number && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i.test(formData.gst_number)) {
+          alert("Invalid GST Number format.");
+          return;
+        }
+        if (formData.pan_number && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(formData.pan_number)) {
+          alert("Invalid PAN Number format.");
+          return;
+        }
+      }
+      setSaving(true);
+      setSaved(false);
+      try {
+        // First update base user data if needed
+        if (formData.phone !== user?.phone) {
         const userRes = await api.put("/user/profile", { phone: formData.phone, name: user?.name });
         if (user) updateUser(userRes.data.data);
       }
 
       // Then update professional profile if applicable
-      if (isBusiness || isWorker) {
+      if (isBusiness || isWorker || isSupplier || isBuilder) {
         const payload = {
           ...formData,
           name: user?.name || "Professional",
@@ -324,7 +334,12 @@ export function CompleteProfileTab() {
       setTimeout(() => setSaved(false), 3000);
       fetchData();
     } catch (e: any) {
-      alert(e.response?.data?.message || "Failed to update profile.");
+      if (e.response?.data?.errors) {
+        const msgs = Object.values(e.response.data.errors).flat().join("\n");
+        alert(`Validation Error:\n${msgs}`);
+      } else {
+        alert(e.response?.data?.message || "Failed to update profile.");
+      }
     } finally {
       setSaving(false);
     }
@@ -422,10 +437,10 @@ export function CompleteProfileTab() {
                   <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="e.g. 9876543210" />
                 </Field>
                 <Field label="City" icon={MapPin}>
-                  <Input name="city" value={formData.city} onChange={handleChange} placeholder="e.g. Patna" />
+                  <Input required name="city" value={formData.city} onChange={handleChange} placeholder="e.g. Patna" />
                 </Field>
                 <Field label="District" icon={MapPin}>
-                  <Input name="district" value={formData.district} onChange={handleChange} placeholder="e.g. Patna" />
+                  <Input required name="district" value={formData.district} onChange={handleChange} placeholder="e.g. Patna" />
                 </Field>
               </div>
 
@@ -470,10 +485,10 @@ export function CompleteProfileTab() {
               {isBusiness && (
                 <>
                   <div className="border-t pt-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Field label={profileType === 'listing' ? "Listing Title" : "Company Name"} icon={Building2}>
-                      <Input name={profileType === 'listing' ? "title" : "company_name"} value={profileType === 'listing' ? formData.title : formData.company_name} onChange={handleChange} placeholder="Your Business Name" />
+                    <Field label={profileType === 'listing' ? "Business Name" : "Company Name"} icon={Briefcase}>
+                      <Input required name={profileType === 'listing' ? "title" : "company_name"} value={profileType === 'listing' ? formData.title : formData.company_name} onChange={handleChange} placeholder="Your Business Name" />
                     </Field>
-                    <Field label="Tagline" icon={Star}>
+                    <Field label="Tagline" icon={Building}>
                       <Input name="tagline" value={formData.tagline} onChange={handleChange} placeholder="e.g. Bihar's best interiors" />
                     </Field>
                   </div>
@@ -493,17 +508,17 @@ export function CompleteProfileTab() {
                   )}
                   
                   {(profileType === 'listing' || profileType === 'supplier') && (
-                    <Field label="Business Description" icon={Building2}>
-                      <Textarea name="description" value={formData.description} onChange={handleChange} placeholder="Describe your services, specialities, etc." rows={4} />
+                    <Field label="Description / Bio" icon={UserCircle2}>
+                      <Textarea required name="description" value={formData.description} onChange={handleChange} placeholder="Describe your services, specialities, etc." rows={4} />
                     </Field>
                   )}
                   
                   <div className="border-t pt-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-lg">
                     <Field label="GST Number *" icon={Hash}>
-                      <Input name="gst_number" required value={formData.gst_number} onChange={handleChange} placeholder="22AAAAA0000A1Z5" />
+                      <Input name="gst_number" required value={formData.gst_number} onChange={handleChange} placeholder="22AAAAA0000A1Z5" pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$" title="Please enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z5)" />
                     </Field>
                     <Field label="PAN Number *" icon={Hash}>
-                      <Input name="pan_number" required value={formData.pan_number} onChange={handleChange} placeholder="ABCDE1234F" />
+                      <Input name="pan_number" required value={formData.pan_number} onChange={handleChange} placeholder="ABCDE1234F" pattern="^[A-Z]{5}[0-9]{4}[A-Z]{1}$" title="Please enter a valid 10-character PAN number (e.g. ABCDE1234F)" />
                     </Field>
                   </div>
                 </>

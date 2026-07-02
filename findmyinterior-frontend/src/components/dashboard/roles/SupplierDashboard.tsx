@@ -11,7 +11,7 @@ import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
-// import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
@@ -109,20 +109,11 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'business_profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('business_profile')} hasPendingVerification={data?.user?.has_pending_verification} />}
-            {activeTab === 'available_leads' && (
-              isUnverified ? (
-                <div className="space-y-6 relative">
-                  <div className="z-20 relative">
-                    <VerificationTab onSwitchTab={setActiveTab} profileData={data} />
-                  </div>
-                  <div className="opacity-30 pointer-events-none relative z-10 select-none blur-sm">
-                    <AvailableLeadsTab leads={data?.recommended_leads} />
-                  </div>
-                </div>
-              ) : (
-                <AvailableLeadsTab leads={data?.recommended_leads} />
-              )
+
+            {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
+            
+            {activeTab === 'unlocked_leads' && (
+              <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />
             )}
             
             {activeTab === 'bids_submitted' && <MyBidsTab bids={data?.submitted_bids || []} />}

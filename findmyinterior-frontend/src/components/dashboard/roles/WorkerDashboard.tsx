@@ -12,6 +12,7 @@ import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import { Star } from "lucide-react";
 export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -71,6 +72,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Jobs")}
+                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Leads")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
                 {renderSidebarButton("active_jobs", <CheckCircle2 className="h-5 w-5" />, "Active Jobs")}
                 {renderSidebarButton("completed_jobs", <CheckCircle2 className="h-5 w-5" />, "Completed Jobs")}
@@ -83,8 +85,12 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('profile')} hasPendingVerification={data?.user?.has_pending_verification} />}
+
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
+            
+            {activeTab === 'unlocked_leads' && (
+              <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />
+            )}
             
             {activeTab === 'bids_submitted' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Job Applications" showAwardedOnly={false} />

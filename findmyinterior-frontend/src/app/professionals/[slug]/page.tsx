@@ -113,7 +113,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
               {/* Advanced Fields */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-6 border-t">
                 {/* Business Specific Details */}
-                {['builder', 'supplier', 'material_supplier'].includes(listing.category?.slug) && (
+                {(listing.years_experience > 0 || listing.team_size || listing.gst_number || listing.pan_number || listing.budget_tier) && (
                   <div className="md:col-span-2 grid grid-cols-2 md:grid-cols-4 gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
                     {listing.years_experience > 0 && (
                       <div>
@@ -131,6 +131,12 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                       <div>
                         <div className="text-xs text-slate-500 font-semibold mb-1">GSTIN</div>
                         <div className="text-sm font-bold text-slate-900">{listing.gst_number}</div>
+                      </div>
+                    )}
+                    {listing.pan_number && (
+                      <div>
+                        <div className="text-xs text-slate-500 font-semibold mb-1">PAN</div>
+                        <div className="text-sm font-bold text-slate-900">{listing.pan_number}</div>
                       </div>
                     )}
                     {listing.budget_tier && (
@@ -168,7 +174,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                   </div>
                 )}
                 
-                {listing.languages && listing.languages.length > 0 && !['supplier', 'material_supplier'].includes(listing.category?.slug) && (
+                {listing.languages && listing.languages.length > 0 && (
                   <div>
                     <h3 className="text-sm font-semibold text-slate-900 mb-3">Languages Spoken</h3>
                     <div className="text-sm text-slate-600">

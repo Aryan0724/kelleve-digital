@@ -58,6 +58,16 @@ class RequirementController extends Controller
             ->withCount('bids')
             ->findOrFail($id);
 
+        $user = $request->user('sanctum');
+        $isCreator = $user && $user->id === $requirement->user_id;
+        $isAdmin = $user && $user->roles()->where('slug', 'admin')->exists();
+
+        if (!$isCreator && !$isAdmin) {
+            $requirement->views_count = ($requirement->views_count ?? 0) + 1;
+            $requirement->timestamps = false;
+            $requirement->save();
+        }
+
         return response()->json([
             'success' => true,
             'data'    => new RequirementResource($requirement),

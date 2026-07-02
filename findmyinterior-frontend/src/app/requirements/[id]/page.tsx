@@ -133,9 +133,6 @@ export default function RequirementDetail() {
       {/* Top Banner */}
       <div className="bg-[#0b1b36] text-white flex justify-between items-center px-4 md:px-8 py-2 text-sm">
         <div className="flex items-center gap-2">
-          <Flame className="w-4 h-4 text-orange-500" />
-          <Star className="w-4 h-4 text-orange-500" />
-          <span className="font-bold tracking-wide">VERIFIED PROJECT</span>
           <span className="text-slate-400">|</span>
           <span className="text-slate-200">12 Interior Companies already interested</span>
         </div>
@@ -396,12 +393,7 @@ export default function RequirementDetail() {
                     {requirement.possession_timeline || requirement.expected_delivery_date || requirement.duration || "N/A"}
                   </span>
                   <span className="text-xs text-slate-500 font-medium leading-tight">Expected<br/>Timeline</span>
-                </div>
-                <div className="flex flex-col items-center justify-center text-center">
-                  <ShieldCheck className={`w-6 h-6 mb-1 ${requirement.user?.verification_level && requirement.user.verification_level !== 'unverified' ? 'text-[#10b981]' : 'text-slate-400'}`} />
-                  <span className="font-extrabold text-xl text-slate-900">{requirement.user?.verification_level && requirement.user.verification_level !== 'unverified' ? 'Verified' : 'Unverified'}</span>
-                  <span className="text-xs text-slate-500 font-medium leading-tight">Phone & Property<br/>{requirement.user?.verification_level && requirement.user.verification_level !== 'unverified' ? 'Verified' : 'Status'}</span>
-                </div>
+
               </div>
 
               {/* About Client & Requirements */}
@@ -417,9 +409,6 @@ export default function RequirementDetail() {
                     <div>
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-900">{requirement.name}</span>
-                        {requirement.user?.verification_level && requirement.user.verification_level !== 'unverified' && (
-                          <span className="bg-[#10b981] text-white text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">Verified</span>
-                        )}
                       </div>
                       <div className="text-xs text-slate-500 flex items-center gap-1 mt-0.5">
                         <MapPin className="w-3 h-3" /> {requirement.city}, {requirement.district}
@@ -724,7 +713,7 @@ export default function RequirementDetail() {
             </div>
             <div className="p-6 space-y-4">
               <p className="text-slate-600 mb-6 leading-relaxed">
-                A fee of <span className="font-bold text-slate-900">{displayUnlockPrice}</span> will be deducted from your wallet to instantly unlock the client's phone number and email.
+                A fee of <span className="font-bold text-slate-900">{displayUnlockPrice}</span> will be deducted from your wallet to instantly unlock the client&apos;s phone number and email.
               </p>
               
               <div className="flex gap-3 pt-2">
@@ -764,7 +753,7 @@ export default function RequirementDetail() {
           </div>
         </div>
       )}
-
+      </div>
     </div>
   );
 }

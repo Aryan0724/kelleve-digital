@@ -7,6 +7,7 @@ use App\Http\Resources\ListingResource;
 use App\Http\Resources\UserResource;
 use App\Models\Listing;
 use App\Models\ListingGallery;
+use App\Services\TrustScoreService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -44,6 +45,8 @@ class ProfileController extends Controller
         $dataUri = \App\Helpers\ImageHelper::toBase64($file, 600, 82);
 
         $user->update(['avatar' => $dataUri]);
+
+        app(TrustScoreService::class)->recalculateForUser($user);
 
         return response()->json([
             'success' => true,
@@ -154,6 +157,8 @@ class ProfileController extends Controller
             'address'          => ['nullable', 'string'],
             'years_experience' => ['nullable', 'integer', 'min:0'],
             'team_size'        => ['nullable', 'integer', 'min:1'],
+            'gst_number'       => ['nullable', 'string', 'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i'],
+            'pan_number'       => ['nullable', 'string', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
         ]);
 
         $listing = Listing::create([
@@ -192,8 +197,8 @@ class ProfileController extends Controller
             'address'          => ['sometimes', 'nullable', 'string'],
             'years_experience' => ['sometimes', 'nullable', 'integer'],
             'team_size'        => ['sometimes', 'nullable', 'integer'],
-            'gst_number'       => ['sometimes', 'nullable', 'string', 'max:50'],
-            'pan_number'       => ['sometimes', 'nullable', 'string', 'max:50'],
+            'gst_number'       => ['sometimes', 'nullable', 'string', 'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i'],
+            'pan_number'       => ['sometimes', 'nullable', 'string', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
         ]);
 
         $listing->update($data);
@@ -219,18 +224,26 @@ class ProfileController extends Controller
 
         $request->validate([
             'images'      => ['required', 'array', 'max:' . ($maxImages - $currentCount)],
-            'images.*.url'     => ['required', 'url'],
+            'images.*.data'     => ['required', 'string'],
             'images.*.caption' => ['nullable', 'string', 'max:255'],
         ]);
 
         foreach ($request->images as $index => $image) {
+            // Check if it's base64 or just a plain url
+            $imageUrl = $image['data'];
+            if (preg_match('/^data:image\/(\w+);base64,/', $imageUrl)) {
+                // We're just saving the base64 string directly in the database as image_url for now, or we could decode and upload
+            }
+
             ListingGallery::create([
                 'listing_id' => $listing->id,
-                'image_url'  => $image['url'],
+                'image_url'  => $imageUrl,
                 'caption'    => $image['caption'] ?? null,
                 'sort_order' => $currentCount + $index,
             ]);
         }
+
+        app(TrustScoreService::class)->recalculateForUser($request->user());
 
         return response()->json([
             'success' => true,

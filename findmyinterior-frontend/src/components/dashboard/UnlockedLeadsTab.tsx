@@ -136,6 +136,9 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                 {biddingId === unlock.requirement?.id && (
                   <div className="mt-4 border-t pt-4">
                     <h5 className="font-bold text-slate-800 mb-3">Submit your bid</h5>
+                    <div className="bg-indigo-50 border border-indigo-100 text-indigo-700 p-3 rounded-lg text-sm mb-4">
+                      <strong>Pro tip:</strong> Clients are 3x more likely to accept bids from professionals with a complete profile. Don't forget to upload your portfolio and previous work in the <strong>Profile</strong> section!
+                    </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                       <div>
                         <label className="block text-xs font-medium text-slate-500 mb-1">Bid Amount (₹)</label>
@@ -164,17 +167,14 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                         rows={3}
                         value={proposal}
                         onChange={e => setProposal(e.target.value)}
-                        className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 outline-none resize-none"
-                        placeholder="Explain why you are the best fit for this project..."
-                      ></textarea>
+                        className="w-full p-2 border rounded focus:ring-2 focus:ring-orange-500 outline-none"
+                        placeholder="Detail your approach and why you are the best fit..."
+                      />
                     </div>
-                    <div className="flex justify-end">
-                      <Button 
-                        onClick={() => handleSubmitBid(unlock.requirement.id)}
-                        disabled={submitting}
-                        className="bg-orange-600 hover:bg-orange-700"
-                      >
-                        {submitting ? "Submitting..." : "Confirm & Submit Bid"}
+                    <div className="flex justify-end gap-2">
+                      <Button variant="ghost" onClick={() => setBiddingId(null)}>Cancel</Button>
+                      <Button onClick={() => handleSubmitBid(unlock.requirement.id)} className="bg-orange-600 hover:bg-orange-700" disabled={submitting}>
+                        {submitting ? "Placing Bid..." : "Submit Bid"}
                       </Button>
                     </div>
                   </div>

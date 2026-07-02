@@ -300,7 +300,17 @@ export default function PostRequirementPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="construction_stage">Current Stage</Label>
-                      <Input id="construction_stage" placeholder="e.g. Empty Plot, Excavation" value={formData.construction_stage} onChange={(e) => setFormData({...formData, construction_stage: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, construction_stage: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Stage" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Empty Plot">Empty Plot</SelectItem>
+                          <SelectItem value="Excavation">Excavation</SelectItem>
+                          <SelectItem value="Foundation">Foundation</SelectItem>
+                          <SelectItem value="Structure/Framing">Structure/Framing</SelectItem>
+                          <SelectItem value="Finishing">Finishing</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
@@ -319,7 +329,16 @@ export default function PostRequirementPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="timeline">Timeline</Label>
-                      <Input id="timeline" placeholder="e.g. 6 Months" value={formData.timeline} onChange={(e) => setFormData({...formData, timeline: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, timeline: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Immediately">Immediately</SelectItem>
+                          <SelectItem value="1-3 Months">1-3 Months</SelectItem>
+                          <SelectItem value="3-6 Months">3-6 Months</SelectItem>
+                          <SelectItem value="6-12 Months">6-12 Months</SelectItem>
+                          <SelectItem value="Flexible">Flexible</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </>
@@ -330,16 +349,46 @@ export default function PostRequirementPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="material_type">Material Type</Label>
-                      <Input id="material_type" placeholder="e.g. Cement, Plywood" value={formData.material_type} onChange={(e) => setFormData({...formData, material_type: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, material_type: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Material" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Cement">Cement</SelectItem>
+                          <SelectItem value="Steel/TMT">Steel/TMT Bars</SelectItem>
+                          <SelectItem value="Bricks/Blocks">Bricks/Blocks</SelectItem>
+                          <SelectItem value="Sand/Aggregate">Sand/Aggregate</SelectItem>
+                          <SelectItem value="Tiles/Marble">Tiles/Marble</SelectItem>
+                          <SelectItem value="Plywood/Wood">Plywood/Wood</SelectItem>
+                          <SelectItem value="Electricals">Electricals</SelectItem>
+                          <SelectItem value="Plumbing">Plumbing</SelectItem>
+                          <SelectItem value="Paint">Paint</SelectItem>
+                          <SelectItem value="Other">Other</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="quantity">Quantity Required</Label>
-                      <Input id="quantity" placeholder="e.g. 50 Bags, 100 Sq Ft" value={formData.quantity} onChange={(e) => setFormData({...formData, quantity: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, quantity: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Quantity" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Small/Sample">Small/Sample</SelectItem>
+                          <SelectItem value="Medium (Part of Project)">Medium (Part of Project)</SelectItem>
+                          <SelectItem value="Large (Full Project)">Large (Full Project)</SelectItem>
+                          <SelectItem value="Bulk/Wholesale">Bulk/Wholesale</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="required_date">Required By Date</Label>
-                    <Input type="date" id="required_date" value={formData.required_date} onChange={(e) => setFormData({...formData, required_date: e.target.value})} />
+                    <Label htmlFor="required_date">Required By</Label>
+                    <Select onValueChange={(val: any) => setFormData({...formData, required_date: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Immediately">Immediately</SelectItem>
+                          <SelectItem value="Within a Week">Within a Week</SelectItem>
+                          <SelectItem value="Within a Month">Within a Month</SelectItem>
+                          <SelectItem value="Flexible">Flexible</SelectItem>
+                        </SelectContent>
+                    </Select>
                   </div>
                 </>
               )}
@@ -369,7 +418,15 @@ export default function PostRequirementPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="number_of_workers">Number of Workers</Label>
-                      <Input type="number" id="number_of_workers" placeholder="e.g. 2" value={formData.number_of_workers} onChange={(e) => setFormData({...formData, number_of_workers: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, number_of_workers: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Number" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="1 - 2 Workers">1 - 2 Workers</SelectItem>
+                          <SelectItem value="3 - 5 Workers">3 - 5 Workers</SelectItem>
+                          <SelectItem value="5 - 10 Workers">5 - 10 Workers</SelectItem>
+                          <SelectItem value="10+ Workers">10+ Workers</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <div className="space-y-2">
@@ -396,7 +453,15 @@ export default function PostRequirementPage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label htmlFor="project_scale">Project Scale</Label>
-                      <Input id="project_scale" placeholder="e.g. 50 Units, 10 Floors" value={formData.project_scale} onChange={(e) => setFormData({...formData, project_scale: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, project_scale: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Scale" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Under 10 Units">Under 10 Units</SelectItem>
+                          <SelectItem value="10 - 50 Units">10 - 50 Units</SelectItem>
+                          <SelectItem value="50 - 100 Units">50 - 100 Units</SelectItem>
+                          <SelectItem value="100+ Units">100+ Units</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="project_location">Location Details</Label>
@@ -418,7 +483,15 @@ export default function PostRequirementPage() {
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="timeline">Timeline</Label>
-                      <Input id="timeline" placeholder="e.g. 2 Years" value={formData.timeline} onChange={(e) => setFormData({...formData, timeline: e.target.value})} />
+                      <Select onValueChange={(val: any) => setFormData({...formData, timeline: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Under 6 Months">Under 6 Months</SelectItem>
+                          <SelectItem value="6 - 12 Months">6 - 12 Months</SelectItem>
+                          <SelectItem value="1 - 2 Years">1 - 2 Years</SelectItem>
+                          <SelectItem value="2+ Years">2+ Years</SelectItem>
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                 </>

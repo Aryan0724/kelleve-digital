@@ -83,11 +83,12 @@ class RfqController extends Controller
     {
         $rfq = Rfq::with(['user', 'bids.professional'])->findOrFail($id);
         
-        $user = Auth::user();
+        $user = Auth::guard('sanctum')->user();
         
         // Unauthenticated users get a basic public view
         if (!$user) {
             $rfq->increment('views_count');
+            $rfq->views_count = $rfq->views_count + 1;
             return $this->success($rfq);
         }
 
@@ -97,6 +98,7 @@ class RfqController extends Controller
 
         if (!$isCreator && !$isAdmin) {
             $rfq->increment('views_count');
+            $rfq->views_count = $rfq->views_count + 1;
         }
 
         // Creator or admin can always see their own RFQ

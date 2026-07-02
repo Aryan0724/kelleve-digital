@@ -44,8 +44,8 @@ class UnlockService
             ];
         }
 
-        // 2. Fetch the fee from configuration (Placeholder: using static 49 for now, ideally config('marketplace.unlock_fee', 49))
-        $fee = config('marketplace.unlock_fee', 49.00);
+        // 2. Fetch the fee from requirement or configuration
+        $fee = $requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00);
 
         return DB::transaction(function () use ($vendor, $requirement, $requirementType, $fee) {
             // 3. Deduct from wallet

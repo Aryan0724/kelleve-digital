@@ -61,12 +61,12 @@ const ROLE_CONFIG: Record<string, any> = {
       { label: "Update Portfolio", href: "/dashboard" },
     ],
     quickCards: [
-      { label: "Recommended Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Available Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
       { label: "Portfolio Views", key: "total_views", icon: TrendingUp, href: "/dashboard" },
       { label: "Unread Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
     ],
     feeds: [
-      { title: "Projects matching skills", key: "recommended_leads", type: "lead", empty: "No projects matching your skills right now." },
+      { title: "Available Projects", key: "recommended_leads", type: "lead", empty: "No projects available right now." },
     ]
   },
   interior_company: {
@@ -79,12 +79,12 @@ const ROLE_CONFIG: Record<string, any> = {
       { label: "Update Portfolio", href: "/dashboard" },
     ],
     quickCards: [
-      { label: "Recommended Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Available Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
       { label: "Portfolio Views", key: "total_views", icon: TrendingUp, href: "/dashboard" },
       { label: "Unread Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
     ],
     feeds: [
-      { title: "Projects matching skills", key: "recommended_leads", type: "lead", empty: "No projects matching your skills right now." },
+      { title: "Available Projects", key: "recommended_leads", type: "lead", empty: "No projects available right now." },
     ]
   },
   contractor: {
@@ -102,7 +102,7 @@ const ROLE_CONFIG: Record<string, any> = {
       { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
     ],
     feeds: [
-      { title: "Recommended Projects", key: "recommended_leads", type: "lead", empty: "No projects matching your skills right now." },
+      { title: "Available Projects", key: "recommended_leads", type: "lead", empty: "No projects available right now." },
       { title: "Nearby Suppliers", key: "featured_suppliers", type: "supplier", empty: "No suppliers near you." }
     ]
   },
@@ -116,7 +116,7 @@ const ROLE_CONFIG: Record<string, any> = {
       { label: "My Workspace", href: "/dashboard" },
     ],
     quickCards: [
-      { label: "Recommended Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Available Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
       { label: "Portfolio Views", key: "total_views", icon: TrendingUp, href: "/dashboard" },
       { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
     ],
@@ -225,12 +225,12 @@ const ROLE_CONFIG: Record<string, any> = {
       { label: "Update Profile", href: "/dashboard" },
     ],
     quickCards: [
-      { label: "New Leads", key: "recommended_leads_count", icon: Search, href: "/projects" },
+      { label: "Available Leads", key: "recommended_leads_count", icon: Search, href: "/projects" },
       { label: "Profile Views", key: "total_views", icon: TrendingUp, href: "/dashboard" },
       { label: "Messages", key: "unread_messages", icon: MessageSquare, href: "/messages" },
     ],
     feeds: [
-      { title: "Recommended Leads", key: "recommended_leads", type: "lead", empty: "No new leads right now." },
+      { title: "Available Leads", key: "recommended_leads", type: "lead", empty: "No new leads right now." },
     ]
   }
 };

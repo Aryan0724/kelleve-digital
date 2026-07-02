@@ -9,6 +9,7 @@ import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Buildin
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
+import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 
 import Link from "next/link";
@@ -107,7 +108,6 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'verification' && activeTab !== 'business_profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} hasPendingVerification={data?.user?.has_pending_verification} />}
             {activeTab === 'projects' && (
               <Card>
                 <CardHeader className="flex flex-row justify-between items-center">

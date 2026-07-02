@@ -11,7 +11,8 @@ import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
-// import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
@@ -109,7 +110,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'business_profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('business_profile')} hasPendingVerification={data?.user?.has_pending_verification} />}
+
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <Card>
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center">
@@ -140,29 +141,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
             {activeTab === 'unlocked_leads' && (
-              <Card>
-                <CardHeader><CardTitle>Unlocked Leads (CRM)</CardTitle></CardHeader>
-                <CardContent>
-                  {data?.unlocked_contacts && data.unlocked_contacts.length > 0 ? (
-                    <div className="space-y-4 mt-4">
-                      {data.unlocked_contacts.map((contact: any) => (
-                        <div key={contact.id} className="p-4 border rounded-xl hover:shadow-md transition-shadow flex justify-between items-center bg-white">
-                          <div>
-                            <h4 className="font-bold text-lg mb-1">{contact.requirement?.title || contact.requirement?.material_type || contact.requirement?.skill_required || `Project #${contact.requirement_id}`}</h4>
-                            <div className="text-sm text-slate-500">Unlocked on: {new Date(contact.created_at).toLocaleDateString()}</div>
-                          </div>
-                          <Button size="sm" onClick={() => router.push(`/requirements/${contact.requirement_id}?type=${contact.requirement_type === 'Rfq' ? 'rfq' : contact.requirement_type === 'WorkerJob' ? 'job' : 'project'}`)} className="bg-orange-600 hover:bg-orange-700">View Project</Button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl mt-4">
-                      <User className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-                      You haven't unlocked any leads yet.
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />
             )}
             
             {activeTab === 'bids_submitted' && (
@@ -174,18 +153,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             )}
 
             {activeTab === 'portfolio' && (
-              <Card>
-                <CardHeader><CardTitle>Portfolio</CardTitle></CardHeader>
-                <CardContent className="py-16 text-center text-slate-500">
-                  <Paintbrush className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                  Your portfolio is currently empty. Upload projects to attract more clients.
-                  <div className="mt-6">
-                    <Button onClick={() => router.push('/dashboard/profile')} className="bg-indigo-600 hover:bg-indigo-700">
-                      Upload Portfolio
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+              <PortfolioTab />
             )}
 
             {activeTab === 'reviews' && (

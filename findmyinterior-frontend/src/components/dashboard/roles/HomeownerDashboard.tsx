@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User as UserIcon, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User, ShieldCheck } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
@@ -76,8 +76,8 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 {renderSidebarButton("shortlisted", <Star className="h-5 w-5" />, "Shortlisted Professionals")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
-                {renderSidebarButton("profile", <UserIcon className="h-5 w-5" />, "Profile")}
-                {renderSidebarButton("settings", <UserIcon className="h-5 w-5" />, "Settings")}
+                {renderSidebarButton("profile", <User className="h-5 w-5" />, "Profile")}
+                {renderSidebarButton("settings", <User className="h-5 w-5" />, "Settings")}
               </div>
             </div>
           </div>
@@ -290,6 +290,14 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                               </div>
                             )}
                             <div className="ml-auto flex gap-2 items-end flex-wrap">
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => window.open(`/professionals/${bid.professional?.id}`, '_blank')}
+                                className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                              >
+                                <User className="w-4 h-4 mr-1" /> View Profile
+                              </Button>
                               <Button
                                 variant="outline"
                                 size="sm"

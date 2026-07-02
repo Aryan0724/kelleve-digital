@@ -377,11 +377,11 @@ export function ProfileTab() {
             </Field>
 
             <Field label="GST Number (Optional)" icon={Hash}>
-              <Input name="gst_number" value={formData.gst_number || ""} onChange={handleChange} placeholder="22AAAAA0000A1Z5" />
+              <Input name="gst_number" value={formData.gst_number || ""} onChange={handleChange} placeholder="22AAAAA0000A1Z5" pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$" title="Please enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z5)" />
             </Field>
 
             <Field label="PAN Number (Optional)" icon={Hash}>
-              <Input name="pan_number" value={formData.pan_number || ""} onChange={handleChange} placeholder="ABCDE1234F" />
+              <Input name="pan_number" value={formData.pan_number || ""} onChange={handleChange} placeholder="ABCDE1234F" pattern="^[A-Z]{5}[0-9]{4}[A-Z]{1}$" title="Please enter a valid 10-character PAN number (e.g. ABCDE1234F)" />
             </Field>
 
             <div className="md:col-span-2">

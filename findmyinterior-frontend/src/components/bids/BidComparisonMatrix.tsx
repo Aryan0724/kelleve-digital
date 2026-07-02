@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, Award, XCircle, IndianRupee, MessageSquare } from "lucide-react";
+import { CheckCircle2, Award, XCircle, IndianRupee, MessageSquare, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
@@ -135,9 +135,14 @@ export function BidComparisonMatrix({ bids, onAward, reqType }: { bids: any[], o
                 >
                   Award to {professional?.name?.split(' ')[0] || 'Vendor'}
                 </Button>
-                <Button variant="outline" onClick={() => handleMessageVendor(bid.professional_id)}>
-                  <MessageSquare className="w-4 h-4 mr-2" /> Message
-                </Button>
+                <div className="grid grid-cols-2 gap-2">
+                  <Button variant="outline" onClick={() => handleMessageVendor(bid.professional_id)}>
+                    <MessageSquare className="w-4 h-4 mr-2" /> Message
+                  </Button>
+                  <Button variant="outline" onClick={() => router.push(`/professionals/${professional?.id}`)}>
+                    <User className="w-4 h-4 mr-2" /> Profile
+                  </Button>
+                </div>
               </div>
             </div>
           );

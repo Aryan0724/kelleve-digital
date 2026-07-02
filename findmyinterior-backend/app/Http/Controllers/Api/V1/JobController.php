@@ -79,10 +79,11 @@ class JobController extends Controller
     {
         $job = WorkerJob::with(['user', 'category', 'applications.worker'])->findOrFail($id);
 
-        $user = Auth::user();
-        
+        $user = Auth::guard('sanctum')->user();
+
         if (!$user) {
             $job->increment('views_count');
+            $job->views_count = $job->views_count + 1;
             return $this->success($job);
         }
 
@@ -92,6 +93,7 @@ class JobController extends Controller
 
         if (!$isCreator && !$isAdmin) {
             $job->increment('views_count');
+            $job->views_count = $job->views_count + 1;
         }
 
         // Creator or admin can always see their own job

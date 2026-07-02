@@ -11,10 +11,12 @@ import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
-// import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
+import { Paintbrush } from "lucide-react";
 
 export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -105,38 +107,17 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
+                {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            {activeTab !== 'business_profile' && <UnverifiedBanner onVerifyClick={() => setActiveTab('business_profile')} hasPendingVerification={data?.user?.has_pending_verification} />}
+
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
             {activeTab === 'unlocked_leads' && (
-              <Card>
-                <CardHeader><CardTitle>Unlocked Leads (CRM)</CardTitle></CardHeader>
-                <CardContent>
-                  {data?.unlocked_contacts && data.unlocked_contacts.length > 0 ? (
-                    <div className="space-y-4 mt-4">
-                      {data.unlocked_contacts.map((contact: any) => (
-                        <div key={contact.id} className="p-4 border rounded-xl hover:shadow-md transition-shadow flex justify-between items-center bg-white">
-                          <div>
-                            <h4 className="font-bold text-lg mb-1">{contact.requirement?.title || contact.requirement?.material_type || contact.requirement?.skill_required || `Project #${contact.requirement_id}`}</h4>
-                            <div className="text-sm text-slate-500">Unlocked on: {new Date(contact.created_at).toLocaleDateString()}</div>
-                          </div>
-                          <Button size="sm" onClick={() => router.push(`/requirements/${contact.requirement_id}?type=${contact.requirement_type === 'Rfq' ? 'rfq' : contact.requirement_type === 'WorkerJob' ? 'job' : 'project'}`)} className="bg-orange-600 hover:bg-orange-700">View Project</Button>
-                        </div>
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl mt-4">
-                      <User className="h-10 w-10 text-slate-300 mx-auto mb-3" />
-                      You haven't unlocked any leads yet.
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />
             )}
             
             {activeTab === 'bids_submitted' && (
@@ -164,6 +145,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
 
             {activeTab === 'business_profile' && <CompleteProfileTab />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
+            {activeTab === 'portfolio' && <PortfolioTab />}
 
             {['labour_requests', 'material_requests', 'subcontract_requests'].includes(activeTab) && (
               <Card>
