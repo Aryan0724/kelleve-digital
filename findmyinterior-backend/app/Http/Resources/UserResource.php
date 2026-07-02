@@ -20,6 +20,9 @@ class UserResource extends JsonResource
             'avatar'             => $this->avatar,
             'is_active'          => $this->is_active,
             'email_verified'     => !is_null($this->email_verified_at),
+            'trust_score'        => $this->trust_score ?? 0,
+            'profile_completion_score' => $this->profile_completion_score ?? 0,
+            'verification_level' => $this->verification_level ?? 'unverified',
             'subscription'       => $this->whenLoaded('activeSubscription', fn() =>
                 $this->activeSubscription
                     ? new UserSubscriptionResource($this->activeSubscription)

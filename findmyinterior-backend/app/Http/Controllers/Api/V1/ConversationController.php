@@ -167,15 +167,14 @@ class ConversationController extends Controller
             }
         }
         
-        // Create or get existing conversation — key on the actual DB unique constraint
+        // Create or get existing conversation — key on the actual DB unique constraint (project_id)
         $conversation = Conversation::updateOrCreate(
             [
-                'conversationable_id'  => $requirementId,
+                'project_id'  => $requirementId,
                 'customer_id' => $customerId,
                 'vendor_id'   => $vendorId,
             ],
             [
-                'conversationable_type'  => $morphType,
                 'status'        => 'active',
                 'project_stage' => 'initiated',
                 'unlocked_at'   => $isUnlocked ? now() : null,

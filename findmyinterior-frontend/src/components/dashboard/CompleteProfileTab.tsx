@@ -328,6 +328,9 @@ export function CompleteProfileTab() {
           }
         };
         await api.put(`/user/professional-profile`, payload);
+        // Refresh user data from server to update trust_score, profile_completion_score in store
+        const meRes = await api.get('/auth/me');
+        if (meRes.data?.data) updateUser(meRes.data.data);
       }
       
       setSaved(true);

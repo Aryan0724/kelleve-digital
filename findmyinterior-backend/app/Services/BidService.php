@@ -201,11 +201,10 @@ class BidService
             }
             
             // 5. Create or retrieve Conversation (safe upsert to avoid unique constraint crashes)
-            $morphType = class_basename($requirement);
+            // The conversations table uses project_id (not polymorphic) after the Sprint 2 migration
             \App\Models\Conversation::updateOrCreate(
                 [
-                    'conversationable_id'  => $requirement->id,
-                    'conversationable_type' => 'App\\Models\\' . $morphType,
+                    'project_id'  => $requirement->id,
                     'customer_id' => $requirement->user_id,
                     'vendor_id'   => $bid->professional_id,
                 ],
