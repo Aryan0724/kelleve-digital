@@ -419,6 +419,7 @@ export function CompleteProfileTab() {
       </Card>
 
       <div className="relative border-l-2 border-indigo-100 ml-4 md:ml-6 pl-6 md:pl-10 space-y-12 pb-10">
+        <form onSubmit={(e) => { e.preventDefault(); handleSave(); }}>
         
         {/* Step 1: Basic Info */}
         <div className="relative">
@@ -605,7 +606,7 @@ export function CompleteProfileTab() {
               )}
 
               <div className="flex justify-end pt-4 border-t mt-6">
-                <Button onClick={handleSave} disabled={saving} className="bg-indigo-600 hover:bg-indigo-700 min-w-[140px]">
+                <Button type="submit" disabled={saving} className="bg-indigo-600 hover:bg-indigo-700 min-w-[140px]">
                   {saving ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <CheckCircle2 className="w-4 h-4 mr-2" />}
                   {saving ? "Saving..." : saved ? "Saved!" : "Save Profile"}
                 </Button>
@@ -614,6 +615,7 @@ export function CompleteProfileTab() {
             </CardContent>
           </Card>
         </div>
+        </form>
 
         {/* Step 2: Verification (For Professionals Only) */}
         {(isBusiness || isWorker) && (
