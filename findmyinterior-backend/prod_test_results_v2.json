@@ -9,37 +9,37 @@
         "label": "Homeowner register",
         "passed": true,
         "code": 201,
-        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":60,\"name\":\"Test Homeowner\",\"email\":\"ho_1783013866@test.com\",\"phone\":null,\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0"
+        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":65,\"name\":\"Test Homeowner\",\"email\":\"ho_1783014469@test.com\",\"phone\":null,\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0"
     },
     {
         "label": "Homeowner login",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"message\":\"Login successful.\",\"data\":{\"user\":{\"id\":60,\"name\":\"Test Homeowner\",\"email\":\"ho_1783013866@test.com\",\"phone\":null,\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"verif"
+        "body": "{\"success\":true,\"message\":\"Login successful.\",\"data\":{\"user\":{\"id\":65,\"name\":\"Test Homeowner\",\"email\":\"ho_1783014469@test.com\",\"phone\":null,\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"verif"
     },
     {
         "label": "Homeowner get profile",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"data\":{\"id\":60,\"name\":\"Test Homeowner\",\"email\":\"ho_1783013866@test.com\",\"phone\":null,\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"verification_level\":\"unverified\",\"subscript"
+        "body": "{\"success\":true,\"data\":{\"id\":65,\"name\":\"Test Homeowner\",\"email\":\"ho_1783014469@test.com\",\"phone\":null,\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"verification_level\":\"unverified\",\"subscript"
     },
     {
         "label": "Homeowner update profile",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"message\":\"Profile updated.\",\"data\":{\"id\":60,\"name\":\"Updated Homeowner\",\"email\":\"ho_1783013866@test.com\",\"phone\":\"9876543210\",\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"ver"
+        "body": "{\"success\":true,\"message\":\"Profile updated.\",\"data\":{\"id\":65,\"name\":\"Updated Homeowner\",\"email\":\"ho_1783014469@test.com\",\"phone\":\"9876543210\",\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"ver"
     },
     {
         "label": "Profile update persists",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"data\":{\"id\":60,\"name\":\"Updated Homeowner\",\"email\":\"ho_1783013866@test.com\",\"phone\":\"9876543210\",\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"verification_level\":\"unverified\""
+        "body": "{\"success\":true,\"data\":{\"id\":65,\"name\":\"Updated Homeowner\",\"email\":\"ho_1783014469@test.com\",\"phone\":\"9876543210\",\"role\":\"customer\",\"roles\":[\"customer\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"verification_level\":\"unverified\""
     },
     {
         "label": "Homeowner dashboard",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"message\":null,\"data\":{\"user\":{\"id\":60,\"name\":\"Updated Homeowner\",\"roles\":[\"customer\"],\"subscription\":\"Basic (Free)\",\"wallet_balance\":0,\"unread_messages_count\":0,\"has_pending_verification\":false},\"projects\":[],\"rfqs\":[],\"jobs\":[],\"total_projects\":0,\"received_bids\":[],\"shortlisted_pro"
+        "body": "{\"success\":true,\"message\":null,\"data\":{\"user\":{\"id\":65,\"name\":\"Updated Homeowner\",\"roles\":[\"customer\"],\"subscription\":\"Basic (Free)\",\"wallet_balance\":0,\"unread_messages_count\":0,\"has_pending_verification\":false},\"projects\":[],\"rfqs\":[],\"jobs\":[],\"total_projects\":0,\"received_bids\":[],\"shortlisted_pro"
     },
     {
         "label": "Post requirement",
@@ -51,31 +51,31 @@
         "label": "Designer register",
         "passed": true,
         "code": 201,
-        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":61,\"name\":\"Test Designer\",\"email\":\"designer_1783013866@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion_sco"
+        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":66,\"name\":\"Test Designer\",\"email\":\"designer_1783014469@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion_sco"
     },
     {
         "label": "Designer login",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"message\":\"Login successful.\",\"data\":{\"user\":{\"id\":61,\"name\":\"Test Designer\",\"email\":\"designer_1783013866@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\""
+        "body": "{\"success\":true,\"message\":\"Login successful.\",\"data\":{\"user\":{\"id\":66,\"name\":\"Test Designer\",\"email\":\"designer_1783014469@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\""
     },
     {
         "label": "Designer creates listing",
         "passed": true,
         "code": 201,
-        "body": "{\"success\":true,\"message\":\"Listing created and is live.\",\"data\":{\"id\":33,\"title\":\"Test Design Studio 1783013866\",\"slug\":\"test-design-studio-1783013866-vGC3Mz\",\"tagline\":\"Modern interiors\",\"description\":\"Full service interior design\",\"cover_image\":null,\"category\":{\"id\":1,\"name\":\"Interior Designers\",\""
+        "body": "{\"success\":true,\"message\":\"Listing created and is live.\",\"data\":{\"id\":34,\"title\":\"Test Design Studio 1783014469\",\"slug\":\"test-design-studio-1783014469-FWDmjf\",\"tagline\":\"Modern interiors\",\"description\":\"Full service interior design\",\"cover_image\":null,\"category\":{\"id\":1,\"name\":\"Interior Designers\",\""
     },
     {
         "label": "Designer updates listing",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"message\":\"Listing updated.\",\"data\":{\"id\":33,\"title\":\"Test Design Studio 1783013866\",\"slug\":\"test-design-studio-1783013866-vGC3Mz\",\"tagline\":\"Award-winning interiors\",\"description\":\"Full service interior design\",\"cover_image\":null,\"category\":{\"id\":1,\"name\":\"Interior Designers\",\"slug\""
+        "body": "{\"success\":true,\"message\":\"Listing updated.\",\"data\":{\"id\":34,\"title\":\"Test Design Studio 1783014469\",\"slug\":\"test-design-studio-1783014469-FWDmjf\",\"tagline\":\"Award-winning interiors\",\"description\":\"Full service interior design\",\"cover_image\":null,\"category\":{\"id\":1,\"name\":\"Interior Designers\",\"slug\""
     },
     {
         "label": "Designer listings persist",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"data\":[{\"id\":33,\"title\":\"Test Design Studio 1783013866\",\"slug\":\"test-design-studio-1783013866-vGC3Mz\",\"tagline\":\"Award-winning interiors\",\"description\":\"Full service interior design\",\"cover_image\":null,\"category\":{\"id\":1,\"name\":\"Interior Designers\",\"slug\":\"interior-designers\",\"icon\""
+        "body": "{\"success\":true,\"data\":[{\"id\":34,\"title\":\"Test Design Studio 1783014469\",\"slug\":\"test-design-studio-1783014469-FWDmjf\",\"tagline\":\"Award-winning interiors\",\"description\":\"Full service interior design\",\"cover_image\":null,\"category\":{\"id\":1,\"name\":\"Interior Designers\",\"slug\":\"interior-designers\",\"icon\""
     },
     {
         "label": "Designer dashboard loads",
@@ -85,45 +85,45 @@
     },
     {
         "label": "Designer vendor metrics",
-        "passed": false,
-        "code": 500,
-        "body": "{\n    \"message\": \"Division by zero\",\n    \"exception\": \"DivisionByZeroError\",\n    \"file\": \"\/var\/www\/html\/app\/Models\/VendorMetric.php\",\n    \"line\": 42,\n    \"trace\": [\n        {\n            \"file\": \"\/var\/www\/html\/vendor\/laravel\/framework\/src\/Illuminate\/Database\/Eloquent\/Concerns\/HasAttributes.php\",\n   "
+        "passed": true,
+        "code": 200,
+        "body": "{\"vendor_id\":66,\"updated_at\":\"2026-07-02T17:48:58.000000Z\",\"created_at\":\"2026-07-02T17:48:58.000000Z\",\"id\":39,\"response_rate\":0,\"completion_rate\":0,\"rating_average\":4.5,\"avg_response_minutes\":0,\"win_rate\":0}"
     },
     {
         "label": "Designer trust_score on profile",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"data\":{\"id\":61,\"name\":\"Test Designer\",\"email\":\"designer_1783013866@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"verification_level\":\"unverified\",\"subs"
+        "body": "{\"success\":true,\"data\":{\"id\":66,\"name\":\"Test Designer\",\"email\":\"designer_1783014469@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"verification_level\":\"unverified\",\"subs"
     },
     {
         "label": "Contractor register",
         "passed": true,
         "code": 201,
-        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":62,\"name\":\"Test Contractor\",\"email\":\"contractor_1783013866@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion"
+        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":67,\"name\":\"Test Contractor\",\"email\":\"contractor_1783014469@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion"
     },
     {
         "label": "Contractor login",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"message\":\"Login successful.\",\"data\":{\"user\":{\"id\":62,\"name\":\"Test Contractor\",\"email\":\"contractor_1783013866@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\""
+        "body": "{\"success\":true,\"message\":\"Login successful.\",\"data\":{\"user\":{\"id\":67,\"name\":\"Test Contractor\",\"email\":\"contractor_1783014469@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\""
     },
     {
         "label": "Builder register",
         "passed": true,
         "code": 201,
-        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":63,\"name\":\"Test Builder\",\"email\":\"builder_1783013866@test.com\",\"phone\":null,\"role\":\"builder\",\"roles\":[\"builder\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":"
+        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":68,\"name\":\"Test Builder\",\"email\":\"builder_1783014469@test.com\",\"phone\":null,\"role\":\"builder\",\"roles\":[\"builder\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":"
     },
     {
         "label": "Builder login",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"message\":\"Login successful.\",\"data\":{\"user\":{\"id\":63,\"name\":\"Test Builder\",\"email\":\"builder_1783013866@test.com\",\"phone\":null,\"role\":\"builder\",\"roles\":[\"builder\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"veri"
+        "body": "{\"success\":true,\"message\":\"Login successful.\",\"data\":{\"user\":{\"id\":68,\"name\":\"Test Builder\",\"email\":\"builder_1783014469@test.com\",\"phone\":null,\"role\":\"builder\",\"roles\":[\"builder\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":0,\"profile_completion_score\":0,\"veri"
     },
     {
         "label": "Supplier register",
         "passed": true,
         "code": 201,
-        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":64,\"name\":\"Test Supplier\",\"email\":\"supplier_1783013866@test.com\",\"phone\":null,\"role\":\"supplier\",\"roles\":[\"supplier\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion_sco"
+        "body": "{\"success\":true,\"message\":\"Registration successful.\",\"data\":{\"user\":{\"id\":69,\"name\":\"Test Supplier\",\"email\":\"supplier_1783014469@test.com\",\"phone\":null,\"role\":\"supplier\",\"roles\":[\"supplier\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":null,\"email_verified\":false,\"trust_score\":0,\"profile_completion_sco"
     },
     {
         "label": "Supplier login",
@@ -237,13 +237,13 @@
         "label": "Admin dashboard",
         "passed": false,
         "code": 500,
-        "body": "{\n    \"message\": \"SQLSTATE[42703]: Undefined column: 7 ERROR:  column \\\"role\\\" does not exist\\nLINE 1: ...ull) as \\\"submitted_bids_count\\\" from \\\"users\\\" where \\\"role\\\" in ...\\n                                                             ^ (Connection: pgsql, Host: dpg-d8luoscvikkc73bu2pd0-a.oregon-"
+        "body": "{\n    \"message\": \"SQLSTATE[42703]: Undefined column: 7 ERROR:  column \\\"contact_unlocks_count\\\" does not exist\\nLINE 1: ..., $3)) and \\\"users\\\".\\\"deleted_at\\\" is null order by (contact_un...\\n                                                             ^ (Connection: pgsql, Host: dpg-d8luoscvikkc73b"
     },
     {
         "label": "Admin views all users",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"data\":[{\"id\":64,\"name\":\"Test Supplier\",\"email\":\"supplier_1783013866@test.com\",\"phone\":null,\"verification_level\":\"unverified\",\"avatar\":null,\"email_verified_at\":null,\"is_active\":true,\"is_verified\":false,\"deleted_at\":null,\"created_at\":\"2026-07-02T17:39:39.000000Z\",\"updated_at\":\"2026-07"
+        "body": "{\"success\":true,\"data\":[{\"id\":69,\"name\":\"Test Supplier\",\"email\":\"supplier_1783014469@test.com\",\"phone\":null,\"verification_level\":\"unverified\",\"avatar\":null,\"email_verified_at\":null,\"is_active\":true,\"is_verified\":false,\"deleted_at\":null,\"created_at\":\"2026-07-02T17:49:41.000000Z\",\"updated_at\":\"2026-07"
     },
     {
         "label": "Admin views requirements",
@@ -273,19 +273,19 @@
         "label": "Admin views listings",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"data\":[{\"id\":33,\"user_id\":61,\"category_id\":1,\"city_id\":null,\"district_id\":null,\"title\":\"Test Design Studio 1783013866\",\"slug\":\"test-design-studio-1783013866-vGC3Mz\",\"description\":\"Full service interior design\",\"tagline\":\"Award-winning interiors\",\"cover_image\":null,\"phone\":\"987654321"
+        "body": "{\"success\":true,\"data\":[{\"id\":34,\"user_id\":66,\"category_id\":1,\"city_id\":null,\"district_id\":null,\"title\":\"Test Design Studio 1783014469\",\"slug\":\"test-design-studio-1783014469-FWDmjf\",\"description\":\"Full service interior design\",\"tagline\":\"Award-winning interiors\",\"cover_image\":null,\"phone\":\"987654321"
     },
     {
         "label": "Admin verifies designer identity",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"message\":\"User verification updated.\",\"data\":{\"id\":61,\"name\":\"Test Designer\",\"email\":\"designer_1783013866@test.com\",\"is_verified\":true,\"verification_level\":\"identity_verified\"}}"
+        "body": "{\"success\":true,\"message\":\"User verification updated.\",\"data\":{\"id\":66,\"name\":\"Test Designer\",\"email\":\"designer_1783014469@test.com\",\"is_verified\":true,\"verification_level\":\"identity_verified\"}}"
     },
     {
         "label": "Designer verification level updated",
         "passed": true,
         "code": 200,
-        "body": "{\"success\":true,\"data\":{\"id\":61,\"name\":\"Test Designer\",\"email\":\"designer_1783013866@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":15,\"profile_completion_score\":15,\"verification_level\":\"identity_verifi"
+        "body": "{\"success\":true,\"data\":{\"id\":66,\"name\":\"Test Designer\",\"email\":\"designer_1783014469@test.com\",\"phone\":null,\"role\":\"business\",\"roles\":[\"business\"],\"isAdmin\":false,\"avatar\":null,\"is_active\":true,\"email_verified\":false,\"trust_score\":15,\"profile_completion_score\":15,\"verification_level\":\"identity_verifi"
     },
     {
         "label": "Admin toggles homeowner active",
@@ -295,9 +295,9 @@
     },
     {
         "label": "Admin revenue endpoint",
-        "passed": false,
-        "code": 500,
-        "body": "{\n    \"message\": \"SQLSTATE[42P01]: Undefined table: 7 ERROR:  relation \\\"requirements\\\" does not exist\\nLINE 1: select count(*) as \\\"aggregate\\\" from \\\"requirements\\\"\\n                                            ^ (Connection: pgsql, Host: dpg-d8luoscvikkc73bu2pd0-a.oregon-postgres.render.com, Port:"
+        "passed": true,
+        "code": 200,
+        "body": "{\"revenue\":{\"revenue_today\":59,\"revenue_week\":59,\"revenue_month\":157,\"mrr\":0,\"arpu\":78.5,\"by_type\":[{\"description\":\"Fee for submitting bid on requirement #74\",\"total\":\"10.00\",\"count\":1},{\"description\":\"Unlocked contact for requirement ID: 51\",\"total\":\"49.00\",\"count\":1},{\"description\":\"Unlocked conta"
     },
     {
         "label": "Admin blogs endpoint",
@@ -382,65 +382,5 @@
         "passed": true,
         "code": 200,
         "body": "{\"success\":true,\"data\":{\"stats\":{\"verified_professionals\":30,\"total_projects\":0,\"happy_customers\":763,\"cities_covered\":5,\"categories\":10},\"categories\":[{\"id\":1,\"name\":\"Interior Designers\",\"slug\":\"interior-designers\",\"icon\":\"sofa\",\"image\":null,\"description\":\"Transform your home with Bihar's top inter"
-    },
-    {
-        "label": "Frontend: \/",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/login",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/register",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/professionals",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/blog",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/terms",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/privacy",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/dispute-resolution",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/compliance",
-        "passed": false,
-        "code": 404,
-        "body": ""
-    },
-    {
-        "label": "Frontend: \/pricing",
-        "passed": false,
-        "code": 404,
-        "body": ""
     }
 ]

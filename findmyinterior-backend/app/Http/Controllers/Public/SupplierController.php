@@ -56,7 +56,7 @@ class SupplierController extends Controller
     {
         $supplier = Supplier::active()
             ->where('slug', $slug)
-            ->with(['activeProducts.images', 'approvedReviews.user'])
+            ->with(['activeProducts.images', 'approvedReviews.reviewer'])
             ->firstOrFail();
 
         return response()->json([

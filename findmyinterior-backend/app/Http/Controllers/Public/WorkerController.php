@@ -62,7 +62,7 @@ class WorkerController extends Controller
     {
         $worker = Worker::active()
             ->where('slug', $slug)
-            ->with(['approvedReviews.user'])
+            ->with(['approvedReviews.reviewer'])
             ->firstOrFail();
 
         return response()->json([

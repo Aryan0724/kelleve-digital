@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Supplier extends Model
@@ -55,14 +55,14 @@ class Supplier extends Model
         return $this->hasMany(SupplierProduct::class)->where('is_active', true);
     }
 
-    public function reviews(): MorphMany
+    public function reviews(): HasMany
     {
-        return $this->morphMany(Review::class, 'reviewable');
+        return $this->hasMany(Review::class, 'reviewed_user_id', 'user_id');
     }
 
-    public function approvedReviews(): MorphMany
+    public function approvedReviews(): HasMany
     {
-        return $this->morphMany(Review::class, 'reviewable')->where('is_approved', true);
+        return $this->hasMany(Review::class, 'reviewed_user_id', 'user_id')->where('is_approved', true);
     }
 
     public function inquiries(): MorphMany

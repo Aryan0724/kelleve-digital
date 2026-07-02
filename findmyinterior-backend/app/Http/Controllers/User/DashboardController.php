@@ -223,7 +223,7 @@ class DashboardController extends Controller
                     ]) ?? [];
 
                 $data['recent_reviews'] = ReviewResource::collection(
-                    $entity?->approvedReviews()->with('user')->latest()->take(5)->get() ?? collect()
+                    $entity?->approvedReviews()->with('reviewer')->latest()->take(5)->get() ?? collect()
                 );
 
                 $data['recent_payments'] = PaymentResource::collection(

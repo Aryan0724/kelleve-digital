@@ -54,7 +54,7 @@ class BuilderController extends Controller
     {
         $builder = Builder::active()
             ->where('slug', $slug)
-            ->with(['projects.images', 'possessionProjects.images', 'approvedReviews.user'])
+            ->with(['projects.images', 'possessionProjects.images', 'approvedReviews.reviewer'])
             ->firstOrFail();
 
         return response()->json([

@@ -95,7 +95,7 @@ class ListingController extends Controller
     public function show(Request $request, string $slug): JsonResponse
     {
         $query = Listing::active()
-            ->with(['category', 'gallery', 'approvedReviews.user', 'user']);
+            ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user']);
 
         if (is_numeric($slug)) {
             $query->where(function($q) use ($slug) {
@@ -111,9 +111,9 @@ class ListingController extends Controller
         if (!$listing && is_numeric($slug)) {
             // If listing not found, check if it's a valid user id and generate a stub Listing
             $user = \App\Models\User::with([
-                'worker.approvedReviews.user', 
-                'supplier.approvedReviews.user', 
-                'builder.approvedReviews.user'
+                'worker.approvedReviews.reviewer', 
+                'supplier.approvedReviews.reviewer', 
+                'builder.approvedReviews.reviewer'
             ])->find($slug);
             
             if (!$user) {

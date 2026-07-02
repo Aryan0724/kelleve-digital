@@ -32,9 +32,7 @@ class BackfillVendorMetrics extends Command
             $metrics->projects_completed = Requirement::where('awarded_vendor_id', $vid)->where('status', 'completed')->count();
             $metrics->unlock_count = ContactUnlock::where('user_id', $vid)->count();
             
-            // Note: In polymorphic relations, we assume reviewable_type is the class name or morph map name.
-            // Morph map uses 'User' for App\Models\User based on AppServiceProvider.
-            $reviews = Review::where('reviewable_type', 'User')->where('reviewable_id', $vid);
+            $reviews = Review::where('reviewed_user_id', $vid);
             $metrics->review_count = $reviews->count();
             $metrics->review_sum = $reviews->sum('rating');
             

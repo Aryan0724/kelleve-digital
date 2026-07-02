@@ -38,7 +38,8 @@ class AdminController extends Controller
                 $q->whereIn('slug', ['business', 'worker', 'builder']);
             })
             ->withCount(['contactUnlocks', 'submittedBids'])
-            ->orderByRaw('(contact_unlocks_count + submitted_bids_count) DESC')
+            ->orderBy('contact_unlocks_count', 'desc')
+            ->orderBy('submitted_bids_count', 'desc')
             ->take(5)
             ->get(['id', 'name']);
 
@@ -220,7 +221,7 @@ class AdminController extends Controller
     public function pendingReviews(): JsonResponse
     {
         $reviews = Review::where('is_approved', false)
-            ->with(['user:id,name', 'reviewable'])
+            ->with(['reviewer:id,name', 'reviewedUser:id,name', 'project:id,title'])
             ->latest()
             ->get();
 

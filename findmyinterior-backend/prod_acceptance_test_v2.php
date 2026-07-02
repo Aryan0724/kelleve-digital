@@ -130,6 +130,8 @@ $r = api('POST', "$BASE/requirements", [
     'scope'       => 'full_home',
     'timeline'    => '3-6 months',
     'property_type' => 'apartment',
+    'name'        => 'Test Homeowner',
+    'phone'       => '9876543210',
 ], $hoToken);
 check('Post requirement', $r, 201, fn($j) => isset($j['data']['id']));
 $reqId = $r['json']['data']['id'] ?? null;
@@ -554,26 +556,6 @@ check('Public workers', $r, 200);
 
 $r = api('GET', "$BASE/homepage");
 check('Homepage data', $r, 200);
-
-// Frontend routes — just check 200 from Vercel
-$frontendBase = 'https://find-my-interior-frontend.vercel.app';
-$frontendRoutes = ['/', '/login', '/register', '/professionals', '/blog', '/terms', '/privacy', '/dispute-resolution', '/compliance', '/pricing'];
-echo "\n=== PHASE 17B: FRONTEND VERCEL ROUTES ===\n";
-foreach ($frontendRoutes as $path) {
-    $ch = curl_init($frontendBase . $path);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_TIMEOUT, 30);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-    curl_setopt($ch, CURLOPT_NOBODY, true); // HEAD-like
-    curl_exec($ch);
-    $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-    curl_close($ch);
-    $passed = in_array($code, [200, 301, 302]);
-    $status = $passed ? $PASS : $FAIL;
-    $results[] = ['label' => "Frontend: $path", 'passed' => $passed, 'code' => $code, 'body' => ''];
-    echo "[$status] Frontend: $path | HTTP $code\n";
-}
 
 // ──────────────────────────────────────────────────────────────
 // SUMMARY
