@@ -314,7 +314,7 @@ export function CompleteProfileTab() {
       }
 
       // Then update professional profile if applicable
-      if (isBusiness || isWorker || isSupplier || isBuilder) {
+      if (isBusiness || isWorker) {
         const payload = {
           ...formData,
           name: user?.name || "Professional",
