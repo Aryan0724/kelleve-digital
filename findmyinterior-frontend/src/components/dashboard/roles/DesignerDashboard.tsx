@@ -94,7 +94,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
               <div className="flex md:flex-col min-w-max md:min-w-0">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Projects")}
-                {renderSidebarButton("unlocked_leads", <UserIcon className="h-5 w-5" />, "Unlocked Leads")}
+                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Leads")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "My Bids")}
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
@@ -157,7 +157,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                     </div>
                   ) : (
                     <div className="text-center py-12 text-slate-500 border border-dashed rounded-xl mt-4">
-                      <UserIcon className="h-10 w-10 text-slate-300 mx-auto mb-3" />
+                      <User className="h-10 w-10 text-slate-300 mx-auto mb-3" />
                       You haven't unlocked any leads yet.
                     </div>
                   )}
