@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('projects', function (Blueprint $table) {
-            $table->decimal('unlock_price', 8, 2)->nullable()->after('budget_tier');
-        });
+        if (!Schema::hasColumn('projects', 'unlock_price')) {
+            Schema::table('projects', function (Blueprint $table) {
+                $table->decimal('unlock_price', 8, 2)->nullable()->after('budget_tier');
+            });
+        }
     }
 
     /**
