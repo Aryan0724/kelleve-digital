@@ -753,7 +753,7 @@ export default function RequirementDetail() {
           </div>
         </div>
       )}
-      </div>
+
     </div>
   );
 }
