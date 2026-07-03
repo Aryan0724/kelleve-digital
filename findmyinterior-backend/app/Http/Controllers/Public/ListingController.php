@@ -134,6 +134,17 @@ class ListingController extends Controller
             $listing->trust_score = $user->trust_score;
             $listing->profile_completion_score = $user->profile_completion_score;
             $listing->verification_level = $user->verification_level;
+
+            // Worker specific fields mapping to Listing fields
+            if ($user->worker) {
+                $listing->years_experience = (int)$user->worker->experience_years;
+                $listing->budget_tier = '₹' . $user->worker->daily_rate . '/day';
+                if ($user->worker->skill) {
+                    $listing->services = [$user->worker->skill];
+                }
+                $listing->description = $user->worker->bio ?? 'Profile pending completion.';
+                $listing->phone = $user->phone;
+            }
             
             $listing->setRelation('user', $user);
             $listing->setRelation('category', new \App\Models\Category(['name' => 'Professional', 'slug' => 'professional']));
