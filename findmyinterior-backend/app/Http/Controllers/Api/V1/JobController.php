@@ -77,7 +77,7 @@ class JobController extends Controller
 
     public function show(string $id)
     {
-        $job = WorkerJob::with(['user', 'category', 'applications.worker'])->findOrFail($id);
+        $job = WorkerJob::with(['user', 'bids.professional'])->findOrFail($id);
 
         $user = Auth::guard('sanctum')->user();
 
