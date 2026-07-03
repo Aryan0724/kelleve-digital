@@ -12,6 +12,7 @@ import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
+import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirementsTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
