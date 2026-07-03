@@ -252,10 +252,21 @@ class DashboardController extends Controller
                         ->take(10)
                         ->get();
                 } elseif (in_array('skilled_worker', $userRoles) || in_array('worker', $userRoles)) {
-                    $data['recommended_leads'] = \App\Models\WorkerJob::where('status', 'open')
-                        ->latest()
-                        ->take(10)
-                        ->get();
+                    $workerEntity = $user->worker;
+                    $query = \App\Models\WorkerJob::where('status', 'open');
+                    
+                    if ($workerEntity && $workerEntity->skill) {
+                        $query->where(function($q) use ($workerEntity) {
+                            $q->where('skills_required', 'like', '%' . $workerEntity->skill . '%')
+                              ->orWhereNull('skills_required')
+                              ->orWhere('skills_required', '');
+                        });
+                    }
+                    if ($workerEntity && $workerEntity->city) {
+                        $query->orderByRaw("CASE WHEN city = ? THEN 0 ELSE 1 END", [$workerEntity->city]);
+                    }
+                    
+                    $data['recommended_leads'] = $query->latest()->take(10)->get();
                 } else {
                     $recommendedIds = \Illuminate\Support\Facades\DB::table('requirement_recommendations')
                         ->where('vendor_id', $user->id)
