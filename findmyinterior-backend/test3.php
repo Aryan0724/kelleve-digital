@@ -1,0 +1,1 @@
+$user = App\Models\User::find(50); $req = Request::create("/api/v1/user/dashboard", "GET"); $req->setUserResolver(function () use ($user) { return $user; }); $res = app()->handle($req); echo json_encode(json_decode($res->getContent())->data->recommended_leads ?? []);

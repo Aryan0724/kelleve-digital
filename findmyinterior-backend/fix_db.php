@@ -1,0 +1,1 @@
+foreach(App\Models\WorkerJob::all() as $job) { if (strpos($job->description, "Carpenter") !== false) { $job->skills_required = ["Carpenter"]; $job->save(); } elseif (strpos($job->description, "Plumber") !== false) { $job->skills_required = ["Plumber"]; $job->save(); } } echo "Fixed";
