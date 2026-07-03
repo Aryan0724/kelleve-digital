@@ -50,7 +50,7 @@ class RequirementResource extends JsonResource
             'phone'          => $canSeeContact ? $this->phone : '+91 ***** *****',
             'email'          => $canSeeContact ? $this->email : null,
             'is_unlocked'    => $canSeeContact,
-            'created_at'     => $this->created_at?->diffForHumans(),
+            'created_at'     => $this->created_at ? \Carbon\Carbon::parse($this->created_at)->diffForHumans() : null,
         ];
     }
 }
