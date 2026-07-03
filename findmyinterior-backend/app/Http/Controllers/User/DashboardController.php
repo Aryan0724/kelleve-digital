@@ -256,22 +256,18 @@ class DashboardController extends Controller
                     $query = \App\Models\WorkerJob::where('status', 'open');
                     
                     if ($workerEntity && $workerEntity->skill) {
-                        $query->where(function($q) use ($workerEntity) {
-                            $skill = strtolower($workerEntity->skill);
-                            // Ensure cross-DB compatibility for json/text columns
-                            $q->whereJsonContains('skills_required', $workerEntity->skill)
-                              ->orWhereRaw('LOWER(CAST(skills_required AS TEXT)) LIKE ?', ['%' . $skill . '%'])
-                              ->orWhereNull('skills_required')
-                              ->orWhere('skills_required', '')
-                              ->orWhereRaw("CAST(skills_required AS TEXT) = '\"\"'")
-                              ->orWhereRaw("CAST(skills_required AS TEXT) = '[]'");
-                        });
+                        $skill = strtolower($workerEntity->skill);
+                        // Order by matching skill instead of filtering out non-matches
+                        $query->orderByRaw("CASE 
+                            WHEN LOWER(CAST(skills_required AS TEXT)) LIKE ? THEN 0 
+                            WHEN skills_required IS NULL OR CAST(skills_required AS TEXT) = '[]' OR CAST(skills_required AS TEXT) = '\"\"' THEN 1
+                            ELSE 2 END", ['%' . $skill . '%']);
                     }
                     if ($workerEntity && $workerEntity->city) {
                         $query->orderByRaw("CASE WHEN city = ? THEN 0 ELSE 1 END", [$workerEntity->city]);
                     }
                     
-                    $data['recommended_leads'] = $query->latest()->take(10)->get();
+                    $data['recommended_leads'] = $query->latest()->take(20)->get();
                 } else {
                     $recommendedIds = \Illuminate\Support\Facades\DB::table('requirement_recommendations')
                         ->where('vendor_id', $user->id)
