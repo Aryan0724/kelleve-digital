@@ -47,6 +47,11 @@ class UnlockService
         // 2. Fetch the fee from requirement or configuration
         $fee = $requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00);
 
+        // Workers can unlock worker jobs for free
+        if ($requirementType === \App\Models\WorkerJob::class && $vendor->hasRole('worker')) {
+            $fee = 0;
+        }
+
         return DB::transaction(function () use ($vendor, $requirement, $requirementType, $fee) {
             // 3. Deduct from wallet
             $this->walletService->deduct(
