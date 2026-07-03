@@ -91,6 +91,16 @@ class UnlockService
                 'phone' => $requirement->phone ?? $requirement->user->phone ?? 'Not Available',
             ]));
 
+            // Notify Customer that their contact was unlocked
+            if ($requirement->user) {
+                $vendorName = $vendor->name ?? 'A professional';
+                $requirement->user->notify(new \App\Notifications\MarketplaceNotification(
+                    'contact_unlocked',
+                    "{$vendorName} has unlocked your contact details for '{$requirement->title}'. Expect a call soon!",
+                    ['requirement_id' => $requirement->id, 'vendor_id' => $vendor->id]
+                ));
+            }
+
             return [
                 'success' => true,
                 'message' => 'Contact unlocked successfully',

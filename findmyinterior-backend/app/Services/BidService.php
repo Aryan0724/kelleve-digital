@@ -218,6 +218,11 @@ class BidService
             // Notify Professional via Event
             event(new \App\Events\ProjectAwarded($requirement));
             
+            $bid->professional->notify(new \App\Notifications\BidAwardedNotification([
+                'title' => $requirement->title,
+                'requirement_id' => $requirement->id,
+            ]));
+            
             // Log Timeline to new activity_logs
             DB::table('activity_logs')->insert([
                 'user_id' => $customer->id,
