@@ -17,11 +17,14 @@ import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirementsTab";
+import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 
 export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState("available_leads");
+  const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = async () => {
     await handleLogoutAction();
@@ -101,6 +104,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
                 {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
@@ -155,6 +159,14 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
             {activeTab === 'portfolio' && (
               <PortfolioTab />
+            )}
+
+            {activeTab === 'my_requirements' && (
+              <PostedRequirementsTab 
+                data={data} 
+                fetchDashboard={fetchDashboard} 
+                onReviewClick={(professionalId, requirementId) => setReviewModal({ isOpen: true, professionalId, requirementId })}
+              />
             )}
 
             {activeTab === 'reviews' && (
@@ -220,6 +232,18 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           </div>
         </div>
       </div>
+      
+      {reviewModal.isOpen && (
+        <LeaveReviewModal
+          isOpen={reviewModal.isOpen}
+          onClose={() => setReviewModal({ ...reviewModal, isOpen: false })}
+          professionalId={reviewModal.professionalId}
+          requirementId={reviewModal.requirementId}
+          onSuccess={() => {
+            fetchDashboard();
+          }}
+        />
+      )}
     </div>
   );
 }

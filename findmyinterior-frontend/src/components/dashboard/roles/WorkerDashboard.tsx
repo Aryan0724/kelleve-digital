@@ -12,12 +12,14 @@ import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
-import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
+import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirementsTab";
+import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const [activeTab, setActiveTab] = useState("available_leads");
+  const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = async () => {
     await handleLogoutAction();
@@ -76,6 +78,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
                 {renderSidebarButton("active_jobs", <CheckCircle2 className="h-5 w-5" />, "Active Jobs")}
                 {renderSidebarButton("completed_jobs", <CheckCircle2 className="h-5 w-5" />, "Completed Jobs")}
+                {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
                 {renderSidebarButton("ratings", <Star className="h-5 w-5" />, "Ratings")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
@@ -102,6 +105,14 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
 
             {activeTab === 'completed_jobs' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="Completed Jobs" statuses={['completed']} />
+            )}
+
+            {activeTab === 'my_requirements' && (
+              <PostedRequirementsTab 
+                data={data} 
+                fetchDashboard={fetchDashboard} 
+                onReviewClick={(professionalId, requirementId) => setReviewModal({ isOpen: true, professionalId, requirementId })}
+              />
             )}
 
             {activeTab === 'ratings' && (
@@ -151,6 +162,18 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
           </div>
         </div>
       </div>
+      
+      {reviewModal.isOpen && (
+        <LeaveReviewModal
+          isOpen={reviewModal.isOpen}
+          onClose={() => setReviewModal({ ...reviewModal, isOpen: false })}
+          professionalId={reviewModal.professionalId}
+          requirementId={reviewModal.requirementId}
+          onSuccess={() => {
+            fetchDashboard();
+          }}
+        />
+      )}
     </div>
   );
 }

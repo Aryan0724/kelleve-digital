@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Gavel, CheckCircle2, MessageSquare, Wallet, User, LogOut, Package, ShieldCheck } from "lucide-react";
+import { Search, Gavel, CheckCircle2, MessageSquare, Wallet, User, LogOut, Package, ShieldCheck, LayoutDashboard } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
@@ -14,14 +14,16 @@ import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import Link from "next/link";
-import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirementsTab";
+import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 
 export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const isUnverified = user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
   const [activeTab, setActiveTab] = useState("available_leads");
+  const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = async () => {
     await handleLogoutAction();
@@ -98,6 +100,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "RFQs")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Submitted Quotes")}
                 {renderSidebarButton("orders", <CheckCircle2 className="h-5 w-5" />, "Orders")}
+                {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
                 {renderSidebarButton("catalogue", <Package className="h-5 w-5" />, "Catalogue")}
                 {renderSidebarButton("products", <Package className="h-5 w-5" />, "Products")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
@@ -122,6 +125,14 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
             {activeTab === 'orders' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Orders (Won Bids)" showAwardedOnly={true} />
+            )}
+
+            {activeTab === 'my_requirements' && (
+              <PostedRequirementsTab 
+                data={data} 
+                fetchDashboard={fetchDashboard} 
+                onReviewClick={(professionalId, requirementId) => setReviewModal({ isOpen: true, professionalId, requirementId })}
+              />
             )}
 
             {activeTab === 'catalogue' && (
@@ -173,6 +184,18 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
           </div>
         </div>
       </div>
+      
+      {reviewModal.isOpen && (
+        <LeaveReviewModal
+          isOpen={reviewModal.isOpen}
+          onClose={() => setReviewModal({ ...reviewModal, isOpen: false })}
+          professionalId={reviewModal.professionalId}
+          requirementId={reviewModal.requirementId}
+          onSuccess={() => {
+            fetchDashboard();
+          }}
+        />
+      )}
     </div>
   );
 }
