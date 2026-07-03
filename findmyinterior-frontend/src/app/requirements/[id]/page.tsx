@@ -124,8 +124,8 @@ export default function RequirementDetail() {
 
   const isProfessional = user && user.role !== 'customer';
   const isOwner = user?.id === requirement?.user_id;
-  const isWorker = user?.roles?.some((r: any) => r.slug === 'worker') || user?.role === 'worker';
-  const displayUnlockPrice = isWorker ? "Free" : (requirement?.unlock_price ? `₹${requirement.unlock_price}` : "₹49");
+  const isWorker = user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker') || user?.role === 'worker' || user?.role === 'skilled_worker';
+  const displayUnlockPrice = (isWorker && reqType === 'job') ? "Free" : (requirement?.unlock_price ? `₹${requirement.unlock_price}` : "₹49");
 
   return (
     <div className="bg-[#f8f9fa] min-h-screen pb-10">
@@ -817,9 +817,15 @@ export default function RequirementDetail() {
               <h2 className="text-xl font-bold">Unlock Contact Details</h2>
             </div>
             <div className="p-6 space-y-4">
-              <p className="text-slate-600 mb-6 leading-relaxed">
-                A fee of <span className="font-bold text-slate-900">{displayUnlockPrice}</span> will be deducted from your wallet to instantly unlock the client&apos;s phone number and email.
-              </p>
+                {displayUnlockPrice === 'Free' ? (
+                  <p className="text-slate-600 mb-6 leading-relaxed">
+                    This contact can be unlocked for <span className="font-bold text-slate-900">Free</span>.
+                  </p>
+                ) : (
+                  <p className="text-slate-600 mb-6 leading-relaxed">
+                    A fee of <span className="font-bold text-slate-900">{displayUnlockPrice}</span> will be deducted from your wallet to instantly unlock the client&apos;s phone number and email.
+                  </p>
+                )}
               
               <div className="flex gap-3 pt-2">
                 <Button variant="outline" className="flex-1 font-semibold h-11" onClick={() => setShowUnlockModal(false)}>Cancel</Button>

@@ -100,7 +100,7 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
                       >
                         {unlockingId === req.id 
                           ? "Unlocking..." 
-                          : `Unlock (${isJob && (user?.role === 'worker' || user?.roles?.some((r: any) => r.slug === 'worker')) ? 'Free' : '₹' + (req.unlock_price || 50)})`}
+                          : `Unlock (${isJob && (user?.role === 'worker' || user?.role === 'skilled_worker' || user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker')) ? 'Free' : '₹' + (req.unlock_price || 50)})`}
                       </Button>
                     </div>
                   )}
