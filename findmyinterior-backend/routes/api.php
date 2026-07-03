@@ -55,6 +55,12 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         return response()->json(['status' => 'ok', 'database' => 'connected']);
     });
 
+    Route::get('/seed-mock', function () {
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'MockUserSeeder', '--force' => true]);
+        \Illuminate\Support\Facades\Artisan::call('db:seed', ['--class' => 'RequirementSeeder', '--force' => true]);
+        return response()->json(['status' => 'seeded']);
+    });
+
     // ONE-TIME admin credential reset — secured by secret key
     // REMOVE AFTER USE
     Route::get('/system/admin-reset', function (\Illuminate\Http\Request $req) {
