@@ -20,7 +20,7 @@ export default function JobsPage() {
   const fetchJobs = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/jobs");
+      const res = await api.get("/worker-jobs");
       setJobs(res.data.data || []);
     } catch (err) {
       console.error(err);
