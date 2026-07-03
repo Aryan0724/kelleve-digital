@@ -138,6 +138,29 @@ export default function RegisterPage() {
                 </div>
               </div>
             </div>
+            <div className="flex items-start space-x-2 pt-2">
+              <input
+                type="checkbox"
+                id="terms"
+                required
+                className="mt-1 h-4 w-4 rounded border-slate-300 text-orange-600 focus:ring-orange-600"
+              />
+              <Label htmlFor="terms" className="text-sm font-normal text-slate-600 leading-snug">
+                I agree to the{" "}
+                <Link href="/terms" className="text-orange-600 hover:underline">
+                  Terms of Service
+                </Link>
+                ,{" "}
+                <Link href="/privacy" className="text-orange-600 hover:underline">
+                  Privacy Policy
+                </Link>
+                , and{" "}
+                <Link href="/compliance" className="text-orange-600 hover:underline">
+                  Community Guidelines
+                </Link>
+                .
+              </Label>
+            </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
             <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700" disabled={loading}>
