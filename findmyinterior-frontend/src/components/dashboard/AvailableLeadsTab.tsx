@@ -98,7 +98,9 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
                         disabled={unlockingId === req.id}
                         className={`w-full mt-1 shadow-sm text-white ${isRFQ ? 'bg-blue-600 hover:bg-blue-700' : isJob ? 'bg-green-600 hover:bg-green-700' : isBuilder ? 'bg-purple-600 hover:bg-purple-700' : 'bg-orange-600 hover:bg-orange-700'}`}
                       >
-                        {unlockingId === req.id ? "Unlocking..." : `Unlock (₹${req.unlock_price || 50})`}
+                        {unlockingId === req.id 
+                          ? "Unlocking..." 
+                          : `Unlock (${isJob && (user?.role === 'worker' || user?.roles?.some((r: any) => r.slug === 'worker')) ? 'Free' : '₹' + (req.unlock_price || 50)})`}
                       </Button>
                     </div>
                   )}
