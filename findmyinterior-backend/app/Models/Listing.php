@@ -112,9 +112,19 @@ class Listing extends Model
 
     public function scopeSearch($query, string $term)
     {
-        return $query->where(function ($q) use ($term) {
-            $q->where('title', 'like', "%{$term}%")
-              ->orWhere('description', 'like', "%{$term}%");
+        $term = strtolower($term);
+        // Remove trailing 's' to match singular forms when plural is searched (e.g., 'contractors' -> 'contractor')
+        $singularTerm = rtrim($term, 's');
+        
+        return $query->where(function ($q) use ($term, $singularTerm) {
+            $q->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
+              ->orWhereRaw('LOWER(title) LIKE ?', ["%{$singularTerm}%"])
+              ->orWhereRaw('LOWER(description) LIKE ?', ["%{$term}%"])
+              ->orWhereRaw('LOWER(description) LIKE ?', ["%{$singularTerm}%"])
+              ->orWhereHas('category', function ($catQ) use ($term, $singularTerm) {
+                  $catQ->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"])
+                       ->orWhereRaw('LOWER(name) LIKE ?', ["%{$singularTerm}%"]);
+              });
         });
     }
 
