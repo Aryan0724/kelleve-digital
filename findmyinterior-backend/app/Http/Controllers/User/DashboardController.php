@@ -257,9 +257,14 @@ class DashboardController extends Controller
                     
                     if ($workerEntity && $workerEntity->skill) {
                         $query->where(function($q) use ($workerEntity) {
-                            $q->whereRaw('LOWER(skills_required) LIKE ?', ['%' . strtolower($workerEntity->skill) . '%'])
+                            $skill = strtolower($workerEntity->skill);
+                            // Ensure cross-DB compatibility for json/text columns
+                            $q->whereJsonContains('skills_required', $workerEntity->skill)
+                              ->orWhereRaw('LOWER(CAST(skills_required AS TEXT)) LIKE ?', ['%' . $skill . '%'])
                               ->orWhereNull('skills_required')
-                              ->orWhere('skills_required', '');
+                              ->orWhere('skills_required', '')
+                              ->orWhereRaw("CAST(skills_required AS TEXT) = '\"\"'")
+                              ->orWhereRaw("CAST(skills_required AS TEXT) = '[]'");
                         });
                     }
                     if ($workerEntity && $workerEntity->city) {

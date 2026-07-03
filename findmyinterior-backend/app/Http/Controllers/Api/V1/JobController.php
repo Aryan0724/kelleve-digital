@@ -60,7 +60,7 @@ class JobController extends Controller
             'district' => $validated['district'],
             'opportunity_type' => $validated['opportunity_type'],
             'requirement_type' => $validated['requirement_type'],
-            'skills_required' => $validated['skills_required'] ?? null,
+            'skills_required' => !empty($validated['skills_required']) ? [$validated['skills_required']] : null,
             'daily_rate' => $dailyRate,
             'duration' => $validated['duration'] ?? '1 day',
             'creator_role' => $creatorRole,
