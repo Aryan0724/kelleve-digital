@@ -53,16 +53,18 @@ class UnlockService
         }
 
         return DB::transaction(function () use ($vendor, $requirement, $requirementType, $fee) {
-            // 3. Deduct from wallet
-            $this->walletService->deduct(
-                $vendor,
-                $fee,
-                "Unlocked contact for requirement ID: {$requirement->id}",
-                [
-                    'reference_type' => $requirementType,
-                    'reference_id' => $requirement->id
-                ]
-            );
+            // 3. Deduct from wallet if fee is greater than 0
+            if ($fee > 0) {
+                $this->walletService->deduct(
+                    $vendor,
+                    $fee,
+                    "Unlocked contact for requirement ID: {$requirement->id}",
+                    [
+                        'reference_type' => $requirementType,
+                        'reference_id' => $requirement->id
+                    ]
+                );
+            }
 
             // 4. Create unlock record
             DB::table('contact_unlocks')->insert([
