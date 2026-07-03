@@ -87,6 +87,17 @@ class ProfessionalProfileController extends Controller
                 $profile->slug = Str::slug($data['title']) . '-' . Str::random(6);
                 $profile->state = 'Bihar';
                 $profile->status = 'active';
+                
+                if (empty($profile->category_id)) {
+                    $categorySlug = match ($role) {
+                        'architect' => 'architects',
+                        'contractor' => 'civil-contractors',
+                        'interior_designer', 'interior_company', 'business' => 'interior-designers',
+                        default => 'interior-designers',
+                    };
+                    $category = \App\Models\Category::where('slug', $categorySlug)->first();
+                    $profile->category_id = $category ? $category->id : 1;
+                }
             }
             $profile->save();
             $type = 'listing';
