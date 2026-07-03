@@ -48,7 +48,7 @@ class UnlockService
         $fee = $requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00);
 
         // Workers and Skilled Workers can unlock worker jobs for free
-        if ($requirementType === \App\Models\WorkerJob::class && ($vendor->hasRole('worker') || $vendor->hasRole('skilled_worker'))) {
+        if ($requirement instanceof \App\Models\WorkerJob && ($vendor->hasRole('worker') || $vendor->hasRole('skilled_worker'))) {
             $fee = 0;
         }
 
