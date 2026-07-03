@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import api from "@/lib/api";
+import { useAuthStore } from "@/lib/store/useAuthStore";
 
 export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly = false, statuses }: { bids: any[], title?: string, showAwardedOnly?: boolean, statuses?: string[] }) {
   
@@ -19,6 +20,7 @@ export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly =
 
   const router = useRouter();
   const [messaging, setMessaging] = useState<number | null>(null);
+  const { user } = useAuthStore();
 
   const handleMessage = async (bid: any) => {
     const reqId = bid.requirement_id;
@@ -26,7 +28,9 @@ export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly =
 
     // Warn before charging if bid is not awarded
     const isAwarded = bid.status === 'awarded' || bid.status === 'accepted' || bid.is_awarded === true;
-    if (!isAwarded) {
+    const isWorker = user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker') || user?.role === 'worker' || user?.role === 'skilled_worker';
+    
+    if (!isAwarded && !isWorker) {
       const confirmed = window.confirm(
         "Sending a message to this client requires a ₹49 messaging unlock fee that will be deducted from your wallet. Proceed?"
       );

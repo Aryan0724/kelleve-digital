@@ -125,7 +125,7 @@ export default function RequirementDetail() {
   const isProfessional = user && user.role !== 'customer';
   const isOwner = user?.id === requirement?.user_id;
   const isWorker = user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker') || user?.role === 'worker' || user?.role === 'skilled_worker';
-  const displayUnlockPrice = (isWorker && reqType === 'job') ? "Free" : (requirement?.unlock_price ? `₹${requirement.unlock_price}` : "₹49");
+  const displayUnlockPrice = isWorker ? "Free" : (requirement?.unlock_price ? `₹${requirement.unlock_price}` : "₹49");
 
   return (
     <div className="bg-[#f8f9fa] min-h-screen pb-10">
