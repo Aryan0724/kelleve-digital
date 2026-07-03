@@ -257,7 +257,7 @@ class DashboardController extends Controller
                     
                     if ($workerEntity && $workerEntity->skill) {
                         $query->where(function($q) use ($workerEntity) {
-                            $q->where('skills_required', 'like', '%' . $workerEntity->skill . '%')
+                            $q->whereRaw('LOWER(skills_required) LIKE ?', ['%' . strtolower($workerEntity->skill) . '%'])
                               ->orWhereNull('skills_required')
                               ->orWhere('skills_required', '');
                         });
