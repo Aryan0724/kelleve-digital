@@ -17,7 +17,7 @@ export class LoginPage {
     await this.page.fill('input[type="email"]', email);
     await this.page.fill('input[type="password"]', password);
     // Click the login button
-    await this.page.click('button[type="submit"]');
+    await this.page.click('button[type="submit"].bg-orange-600');
     
     // Wait for the URL to change (e.g. redirect to dashboard or home)
     await this.page.waitForURL(url => !url.toString().includes('/login'));

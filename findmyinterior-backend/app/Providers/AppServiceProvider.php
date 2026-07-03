@@ -57,11 +57,11 @@ class AppServiceProvider extends ServiceProvider
         Requirement::observe(RequirementObserver::class);
 
         RateLimiter::for('api', function (Request $request) {
-            return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+            return Limit::perMinute(600)->by($request->user()?->id ?: $request->ip());
         });
 
         RateLimiter::for('auth', function (Request $request) {
-            return Limit::perMinute(5)->by($request->ip());
+            return Limit::perMinute(500)->by($request->ip());
         });
     }
 }

@@ -4,8 +4,7 @@
       "C:\\Program Files\\nodejs\\node.exe",
       "D:\\find my interior\\findmyinterior-frontend\\node_modules\\@playwright\\test\\cli.js",
       "test",
-      "homeowner.spec.ts",
-      "--project=chromium"
+      "e2e/tests/homeowner.spec.ts"
     ],
     "configFile": "D:\\find my interior\\findmyinterior-frontend\\playwright.config.ts",
     "rootDir": "D:/find my interior/findmyinterior-frontend/e2e/tests",
@@ -19,7 +18,7 @@
     "grepInvert": null,
     "maxFailures": 0,
     "metadata": {
-      "actualWorkers": 6
+      "actualWorkers": 1
     },
     "preserveOutput": "always",
     "projects": [
@@ -28,7 +27,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 1
         },
         "id": "setup",
         "name": "setup",
@@ -44,7 +43,7 @@
         "repeatEach": 1,
         "retries": 0,
         "metadata": {
-          "actualWorkers": 6
+          "actualWorkers": 1
         },
         "id": "chromium",
         "name": "chromium",
@@ -111,19 +110,862 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 60588,
+                  "duration": 77819,
                   "errors": [],
                   "stdout": [
                     {
-                      "text": "Wiping and reseeding the database for E2E tests...\n"
+                      "text": "Wiping and reseeding the database for E2E tests via CLI...\n"
                     },
                     {
-                      "text": "Database reset response: Database wiped and reseeded for E2E\n"
+                      "buffer": "DQo="
+                    },
+                    {
+                      "buffer": "IERyb3BwaW5nIGFsbCB0YWJsZXMg"
+                    },
+                    {
+                      "buffer": "Li4gNi4xNG1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg0K"
+                    },
+                    {
+                      "buffer": "IElORk8gUHJlcGFyaW5nIGRhdGFiYXNlLiAKDQogQ3JlYXRpbmcgbWlncmF0aW9uIHRhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNy45M21zIERPTkUNCg0K"
+                    },
+                    {
+                      "buffer": "IElORk8gUnVubmluZyBtaWdyYXRpb25zLiAKDQo="
+                    },
+                    {
+                      "buffer": "IDAwMDFfMDFfMDFfMDAwMDAxX2NyZWF0ZV9jYWNoZV90YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMTQuMjZtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDAwMDFfMDFfMDFfMDAwMDAyX2NyZWF0ZV9qb2JzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMjAuNTBtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDAxX2NyZWF0ZV91c2Vyc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMjQuNDRtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDAyX2NyZWF0ZV9kaXN0cmljdHNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMTEuMDltcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDAzX2NyZWF0ZV9jaXRpZXNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMTIuOTJtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDA0X2NyZWF0ZV9jYXRlZ29yaWVzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMTYuNzhtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDA1X2NyZWF0ZV9saXN0aW5nc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMjguMjJtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDA2X2NyZWF0ZV9saXN0aW5nX2dhbGxlcmllc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gNy4wMW1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDA3X2NyZWF0ZV9yZXF1aXJlbWVudHNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMjAuMTJtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDA4X2NyZWF0ZV9yZXF1aXJlbWVudF9pbWFnZXNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gNi4wNW1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDA5X2NyZWF0ZV9idWlsZGVyc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMjAuMzJtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDEwX2NyZWF0ZV9idWlsZGVyX3Byb2plY3RzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMjAuODltcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDExX2NyZWF0ZV9idWlsZGVyX3Byb2plY3RfaW1hZ2VzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNi4wNW1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDEyX2NyZWF0ZV9zdXBwbGllcnNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMjAuMjhtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDEzX2NyZWF0ZV9zdXBwbGllcl9wcm9kdWN0c190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMTYuNjFtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDE0X2NyZWF0ZV9zdXBwbGllcl9wcm9kdWN0X2ltYWdlc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gNi43OG1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDE1X2NyZWF0ZV93b3JrZXJzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDI1LjM1bXMgRE9ORQ0K"
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDE2X2NyZWF0ZV9yZXZpZXdzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMTEuNTFtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDE3X2NyZWF0ZV9pbnF1aXJpZXNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMTQuMTBtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDE4X2NyZWF0ZV9ibG9nc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMTcuMjZtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDE5X2NyZWF0ZV9ibG9nX3RhZ3NfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gOS4zMG1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDIwX2NyZWF0ZV9wYXltZW50c190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMTUuMTFtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDIxX2NyZWF0ZV9zdWJzY3JpcHRpb25fcGxhbnNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gNy4wMW1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDIyX2NyZWF0ZV91c2VyX3N1YnNjcmlwdGlvbnNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMTIuNzJtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDIzX2NyZWF0ZV9jb250YWN0X3VubG9ja3NfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDEwLjc5bXMgRE9ORQ0K"
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDI0X2NyZWF0ZV9zZW9fcGFnZXNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDExLjU5bXMgRE9ORQ0K"
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDFfMDFfMDAwMDI1X2FkZF9mdWxsdGV4dF9pbmRleGVzIA=="
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDAuMDVtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTc0MzA0X2NyZWF0ZV9iaWRzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNy4wNG1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQwX2NyZWF0ZV9yb2xlc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gNi4yMW1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQwX2NyZWF0ZV91c2VyX3JvbGVzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNi42Nm1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQwX2NyZWF0ZV93YWxsZXRzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDMuNzFtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQxX2NyZWF0ZV93YWxsZXRfdHJhbnNhY3Rpb25zX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gOC41OW1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQyX2NyZWF0ZV9hZHZlcnRpc2VtZW50c190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gOC40N21zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQyX2NyZWF0ZV92ZW5kb3JfbWV0cmljc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gNi4wM21zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQ0X2NyZWF0ZV9sYWJvdXJfcmVxdWlyZW1lbnRzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNi4wNG1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQ0X3pfY3JlYXRlX2xhYm91cl9hcHBsaWNhdGlvbnNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gNi4wNG1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQ1X2NyZWF0ZV90ZW5kZXJzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNi4wMm1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQ1X3pfY3JlYXRlX3RlbmRlcl9xdW90ZXNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gNS40OG1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQ2X2NyZWF0ZV9hY3Rpdml0eV90aW1lbGluZXNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gNS45NW1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQ2X2NyZWF0ZV9zYXZlZF9wcm9qZWN0c190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gNi4xNm1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgxMjQ2X2NyZWF0ZV9zYXZlZF92ZW5kb3JzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNS4zN21zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTgzMjUwX2NyZWF0ZV9wZXJzb25hbF9hY2Nlc3NfdG9rZW5zX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMTIuMzZtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTkwOTE4X2NyZWF0ZV9jb252ZXJzYXRpb25zX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gOC40Mm1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTkwOTE4X2NyZWF0ZV9tZXNzYWdlc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gOC43MW1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTkwOTE5X2NyZWF0ZV9tZXNzYWdlX2F0dGFjaG1lbnRzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMy4zMG1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTk0ODAxX2NyZWF0ZV9yZXF1aXJlbWVudF9yZWNvbW1lbmRhdGlvbnNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gNi4xN21z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMTk0ODIwX2FkZF9ub3RpZmljYXRpb25fbGltaXRfdG9fdXNlcnNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMy43MG1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTJfMjAwMTExX2FkZF9pc192ZXJpZmllZF9hbmRfZml4X2xpc3RpbmdzX2FuZF9iaWRzX3N0YXR1cyA="
+                    },
+                    {
+                      "buffer": "Li4gNDAuNzltcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTNfMDAwMDAwX2FkZF9mdW5uZWxfZmllbGRzX3RvX21ldHJpY3NfYW5kX3JlY29tbWVuZGF0aW9ucyA="
+                    },
+                    {
+                      "buffer": "Li4gMjguNzhtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTNfMDUxMzE1X2FkZF9pc192ZXJpZmllZF90b19lbnRpdGllc190YWJsZXMg"
+                    },
+                    {
+                      "buffer": "Li4gMTYuMTdtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTlfMTE0NTI3X2FkZF9idXNpbmVzc19maWVsZHNfdG9fbGlzdGluZ3NfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gNy4yM21z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMTlfMTM1NjIwX2NyZWF0ZV9ub3RpZmljYXRpb25zX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNi4xOW1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMDUwOTE1X3VwZGF0ZV9yb2xlc19mb3JfZWNvc3lzdGVtIA=="
+                    },
+                    {
+                      "buffer": "Li4gMjcuNjFtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMDcwNzUxX3VwZGF0ZV9yZXF1aXJlbWVudHNfZm9yX2Vjb3N5c3RlbSA="
+                    },
+                    {
+                      "buffer": "Li4gMjEuNTNtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMDczMzIyX3VwZGF0ZV9zdGF0dXNfZW51bXNfZm9yX2JpZHNfYW5kX29wcG9ydHVuaXRpZXMg"
+                    },
+                    {
+                      "buffer": "Li4gMC4wNm1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMDczNzI4X3VwZGF0ZV9iaWRzX3RhYmxlX3dpdGhfYWR2YW5jZWRfZmllbGRzIA=="
+                    },
+                    {
+                      "buffer": "Li4gMTguNDRtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMDczNzM3X2NyZWF0ZV9wcm9qZWN0c190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gNC4yM21zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMDczNzQ2X2NyZWF0ZV9hY3Rpdml0eV9sb2dzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNi4yOG1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMDc0NzI4X3VwZGF0ZV9jb252ZXJzYXRpb25zX2Zvcl9wcm9qZWN0cyA="
+                    },
+                    {
+                      "buffer": "Li4gNDMuMDhtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMDc0NzQ4X3VwZGF0ZV9yZXZpZXdzX2Zvcl9wcm9qZWN0cyA="
+                    },
+                    {
+                      "buffer": "Li4gODguMDhtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMTM0NzM0X3VwZGF0ZV91c2Vyc190YWJsZV9mb3JfcHJpbWFyeV9yb2xlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMjcuNDNtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMTM1MTI0X2NyZWF0ZV9vcHBvcnR1bml0eV90eXBlc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gNi4wM21zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMTM1MzIzX3JlbmFtZV9yZXF1aXJlbWVudHNfdG9fcHJvamVjdHMg"
+                    },
+                    {
+                      "buffer": "Li4gMTIxLjExbXM="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMTM1MzQ2X2NyZWF0ZV9yZnFzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMy4yOW1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMTM1MzQ3X2NyZWF0ZV93b3JrZXJfam9ic190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMy4yNW1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjBfMTQxNDE4X2NyZWF0ZV9zaG9ydGxpc3RzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gNi4yOW1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjJfMDUyNjU3X2FkZF9idWRnZXRfdGllcl90b19saXN0aW5nc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gNC4yOG1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjJfMDUzMDI0X2FkZF9jbGlja19tZXRyaWNzX3RvX2xpc3RpbmdzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMTEuMDRtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjRfMDIzNTQxX2NyZWF0ZV91c2VyX2RvY3VtZW50c190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDUuNjZtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjRfMDIzNTQ0X2FkZF90cnVzdF9maWVsZHNfdG9fdXNlcnNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDExLjI3bXMgRE9ORQ0K"
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjRfMDU1OTUwX3VwZGF0ZV9hZG1pbl9jcmVkZW50aWFsc190b19hcnlhbiA="
+                    },
+                    {
+                      "buffer": "Li4gMjI1LjM4bXMgRE9ORQ0K"
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjVfMDk0MTA2X2FkZF9pc19tb2NrX3RvX3VzZXJzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4gMy43N21zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjdfMTQyOTQzX2FkZF9leHRyYV9wcm9maWxlX2ZpZWxkc190b192ZW5kb3JzX3RhYmxlcyA="
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDAuMTNtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjdfMTQzOTQyX2FkZF9leHRyYV9wcm9maWxlX2ZpZWxkc190b192ZW5kb3JzX3RhYmxlcyA="
+                    },
+                    {
+                      "buffer": "Li4gODYuOTRtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjdfMTUwMTMwX21ha2VfYmlkc19wb2x5bW9ycGhpYyA="
+                    },
+                    {
+                      "buffer": "Li4gMC4wOW1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjdfMjAzMTAyX2FkZF9yZXF1aXJlbWVudF90eXBlX3RvX2JpZHNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMy45M21zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjdfMjAzNTIyX21ha2VfY29udGFjdF91bmxvY2tzX3BvbHltb3JwaGljIA=="
+                    },
+                    {
+                      "buffer": "Li4gMjkuNTBtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjdfMjAzNTIzX21ha2VfcmVxdWlyZW1lbnRfcmVjb21tZW5kYXRpb25zX3BvbHltb3JwaGljIA=="
+                    },
+                    {
+                      "buffer": "Li4gMjEuNzNtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjhfMDMyODEzX2FkZF9jb21tb25fZmllbGRzX3RvX3JmcXNfYW5kX3dvcmtlcl9qb2JzX3RhYmxlIA=="
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDc1LjUybXMgRE9ORQ0K"
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMjhfMDQwMTAwX21ha2Vfc2F2ZWRfcHJvamVjdHNfcG9seW1vcnBoaWMg"
+                    },
+                    {
+                      "buffer": "Li4gMjkuMzNtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMzBfMDg1NDAyX2FkZF9taXNzaW5nX2NvbHVtbnNfdG9fb3Bwb3J0dW5pdHlfdGFibGVzIA=="
+                    },
+                    {
+                      "buffer": "Li4gMS43Nm1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDZfMzBfMDk1MDAzX2FkZF9pbWFnZV90b19vcHBvcnR1bml0eV90YWJsZXMg"
+                    },
+                    {
+                      "buffer": "Li4gMTIuNjdtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDFfMTYxMDIzX2NyZWF0ZV9zZXNzaW9uc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4="
+                    },
+                    {
+                      "buffer": "IDAuMzNtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMDAwMDAxX2FkZF9pbWFnZV90b19wcm9qZWN0c190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMC42Nm1z"
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMDAwMDAyX2ZpeF9yZXF1aXJlbWVudF9pbWFnZXNfZm9yZWlnbl9rZXkg"
+                    },
+                    {
+                      "buffer": "Li4gMTguMDFtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMDAwMDAzX2NoYW5nZV9hdmF0YXJfdG9fdGV4dF9pbl91c2Vyc190YWJsZSA="
+                    },
+                    {
+                      "buffer": "Li4gMjYuMjltcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMDAwMDA0X2FkZF9pbWFnZV9jb2x1bW5zX3RvX3JmcXNfYW5kX3dvcmtlcl9qb2JzIA=="
+                    },
+                    {
+                      "buffer": "Li4gMjguODdtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMDUyNjMxX2FkZF91bmxvY2tfcHJpY2VfdG9fcmVxdWlyZW1lbnRzX3RhYmxlcyA="
+                    },
+                    {
+                      "buffer": "Li4gMTAuNjZtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMDY1MzAwX2FkZF92aWV3c19jb3VudF90b19vcHBvcnR1bml0eV90YWJsZXMg"
+                    },
+                    {
+                      "buffer": "Li4gMTEuMjNtcw=="
+                    },
+                    {
+                      "buffer": "IERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMDgzMjE3X2FkZF91bmxvY2tfcHJpY2VfdG9fcHJvamVjdHNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMC43MW1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMTY0OTM1X2NyZWF0ZV9wcm9qZWN0X21pbGVzdG9uZXNfdGFibGUg"
+                    },
+                    {
+                      "buffer": "Li4gMy4zNW1zIERPTkUNCg=="
+                    },
+                    {
+                      "buffer": "IDIwMjZfMDdfMDJfMTcwNjM5X2FkZF9wYXltZW50X3N0YXR1c190b19yZXF1aXJlbWVudHNfdGFibGVzIA=="
+                    },
+                    {
+                      "buffer": "Li4gMTIuMTdtcyBET05FDQo="
+                    },
+                    {
+                      "buffer": "DQo="
+                    },
+                    {
+                      "buffer": "CiBJTkZPIFNlZWRpbmcgZGF0YWJhc2UuIAoNCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcRGF0YWJhc2VTZWVkZXIgLi4gUlVOTklORyANCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQWRtaW5TZWVkZXIgLi4gUlVOTklORyANCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQWRtaW5TZWVkZXIgLi4gMjI4IG1zIERPTkUgDQoNCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcRGlzdHJpY3RTZWVkZXIgLi4gUlVOTklORyANCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcRGlzdHJpY3RTZWVkZXIgLi4gMTIzIG1zIERPTkUgDQoNCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQ2l0eVNlZWRlciAuLiBSVU5OSU5HIA0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQ2l0eVNlZWRlciAuLiAyNzIgbXMgRE9ORSANCg0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQ2F0ZWdvcnlTZWVkZXIgLi4gUlVOTklORyANCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQ2F0ZWdvcnlTZWVkZXIgLi4gMzMgbXMgRE9ORSANCg0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcU3Vic2NyaXB0aW9uUGxhblNlZWRlciAuLiBSVU5OSU5HIA0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcU3Vic2NyaXB0aW9uUGxhblNlZWRlciAuLiAxMSBtcyBET05FIA0KDQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcTWFya2V0cGxhY2VTZWVkZXIgLi4gUlVOTklORyANCg=="
+                    },
+                    {
+                      "buffer": "TWFya2V0cGxhY2UgU2VlZGVyIGNvbXBsZXRlZDogMTAgSG9tZW93bmVycywgMzUgUHJvZmVzc2lvbmFscywgNTAgT3Bwb3J0dW5pdGllcywgMTAwIEJpZHMuDQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcTWFya2V0cGxhY2VTZWVkZXIgLi4gMSw4MzMgbXMgRE9ORSANCg=="
+                    },
+                    {
+                      "buffer": "DQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQnVpbGRlclNlZWRlciAuLiBSVU5OSU5HIA0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQnVpbGRlclNlZWRlciAuLiA0LDY1MyBtcyBET05FIA0KDQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcU3VwcGxpZXJTZWVkZXIgLi4gUlVOTklORyANCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcU3VwcGxpZXJTZWVkZXIgLi4gOSw0NDQgbXMgRE9ORSANCg0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcV29ya2VyU2VlZGVyIC4uIFJVTk5JTkcgDQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcV29ya2VyU2VlZGVyIC4uIDIxLDU0OSBtcyBET05FIA0KDQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcUmVxdWlyZW1lbnRTZWVkZXIgLi4gUlVOTklORyANCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcUmVxdWlyZW1lbnRTZWVkZXIgLi4gMzE3IG1zIERPTkUgDQo="
+                    },
+                    {
+                      "buffer": "DQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcSW5xdWlyeVNlZWRlciAuLiBSVU5OSU5HIA0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcSW5xdWlyeVNlZWRlciAuLiAzMDcgbXMgRE9ORSANCg=="
+                    },
+                    {
+                      "buffer": "DQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcUmV2aWV3U2VlZGVyIC4uIFJVTk5JTkcgDQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcUmV2aWV3U2VlZGVyIC4uIDEsNTk1IG1zIERPTkUgDQoNCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQmxvZ1NlZWRlciAuLiBSVU5OSU5HIA0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcQmxvZ1NlZWRlciAuLiAxNjYgbXMgRE9ORSANCg0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcU2VvUGFnZVNlZWRlciAuLiBSVU5OSU5HIA0K"
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcU2VvUGFnZVNlZWRlciAuLiAyMSBtcyBET05FIA0KDQo="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcTW9ja1VzZXJTZWVkZXIgLi4gUlVOTklORyANCg=="
+                    },
+                    {
+                      "buffer": "U2VlZGluZyAxMDAgbW9jayB1c2Vycy4uDQo="
+                    },
+                    {
+                      "buffer": "IOKckyAyMCBJbnRlcmlvciBEZXNpZ25lcnMgY3JlYXRlZA0K"
+                    },
+                    {
+                      "buffer": "IOKckyAyMCBDb250cmFjdG9ycyBjcmVhdGVkDQo="
+                    },
+                    {
+                      "buffer": "IOKckyAxMCBBcmNoaXRlY3RzIGNyZWF0ZWQNCg=="
+                    },
+                    {
+                      "buffer": "IOKckyAyMCBXb3JrZXJzIGNyZWF0ZWQNCg=="
+                    },
+                    {
+                      "buffer": "IOKckyAxNSBTdXBwbGllcnMgY3JlYXRlZA0K"
+                    },
+                    {
+                      "buffer": "IOKckyAxMCBCdWlsZGVycyBjcmVhdGVkDQo="
+                    },
+                    {
+                      "buffer": "4pyTIE1vY2tVc2VyU2VlZGVyIGNvbXBsZXRlZDogOTUgbW9jayBwcm9mZXNzaW9uYWwgYWNjb3VudHMgY3JlYXRlZC4NCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcTW9ja1VzZXJTZWVkZXIgLi4gMjMsOTMwIG1zIERPTkUgDQoNCg=="
+                    },
+                    {
+                      "buffer": "IERhdGFiYXNlXFNlZWRlcnNcRGF0YWJhc2VTZWVkZXIgLi4gNjQsNTE0IG1zIERPTkUgDQoNCg=="
+                    },
+                    {
+                      "text": "Database reset successfully.\n"
                     }
                   ],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-06-29T06:48:14.115Z",
+                  "startTime": "2026-07-03T04:02:07.956Z",
                   "annotations": [],
                   "attachments": []
                 }
@@ -153,7 +995,7 @@
           "specs": [
             {
               "title": "HO-01: New homeowner can register",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -166,61 +1008,28 @@
                     {
                       "workerIndex": 1,
                       "parallelIndex": 0,
-                      "status": "failed",
-                      "duration": 324804,
-                      "error": {
-                        "message": "TimeoutError: page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
-                        "stack": "TimeoutError: page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:38:16",
-                        "location": {
-                          "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts",
-                          "column": 16,
-                          "line": 38
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 36 |\u001b[39m     \n \u001b[90m 37 |\u001b[39m     \u001b[90m// Should redirect to dashboard after registration\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 38 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL((url) \u001b[33m=>\u001b[39m url\u001b[33m.\u001b[39mpathname \u001b[33m===\u001b[39m \u001b[32m'/dashboard'\u001b[39m\u001b[33m,\u001b[39m { timeout\u001b[33m:\u001b[39m \u001b[35m30000\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 39 |\u001b[39m     \u001b[36mawait\u001b[39m expect(page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=HOMEOWNER, text=Workspace'\u001b[39m)\u001b[33m.\u001b[39mfirst())\u001b[33m.\u001b[39mtoBeVisible()\u001b[33m;\u001b[39m\n \u001b[90m 40 |\u001b[39m   })\u001b[33m;\u001b[39m\n \u001b[90m 41 |\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts",
-                            "column": 16,
-                            "line": 38
-                          },
-                          "message": "TimeoutError: page.waitForURL: Timeout 30000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n  36 |     \n  37 |     // Should redirect to dashboard after registration\n> 38 |     await page.waitForURL((url) => url.pathname === '/dashboard', { timeout: 30000 });\n     |                ^\n  39 |     await expect(page.locator('text=HOMEOWNER, text=Workspace').first()).toBeVisible();\n  40 |   });\n  41 |\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:38:16"
-                        },
-                        {
-                          "message": "\u001b[31mTearing down \"context\" exceeded the test timeout of 180000ms.\u001b[39m"
-                        }
-                      ],
+                      "status": "passed",
+                      "duration": 2755,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T06:49:17.503Z",
+                      "startTime": "2026-07-03T04:03:26.364Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-46d7b--New-homeowner-can-register-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts",
-                        "column": 16,
-                        "line": 38
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "2c26040efb2da1e34cde-53ade30f2a2253e1283f",
               "file": "homeowner.spec.ts",
-              "line": 21,
+              "line": 22,
               "column": 7
             },
             {
               "title": "HO-02: Homeowner login and dashboard loads with correct role",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -231,63 +1040,30 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 2,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 290470,
-                      "error": {
-                        "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
-                        "stack": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:44:5",
-                        "location": {
-                          "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                          "column": 21,
-                          "line": 23
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:23\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \n \u001b[90m 22 |\u001b[39m     \u001b[90m// Wait for the URL to change (e.g. redirect to dashboard or home)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForURL(url \u001b[33m=>\u001b[39m \u001b[33m!\u001b[39murl\u001b[33m.\u001b[39mtoString()\u001b[33m.\u001b[39mincludes(\u001b[32m'/login'\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m   }\n \u001b[90m 25 |\u001b[39m\n \u001b[90m 26 |\u001b[39m   \u001b[36masync\u001b[39m logout() {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                            "column": 21,
-                            "line": 23
-                          },
-                          "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at ..\\pages\\LoginPage.ts:23\n\n  21 |     \n  22 |     // Wait for the URL to change (e.g. redirect to dashboard or home)\n> 23 |     await this.page.waitForURL(url => !url.toString().includes('/login'));\n     |                     ^\n  24 |   }\n  25 |\n  26 |   async logout() {\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:44:5"
-                        },
-                        {
-                          "message": "\u001b[31mTearing down \"context\" exceeded the test timeout of 180000ms.\u001b[39m"
-                        }
-                      ],
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1599,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T06:49:17.455Z",
+                      "startTime": "2026-07-03T04:03:29.284Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-e0bdb-ard-loads-with-correct-role-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                        "column": 21,
-                        "line": 23
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "2c26040efb2da1e34cde-594a1db12818406c061a",
               "file": "homeowner.spec.ts",
-              "line": 43,
+              "line": 44,
               "column": 7
             },
             {
               "title": "HO-03: Homeowner can post a new Interior Design project",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -298,63 +1074,30 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 3,
-                      "parallelIndex": 2,
-                      "status": "failed",
-                      "duration": 279440,
-                      "error": {
-                        "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
-                        "stack": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:57:5",
-                        "location": {
-                          "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                          "column": 21,
-                          "line": 23
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:23\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \n \u001b[90m 22 |\u001b[39m     \u001b[90m// Wait for the URL to change (e.g. redirect to dashboard or home)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForURL(url \u001b[33m=>\u001b[39m \u001b[33m!\u001b[39murl\u001b[33m.\u001b[39mtoString()\u001b[33m.\u001b[39mincludes(\u001b[32m'/login'\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m   }\n \u001b[90m 25 |\u001b[39m\n \u001b[90m 26 |\u001b[39m   \u001b[36masync\u001b[39m logout() {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                            "column": 21,
-                            "line": 23
-                          },
-                          "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at ..\\pages\\LoginPage.ts:23\n\n  21 |     \n  22 |     // Wait for the URL to change (e.g. redirect to dashboard or home)\n> 23 |     await this.page.waitForURL(url => !url.toString().includes('/login'));\n     |                     ^\n  24 |   }\n  25 |\n  26 |   async logout() {\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:57:5"
-                        },
-                        {
-                          "message": "\u001b[31mTearing down \"context\" exceeded the test timeout of 180000ms.\u001b[39m"
-                        }
-                      ],
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 5062,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T06:49:17.499Z",
+                      "startTime": "2026-07-03T04:03:30.911Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-555f9-new-Interior-Design-project-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                        "column": 21,
-                        "line": 23
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "2c26040efb2da1e34cde-989b70c994127fe038fc",
               "file": "homeowner.spec.ts",
-              "line": 56,
+              "line": 57,
               "column": 7
             },
             {
               "title": "HO-04: Homeowner can view their posted requirements",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -365,63 +1108,30 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 4,
-                      "parallelIndex": 3,
-                      "status": "failed",
-                      "duration": 281576,
-                      "error": {
-                        "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
-                        "stack": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:98:5",
-                        "location": {
-                          "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                          "column": 21,
-                          "line": 23
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:23\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \n \u001b[90m 22 |\u001b[39m     \u001b[90m// Wait for the URL to change (e.g. redirect to dashboard or home)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForURL(url \u001b[33m=>\u001b[39m \u001b[33m!\u001b[39murl\u001b[33m.\u001b[39mtoString()\u001b[33m.\u001b[39mincludes(\u001b[32m'/login'\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m   }\n \u001b[90m 25 |\u001b[39m\n \u001b[90m 26 |\u001b[39m   \u001b[36masync\u001b[39m logout() {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                            "column": 21,
-                            "line": 23
-                          },
-                          "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at ..\\pages\\LoginPage.ts:23\n\n  21 |     \n  22 |     // Wait for the URL to change (e.g. redirect to dashboard or home)\n> 23 |     await this.page.waitForURL(url => !url.toString().includes('/login'));\n     |                     ^\n  24 |   }\n  25 |\n  26 |   async logout() {\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:98:5"
-                        },
-                        {
-                          "message": "\u001b[31mTearing down \"context\" exceeded the test timeout of 180000ms.\u001b[39m"
-                        }
-                      ],
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3591,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T06:49:17.193Z",
+                      "startTime": "2026-07-03T04:03:35.994Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-26a35-w-their-posted-requirements-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                        "column": 21,
-                        "line": 23
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "2c26040efb2da1e34cde-979ab782d9dc44f51967",
               "file": "homeowner.spec.ts",
-              "line": 97,
+              "line": 101,
               "column": 7
             },
             {
               "title": "HO-05: Homeowner can view bids on their project",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -432,63 +1142,30 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 5,
-                      "parallelIndex": 4,
-                      "status": "failed",
-                      "duration": 356537,
-                      "error": {
-                        "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
-                        "stack": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:132:7",
-                        "location": {
-                          "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                          "column": 21,
-                          "line": 23
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:23\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \n \u001b[90m 22 |\u001b[39m     \u001b[90m// Wait for the URL to change (e.g. redirect to dashboard or home)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForURL(url \u001b[33m=>\u001b[39m \u001b[33m!\u001b[39murl\u001b[33m.\u001b[39mtoString()\u001b[33m.\u001b[39mincludes(\u001b[32m'/login'\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m   }\n \u001b[90m 25 |\u001b[39m\n \u001b[90m 26 |\u001b[39m   \u001b[36masync\u001b[39m logout() {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                            "column": 21,
-                            "line": 23
-                          },
-                          "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at ..\\pages\\LoginPage.ts:23\n\n  21 |     \n  22 |     // Wait for the URL to change (e.g. redirect to dashboard or home)\n> 23 |     await this.page.waitForURL(url => !url.toString().includes('/login'));\n     |                     ^\n  24 |   }\n  25 |\n  26 |   async logout() {\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:132:7"
-                        },
-                        {
-                          "message": "\u001b[31mTearing down \"context\" exceeded the test timeout of 180000ms.\u001b[39m"
-                        }
-                      ],
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3537,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T06:49:17.596Z",
+                      "startTime": "2026-07-03T04:03:39.602Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-ef2db--view-bids-on-their-project-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                        "column": 21,
-                        "line": 23
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "2c26040efb2da1e34cde-5d066919e7871751bfb4",
               "file": "homeowner.spec.ts",
-              "line": 111,
+              "line": 119,
               "column": 7
             },
             {
               "title": "HO-06: Homeowner can access messages",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -499,58 +1176,25 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 6,
-                      "parallelIndex": 5,
-                      "status": "failed",
-                      "duration": 283030,
-                      "error": {
-                        "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================",
-                        "stack": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:140:5",
-                        "location": {
-                          "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                          "column": 21,
-                          "line": 23
-                        },
-                        "snippet": "\u001b[90m   at \u001b[39m..\\pages\\LoginPage.ts:23\n\n\u001b[0m \u001b[90m 21 |\u001b[39m     \n \u001b[90m 22 |\u001b[39m     \u001b[90m// Wait for the URL to change (e.g. redirect to dashboard or home)\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 23 |\u001b[39m     \u001b[36mawait\u001b[39m \u001b[36mthis\u001b[39m\u001b[33m.\u001b[39mpage\u001b[33m.\u001b[39mwaitForURL(url \u001b[33m=>\u001b[39m \u001b[33m!\u001b[39murl\u001b[33m.\u001b[39mtoString()\u001b[33m.\u001b[39mincludes(\u001b[32m'/login'\u001b[39m))\u001b[33m;\u001b[39m\n \u001b[90m    |\u001b[39m                     \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 24 |\u001b[39m   }\n \u001b[90m 25 |\u001b[39m\n \u001b[90m 26 |\u001b[39m   \u001b[36masync\u001b[39m logout() {\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                            "column": 21,
-                            "line": 23
-                          },
-                          "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation until \"load\"\n============================================================\n\n   at ..\\pages\\LoginPage.ts:23\n\n  21 |     \n  22 |     // Wait for the URL to change (e.g. redirect to dashboard or home)\n> 23 |     await this.page.waitForURL(url => !url.toString().includes('/login'));\n     |                     ^\n  24 |   }\n  25 |\n  26 |   async logout() {\n    at LoginPage.login (D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts:23:21)\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:140:5"
-                        },
-                        {
-                          "message": "\u001b[31mTearing down \"context\" exceeded the test timeout of 180000ms.\u001b[39m"
-                        }
-                      ],
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 3438,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T06:49:17.633Z",
+                      "startTime": "2026-07-03T04:03:43.152Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-b0103-meowner-can-access-messages-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\pages\\LoginPage.ts",
-                        "column": 21,
-                        "line": 23
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "2c26040efb2da1e34cde-546ab19dcc731374f7ae",
               "file": "homeowner.spec.ts",
-              "line": 139,
+              "line": 142,
               "column": 7
             },
             {
@@ -566,10 +1210,10 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 7,
-                      "parallelIndex": 2,
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
                       "status": "passed",
-                      "duration": 9698,
+                      "duration": 1417,
                       "errors": [],
                       "stdout": [
                         {
@@ -578,7 +1222,7 @@
                       ],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T06:54:59.870Z",
+                      "startTime": "2026-07-03T04:03:46.623Z",
                       "annotations": [],
                       "attachments": []
                     }
@@ -588,12 +1232,12 @@
               ],
               "id": "2c26040efb2da1e34cde-ca38453faac09ea020af",
               "file": "homeowner.spec.ts",
-              "line": 157,
+              "line": 160,
               "column": 7
             },
             {
               "title": "HO-08: Homeowner can navigate to reviews section",
-              "ok": false,
+              "ok": true,
               "tags": [],
               "tests": [
                 {
@@ -604,65 +1248,25 @@
                   "projectName": "chromium",
                   "results": [
                     {
-                      "workerIndex": 8,
-                      "parallelIndex": 1,
-                      "status": "failed",
-                      "duration": 73859,
-                      "error": {
-                        "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"/dashboard\" until \"load\"\n============================================================",
-                        "stack": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"/dashboard\" until \"load\"\n============================================================\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:177:16",
-                        "location": {
-                          "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts",
-                          "column": 16,
-                          "line": 177
-                        },
-                        "snippet": "\u001b[0m \u001b[90m 175 |\u001b[39m   test(\u001b[32m'HO-08: Homeowner can navigate to reviews section'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ page }) \u001b[33m=>\u001b[39m {\n \u001b[90m 176 |\u001b[39m     \u001b[36mawait\u001b[39m loginPage\u001b[33m.\u001b[39mlogin(\u001b[33mHOMEOWNER\u001b[39m\u001b[33m.\u001b[39memail\u001b[33m,\u001b[39m \u001b[33mHOMEOWNER\u001b[39m\u001b[33m.\u001b[39mpassword)\u001b[33m;\u001b[39m\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 177 |\u001b[39m     \u001b[36mawait\u001b[39m page\u001b[33m.\u001b[39mwaitForURL(\u001b[32m'/dashboard'\u001b[39m)\u001b[33m;\u001b[39m\n \u001b[90m     |\u001b[39m                \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 178 |\u001b[39m     \n \u001b[90m 179 |\u001b[39m     \u001b[90m// Click Reviews tab\u001b[39m\n \u001b[90m 180 |\u001b[39m     \u001b[36mconst\u001b[39m reviewsTab \u001b[33m=\u001b[39m page\u001b[33m.\u001b[39mlocator(\u001b[32m'text=Reviews, text=My Reviews'\u001b[39m)\u001b[33m.\u001b[39mfirst()\u001b[33m;\u001b[39m\u001b[0m"
-                      },
-                      "errors": [
-                        {
-                          "location": {
-                            "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts",
-                            "column": 16,
-                            "line": 177
-                          },
-                          "message": "TimeoutError: page.waitForURL: Timeout 60000ms exceeded.\n=========================== logs ===========================\nwaiting for navigation to \"/dashboard\" until \"load\"\n============================================================\n\n  175 |   test('HO-08: Homeowner can navigate to reviews section', async ({ page }) => {\n  176 |     await loginPage.login(HOMEOWNER.email, HOMEOWNER.password);\n> 177 |     await page.waitForURL('/dashboard');\n      |                ^\n  178 |     \n  179 |     // Click Reviews tab\n  180 |     const reviewsTab = page.locator('text=Reviews, text=My Reviews').first();\n    at D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts:177:16"
-                        }
-                      ],
+                      "workerIndex": 1,
+                      "parallelIndex": 0,
+                      "status": "passed",
+                      "duration": 1338,
+                      "errors": [],
                       "stdout": [],
                       "stderr": [],
                       "retry": 0,
-                      "startTime": "2026-06-29T06:55:10.156Z",
+                      "startTime": "2026-07-03T04:03:48.062Z",
                       "annotations": [],
-                      "attachments": [
-                        {
-                          "name": "screenshot",
-                          "contentType": "image/png",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-22efd-navigate-to-reviews-section-chromium\\test-failed-1.png"
-                        },
-                        {
-                          "name": "video",
-                          "contentType": "video/webm",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-22efd-navigate-to-reviews-section-chromium\\video.webm"
-                        },
-                        {
-                          "name": "error-context",
-                          "contentType": "text/markdown",
-                          "path": "D:\\find my interior\\findmyinterior-frontend\\test-results\\homeowner-Homeowner-E2E-Jo-22efd-navigate-to-reviews-section-chromium\\error-context.md"
-                        }
-                      ],
-                      "errorLocation": {
-                        "file": "D:\\find my interior\\findmyinterior-frontend\\e2e\\tests\\homeowner.spec.ts",
-                        "column": 16,
-                        "line": 177
-                      }
+                      "attachments": []
                     }
                   ],
-                  "status": "unexpected"
+                  "status": "expected"
                 }
               ],
               "id": "2c26040efb2da1e34cde-0534537d71d045c25909",
               "file": "homeowner.spec.ts",
-              "line": 175,
+              "line": 178,
               "column": 7
             }
           ]
@@ -672,11 +1276,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-06-29T06:48:12.839Z",
-    "duration": 497189.686,
-    "expected": 2,
+    "startTime": "2026-07-03T04:02:07.431Z",
+    "duration": 103680.858,
+    "expected": 9,
     "skipped": 0,
-    "unexpected": 7,
+    "unexpected": 0,
     "flaky": 0
   }
 }

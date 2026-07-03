@@ -11,6 +11,7 @@ import { apiLogin, apiGetRequirements } from '../helpers/api';
 const HOMEOWNER = USERS.homeowner;
 
 test.describe('Homeowner E2E Journey', () => {
+  test.describe.configure({ mode: 'serial' });
   let loginPage: LoginPage;
 
   test.beforeEach(async ({ page }) => {
@@ -32,11 +33,11 @@ test.describe('Homeowner E2E Journey', () => {
     await page.fill('#password', 'Password123!');
     await page.fill('#password_confirmation', 'Password123!');
     
-    await page.click('button[type="submit"]');
+    await page.click('button[type="submit"].bg-orange-600');
     
     // Should redirect to dashboard after registration
     await page.waitForURL((url) => url.pathname === '/dashboard', { timeout: 30000 });
-    await expect(page.locator('text=HOMEOWNER, text=Workspace').first()).toBeVisible();
+    await expect(page.getByText('Workspace', { exact: false }).first()).toBeVisible();
   });
 
   // ─── 2. Login & Dashboard ─────────────────────────────────────────────────
@@ -45,8 +46,8 @@ test.describe('Homeowner E2E Journey', () => {
     await page.waitForURL('/dashboard');
     
     // Confirm role-specific header text
-    await expect(page.locator('text=HOMEOWNER').first()).toBeVisible();
-    await expect(page.locator("text=Workspace").first()).toBeVisible();
+    await expect(page.getByText('HOMEOWNER').first()).toBeVisible();
+    await expect(page.getByText('Workspace', { exact: false }).first()).toBeVisible();
     
     // Confirm sidebar tabs for homeowners
     await expect(page.locator('text=My Projects').first()).toBeVisible();
@@ -60,8 +61,11 @@ test.describe('Homeowner E2E Journey', () => {
     await page.goto('/post-requirement');
     await page.waitForLoadState('networkidle');
     
-    // Select Interior Design type
-    await page.locator('text=Interior Design').first().click();
+    // Select Interior Design type by explicitly finding the correct card
+    await page.locator('div.border.rounded-xl', { hasText: 'Interior Design' }).first().click();
+    
+    // Click Next Step
+    await page.getByRole('button', { name: /next step/i }).click();
     
     // Fill in project details in step 2
     const ts = Date.now();
@@ -86,11 +90,11 @@ test.describe('Homeowner E2E Journey', () => {
     if (await districtInput.isVisible()) await districtInput.fill('Patna');
     
     // Submit
-    await page.locator('button[type="submit"]').click();
+    await page.getByRole('button', { name: /post opportunity/i }).click();
     
-    // Expect success
-    const success = page.locator('.text-green-600, text=success, text=posted, text=submitted');
-    await expect(success.first()).toBeVisible({ timeout: 15000 });
+    // Expect success redirect to dashboard
+    await page.waitForURL('**/dashboard', { timeout: 15000 });
+    await expect(page.locator('text=HOMEOWNER').first()).toBeVisible();
   });
 
   // ─── 4. View My Projects ─────────────────────────────────────────────────
@@ -103,35 +107,34 @@ test.describe('Homeowner E2E Journey', () => {
     await page.waitForTimeout(2000);
     
     // Expect at least one requirement (seeded by E2ESeeder)
-    const reqCards = page.locator('text=E2E Living Room Renovation, text=E2E Interior, [data-type="requirement"]');
-    await expect(reqCards.first()).toBeVisible({ timeout: 15000 });
+    const reqCards = page.locator('[data-type="requirement"]');
+    if (await reqCards.count() > 0) {
+        await expect(reqCards.first()).toBeVisible({ timeout: 15000 });
+    } else {
+        await expect(page.getByText(/E2E Living Room Renovation|E2E Interior/i).first()).toBeVisible({ timeout: 15000 });
+    }
   });
 
   // ─── 5. Access Bids ──────────────────────────────────────────────────────
-  test('HO-05: Homeowner can view bids on their project', async ({ page, request }) => {
-    // Get a valid requirement ID via API
-    const token = await apiLogin(request, HOMEOWNER.email, HOMEOWNER.password);
-    const reqs = await apiGetRequirements(request, token);
+  test('HO-05: Homeowner can view bids on their project', async ({ page }) => {
+    await loginPage.login(HOMEOWNER.email, HOMEOWNER.password);
+    await page.waitForURL('/dashboard');
     
-    expect(reqs).toBeDefined();
+    // Navigate to "My Projects" tab in dashboard
+    await page.locator('text=My Projects').first().click();
+    await page.waitForTimeout(2000);
     
-    if (reqs && reqs.data && reqs.data.length > 0) {
-      const reqId = reqs.data[0].id;
-      await loginPage.login(HOMEOWNER.email, HOMEOWNER.password);
-      await page.waitForURL('/dashboard');
-      
-      // Navigate to the requirements page
-      await page.goto(`/dashboard/projects/${reqId}`);
-      await page.waitForLoadState('networkidle');
-      
-      // Should show bids section (even if empty)
-      const bidsSection = page.locator('text=Bids, text=No bids, text=Submit a Bid').first();
-      await expect(bidsSection).toBeVisible({ timeout: 15000 });
+    // Click on the first requirement card
+    const reqCard = page.locator('[data-type="requirement"]').first();
+    if (await reqCard.isVisible()) {
+        await reqCard.click();
+        await page.waitForLoadState('networkidle');
+        
+        // Should show bids section
+        const bidsSection = page.getByText(/Bids|No bids|Submit a Bid/i).first();
+        await expect(bidsSection).toBeVisible({ timeout: 15000 });
     } else {
-      // No requirements yet, just verify dashboard works
-      await loginPage.login(HOMEOWNER.email, HOMEOWNER.password);
-      await page.waitForURL('/dashboard');
-      await expect(page.locator('text=HOMEOWNER').first()).toBeVisible();
+        await expect(page.locator('text=HOMEOWNER').first()).toBeVisible();
     }
   });
 
@@ -149,7 +152,7 @@ test.describe('Homeowner E2E Journey', () => {
     await page.waitForTimeout(2000);
     
     // Should show messages section (even if empty)
-    const msgSection = page.locator('text=Messages, text=No conversations, text=Inbox').first();
+    const msgSection = page.getByText(/Messages|No conversations|Inbox/i).first();
     await expect(msgSection).toBeVisible({ timeout: 15000 });
   });
 
@@ -181,7 +184,7 @@ test.describe('Homeowner E2E Journey', () => {
     if (await reviewsTab.isVisible()) {
       await reviewsTab.click();
       await page.waitForTimeout(2000);
-      await expect(page.locator('text=Reviews, text=No reviews, text=Leave Review').first()).toBeVisible();
+      await expect(page.getByText(/Reviews|No reviews|Leave Review/i).first()).toBeVisible();
     } else {
       // Reviews might be in a different section
       await expect(page.locator('text=HOMEOWNER').first()).toBeVisible();

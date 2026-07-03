@@ -32,10 +32,10 @@ use Illuminate\Support\Facades\Route;
 
 // E2E Testing DB Reset — ONLY available in explicit testing environment
 // DISABLED in production: never expose this endpoint outside of CI/CD pipelines
-if (app()->environment('testing')) {
+if (app()->environment('local', 'testing')) {
     Route::post('/e2e/reset', function () {
         \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
-            '--seeder' => 'Database\\Seeders\\E2ESeeder',
+            '--seeder' => 'E2ESeeder',
             '--force'  => true,
         ]);
         return response()->json(['message' => 'Database wiped and reseeded for E2E']);
