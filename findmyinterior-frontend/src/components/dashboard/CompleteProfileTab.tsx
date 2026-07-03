@@ -473,10 +473,10 @@ export function CompleteProfileTab() {
                       </select>
                     </Field>
                     <Field label="Years Experience" icon={Star}>
-                      <Input name="experience_years" type="number" value={formData.experience_years} onChange={handleChange} placeholder="e.g. 5" />
+                      <Input name="experience_years" type="number" min="0" value={formData.experience_years} onChange={handleChange} placeholder="e.g. 5" />
                     </Field>
                     <Field label="Daily Rate (₹)" icon={Hash}>
-                      <Input name="daily_rate" type="number" value={formData.daily_rate} onChange={handleChange} placeholder="e.g. 800" />
+                      <Input name="daily_rate" type="number" min="0" value={formData.daily_rate} onChange={handleChange} placeholder="e.g. 800" />
                     </Field>
                   </div>
                   <Field label="Professional Bio" icon={User}>
@@ -500,10 +500,10 @@ export function CompleteProfileTab() {
                   {profileType === 'listing' && (
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                       <Field label="Experience (Years)" icon={Star}>
-                        <Input type="number" name="years_experience" value={formData.years_experience} onChange={handleChange} placeholder="e.g. 10" />
+                        <Input type="number" min="0" name="years_experience" value={formData.years_experience} onChange={handleChange} placeholder="e.g. 10" />
                       </Field>
                       <Field label="Team Size" icon={Users}>
-                        <Input type="number" name="team_size" value={formData.team_size} onChange={handleChange} placeholder="e.g. 15" />
+                        <Input type="number" min="0" name="team_size" value={formData.team_size} onChange={handleChange} placeholder="e.g. 15" />
                       </Field>
                       <Field label="Website" icon={Globe}>
                         <Input type="url" name="website" value={formData.website} onChange={handleChange} placeholder="https://" />
