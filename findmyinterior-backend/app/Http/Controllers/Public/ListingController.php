@@ -139,11 +139,33 @@ class ListingController extends Controller
             if ($user->worker) {
                 $listing->years_experience = (int)$user->worker->experience_years;
                 $listing->budget_tier = '₹' . $user->worker->daily_rate . '/day';
-                if ($user->worker->skill) {
-                    $listing->services = [$user->worker->skill];
-                }
+                $listing->services = $user->worker->services ?? ($user->worker->skill ? [$user->worker->skill] : []);
                 $listing->description = $user->worker->bio ?? 'Profile pending completion.';
                 $listing->phone = $user->phone;
+                $listing->achievements = $user->worker->achievements ?? [];
+                $listing->languages = $user->worker->languages ?? [];
+                $listing->business_hours = $user->worker->availability ? 'Availability: ' . $user->worker->availability : null;
+                $listing->instagram = $user->worker->social_links['instagram'] ?? null;
+                $listing->facebook = $user->worker->social_links['facebook'] ?? null;
+                $listing->linkedin = $user->worker->social_links['linkedin'] ?? null;
+            } elseif ($user->supplier) {
+                $listing->description = $user->supplier->company_name ?? 'Profile pending completion.';
+                $listing->phone = $user->supplier->phone ?? $user->phone;
+                $listing->services = $user->supplier->services ?? [];
+                $listing->achievements = $user->supplier->achievements ?? [];
+                $listing->languages = $user->supplier->languages ?? [];
+                $listing->instagram = $user->supplier->social_links['instagram'] ?? null;
+                $listing->facebook = $user->supplier->social_links['facebook'] ?? null;
+                $listing->linkedin = $user->supplier->social_links['linkedin'] ?? null;
+            } elseif ($user->builder) {
+                $listing->description = $user->builder->company_name ?? 'Profile pending completion.';
+                $listing->phone = $user->builder->phone ?? $user->phone;
+                $listing->services = $user->builder->services ?? [];
+                $listing->achievements = $user->builder->achievements ?? [];
+                $listing->languages = $user->builder->languages ?? [];
+                $listing->instagram = $user->builder->social_links['instagram'] ?? null;
+                $listing->facebook = $user->builder->social_links['facebook'] ?? null;
+                $listing->linkedin = $user->builder->social_links['linkedin'] ?? null;
             }
             
             $listing->setRelation('user', $user);
