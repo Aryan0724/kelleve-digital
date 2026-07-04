@@ -60,6 +60,10 @@ function PostRequirementContent() {
     quantity: "",
     required_date: "",
     
+    // Furniture specific
+    furniture_type: "",
+    furniture_material: "",
+    
     // Job specific
     skill_required: "",
     number_of_workers: "",
@@ -143,6 +147,18 @@ function PostRequirementContent() {
               construction_stage: data.site_condition || "",
               timeline: data.possession_timeline || "",
             }));
+          } else if (typeVal === 'furniture') {
+            setFormData(prev => ({
+              ...prev,
+              title: data.title || "",
+              description: data.description?.split("\n\n[Details]")[0] || data.description || "",
+              city: data.city || "",
+              district: data.district || "",
+              budget: data.budget || "",
+              furniture_type: data.project_category || "",
+              furniture_material: data.design_style || "",
+              timeline: data.possession_timeline || "",
+            }));
           } else {
             setFormData(prev => ({
               ...prev,
@@ -208,7 +224,7 @@ function PostRequirementContent() {
       payload.requirement_type = selectedType.toUpperCase();
       
       let detailsText = "";
-      if (['interior_design', 'renovation', 'architect', 'furniture'].includes(selectedType)) {
+      if (['interior_design', 'renovation', 'architect'].includes(selectedType)) {
         detailsText = `Property Type: ${formData.property_type}\nArea: ${formData.area}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}\nStyle: ${formData.style_preferences}`;
         payload.project_category = formData.property_type;
         payload.project_type = formData.property_type;
@@ -216,6 +232,13 @@ function PostRequirementContent() {
         payload.budget = formData.budget;
         payload.possession_timeline = formData.timeline;
         payload.design_style = formData.style_preferences;
+      } else if (selectedType === 'furniture') {
+        detailsText = `Furniture Type: ${formData.furniture_type}\nMaterial: ${formData.furniture_material}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}`;
+        payload.project_category = formData.furniture_type;
+        payload.project_type = 'furniture';
+        payload.design_style = formData.furniture_material;
+        payload.budget = formData.budget;
+        payload.possession_timeline = formData.timeline;
       } else if (selectedType === 'construction') {
         detailsText = `Plot Size: ${formData.plot_size}\nStage: ${formData.construction_stage}\nBudget: ${formData.budget}\nTimeline: ${formData.timeline}`;
         payload.project_category = 'construction';
@@ -312,7 +335,7 @@ function PostRequirementContent() {
 
 
               {/* Context Aware Fields */}
-              {['interior_design', 'renovation', 'architect', 'furniture'].includes(selectedType) && (
+              {['interior_design', 'renovation', 'architect'].includes(selectedType) && (
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -373,6 +396,68 @@ function PostRequirementContent() {
                   <div className="space-y-2">
                     <Label htmlFor="style">Style Preferences</Label>
                     <Input id="style" placeholder="e.g. Modern, Minimalist, Traditional" value={formData.style_preferences} onChange={(e) => setFormData({...formData, style_preferences: e.target.value})} />
+                  </div>
+                </>
+              )}
+
+              {selectedType === 'furniture' && (
+                <>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="furniture_type">Furniture Type</Label>
+                      <Select onValueChange={(val: any) => setFormData({...formData, furniture_type: val})}>
+                        <SelectTrigger><SelectValue placeholder="e.g. Wardrobe" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Wardrobe">Wardrobe</SelectItem>
+                          <SelectItem value="Kitchen Cabinet">Kitchen Cabinet</SelectItem>
+                          <SelectItem value="Bed">Bed</SelectItem>
+                          <SelectItem value="Sofa">Sofa / Seating</SelectItem>
+                          <SelectItem value="TV Unit">TV Unit</SelectItem>
+                          <SelectItem value="Full House">Full House Furniture</SelectItem>
+                          <SelectItem value="Custom">Custom / Other</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="furniture_material">Material Preference</Label>
+                      <Select onValueChange={(val: any) => setFormData({...formData, furniture_material: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Material" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Plywood">Plywood</SelectItem>
+                          <SelectItem value="Solid Wood">Solid Wood</SelectItem>
+                          <SelectItem value="MDF / Particle Board">MDF / Particle Board</SelectItem>
+                          <SelectItem value="Metal">Metal</SelectItem>
+                          <SelectItem value="Not Sure">Not Sure / Suggest me</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="budget">Estimated Budget</Label>
+                      <Select onValueChange={(val: any) => setFormData({...formData, budget: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Budget" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Under ₹10,000">Under ₹10,000</SelectItem>
+                          <SelectItem value="₹10,000 - ₹50,000">₹10,000 - ₹50,000</SelectItem>
+                          <SelectItem value="₹50,000 - ₹1 Lakh">₹50,000 - ₹1 Lakh</SelectItem>
+                          <SelectItem value="₹1 Lakh - ₹3 Lakhs">₹1 Lakh - ₹3 Lakhs</SelectItem>
+                          <SelectItem value="Above ₹3 Lakhs">Above ₹3 Lakhs</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="timeline">Required By</Label>
+                      <Select onValueChange={(val: any) => setFormData({...formData, timeline: val})}>
+                        <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="Immediately">Immediately</SelectItem>
+                          <SelectItem value="Within 2 Weeks">Within 2 Weeks</SelectItem>
+                          <SelectItem value="Within 1 Month">Within 1 Month</SelectItem>
+                          <SelectItem value="Flexible">Flexible</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
                 </>
               )}
