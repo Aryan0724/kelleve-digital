@@ -204,6 +204,35 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
               </Card>
             )}
 
+            {activeTab === 'dashboard' && data?.recent_blogs && data.recent_blogs.length > 0 && (
+              <div className="mt-8">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-slate-900">Latest from the Blog</h3>
+                  <Link href="/blog" className="text-sm font-medium text-orange-600 hover:underline">View All</Link>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  {data.recent_blogs.map((blog: any) => (
+                    <Link key={blog.id} href={`/blog/${blog.slug}`} className="group block">
+                      <Card className="h-full overflow-hidden hover:shadow-md transition-all">
+                        <div className="h-40 bg-slate-100 overflow-hidden relative">
+                          {blog.cover_image ? (
+                            <img src={blog.cover_image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                          ) : (
+                            <div className="w-full h-full bg-slate-200 flex items-center justify-center text-3xl">✍️</div>
+                          )}
+                          <Badge className="absolute top-2 left-2 bg-orange-600 border-0">{blog.category}</Badge>
+                        </div>
+                        <CardContent className="p-4">
+                          <h4 className="font-bold text-slate-800 line-clamp-2 group-hover:text-orange-600">{blog.title}</h4>
+                          <div className="text-xs text-slate-500 mt-2">{new Date(blog.published_at).toLocaleDateString()}</div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {activeTab === 'bids' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">

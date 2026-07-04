@@ -18,6 +18,7 @@ import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
 import { Paintbrush } from "lucide-react";
+import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 
 export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -132,16 +133,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             {activeTab === 'wallet' && <WalletTab />}
 
             {activeTab === 'subscription' && (
-              <Card>
-                <CardContent className="py-16 text-center">
-                  <Wallet className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-slate-900 mb-2">Subscription Details</h3>
-                  <p className="text-slate-500 mb-4">You are currently on the {data?.user?.subscription || "Free Plan"}</p>
-                  <Link href="/pricing">
-                    <Button>Upgrade Plan</Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />
             )}
 
             {activeTab === 'business_profile' && <CompleteProfileTab />}

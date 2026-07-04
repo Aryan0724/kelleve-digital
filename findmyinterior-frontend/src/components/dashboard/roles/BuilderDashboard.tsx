@@ -16,6 +16,7 @@ import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 
 export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -102,6 +103,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
                 {renderSidebarButton("supplier_requests", <Search className="h-5 w-5" />, "Supplier Requests")}
                 {renderSidebarButton("worker_requests", <User className="h-5 w-5" />, "Worker Requests")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
+                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
               </div>
@@ -207,6 +209,10 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
                   <Button onClick={() => router.push('/post-requirement')} className="bg-orange-600">Post New Request</Button>
                 </CardContent>
               </Card>
+            )}
+
+            {activeTab === 'subscription' && (
+              <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />
             )}
 
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}

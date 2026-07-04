@@ -41,6 +41,9 @@ class DashboardController extends Controller
                     'unread_messages_count' => $unreadCustomer + $unreadVendor,
                     'has_pending_verification' => \App\Models\UserDocument::where('user_id', $user->id)->where('status', 'pending')->exists(),
                 ],
+                'recent_blogs' => \App\Http\Resources\BlogResource::collection(
+                    \App\Models\Blog::published()->with(['author', 'tags'])->latest()->take(3)->get()
+                ),
             ];
 
             $userRoles = $user->roles->pluck('slug')->toArray();

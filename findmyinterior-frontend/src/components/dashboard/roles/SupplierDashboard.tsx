@@ -17,6 +17,7 @@ import Link from "next/link";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirementsTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
+import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 
 export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -156,16 +157,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
             )}
 
             {activeTab === 'subscription' && (
-              <Card>
-                <CardContent className="py-16 text-center">
-                  <Wallet className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-slate-900 mb-2">Subscription Details</h3>
-                  <p className="text-slate-500 mb-4">You are currently on the {data?.user?.subscription || "Free Plan"}</p>
-                  <Link href="/pricing">
-                    <Button>Upgrade Plan</Button>
-                  </Link>
-                </CardContent>
-              </Card>
+              <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />
             )}
 
             {activeTab === 'business_profile' && <CompleteProfileTab />}

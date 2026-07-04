@@ -128,6 +128,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
     // Public inquiry submission
     Route::post('inquiries', [InquiryController::class, 'store']);
+    Route::post('contact', [\App\Http\Controllers\Public\ContactController::class, 'store']);
     
     // Opportunity Backend Configuration
     Route::get('opportunities/config', [\App\Http\Controllers\Public\OpportunityConfigController::class, '__invoke']);
@@ -334,15 +335,17 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::delete('database/query/{table}/{id}', [\App\Http\Controllers\Admin\DatabaseExplorerController::class, 'deleteRow']);
 
         // Subscription Plans
-        Route::post('subscription-plans/{id}', [AdminController::class, 'updateSubscriptionPlan']);
+        Route::apiResource('subscription-plans', \App\Http\Controllers\Admin\SubscriptionPlanController::class)->except(['show']);
 
         // Categories
         Route::post('categories', [AdminController::class, 'createCategory']);
         Route::delete('categories/{id}', [AdminController::class, 'deleteCategory']);
 
-        // Inquiries
+        // Inquiries & Contact
         Route::get('inquiries', [AdminController::class, 'inquiries']);
         Route::patch('inquiries/{id}/resolve', [AdminController::class, 'resolveInquiry']);
+        Route::get('contact-messages', [AdminController::class, 'contactMessages']);
+        Route::patch('contact-messages/{id}/status', [AdminController::class, 'updateContactMessageStatus']);
         
         // Blogs
         Route::get('blogs', [AdminController::class, 'blogs']);

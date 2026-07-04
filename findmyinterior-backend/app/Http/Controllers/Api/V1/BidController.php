@@ -76,9 +76,13 @@ class BidController extends Controller
         $primaryRole = count($userRoles) > 0 ? $userRoles[0] : 'worker';
         if ($primaryRole === 'designer') $primaryRole = 'interior'; // Map designer to interior if needed
         
-        $settingKey = 'bid_fee_' . $primaryRole;
-        $feeSetting = \App\Models\Setting::where('key', $settingKey)->first();
-        $fee = $feeSetting ? (float) $feeSetting->value : 10.00; // fallback to 10.00
+        if (in_array('skilled_worker', $userRoles) || in_array('worker', $userRoles)) {
+            $fee = 0;
+        } else {
+            $settingKey = 'bid_fee_' . $primaryRole;
+            $feeSetting = \App\Models\Setting::where('key', $settingKey)->first();
+            $fee = $feeSetting ? (float) $feeSetting->value : 10.00; // fallback to 10.00
+        }
         
         if ($fee > 0) {
             $balance = $this->walletService->getBalance($request->user());

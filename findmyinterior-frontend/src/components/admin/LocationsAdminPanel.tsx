@@ -21,7 +21,7 @@ export function LocationsAdminPanel() {
   const fetchLocations = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/admin/locations");
+      const res = await api.get("/locations");
       setLocations(res.data.data || []);
     } catch (e) {
       console.error(e);

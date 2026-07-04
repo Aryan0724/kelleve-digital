@@ -15,6 +15,8 @@ import { VerificationAdminPanel } from "@/components/admin/VerificationAdminPane
 import { LocationsAdminPanel } from "@/components/admin/LocationsAdminPanel";
 import { SettingsAdminPanel } from "@/components/admin/SettingsAdminPanel";
 import { CMSAdminPanel } from "@/components/admin/CMSAdminPanel";
+import { ContactMessagesPanel } from "@/components/admin/ContactMessagesPanel";
+import { SubscriptionAdminPanel } from "@/components/admin/SubscriptionAdminPanel";
 import {
   CheckCircle,
   ClipboardList,
@@ -43,6 +45,7 @@ const tabs: { id: AdminTab; label: string }[] = [
   { id: "locations", label: "Locations" },
   { id: "settings", label: "Settings" },
   { id: "cms", label: "CMS" },
+  { id: "contact-messages", label: "Contact Messages" },
   { id: "inquiries", label: "Support" },
 ];
 
@@ -302,6 +305,7 @@ export default function AdminDashboard() {
         {activeTab === "locations" && <LocationsAdminPanel />}
         {activeTab === "settings" && <SettingsAdminPanel />}
         {activeTab === "cms" && <CMSAdminPanel />}
+        {activeTab === "contact-messages" && <ContactMessagesPanel />}
 
         {/* Database Explorer Tab */}
         {activeTab === "users" && (
@@ -679,30 +683,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === "subscriptions" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Subscription Plans</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AdminTable
-                headers={["Plan Name", "Monthly (₹)", "Yearly (₹)", "Active", "Action"]}
-                rows={plans.map((item) => [
-                  <div key="name" className="font-semibold capitalize">{item.name}</div>,
-                  <div key="month">{item.price_monthly}</div>,
-                  <div key="year">{item.price_yearly}</div>,
-                  <Badge key="status" variant={item.is_active ? 'default' : 'secondary'}>{item.is_active ? 'Active' : 'Disabled'}</Badge>,
-                  <div key="actions" className="flex justify-end gap-2">
-                    <Button size="sm" variant="outline" onClick={() => {
-                      const p = prompt('Enter new Monthly Price', item.price_monthly);
-                      if (p) runAction(`edit-plan-${item.id}`, () => api.post(`/admin/subscription-plans/${item.id}`, { price_monthly: p }));
-                    }}>
-                      Edit Price
-                    </Button>
-                  </div>
-                ])}
-              />
-            </CardContent>
-          </Card>
+          <SubscriptionAdminPanel />
         )}
 
         {activeTab === "categories" && (

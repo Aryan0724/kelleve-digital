@@ -606,6 +606,24 @@ class AdminController extends Controller
         return response()->json(['success' => true, 'message' => 'Inquiry marked as resolved.']);
     }
 
+    public function contactMessages()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => \App\Models\ContactMessage::latest()->paginate(20)
+        ]);
+    }
+
+    public function updateContactMessageStatus(Request $request, $id)
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:new,read,resolved'
+        ]);
+        $msg = \App\Models\ContactMessage::findOrFail($id);
+        $msg->update(['status' => $validated['status']]);
+        return response()->json(['success' => true, 'data' => $msg]);
+    }
+
     public function blogs(Request $request): JsonResponse
     {
         $blogs = Blog::with('author:id,name')->latest()->paginate(20);

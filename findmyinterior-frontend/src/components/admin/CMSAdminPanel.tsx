@@ -21,6 +21,8 @@ export function CMSAdminPanel() {
     content: "",
     category: "Tips",
     status: "published",
+    cover_image: "",
+    tags: "",
   });
 
   useEffect(() => {
@@ -30,7 +32,7 @@ export function CMSAdminPanel() {
   const fetchBlogs = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/blogs");
+      const res = await api.get("/admin/blogs");
       setBlogs(res.data.data || []);
     } catch (e) {
       console.error(e);
@@ -42,10 +44,15 @@ export function CMSAdminPanel() {
   const handleSave = async () => {
     if (!formData.title || !formData.content) return alert("Title and Content are required.");
     try {
+      const payload = {
+        ...formData,
+        tags: formData.tags ? formData.tags.split(",").map(t => t.trim()).filter(Boolean) : []
+      };
+      
       if (formData.id) {
-        await api.put(`/admin/blogs/${formData.id}`, formData);
+        await api.put(`/admin/blogs/${formData.id}`, payload);
       } else {
-        await api.post("/admin/blogs", formData);
+        await api.post("/admin/blogs", payload);
       }
       setIsEditing(false);
       resetForm();
@@ -66,7 +73,7 @@ export function CMSAdminPanel() {
   };
 
   const resetForm = () => {
-    setFormData({ id: null, title: "", excerpt: "", content: "", category: "Tips", status: "published" });
+    setFormData({ id: null, title: "", excerpt: "", content: "", category: "Tips", status: "published", cover_image: "", tags: "" });
   };
 
   if (loading && !blogs.length) return <div className="text-center p-8">Loading CMS...</div>;
@@ -88,6 +95,16 @@ export function CMSAdminPanel() {
               placeholder="Short excerpt..." 
               value={formData.excerpt} 
               onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })} 
+            />
+            <Input 
+              placeholder="Cover Image URL (e.g. https://example.com/image.jpg)" 
+              value={formData.cover_image} 
+              onChange={(e) => setFormData({ ...formData, cover_image: e.target.value })} 
+            />
+            <Input 
+              placeholder="Tags (comma separated, e.g. interior, tips, design)" 
+              value={formData.tags} 
+              onChange={(e) => setFormData({ ...formData, tags: e.target.value })} 
             />
             <div className="flex gap-4">
               <Select value={formData.category} onValueChange={(val) => setFormData({ ...formData, category: val || "" })}>
@@ -151,7 +168,14 @@ export function CMSAdminPanel() {
                     </TableCell>
                     <TableCell>{new Date(blog.published_at || blog.created_at).toLocaleDateString()}</TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="sm" onClick={() => { setFormData(blog); setIsEditing(true); }}>
+                      <Button variant="ghost" size="sm" onClick={() => { 
+                        setFormData({
+                          ...blog,
+                          cover_image: blog.cover_image || "",
+                          tags: blog.tags ? blog.tags.map((t: any) => t.tag || t).join(", ") : ""
+                        }); 
+                        setIsEditing(true); 
+                      }}>
                         <Edit className="w-4 h-4" />
                       </Button>
                       <Button variant="ghost" size="sm" onClick={() => handleDelete(blog.id)}>
