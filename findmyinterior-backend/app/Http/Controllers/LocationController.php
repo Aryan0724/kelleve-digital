@@ -10,11 +10,15 @@ class LocationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Location::query();
-        if ($request->has('active_only')) {
-            $query->where('is_active', true);
-        }
-        return response()->json(['success' => true, 'data' => $query->orderBy('name')->get()]);
+        $data = \Illuminate\Support\Facades\Cache::remember('locations_dropdown_' . ($request->has('active_only') ? 'active' : 'all'), 3600, function () use ($request) {
+            $query = Location::query();
+            if ($request->has('active_only')) {
+                $query->where('is_active', true);
+            }
+            return $query->orderBy('name')->get();
+        });
+
+        return response()->json(['success' => true, 'data' => $data]);
     }
 
     public function store(Request $request)

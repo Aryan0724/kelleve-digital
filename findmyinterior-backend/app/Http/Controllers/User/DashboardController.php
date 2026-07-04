@@ -126,32 +126,37 @@ class DashboardController extends Controller
                         }
                     })
                     ->latest()
-                    ->get()
-                    ->map(function ($bid) {
+                    ->latest()
+                    ->get();
+                    
+                // Eager load requirement titles and worker profiles to avoid N+1
+                $reqIds = $data['received_bids']->pluck('requirement_id')->unique();
+                $profIds = $data['received_bids']->pluck('professional.id')->filter()->unique();
+                
+                $requirements = \App\Models\Requirement::whereIn('id', $reqIds)->pluck('title', 'id');
+                $rfqs = \App\Models\Rfq::whereIn('id', $reqIds)->pluck('title', 'id');
+                $workerJobs = \App\Models\WorkerJob::whereIn('id', $reqIds)->pluck('title', 'id');
+                $workerProfiles = \App\Models\Worker::whereIn('user_id', $profIds)->get()->keyBy('user_id');
+
+                $data['received_bids'] = $data['received_bids']->map(function ($bid) use ($requirements, $rfqs, $workerJobs, $workerProfiles) {
                         // Resolve the requirement title and type label
                         $requirementTitle = 'Requirement #' . $bid->requirement_id;
                         $requirementTypeLabel = $bid->requirement_type;
 
                         if (in_array($bid->requirement_type, ['Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project'])) {
-                            $req = \App\Models\Requirement::find($bid->requirement_id);
-                            $requirementTitle = $req?->title ?? $requirementTitle;
+                            $requirementTitle = $requirements[$bid->requirement_id] ?? $requirementTitle;
                             $requirementTypeLabel = 'Project';
                         } elseif (in_array($bid->requirement_type, ['Rfq', 'App\Models\Rfq'])) {
-                            $req = \App\Models\Rfq::find($bid->requirement_id);
-                            $requirementTitle = $req?->title ?? $requirementTitle;
+                            $requirementTitle = $rfqs[$bid->requirement_id] ?? $requirementTitle;
                             $requirementTypeLabel = 'RFQ';
                         } elseif (in_array($bid->requirement_type, ['WorkerJob', 'App\Models\WorkerJob'])) {
-                            $req = \App\Models\WorkerJob::find($bid->requirement_id);
-                            $requirementTitle = $req?->title ?? $requirementTitle;
+                            $requirementTitle = $workerJobs[$bid->requirement_id] ?? $requirementTitle;
                             $requirementTypeLabel = 'Skilled Labour Job';
                         }
 
                         // Get worker/professional profile for extra info
                         $professional = $bid->professional;
-                        $workerProfile = null;
-                        if ($professional) {
-                            $workerProfile = \App\Models\Worker::where('user_id', $professional->id)->first();
-                        }
+                        $workerProfile = $professional ? ($workerProfiles[$professional->id] ?? null) : null;
 
                         return [
                             'id'                  => $bid->id,

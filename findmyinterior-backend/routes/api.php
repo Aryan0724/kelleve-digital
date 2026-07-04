@@ -107,13 +107,19 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
     // Dropdown Data
     Route::get('categories', function () {
-        return \App\Models\Category::orderBy('sort_order')->get();
+        return \Illuminate\Support\Facades\Cache::remember('categories_dropdown', 3600, function() {
+            return \App\Models\Category::orderBy('sort_order')->get();
+        });
     });
     Route::get('cities', function () {
-        return \App\Models\City::orderBy('name')->get();
+        return \Illuminate\Support\Facades\Cache::remember('cities_dropdown', 3600, function() {
+            return \App\Models\City::orderBy('name')->get();
+        });
     });
     Route::get('districts', function () {
-        return \App\Models\District::orderBy('name')->get();
+        return \Illuminate\Support\Facades\Cache::remember('districts_dropdown', 3600, function() {
+            return \App\Models\District::orderBy('name')->get();
+        });
     });
     Route::get('locations', [\App\Http\Controllers\LocationController::class, 'index']);
     Route::apiResource('listings', ListingController::class)->only(['index', 'show']);

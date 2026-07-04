@@ -25,7 +25,8 @@ class HomepageController extends Controller
      */
     public function __invoke(): JsonResponse
     {
-        // Stats bar
+        $data = \Illuminate\Support\Facades\Cache::remember('homepage_data', 900, function () {
+            // Stats bar
         $stats = [
             'verified_professionals' => Listing::active()->verified()->count(),
             'total_projects'         => BuilderProject::whereIn('status', ['completed', 'possession_ready'])->count(),
@@ -91,18 +92,21 @@ class HomepageController extends Controller
             ->take(8)
             ->get();
 
+        return [
+            'stats'               => $stats,
+            'categories'          => CategoryResource::collection($categories),
+            'featured_listings'   => ListingResource::collection($featuredListings),
+            'featured_builders'   => BuilderResource::collection($featuredBuilders),
+            'possession_projects' => BuilderProjectResource::collection($possessionProjects),
+            'upcoming_projects'   => BuilderProjectResource::collection($upcomingProjects),
+            'featured_suppliers'  => SupplierResource::collection($featuredSuppliers),
+            'featured_workers'    => WorkerResource::collection($featuredWorkers),
+        ];
+        });
+
         return response()->json([
             'success' => true,
-            'data'    => [
-                'stats'               => $stats,
-                'categories'          => CategoryResource::collection($categories),
-                'featured_listings'   => ListingResource::collection($featuredListings),
-                'featured_builders'   => BuilderResource::collection($featuredBuilders),
-                'possession_projects' => BuilderProjectResource::collection($possessionProjects),
-                'upcoming_projects'   => BuilderProjectResource::collection($upcomingProjects),
-                'featured_suppliers'  => SupplierResource::collection($featuredSuppliers),
-                'featured_workers'    => WorkerResource::collection($featuredWorkers),
-            ],
+            'data'    => $data,
         ]);
     }
 }
