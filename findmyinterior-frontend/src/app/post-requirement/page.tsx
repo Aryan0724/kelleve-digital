@@ -280,21 +280,48 @@ function PostRequirementContent() {
         formDataPayload.append('image', imageFile);
       }
 
-      const requestTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out after 15 seconds. Please check your internet connection or try again.")), 15000));
 
+
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://find-my-interior-1.onrender.com/api/v1';
+      const fullUrl = editId ? `${baseUrl}${endpoint}/${editId}` : `${baseUrl}${endpoint}`;
+      
       if (editId) {
         formDataPayload.append('_method', 'PUT');
-        await Promise.race([api.post(`${endpoint}/${editId}`, formDataPayload), requestTimeout]);
-      } else {
-        await Promise.race([api.post(endpoint, formDataPayload), requestTimeout]);
       }
+      
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
+      
+      const res = await fetch(fullUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formDataPayload,
+        signal: controller.signal
+      });
+      
+      clearTimeout(timeoutId);
+      
+      const resData = await res.json().catch(() => null);
+      
+      if (!res.ok) {
+        if (res.status === 401) {
+          useAuthStore.getState().logout();
+          router.push('/login');
+          return;
+        }
+        throw new Error(resData?.message || resData?.error || `Server responded with ${res.status}`);
+      }
+      
       setLoading(false);
-      // Hard navigate so dashboard re-mounts and fetches fresh data
-      window.location.href = '/dashboard';
+      setSuccess("Opportunity posted successfully! Redirecting...");
+      router.refresh();
+      setTimeout(() => router.push('/dashboard'), 100);
 
     } catch (err: any) {
       console.error("POST requirement error:", err);
-      const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Failed to post opportunity";
+      const errMsg = err.name === 'AbortError' ? "Request timed out after 20 seconds. Please check your internet connection." : (err.message || "Failed to post opportunity");
       setError(errMsg);
       alert("Error: " + errMsg);
     } finally {
