@@ -258,10 +258,10 @@ class AdminController extends Controller
     {
         $data = $request->validate([
             'title'       => ['required', 'string', 'max:255'],
-            'excerpt'     => ['required', 'string', 'max:500'],
+            'excerpt'     => ['nullable', 'string', 'max:500'],
             'content'     => ['required', 'string'],
             'cover_image' => ['nullable', 'url'],
-            'category'    => ['required', 'string', 'max:100'],
+            'category'    => ['nullable', 'string', 'max:100'],
             'status'      => ['in:draft,published'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['string', 'max:100'],
@@ -271,10 +271,10 @@ class AdminController extends Controller
             'author_id'    => $request->user()->id,
             'title'        => $data['title'],
             'slug'         => Str::slug($data['title']) . '-' . Str::random(6),
-            'excerpt'      => $data['excerpt'],
+            'excerpt'      => $data['excerpt'] ?? null,
             'content'      => $data['content'],
             'cover_image'  => $data['cover_image'] ?? null,
-            'category'     => $data['category'],
+            'category'     => $data['category'] ?? 'General',
             'status'       => $data['status'] ?? 'draft',
             'published_at' => ($data['status'] ?? 'draft') === 'published' ? now() : null,
         ]);
@@ -297,10 +297,10 @@ class AdminController extends Controller
         
         $data = $request->validate([
             'title'       => ['sometimes', 'string', 'max:255'],
-            'excerpt'     => ['sometimes', 'string', 'max:500'],
+            'excerpt'     => ['nullable', 'string', 'max:500'],
             'content'     => ['sometimes', 'string'],
             'cover_image' => ['nullable', 'url'],
-            'category'    => ['sometimes', 'string', 'max:100'],
+            'category'    => ['nullable', 'string', 'max:100'],
             'status'      => ['in:draft,published'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['string', 'max:100'],
