@@ -22,7 +22,7 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 export function Hero() {
   const router = useRouter();
   const { user } = useAuthStore();
-  const [city, setCity] = useState("Patna");
+  const [city, setCity] = useState("");
   const [service, setService] = useState("");
   const [showServiceDropdown, setShowServiceDropdown] = useState(false);
   const [showCityDropdown, setShowCityDropdown] = useState(false);
