@@ -315,7 +315,7 @@ function PostRequirementContent() {
       }
       
       setLoading(false);
-      setSuccess("Opportunity posted successfully! Redirecting...");
+      setSuccess(true);
       router.refresh();
       setTimeout(() => router.push('/dashboard'), 100);
 
