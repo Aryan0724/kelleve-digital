@@ -271,7 +271,7 @@ class AdminController extends Controller
             'author_id'    => $request->user()->id,
             'title'        => $data['title'],
             'slug'         => Str::slug($data['title']) . '-' . Str::random(6),
-            'excerpt'      => $data['excerpt'] ?? null,
+            'excerpt'      => $data['excerpt'] ?? Str::limit(strip_tags($data['content']), 150),
             'content'      => $data['content'],
             'cover_image'  => $data['cover_image'] ?? null,
             'category'     => $data['category'] ?? 'General',
@@ -312,6 +312,10 @@ class AdminController extends Controller
         
         if (isset($data['status']) && $data['status'] === 'published' && $blog->status !== 'published') {
             $data['published_at'] = now();
+        }
+
+        if (isset($data['content']) && empty($data['excerpt']) && empty($blog->excerpt)) {
+            $data['excerpt'] = Str::limit(strip_tags($data['content']), 150);
         }
 
         $blog->update($data);
