@@ -313,11 +313,7 @@ function PostRequirementContent() {
 
           {step === 2 && (
             <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
-              <div className="space-y-2">
-                <Label htmlFor="title">Title</Label>
-                <Input required id="title" placeholder="A short title for your request" 
-                  value={formData.title} onChange={(e) => setFormData({...formData, title: e.target.value})} />
-              </div>
+
 
               {/* Context Aware Fields */}
               {['interior_design', 'renovation', 'architect', 'furniture'].includes(selectedType) && (
