@@ -38,6 +38,7 @@ function PostRequirementContent() {
   const [mounted, setMounted] = useState(false);
 
   const [selectedType, setSelectedType] = useState<string>("");
+  const [locations, setLocations] = useState<any[]>([]);
 
   const [formData, setFormData] = useState({
     title: "",
@@ -74,6 +75,13 @@ function PostRequirementContent() {
   useEffect(() => {
     setMounted(true);
     
+    // Fetch locations
+    api.get("/locations?active_only=1").then(res => {
+      if(res.data?.data) {
+        setLocations(res.data.data);
+      }
+    }).catch(console.error);
+
     if (editId) {
       setLoading(true);
       let fetchEndpoint = `/projects/${editId}`;
@@ -601,7 +609,17 @@ function PostRequirementContent() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="city">City</Label>
-                  <Input required id="city" value={formData.city} onChange={(e) => setFormData({...formData, city: e.target.value})} />
+                  <Select required value={formData.city} onValueChange={(val) => setFormData({...formData, city: val || ""})}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select City" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {locations.map((loc) => (
+                        <SelectItem key={loc.id} value={loc.name}>{loc.name}</SelectItem>
+                      ))}
+                      {locations.length === 0 && <SelectItem value="Patna">Patna</SelectItem>}
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="district">District / Area</Label>

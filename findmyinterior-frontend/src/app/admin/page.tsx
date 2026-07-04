@@ -12,6 +12,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { VerificationAdminPanel } from "@/components/admin/VerificationAdminPanel";
+import { LocationsAdminPanel } from "@/components/admin/LocationsAdminPanel";
+import { SettingsAdminPanel } from "@/components/admin/SettingsAdminPanel";
+import { CMSAdminPanel } from "@/components/admin/CMSAdminPanel";
 import {
   CheckCircle,
   ClipboardList,
@@ -24,7 +27,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-type AdminTab = "overview" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries";
+type AdminTab = "overview" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings";
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -37,6 +40,8 @@ const tabs: { id: AdminTab; label: string }[] = [
   { id: "payments", label: "Payments" },
   { id: "subscriptions", label: "Plans" },
   { id: "categories", label: "Categories" },
+  { id: "locations", label: "Locations" },
+  { id: "settings", label: "Settings" },
   { id: "cms", label: "CMS" },
   { id: "inquiries", label: "Support" },
 ];
@@ -294,6 +299,11 @@ export default function AdminDashboard() {
           <VerificationAdminPanel />
         )}
 
+        {activeTab === "locations" && <LocationsAdminPanel />}
+        {activeTab === "settings" && <SettingsAdminPanel />}
+        {activeTab === "cms" && <CMSAdminPanel />}
+
+        {/* Database Explorer Tab */}
         {activeTab === "users" && (
           <Card>
             <CardHeader>

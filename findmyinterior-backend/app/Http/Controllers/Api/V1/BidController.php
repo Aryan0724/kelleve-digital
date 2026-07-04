@@ -71,13 +71,16 @@ class BidController extends Controller
         $validated['experience_years'] = $listing ? $listing->years_experience : 0;
         $validated['previous_projects_count'] = 0; // Default or calculate from won bids
 
-        // Check and deduct wallet fee (except for workers)
+        // Determine primary role to fetch specific bid fee
         $userRoles = $request->user()->roles->pluck('slug')->toArray();
-        $isWorker = in_array('worker', $userRoles);
+        $primaryRole = count($userRoles) > 0 ? $userRoles[0] : 'worker';
+        if ($primaryRole === 'designer') $primaryRole = 'interior'; // Map designer to interior if needed
         
-        $fee = config('marketplace.bid_fee', 10.00); // flat ₹10 fee
+        $settingKey = 'bid_fee_' . $primaryRole;
+        $feeSetting = \App\Models\Setting::where('key', $settingKey)->first();
+        $fee = $feeSetting ? (float) $feeSetting->value : 10.00; // fallback to 10.00
         
-        if (!$isWorker && $fee > 0) {
+        if ($fee > 0) {
             $balance = $this->walletService->getBalance($request->user());
             if ($balance < $fee) {
                 return $this->error("Insufficient wallet balance to submit bid. Please recharge ₹{$fee}.", 402);

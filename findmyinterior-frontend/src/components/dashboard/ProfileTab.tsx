@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -170,6 +172,7 @@ export function ProfileTab() {
   const [saved, setSaved] = useState(false);
   const [formData, setFormData] = useState<any>({});
   const [categories, setCategories] = useState<any[]>([]);
+  const [locations, setLocations] = useState<any[]>([]);
 
   // Completion score (out of 13 fields)
   const fields = [
@@ -186,11 +189,13 @@ export function ProfileTab() {
 
   const fetchData = async () => {
     try {
-      const [listingsRes, categoriesRes] = await Promise.all([
+      const [listingsRes, categoriesRes, locationsRes] = await Promise.all([
         api.get("/user/listings").catch(() => ({ data: { data: [] } })),
         api.get("/categories"),
+        api.get("/locations?active_only=1").catch(() => ({ data: { data: [] } })),
       ]);
       setCategories(categoriesRes.data || []);
+      setLocations(locationsRes.data?.data || []);
       if (listingsRes.data.data.length > 0) {
         const l = listingsRes.data.data[0];
         setListing(l);
@@ -360,13 +365,26 @@ export function ProfileTab() {
               <Input name="whatsapp" value={formData.whatsapp || ""} onChange={handleChange} placeholder="Same as phone or different" />
             </Field>
 
-            <Field label="City" icon={MapPin}>
-              <Input name="city" value={formData.city || ""} onChange={handleChange} placeholder="Patna" />
-            </Field>
-
-            <Field label="District" icon={MapPin}>
-              <Input name="district" value={formData.district || ""} onChange={handleChange} placeholder="Patna" />
-            </Field>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 col-span-2">
+              <div>
+                <Label className="text-sm font-medium text-slate-700">City</Label>
+                <Select value={formData.city} onValueChange={(val) => setFormData({ ...formData, city: val || "" })}>
+                  <SelectTrigger className="w-full">
+                    <SelectValue placeholder="Select City" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {locations.map((loc) => (
+                      <SelectItem key={loc.id} value={loc.name}>{loc.name}</SelectItem>
+                    ))}
+                    {locations.length === 0 && <SelectItem value="Patna">Patna</SelectItem>}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
+                <Label className="text-sm font-medium text-slate-700">District / Region</Label>
+                <Input name="district" value={formData.district || ""} onChange={handleChange} placeholder="District" />
+              </div>
+            </div>
 
             <Field label="Years of Experience" icon={Briefcase}>
               <Input type="number" name="years_experience" value={formData.years_experience || ""} onChange={handleChange} placeholder="5" min={0} />

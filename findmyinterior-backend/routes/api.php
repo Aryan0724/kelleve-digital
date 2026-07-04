@@ -115,6 +115,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::get('districts', function () {
         return \App\Models\District::orderBy('name')->get();
     });
+    Route::get('locations', [\App\Http\Controllers\LocationController::class, 'index']);
     Route::apiResource('listings', ListingController::class)->only(['index', 'show']);
     Route::post('listings/{id}/click', [ListingController::class, 'trackClick']);
     Route::apiResource('builders', BuilderController::class)->only(['index', 'show']);
@@ -296,8 +297,13 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::delete('reviews/{id}', [AdminController::class, 'deleteReview']);
         
         Route::post('blogs', [AdminController::class, 'createBlog']);
+        Route::put('blogs/{id}', [AdminController::class, 'updateBlog']);
         Route::delete('blogs/{id}', [AdminController::class, 'deleteBlog']);
         
+        Route::apiResource('locations', \App\Http\Controllers\LocationController::class)->except(['index', 'show']);
+        Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index']);
+        Route::put('settings', [\App\Http\Controllers\SettingController::class, 'update']);
+
         Route::patch('builders/{id}/verify', [AdminController::class, 'verifyBuilder']);
         Route::patch('suppliers/{id}/verify', [AdminController::class, 'verifySupplier']);
         Route::patch('workers/{id}/verify', [AdminController::class, 'verifyWorker']);

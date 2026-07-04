@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Camera, CheckCircle2, Loader2, ShieldCheck, Star, Upload,
@@ -196,6 +198,7 @@ export function CompleteProfileTab() {
   const [profileType, setProfileType] = useState<string>("none");
   const [verificationData, setVerificationData] = useState<any>(null);
   const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
+  const [locations, setLocations] = useState<any[]>([]);
 
   const role = user?.role || 'homeowner';
   const isBusiness = ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business'].includes(role);
@@ -287,7 +290,14 @@ export function CompleteProfileTab() {
     }
   };
 
-  useEffect(() => { fetchData(); }, []);
+  useEffect(() => { 
+    fetchData(); 
+    api.get("/locations?active_only=1").then(res => {
+      if(res.data?.data) {
+        setLocations(res.data.data);
+      }
+    }).catch(console.error);
+  }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -440,9 +450,22 @@ export function CompleteProfileTab() {
                 <Field label="Phone Number" icon={Phone}>
                   <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="e.g. 9876543210" />
                 </Field>
-                <Field label="City" icon={MapPin}>
-                  <Input required name="city" value={formData.city} onChange={handleChange} placeholder="e.g. Patna" />
-                </Field>
+                <div>
+                  <Label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1.5">
+                    <MapPin className="w-3.5 h-3.5 text-slate-400" /> City *
+                  </Label>
+                  <Select required value={formData.city} onValueChange={(val) => setFormData({ ...formData, city: val || "" })}>
+                    <SelectTrigger className="w-full">
+                      <SelectValue placeholder="Select City" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {locations.map((loc) => (
+                        <SelectItem key={loc.id} value={loc.name}>{loc.name}</SelectItem>
+                      ))}
+                      {locations.length === 0 && <SelectItem value="Patna">Patna</SelectItem>}
+                    </SelectContent>
+                  </Select>
+                </div>
                 <Field label="District" icon={MapPin}>
                   <Input required name="district" value={formData.district} onChange={handleChange} placeholder="e.g. Patna" />
                 </Field>

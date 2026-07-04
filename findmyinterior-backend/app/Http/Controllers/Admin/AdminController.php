@@ -289,6 +289,44 @@ class AdminController extends Controller
     }
 
     /**
+     * PUT /api/v1/admin/blogs/{id}
+     */
+    public function updateBlog(Request $request, int $id): JsonResponse
+    {
+        $blog = Blog::findOrFail($id);
+        
+        $data = $request->validate([
+            'title'       => ['sometimes', 'string', 'max:255'],
+            'excerpt'     => ['sometimes', 'string', 'max:500'],
+            'content'     => ['sometimes', 'string'],
+            'cover_image' => ['nullable', 'url'],
+            'category'    => ['sometimes', 'string', 'max:100'],
+            'status'      => ['in:draft,published'],
+            'tags'        => ['nullable', 'array'],
+            'tags.*'      => ['string', 'max:100'],
+        ]);
+
+        if (isset($data['title'])) {
+            $data['slug'] = Str::slug($data['title']) . '-' . Str::random(6);
+        }
+        
+        if (isset($data['status']) && $data['status'] === 'published' && $blog->status !== 'published') {
+            $data['published_at'] = now();
+        }
+
+        $blog->update($data);
+
+        if (isset($data['tags'])) {
+            BlogTag::where('blog_id', $blog->id)->delete();
+            foreach ($data['tags'] as $tag) {
+                BlogTag::create(['blog_id' => $blog->id, 'tag' => $tag]);
+            }
+        }
+
+        return response()->json(['success' => true, 'message' => 'Blog post updated.', 'data' => $blog]);
+    }
+
+    /**
      * DELETE /api/v1/admin/blogs/{id}
      */
     public function deleteBlog(int $id): JsonResponse

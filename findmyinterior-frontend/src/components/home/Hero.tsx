@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import api from "@/lib/api";
 import { 
   MapPin, 
   ChevronDown, 
@@ -32,11 +33,18 @@ export function Hero() {
   const isPro = user && ['interior_designer', 'architect', 'contractor', 'builder', 'supplier'].includes(user.role);
   const isWorker = user?.role === 'worker';
 
-  const availableCities = [
-    "Patna", "Gaya", "Bhagalpur", "Muzaffarpur", "Purnia", 
-    "Darbhanga", "Bihar Sharif", "Arrah", "Begusarai", "Katihar"
-  ];
+  const [availableCities, setAvailableCities] = useState<string[]>(["Patna"]); // Default to Patna until loaded
 
+  useEffect(() => {
+    api.get("/locations?active_only=1").then(res => {
+      if (res.data?.data) {
+        setAvailableCities(res.data.data.map((loc: any) => loc.name));
+        if (res.data.data.length > 0 && city === "Patna") {
+          // keep patna or update if needed, but fetching allows dropdown to work
+        }
+      }
+    }).catch(console.error);
+  }, []);
   const availableBudgets = [
     "All Budget",
     "Under ₹50,000",
