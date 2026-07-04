@@ -207,7 +207,8 @@ export function Hero() {
                       <div 
                         key={c} 
                         className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm font-medium text-slate-700"
-                        onClick={() => {
+                        onMouseDown={(e) => {
+                          e.preventDefault(); // Prevent focus loss on input
                           setCity(c);
                           setShowCityDropdown(false);
                         }}
@@ -245,7 +246,8 @@ export function Hero() {
                       <div 
                         key={s} 
                         className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm font-medium text-slate-700"
-                        onClick={() => {
+                        onMouseDown={(e) => {
+                          e.preventDefault();
                           setService(s);
                           setShowServiceDropdown(false);
                         }}
@@ -279,7 +281,8 @@ export function Hero() {
                       <div 
                         key={b} 
                         className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm font-medium text-slate-700"
-                        onClick={() => {
+                        onMouseDown={(e) => {
+                          e.preventDefault();
                           setBudget(b === "All Budget" ? "" : b);
                           setShowBudgetDropdown(false);
                         }}

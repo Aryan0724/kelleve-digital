@@ -291,7 +291,9 @@ function PostRequirementContent() {
       window.location.href = '/dashboard';
 
     } catch (err: any) {
-      setError(err.response?.data?.message || "Failed to post opportunity");
+      console.error("POST requirement error:", err);
+      const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Failed to post opportunity";
+      setError(errMsg);
     } finally {
       setLoading(false);
     }
