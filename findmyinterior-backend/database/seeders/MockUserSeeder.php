@@ -229,7 +229,7 @@ class MockUserSeeder extends Seeder
 
             // Top 20% are verified
             $isVerified      = ($i < ($count * 0.2));
-            $verificationLevel = $isVerified ? 'verified_business' : 'basic';
+            $verificationLevel = $isVerified ? 'business_verified' : 'unverified';
 
             $user = User::create([
                 'name'               => $nameData['name'],
@@ -302,7 +302,7 @@ class MockUserSeeder extends Seeder
                 'is_active'          => true,
                 'is_mock'            => true,
                 'email_verified_at'  => now()->subDays(rand(10, 365)),
-                'verification_level' => $isVerified ? 'verified_business' : 'basic',
+                'verification_level' => $isVerified ? 'business_verified' : 'unverified',
                 'trust_score'        => rand(20, 80),
             ]);
 
@@ -356,7 +356,7 @@ class MockUserSeeder extends Seeder
                 'is_active'          => true,
                 'is_mock'            => true,
                 'email_verified_at'  => now()->subDays(rand(10, 365)),
-                'verification_level' => $isVerified ? 'verified_business' : 'basic',
+                'verification_level' => $isVerified ? 'business_verified' : 'unverified',
                 'trust_score'        => rand(30, 85),
             ]);
 
@@ -405,7 +405,7 @@ class MockUserSeeder extends Seeder
                 'is_active'          => true,
                 'is_mock'            => true,
                 'email_verified_at'  => now()->subDays(rand(30, 365)),
-                'verification_level' => 'verified_business',
+                'verification_level' => 'business_verified',
                 'trust_score'        => rand(70, 95),
             ]);
 
