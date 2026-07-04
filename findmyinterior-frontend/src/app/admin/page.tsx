@@ -29,7 +29,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-type AdminTab = "overview" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings";
+type AdminTab = "overview" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages";
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: "overview", label: "Overview" },
