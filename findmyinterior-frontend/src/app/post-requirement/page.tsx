@@ -259,13 +259,9 @@ function PostRequirementContent() {
 
       if (editId) {
         formDataPayload.append('_method', 'PUT');
-        await api.post(`${endpoint}/${editId}`, formDataPayload, {
-          headers: { 'Content-Type': undefined },
-        });
+        await api.post(`${endpoint}/${editId}`, formDataPayload);
       } else {
-        await api.post(endpoint, formDataPayload, {
-          headers: { 'Content-Type': undefined },
-        });
+        await api.post(endpoint, formDataPayload);
       }
       setLoading(false);
       // Hard navigate so dashboard re-mounts and fetches fresh data
