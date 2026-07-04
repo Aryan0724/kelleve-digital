@@ -6,7 +6,7 @@ import { Calendar, Eye, User, Tag, ArrowLeft, ChevronRight } from "lucide-react"
 async function getBlog(slug: string) {
   try {
     const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1"}/blogs/${slug}`,
+      `${process.env.NEXT_PUBLIC_API_URL || "https://find-my-interior-1.onrender.com/api/v1"}/blogs/${slug}`,
       { cache: "no-store" }
     );
     if (res.status === 404) return null;

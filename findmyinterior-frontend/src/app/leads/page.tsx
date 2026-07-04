@@ -20,7 +20,7 @@ async function getLeads(searchParams: any) {
       cleanParams.category = searchParams.search.toLowerCase().replace(/ /g, '-');
     }
     const params = new URLSearchParams(cleanParams).toString();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/requirements?${params}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://find-my-interior-1.onrender.com/api/v1'}/requirements?${params}`, {
       cache: 'no-store'
     });
     if (!res.ok) throw new Error('Failed to fetch');
