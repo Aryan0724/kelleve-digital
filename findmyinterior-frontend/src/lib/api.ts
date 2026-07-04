@@ -29,7 +29,8 @@ api.interceptors.response.use(
       if (typeof window !== 'undefined') {
         useAuthStore.getState().logout();
         window.location.href = '/login';
-        return new Promise(() => {}); // Prevent unhandled rejection overlay while redirecting
+        // Prevent unhandled rejection overlay but still reject the promise so the caller unblocks
+        return Promise.reject(error);
       }
     }
     return Promise.reject(error);
