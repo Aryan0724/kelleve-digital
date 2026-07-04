@@ -23,20 +23,20 @@ async function getProfessionals(searchParams: any) {
       }
     }
     const params = new URLSearchParams(cleanParams).toString();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/listings?${params}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://find-my-interior-1.onrender.com/api/v1'}/listings?${params}`, {
       cache: 'no-store'
     });
     if (!res.ok) throw new Error('Failed to fetch');
     return await res.json();
-  } catch (error) {
-    console.error(error);
-    return { data: [], meta: { current_page: 1, last_page: 1 } };
+  } catch (error: any) {
+    console.error("Fetch Error in ProfessionalsPage:", error);
+    return { data: [], meta: { current_page: 1, last_page: 1 }, error: error.message };
   }
 }
 
 export default async function ProfessionalsPage({ searchParams }: { searchParams: Promise<any> }) {
   const resolvedSearchParams = await searchParams;
-  const { data: listings, meta } = await getProfessionals(resolvedSearchParams);
+  const { data: listings, meta, error } = await getProfessionals(resolvedSearchParams);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -136,6 +136,9 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
               </Link>
             )) : (
               <div className="col-span-full py-12 text-center text-slate-500">
+                {error ? (
+                  <div className="text-red-500 font-bold mb-2">Error fetching data: {error}</div>
+                ) : null}
                 No professionals found matching your search criteria.
               </div>
             )}
