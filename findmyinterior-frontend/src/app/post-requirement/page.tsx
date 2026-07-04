@@ -280,11 +280,13 @@ function PostRequirementContent() {
         formDataPayload.append('image', imageFile);
       }
 
+      const requestTimeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Request timed out after 15 seconds. Please check your internet connection or try again.")), 15000));
+
       if (editId) {
         formDataPayload.append('_method', 'PUT');
-        await api.post(`${endpoint}/${editId}`, formDataPayload);
+        await Promise.race([api.post(`${endpoint}/${editId}`, formDataPayload), requestTimeout]);
       } else {
-        await api.post(endpoint, formDataPayload);
+        await Promise.race([api.post(endpoint, formDataPayload), requestTimeout]);
       }
       setLoading(false);
       // Hard navigate so dashboard re-mounts and fetches fresh data
@@ -294,6 +296,7 @@ function PostRequirementContent() {
       console.error("POST requirement error:", err);
       const errMsg = err.response?.data?.message || err.response?.data?.error || err.message || "Failed to post opportunity";
       setError(errMsg);
+      alert("Error: " + errMsg);
     } finally {
       setLoading(false);
     }
