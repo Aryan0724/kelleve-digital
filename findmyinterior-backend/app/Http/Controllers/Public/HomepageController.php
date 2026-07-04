@@ -94,13 +94,13 @@ class HomepageController extends Controller
 
         return [
             'stats'               => $stats,
-            'categories'          => CategoryResource::collection($categories),
-            'featured_listings'   => ListingResource::collection($featuredListings),
-            'featured_builders'   => BuilderResource::collection($featuredBuilders),
-            'possession_projects' => BuilderProjectResource::collection($possessionProjects),
-            'upcoming_projects'   => BuilderProjectResource::collection($upcomingProjects),
-            'featured_suppliers'  => SupplierResource::collection($featuredSuppliers),
-            'featured_workers'    => WorkerResource::collection($featuredWorkers),
+            'categories'          => CategoryResource::collection($categories)->resolve(),
+            'featured_listings'   => ListingResource::collection($featuredListings)->resolve(),
+            'featured_builders'   => BuilderResource::collection($featuredBuilders)->resolve(),
+            'possession_projects' => BuilderProjectResource::collection($possessionProjects)->resolve(),
+            'upcoming_projects'   => BuilderProjectResource::collection($upcomingProjects)->resolve(),
+            'featured_suppliers'  => SupplierResource::collection($featuredSuppliers)->resolve(),
+            'featured_workers'    => WorkerResource::collection($featuredWorkers)->resolve(),
         ];
         });
 
