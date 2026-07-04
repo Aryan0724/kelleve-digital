@@ -290,7 +290,7 @@ function PostRequirementContent() {
       }
       
       const controller = new AbortController();
-      const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s timeout
+      const timeoutId = setTimeout(() => controller.abort(), 300000); // 5 min timeout for slow uploads
       
       const res = await fetch(fullUrl, {
         method: 'POST',
@@ -769,7 +769,7 @@ function PostRequirementContent() {
                 Back
               </Button>
               <Button onClick={handleSubmit} disabled={loading} className="bg-orange-600 hover:bg-orange-700">
-                {loading ? (editId ? "Updating..." : "Posting...") : (editId ? "Update Opportunity" : "Post Opportunity")}
+                {loading ? (imageFile ? "Uploading Image... (Please Wait)" : (editId ? "Updating..." : "Posting...")) : (editId ? "Update Opportunity" : "Post Opportunity")}
               </Button>
             </>
           )}
