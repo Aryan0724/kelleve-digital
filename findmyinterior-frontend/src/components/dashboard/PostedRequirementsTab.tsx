@@ -21,8 +21,21 @@ export function PostedRequirementsTab({ data, fetchDashboard, onReviewClick }: {
       <CardContent>
         {requirements.length > 0 ? (
           <div className="space-y-4 mt-4">
-            {requirements.map((req: any) => (
-              <div key={req.id + (req.material_type ? '-rfq' : req.skill_required ? '-job' : '-proj')} className="flex flex-col md:flex-row justify-between p-4 border rounded-xl hover:shadow-md transition-shadow bg-white">
+            {requirements.map((req: any) => {
+              // Group bids that belong to this specific requirement
+              const reqTypeStr = req.material_type ? 'rfq' : req.skill_required ? 'job' : 'project';
+              const reqBids = (data?.received_bids || []).filter((b: any) => {
+                if (b.requirement_id !== req.id) return false;
+                const bType = String(b.requirement_type).toLowerCase();
+                if (reqTypeStr === 'project' && (bType.includes('project') || bType.includes('requirement'))) return true;
+                if (reqTypeStr === 'rfq' && bType.includes('rfq')) return true;
+                if (reqTypeStr === 'job' && bType.includes('workerjob')) return true;
+                return false;
+              });
+
+              return (
+              <div key={req.id + '-' + reqTypeStr} className="flex flex-col p-4 border rounded-xl hover:shadow-md transition-shadow bg-white">
+                <div className="flex flex-col md:flex-row justify-between mb-2">
                   <div className="flex-1 mb-4 md:mb-0">
                     <div className="flex items-center gap-2 mb-1">
                       <h4 className="font-semibold text-lg text-slate-900">{req.title || req.material_type || req.skill_required}</h4>
@@ -80,8 +93,43 @@ export function PostedRequirementsTab({ data, fetchDashboard, onReviewClick }: {
                       </Button>
                     )}
                   </div>
+                </div>
+
+                {/* Received Bids Section */}
+                {reqBids.length > 0 && (
+                  <div className="mt-2 pt-3 border-t border-slate-100">
+                    <div className="flex items-center justify-between mb-3">
+                      <h5 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
+                        <Gavel className="w-4 h-4 text-orange-500" /> 
+                        Received Bids ({reqBids.length})
+                      </h5>
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      {reqBids.slice(0, 4).map((bid: any) => (
+                        <div key={bid.id} className="bg-slate-50 rounded-lg p-3 border border-slate-100 flex items-center justify-between hover:bg-orange-50 transition-colors cursor-pointer" onClick={() => router.push(`/requirements/${req.id}?type=${req._type || 'project'}`)}>
+                          <div>
+                            <div className="font-semibold text-sm text-slate-900">{bid.professional?.name || 'Professional'}</div>
+                            <div className="text-xs text-slate-500 font-medium mt-0.5">Bid: ₹{bid.amount || bid.proposed_amount || bid.price || 'N/A'}</div>
+                          </div>
+                          {bid.is_awarded || bid.status === 'accepted' ? (
+                            <Badge className="bg-green-500 border-0">Awarded</Badge>
+                          ) : (
+                            <Badge variant="outline" className="text-slate-400 border-slate-200">Pending</Badge>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                    {reqBids.length > 4 && (
+                      <div className="mt-3 text-center">
+                        <Button variant="link" size="sm" className="text-orange-600 h-auto p-0" onClick={() => router.push(`/requirements/${req.id}?type=${req._type || 'project'}`)}>
+                          View all {reqBids.length} bids
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
-            ))}
+            )})}
           </div>
         ) : (
           <div className="text-center py-12 bg-slate-50 border rounded-lg text-slate-500">
