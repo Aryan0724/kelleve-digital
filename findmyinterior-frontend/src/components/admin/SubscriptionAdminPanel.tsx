@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export function SubscriptionAdminPanel() {
   const [plans, setPlans] = useState<any[]>([]);
@@ -178,8 +178,8 @@ export function SubscriptionAdminPanel() {
                 />
               </div>
               <div className="flex items-center gap-2">
-                <Switch checked={formData.is_active} onCheckedChange={c => setFormData({ ...formData, is_active: c })} />
-                <Label>Is Active?</Label>
+                <Checkbox id="is_active" checked={formData.is_active} onCheckedChange={c => setFormData({ ...formData, is_active: !!c })} />
+                <Label htmlFor="is_active">Is Active?</Label>
               </div>
             </CardContent>
             <CardFooter className="flex justify-end gap-2">
