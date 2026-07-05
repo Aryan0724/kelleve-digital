@@ -108,17 +108,17 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     // Dropdown Data
     Route::get('categories', function () {
         return \Illuminate\Support\Facades\Cache::remember('categories_dropdown', 3600, function() {
-            return \App\Models\Category::orderBy('sort_order')->get();
+            return \App\Models\Category::orderBy('sort_order')->get()->toArray();
         });
     });
     Route::get('cities', function () {
         return \Illuminate\Support\Facades\Cache::remember('cities_dropdown', 3600, function() {
-            return \App\Models\City::orderBy('name')->get();
+            return \App\Models\City::orderBy('name')->get()->toArray();
         });
     });
     Route::get('districts', function () {
         return \Illuminate\Support\Facades\Cache::remember('districts_dropdown', 3600, function() {
-            return \App\Models\District::orderBy('name')->get();
+            return \App\Models\District::orderBy('name')->get()->toArray();
         });
     });
     Route::get('locations', [\App\Http\Controllers\LocationController::class, 'index']);

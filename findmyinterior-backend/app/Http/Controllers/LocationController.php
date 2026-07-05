@@ -15,7 +15,7 @@ class LocationController extends Controller
             if ($request->has('active_only')) {
                 $query->where('is_active', true);
             }
-            return $query->orderBy('name')->get();
+            return $query->orderBy('name')->get()->toArray();
         });
 
         return response()->json(['success' => true, 'data' => $data]);
