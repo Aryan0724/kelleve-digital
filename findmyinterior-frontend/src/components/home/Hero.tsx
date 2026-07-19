@@ -76,12 +76,12 @@ export function Hero() {
   };
 
   return (
-    <section className="relative w-full min-h-[500px] flex items-center bg-white">
+    <section className="relative w-full min-h-[500px] flex items-center bg-white dark:bg-background">
       {/* Background Image with Gradient Fade */}
       <div 
         className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100"
       />
-      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent w-full md:w-[70%]" />
+      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-[#0a1c3a]/80 dark:md:bg-gradient-to-r dark:md:from-[#0a1c3a] dark:md:via-[#0a1c3a]/90 dark:md:to-transparent w-full md:w-[70%]" />
       
       <div className="container relative z-40 mx-auto px-4 py-10 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
         
@@ -90,52 +90,52 @@ export function Hero() {
 
 
           {user && user.role === 'customer' && (
-            <h1 className="text-3xl md:text-4xl lg:text-[3rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-2">
+            <h1 className="text-3xl md:text-4xl lg:text-[3rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.15] mb-2">
               Welcome back, {user.name.split(' ')[0]}!
             </h1>
           )}
 
           {isWorker ? (
             <>
-              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-5">
+              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.15] mb-5">
                 Find Regular Work in <span className="text-[#E8701A] relative inline-block">
                   Bihar
                   <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
                 </span>
               </h1>
-              <p className="text-base md:text-lg text-gray-700 mb-8 max-w-2xl font-medium leading-relaxed">
+              <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
                 Connect with top contractors, builders, and homeowners. Get daily wage and contract work directly on your dashboard.
               </p>
             </>
           ) : isPro ? (
             <>
-              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-5">
+              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.15] mb-5">
                 Grow Your Business in <span className="text-[#E8701A] relative inline-block">
                   Bihar
                   <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
                 </span>
               </h1>
-              <p className="text-base md:text-lg text-gray-700 mb-8 max-w-2xl font-medium leading-relaxed">
+              <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
                 Find new projects, submit quotes, and manage your incoming leads directly from your dashboard.
               </p>
             </>
           ) : (
             <>
-              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] leading-[1.15] mb-5">
+              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.15] mb-5">
                 Find & Hire The Best<br/>
                 Interior Experts in <span className="text-[#E8701A] relative inline-block">
                   Bihar
                   <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
                 </span>
               </h1>
-              <p className="text-base md:text-lg text-gray-700 mb-8 max-w-2xl font-medium leading-relaxed">
+              <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
                 From top-rated Interior Designers to skilled Contractors & Material Suppliers. Compare quotes and save up to 30% on your next home project.
               </p>
             </>
           )}
 
           {/* Value Props */}
-          <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-x-6 gap-y-4 mb-10 p-4 rounded-2xl glass-panel opacity-0 animate-fade-in-up delay-100">
+          <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-x-6 gap-y-4 mb-10 p-4 rounded-2xl premium-glass opacity-0 animate-fade-in-up delay-100">
             {isWorker ? (
               <>
                 <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
@@ -182,14 +182,14 @@ export function Hero() {
           {!isWorker ? (
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-              className="w-full max-w-3xl bg-white/95 md:bg-white backdrop-blur-xl p-3 md:p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/60 flex flex-col relative z-50 opacity-0 animate-fade-in-up delay-200"
+              className="w-full max-w-3xl premium-glass p-3 md:p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex flex-col relative z-50 opacity-0 animate-fade-in-up delay-200"
             >
-              <div className="w-full text-center md:hidden mb-2 pt-1 pb-2 border-b border-gray-100">
-                <span className="text-[10px] sm:text-xs font-bold text-[#0a1c3a] tracking-wider uppercase">FIND THE RIGHT PROFESSIONAL FOR YOUR PROJECT</span>
+              <div className="w-full text-center md:hidden mb-2 pt-1 pb-2 border-b border-gray-100 dark:border-white/10">
+                <span className="text-[10px] sm:text-xs font-bold text-[#0a1c3a] dark:text-gray-300 tracking-wider uppercase">FIND THE RIGHT PROFESSIONAL FOR YOUR PROJECT</span>
               </div>
               <div className="flex flex-col md:flex-row gap-2 w-full">
               {/* City */}
-              <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-lg transition relative">
+              <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition relative">
                 <span className="text-[0.65rem] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Select City</span>
                 <div className="flex items-center justify-between">
                   <input 
@@ -201,18 +201,18 @@ export function Hero() {
                     }}
                     onFocus={() => setShowCityDropdown(true)}
                     onBlur={() => setTimeout(() => setShowCityDropdown(false), 200)}
-                    className="bg-transparent font-semibold text-[#0a1c3a] outline-none w-full"
+                    className="bg-transparent font-semibold text-[#0a1c3a] dark:text-white outline-none w-full"
                     placeholder="e.g. Patna"
                   />
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
                 {/* City Autocomplete Dropdown */}
                 {showCityDropdown && filteredCities.length > 0 && (
-                  <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
+                  <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#0a1c3a] border border-gray-200 dark:border-white/10 shadow-xl rounded-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
                     {filteredCities.map(c => (
                       <div 
                         key={c} 
-                        className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm font-medium text-slate-700"
+                        className="px-4 py-2 hover:bg-orange-50 dark:hover:bg-white/10 cursor-pointer text-sm font-medium text-slate-700 dark:text-gray-300"
                         onMouseDown={(e) => {
                           e.preventDefault(); // Prevent focus loss on input
                           setCity(c);
@@ -227,7 +227,7 @@ export function Hero() {
               </div>
 
               {/* Service */}
-              <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-lg transition relative">
+              <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition relative">
                 <span className="text-[0.65rem] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Select Service</span>
                 <div className="flex items-center justify-between">
                   <input 
@@ -239,7 +239,7 @@ export function Hero() {
                     }}
                     onFocus={() => setShowServiceDropdown(true)}
                     onBlur={() => setTimeout(() => setShowServiceDropdown(false), 200)}
-                    className="bg-transparent font-semibold text-[#0a1c3a] outline-none w-full"
+                    className="bg-transparent font-semibold text-[#0a1c3a] dark:text-white outline-none w-full"
                     placeholder="e.g. Contractor"
                   />
                   <ChevronDown className="w-4 h-4 text-gray-400" />
@@ -247,11 +247,11 @@ export function Hero() {
                 
                 {/* Service Autocomplete Dropdown */}
                 {showServiceDropdown && filteredServices.length > 0 && (
-                  <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
+                  <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#0a1c3a] border border-gray-200 dark:border-white/10 shadow-xl rounded-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
                     {filteredServices.map(s => (
                       <div 
                         key={s} 
-                        className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm font-medium text-slate-700"
+                        className="px-4 py-2 hover:bg-orange-50 dark:hover:bg-white/10 cursor-pointer text-sm font-medium text-slate-700 dark:text-gray-300"
                         onMouseDown={(e) => {
                           e.preventDefault();
                           setService(s);
@@ -266,7 +266,7 @@ export function Hero() {
               </div>
 
               {/* Budget */}
-              <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-lg transition relative">
+              <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition relative">
                 <span className="text-[0.65rem] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Select Budget</span>
                 <div 
                   className="flex items-center justify-between w-full"
@@ -274,7 +274,7 @@ export function Hero() {
                   onBlur={() => setTimeout(() => setShowBudgetDropdown(false), 200)}
                   tabIndex={0}
                 >
-                  <div className="flex items-center font-semibold text-[#0a1c3a] truncate">
+                  <div className="flex items-center font-semibold text-[#0a1c3a] dark:text-white truncate">
                     <Wallet className="w-4 h-4 mr-1.5 text-gray-400 shrink-0" /> {budget || "All Budget"}
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400 shrink-0" />
@@ -282,11 +282,11 @@ export function Hero() {
                 
                 {/* Budget Dropdown */}
                 {showBudgetDropdown && (
-                  <div className="absolute top-full left-0 w-full mt-2 bg-white border border-gray-200 shadow-xl rounded-lg overflow-hidden z-50">
+                  <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#0a1c3a] border border-gray-200 dark:border-white/10 shadow-xl rounded-lg overflow-hidden z-50">
                     {availableBudgets.map(b => (
                       <div 
                         key={b} 
-                        className="px-4 py-2 hover:bg-orange-50 cursor-pointer text-sm font-medium text-slate-700"
+                        className="px-4 py-2 hover:bg-orange-50 dark:hover:bg-white/10 cursor-pointer text-sm font-medium text-slate-700 dark:text-gray-300"
                         onMouseDown={(e) => {
                           e.preventDefault();
                           setBudget(b === "All Budget" ? "" : b);
@@ -303,7 +303,7 @@ export function Hero() {
               {/* Button */}
               <button 
                 type="submit"
-                className="w-full md:w-auto bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white font-bold text-sm px-8 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center whitespace-nowrap md:h-full mt-2 md:mt-0"
+                className="w-full md:w-auto bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white font-bold text-sm px-8 py-4 rounded-xl shadow-lg hover:shadow-orange-500/25 transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center whitespace-nowrap md:h-full mt-2 md:mt-0"
               >
                 SEARCH PROS <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">→</span>
               </button>
@@ -339,7 +339,7 @@ export function Hero() {
 
         {/* Right Content - Lead Card */}
         <div className="w-full lg:w-[38%] max-w-sm mt-12 lg:mt-0 opacity-0 animate-fade-in-right delay-200">
-          <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] overflow-hidden border border-gray-100 transform transition-transform duration-500 hover:scale-[1.02]">
+          <div className="premium-glass rounded-3xl overflow-hidden transform transition-transform duration-500 hover:scale-[1.02]">
             {user ? (
               <>
                 <div className="bg-gradient-to-br from-[#0a1c3a] to-[#1a2c4a] text-white p-8 relative overflow-hidden">
@@ -376,35 +376,35 @@ export function Hero() {
                 </div>
                 <div className="p-6 space-y-5">
                   <div className="flex items-start">
-                    <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
+                    <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-full mr-4 shrink-0">
                       <FileText className="w-4 h-4 text-[#E8701A]" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-800">Share Your Requirement</h4>
+                      <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200">Share Your Requirement</h4>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
+                    <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-full mr-4 shrink-0">
                       <ShieldCheck className="w-4 h-4 text-[#E8701A]" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-800">Receive Multiple Quotes</h4>
+                      <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200">Receive Multiple Quotes</h4>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
+                    <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-full mr-4 shrink-0">
                       <IndianRupee className="w-4 h-4 text-[#E8701A]" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-800">Compare & Save Money</h4>
+                      <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200">Compare & Save Money</h4>
                     </div>
                   </div>
                   <div className="flex items-start">
-                    <div className="bg-orange-100 p-2 rounded-full mr-4 shrink-0">
+                    <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-full mr-4 shrink-0">
                       <CheckCircle2 className="w-4 h-4 text-[#E8701A]" />
                     </div>
                     <div>
-                      <h4 className="font-semibold text-sm text-gray-800">Hire the Best Expert</h4>
+                      <h4 className="font-semibold text-sm text-gray-800 dark:text-gray-200">Hire the Best Expert</h4>
                     </div>
                   </div>
                   

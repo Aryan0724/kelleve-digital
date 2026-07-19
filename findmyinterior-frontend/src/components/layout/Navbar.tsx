@@ -122,7 +122,7 @@ export function Navbar() {
       </div>
 
       {/* 2. MAIN NAVBAR */}
-      <header className="w-full bg-white border-b border-gray-100 py-3 px-4 shadow-sm">
+      <header className="w-full premium-glass sticky top-0 z-40 py-3 px-4 transition-all duration-300">
         <div className="container mx-auto flex items-center justify-between gap-4">
           
           {/* Logo */}
@@ -217,7 +217,7 @@ export function Navbar() {
 
           {/* Mobile Menu Toggle */}
           <button 
-            className="xl:hidden p-2 text-gray-600 hover:text-[#0a1c3a] focus:outline-none"
+            className="xl:hidden p-2 text-gray-600 dark:text-white hover:text-[#0a1c3a] dark:hover:text-gray-300 focus:outline-none"
             onClick={() => setIsMobileMenuOpen(true)}
           >
             <Menu className="w-7 h-7" />
@@ -226,51 +226,51 @@ export function Navbar() {
       </header>
 
       {/* 3. SUB NAVBAR */}
-      <div className="w-full bg-white border-b border-gray-100 hidden md:block shadow-sm">
+      <div className="w-full bg-white/95 dark:bg-[#0a1c3a]/95 backdrop-blur-md border-b border-gray-100 dark:border-white/10 hidden md:block shadow-sm z-30">
         <div className="container mx-auto">
-          <ul className="flex items-center justify-center space-x-8 py-3 text-sm font-medium text-gray-600">
+          <ul className="flex items-center justify-center space-x-8 py-3 text-sm font-medium text-gray-600 dark:text-gray-300">
             <li>
-              <Link href="/professionals?search=Interior+Designer" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/professionals?search=Interior+Designer" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <Sofa className="w-4 h-4 mr-1.5" /> Interior Designers
               </Link>
             </li>
             <li>
-              <Link href="/professionals?search=Architect" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/professionals?search=Architect" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <Building2 className="w-4 h-4 mr-1.5" /> Architects
               </Link>
             </li>
             <li>
-              <Link href="/professionals?search=Contractor" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/professionals?search=Contractor" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <HardHat className="w-4 h-4 mr-1.5" /> Contractors
               </Link>
             </li>
             <li>
-              <Link href="/professionals?search=Skilled+Worker" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/professionals?search=Skilled+Worker" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <Hammer className="w-4 h-4 mr-1.5" /> Skilled Workers
               </Link>
             </li>
             <li>
-              <Link href="/professionals?search=Supplier" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/professionals?search=Supplier" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <Truck className="w-4 h-4 mr-1.5" /> Suppliers
               </Link>
             </li>
             <li>
-              <Link href="/projects" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/projects" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <Home className="w-4 h-4 mr-1.5" /> Projects
               </Link>
             </li>
             <li>
-              <Link href="/projects?type=builder" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/projects?type=builder" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <Building className="w-4 h-4 mr-1.5" /> Builder Projects <span className="ml-1 text-[10px] bg-red-500 text-white px-1 py-0.5 rounded-sm font-bold leading-none">NEW</span>
               </Link>
             </li>
             <li>
-              <Link href="/professionals?search=Brand" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/professionals?search=Brand" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <Tag className="w-4 h-4 mr-1.5" /> Brands
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="flex items-center hover:text-[#E8701A] transition-colors">
+              <Link href="/contact" className="flex items-center hover:text-[#E8701A] hover:-translate-y-0.5 transition-all">
                 <PhoneCall className="w-4 h-4 mr-1.5" /> Contact
               </Link>
             </li>
@@ -280,8 +280,8 @@ export function Navbar() {
 
       {/* MOBILE MENU */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-white dark:bg-gray-900 flex flex-col xl:hidden">
-          <div className="flex items-center justify-between p-4 border-b dark:border-gray-800">
+        <div className="fixed inset-0 z-50 premium-glass flex flex-col xl:hidden">
+          <div className="flex items-center justify-between p-4 border-b dark:border-white/10">
             <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center">
               <img src="/logo.jpg" alt="Find My Interior" className="h-12 w-auto" />
             </Link>
