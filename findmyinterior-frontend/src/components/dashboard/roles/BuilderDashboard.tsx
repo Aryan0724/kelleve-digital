@@ -32,7 +32,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
   const renderSidebarButton = (id: string, icon: React.ReactNode, label: string) => (
     <button 
       onClick={() => setActiveTab(id)}
-      className={`flex items-center p-4 border-b md:border-r-0 border-r text-left font-medium whitespace-nowrap md:whitespace-normal transition-colors ${activeTab === id ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+      className={`flex items-center p-3 md:p-4 border-b md:border-r-0 border-r text-left font-medium text-xs sm:text-sm md:text-base transition-colors w-full h-full ${activeTab === id ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
     >
       <div className={`mr-3 shrink-0 ${activeTab === id ? 'text-orange-600' : 'text-slate-400'}`}>
         {icon}
@@ -94,8 +94,8 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
               </CardContent>
             </Card>
 
-            <div className="bg-white border rounded-xl overflow-hidden flex md:flex-col overflow-x-auto md:overflow-visible no-scrollbar">
-              <div className="flex md:flex-col min-w-max md:min-w-0">
+            <div className="bg-white border rounded-xl overflow-hidden w-full">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
                 {renderSidebarButton("projects", <Building className="h-5 w-5" />, "Projects")}
                 {renderSidebarButton("possession_projects", <Building className="h-5 w-5" />, "Possession Projects")}
                 {renderSidebarButton("contractor_requests", <HardHat className="h-5 w-5" />, "Contractor Requests")}

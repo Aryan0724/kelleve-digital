@@ -213,10 +213,15 @@ export function Navbar() {
                   </button>
                 </Link>
               </div>
-            )}
           </div>
 
-          </ul>
+          {/* Mobile Menu Toggle */}
+          <button 
+            className="xl:hidden p-2 text-gray-600 hover:text-[#0a1c3a] focus:outline-none"
+            onClick={() => setIsMobileMenuOpen(true)}
+          >
+            <Menu className="w-7 h-7" />
+          </button>
         </div>
       </div>
 
