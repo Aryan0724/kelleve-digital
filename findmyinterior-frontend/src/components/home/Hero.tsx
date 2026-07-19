@@ -138,40 +138,40 @@ export function Hero() {
           <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-x-6 gap-y-4 mb-10 p-4 rounded-2xl premium-glass opacity-0 animate-fade-in-up delay-100">
             {isWorker ? (
               <>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Verified Jobs
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <FileText className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Direct Contacts
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <IndianRupee className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Best Daily Rates
                 </div>
               </>
             ) : isPro ? (
               <>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Verified Leads
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <FileText className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Direct Clients
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <IndianRupee className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Zero Commission
                 </div>
               </>
             ) : (
               <>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Verified Pros
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <FileText className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Multiple Quotes
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <IndianRupee className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Best Prices
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
                   <CheckCircle2 className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> On-Time
                 </div>
               </>

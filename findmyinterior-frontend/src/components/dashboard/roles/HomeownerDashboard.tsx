@@ -38,9 +38,9 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   const renderSidebarButton = (id: string, icon: React.ReactNode, label: string) => (
     <button 
       onClick={() => setActiveTab(id)}
-      className={`flex items-center p-3 md:p-4 border-b md:border-r-0 border-r text-left font-medium text-xs sm:text-sm md:text-base transition-colors w-full h-full ${activeTab === id ? 'bg-orange-50 text-orange-700' : 'hover:bg-slate-50 text-slate-700'}`}
+      className={`flex items-center p-3 md:p-4 border-b md:border-r-0 border-r dark:border-slate-800 text-left font-medium text-xs sm:text-sm md:text-base transition-colors w-full h-full ${activeTab === id ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-500' : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}
     >
-      <div className={`mr-3 shrink-0 ${activeTab === id ? 'text-orange-600' : 'text-slate-400'}`}>
+      <div className={`mr-3 shrink-0 ${activeTab === id ? 'text-orange-600' : 'text-slate-400 dark:text-slate-500'}`}>
         {icon}
       </div>
       {label}
@@ -48,15 +48,15 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   );
 
   return (
-    <div className="bg-slate-50 min-h-screen">
-      <div className="bg-white border-b">
+    <div className="bg-slate-50 dark:bg-background min-h-screen transition-colors duration-300">
+      <div className="bg-white dark:bg-slate-900 border-b dark:border-slate-800 transition-colors duration-300">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 text-slate-900 font-bold">
+          <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold">
             <LayoutDashboard className="h-5 w-5 text-orange-600" /> {user?.name}'s Workspace
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm font-medium text-slate-600 hidden md:block">HOMEOWNER</span>
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600">
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-400 hidden md:block">HOMEOWNER</span>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400">
               <LogOut className="h-4 w-4 mr-2" /> Logout
             </Button>
           </div>
@@ -69,7 +69,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
           <div className="lg:col-span-1 space-y-4">
             <Card>
               <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
+                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 dark:ring-orange-900/30 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 dark:text-slate-500 shadow">
                   <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
                   {user?.avatar && (
                     <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
@@ -80,7 +80,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
               </CardContent>
             </Card>
 
-            <div className="bg-white border rounded-xl overflow-hidden w-full">
+            <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
                 {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
                 {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Bids")}
@@ -98,32 +98,32 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
                 <Card>
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 mb-1">Active Projects</div>
-                    <div className="text-2xl font-bold text-slate-900">{data?.projects?.filter((p:any) => p.status === 'in_progress').length || 0}</div>
+                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Active Projects</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'in_progress').length || 0}</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 mb-1">Open Requirements</div>
-                    <div className="text-2xl font-bold text-slate-900">{data?.projects?.filter((p:any) => p.status === 'open').length || 0}</div>
+                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Open Requirements</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'open').length || 0}</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 mb-1">Received Bids</div>
-                    <div className="text-2xl font-bold text-slate-900">{data?.received_bids?.length || 0}</div>
+                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Received Bids</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.received_bids?.length || 0}</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 mb-1">Unread Messages</div>
-                    <div className="text-2xl font-bold text-slate-900">{data?.unread_messages || 0}</div>
+                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Unread Messages</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.unread_messages || 0}</div>
                   </CardContent>
                 </Card>
                 <Card>
                   <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 mb-1">Completed Projects</div>
-                    <div className="text-2xl font-bold text-slate-900">{data?.projects?.filter((p:any) => p.status === 'completed').length || 0}</div>
+                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Completed Projects</div>
+                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'completed').length || 0}</div>
                   </CardContent>
                 </Card>
               </div>
@@ -139,20 +139,20 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                   {((data?.projects || []).concat(data?.rfqs || []).concat(data?.jobs || [])).length > 0 ? (
                     <div className="space-y-4 mt-4">
                       {((data?.projects || []).concat(data?.rfqs || []).concat(data?.jobs || [])).map((req: any) => (
-                        <div key={req.id + (req.material_type ? '-rfq' : req.skill_required ? '-job' : '-proj')} className="flex flex-col md:flex-row justify-between p-4 border rounded-xl hover:shadow-md transition-shadow bg-white">
+                        <div key={req.id + (req.material_type ? '-rfq' : req.skill_required ? '-job' : '-proj')} className="flex flex-col md:flex-row justify-between p-4 border dark:border-slate-700 rounded-xl hover:shadow-md transition-shadow bg-white dark:bg-slate-800">
                             <div className="flex-1 mb-4 md:mb-0">
                               <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-semibold text-lg text-slate-900">{req.title || req.material_type || req.skill_required}</h4>
-                                <Badge variant="outline" className="bg-slate-100">{req.status}</Badge>
+                                <h4 className="font-semibold text-lg text-slate-900 dark:text-white">{req.title || req.material_type || req.skill_required}</h4>
+                                <Badge variant="outline" className="bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">{req.status}</Badge>
                                 {req.material_type && <Badge variant="secondary">Material RFQ</Badge>}
                                 {req.skill_required && <Badge variant="secondary">Worker Job</Badge>}
                               </div>
-                              <div className="text-sm text-slate-500 mb-2 flex items-center gap-4">
+                              <div className="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-4">
                                 <span>{req.city}</span>
                                 <span>•</span>
                                 <span>{req.created_at ? new Date(req.created_at).toLocaleDateString() : 'Recent'}</span>
                               </div>
-                              <p className="text-slate-600 text-sm line-clamp-2">{req.description || `Required: ${req.quantity || req.number_of_workers}`}</p>
+                              <p className="text-slate-600 dark:text-slate-300 text-sm line-clamp-2">{req.description || `Required: ${req.quantity || req.number_of_workers}`}</p>
                             </div>
                             <div className="flex flex-col gap-2 shrink-0">
                               <div className="flex flex-wrap gap-2">
