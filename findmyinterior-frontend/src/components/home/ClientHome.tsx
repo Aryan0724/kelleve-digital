@@ -26,7 +26,7 @@ export function ClientHome() {
   }, []);
 
   if (!mounted) {
-    return <div className="min-h-screen bg-white" />; // Prevent hydration mismatch flash
+    return <div className="min-h-screen bg-white dark:bg-background" />; // Prevent hydration mismatch flash
   }
 
   if (user && Object.keys(user).length > 0) {

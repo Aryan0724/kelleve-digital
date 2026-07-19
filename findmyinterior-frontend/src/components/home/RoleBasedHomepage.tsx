@@ -240,10 +240,10 @@ const ROLE_CONFIG: Record<string, any> = {
 function LeadCard({ item, role }: { item: any; role: string }) {
   const isWorkerJob = role === "worker" || role === "skilled_worker";
   return (
-    <div className="bg-white border border-slate-100 rounded-xl p-4 hover:shadow-md transition-all hover:-translate-y-0.5 group">
+    <div className="premium-card rounded-xl p-4 group">
       <div className="flex justify-between items-start gap-3">
         <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-900 text-sm line-clamp-1 group-hover:text-orange-600 transition-colors">
+          <h4 className="font-semibold text-slate-900 dark:text-white text-sm line-clamp-1 group-hover:text-orange-600 transition-colors">
             {item.title}
           </h4>
           <p className="text-xs text-slate-500 mt-1 line-clamp-2">{item.description}</p>
@@ -293,8 +293,8 @@ function LeadCard({ item, role }: { item: any; role: string }) {
 
 function ListingCard({ item }: { item: any }) {
   return (
-    <div className="bg-white border border-slate-100 rounded-xl p-4 hover:shadow-md transition-all group flex gap-4 items-center">
-      <div className="w-16 h-16 rounded-lg bg-slate-100 flex-shrink-0 overflow-hidden">
+    <div className="premium-card rounded-xl p-4 group flex gap-4 items-center">
+      <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-white/10 flex-shrink-0 overflow-hidden">
         {item.image_url ? (
            <img src={item.image_url} alt={item.business_name} className="w-full h-full object-cover" />
         ) : (
@@ -302,7 +302,7 @@ function ListingCard({ item }: { item: any }) {
         )}
       </div>
       <div className="flex-1 min-w-0">
-        <h4 className="font-semibold text-slate-900 text-sm line-clamp-1 group-hover:text-orange-600 transition-colors">
+        <h4 className="font-semibold text-slate-900 dark:text-white text-sm line-clamp-1 group-hover:text-orange-600 transition-colors">
           {item.business_name}
         </h4>
         <div className="flex items-center gap-1 mt-1">
@@ -334,12 +334,12 @@ function QuickStats({ stats, config }: { stats: any; config: any }) {
         const Icon = s.icon;
         return (
           <Link key={i} href={s.href}>
-            <div className="bg-white border border-slate-100 rounded-xl p-4 hover:shadow-sm hover:border-orange-200 transition-all cursor-pointer h-full flex flex-col justify-between">
+            <div className="premium-card rounded-xl p-4 h-full flex flex-col justify-between">
               <div className="flex items-center gap-2 mb-3">
                 <Icon className="w-4 h-4 text-orange-500" />
-                <span className="text-xs font-medium text-slate-500">{s.label}</span>
+                <span className="text-xs font-medium text-slate-500 dark:text-gray-400">{s.label}</span>
               </div>
-              <div className="text-2xl font-bold text-slate-900">{stats[s.key] ?? 0}</div>
+              <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats[s.key] ?? 0}</div>
             </div>
           </Link>
         )
@@ -413,7 +413,7 @@ export function RoleBasedHomepage() {
   };
 
   return (
-    <div className="w-full bg-slate-50 min-h-screen pb-12">
+    <div className="w-full bg-slate-50 dark:bg-background min-h-screen pb-12">
       {/* ─── Personalized Hero ──────────────────────────────────── */}
       <div className={`w-full bg-gradient-to-r ${config.color} text-white`}>
         <div className="container mx-auto px-4 py-10 md:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
@@ -480,7 +480,7 @@ export function RoleBasedHomepage() {
           return (
             <div key={idx} className="mb-10">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-bold text-slate-800">{feed.title}</h3>
+                <h3 className="text-lg font-bold text-slate-800 dark:text-white">{feed.title}</h3>
                 <Link href={feed.type === 'listing' ? '/professionals' : feed.type === 'supplier' ? '/materials' : '/dashboard'} className="text-sm text-orange-600 font-semibold hover:text-orange-700 flex items-center gap-1">
                   View All <ChevronRight className="w-4 h-4" />
                 </Link>
@@ -489,10 +489,10 @@ export function RoleBasedHomepage() {
               {loading ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {[1, 2, 3].map((i) => (
-                    <div key={i} className="bg-white border border-slate-100 rounded-xl p-4 animate-pulse">
-                      <div className="h-4 bg-slate-200 rounded w-3/4 mb-2" />
-                      <div className="h-3 bg-slate-100 rounded w-full mb-3" />
-                      <div className="h-3 bg-slate-100 rounded w-1/2" />
+                    <div key={i} className="premium-card rounded-xl p-4 animate-pulse">
+                      <div className="h-4 bg-slate-200 dark:bg-slate-700 rounded w-3/4 mb-2" />
+                      <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-full mb-3" />
+                      <div className="h-3 bg-slate-100 dark:bg-slate-800 rounded w-1/2" />
                     </div>
                   ))}
                 </div>
@@ -507,7 +507,7 @@ export function RoleBasedHomepage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 text-slate-400 bg-white rounded-xl border border-slate-100">
+                <div className="text-center py-10 text-slate-400 dark:text-gray-500 premium-card rounded-xl">
                   <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
                   <p className="text-sm">{feed.empty || "No items to show."}</p>
                 </div>
