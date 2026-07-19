@@ -30,7 +30,6 @@ import {
   LayoutDashboard,
   LogOut,
   MessageSquare,
-  MessageSquare,
   ShieldAlert,
   Moon,
   Sun,
@@ -213,6 +212,7 @@ export function Navbar() {
                   </button>
                 </Link>
               </div>
+            )}
           </div>
 
           {/* Mobile Menu Toggle */}
@@ -222,6 +222,59 @@ export function Navbar() {
           >
             <Menu className="w-7 h-7" />
           </button>
+        </div>
+      </header>
+
+      {/* 3. SUB NAVBAR */}
+      <div className="w-full bg-white border-b border-gray-100 hidden md:block shadow-sm">
+        <div className="container mx-auto">
+          <ul className="flex items-center justify-center space-x-8 py-3 text-sm font-medium text-gray-600">
+            <li>
+              <Link href="/professionals?search=Interior+Designer" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <Sofa className="w-4 h-4 mr-1.5" /> Interior Designers
+              </Link>
+            </li>
+            <li>
+              <Link href="/professionals?search=Architect" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <Building2 className="w-4 h-4 mr-1.5" /> Architects
+              </Link>
+            </li>
+            <li>
+              <Link href="/professionals?search=Contractor" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <HardHat className="w-4 h-4 mr-1.5" /> Contractors
+              </Link>
+            </li>
+            <li>
+              <Link href="/professionals?search=Skilled+Worker" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <Hammer className="w-4 h-4 mr-1.5" /> Skilled Workers
+              </Link>
+            </li>
+            <li>
+              <Link href="/professionals?search=Supplier" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <Truck className="w-4 h-4 mr-1.5" /> Suppliers
+              </Link>
+            </li>
+            <li>
+              <Link href="/projects" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <Home className="w-4 h-4 mr-1.5" /> Projects
+              </Link>
+            </li>
+            <li>
+              <Link href="/projects?type=builder" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <Building className="w-4 h-4 mr-1.5" /> Builder Projects <span className="ml-1 text-[10px] bg-red-500 text-white px-1 py-0.5 rounded-sm font-bold leading-none">NEW</span>
+              </Link>
+            </li>
+            <li>
+              <Link href="/professionals?search=Brand" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <Tag className="w-4 h-4 mr-1.5" /> Brands
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="flex items-center hover:text-[#E8701A] transition-colors">
+                <PhoneCall className="w-4 h-4 mr-1.5" /> Contact
+              </Link>
+            </li>
+          </ul>
         </div>
       </div>
 
