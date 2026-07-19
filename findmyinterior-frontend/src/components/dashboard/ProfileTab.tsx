@@ -376,7 +376,7 @@ export function ProfileTab() {
                     {locations.map((loc) => (
                       <SelectItem key={loc.id} value={loc.name}>{loc.name}</SelectItem>
                     ))}
-                    {locations.length === 0 && <SelectItem value="Patna">Patna</SelectItem>}
+
                   </SelectContent>
                 </Select>
               </div>

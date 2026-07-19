@@ -16,17 +16,16 @@ use Illuminate\Support\Str;
 
 class MockUserSeeder extends Seeder
 {
-    private array $biharCities = [
-        'Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur', 'Purnia',
-        'Darbhanga', 'Bihar Sharif', 'Arrah', 'Begusarai', 'Katihar',
-        'Munger', 'Chhapra', 'Hajipur', 'Sitamarhi', 'Saharsa',
-        'Siwan', 'Motihari', 'Buxar', 'Jehanabad', 'Nawada',
-    ];
+    private array $locations = [];
 
-    private array $biharDistricts = [
-        'Patna', 'Gaya', 'Bhagalpur', 'Muzaffarpur', 'Purnia',
-        'Darbhanga', 'Nalanda', 'Bhojpur', 'Begusarai', 'Katihar',
-    ];
+    private function getLocations(): array
+    {
+        if (empty($this->locations)) {
+            $locations = DB::table('locations')->where('is_active', true)->pluck('name')->toArray();
+            $this->locations = !empty($locations) ? $locations : ['Mumbai', 'Delhi', 'Bangalore', 'Kolkata', 'Chennai', 'Hyderabad', 'Pune', 'Ahmedabad', 'Surat', 'Jaipur', 'Lucknow', 'Kanpur', 'Nagpur'];
+        }
+        return $this->locations;
+    }
 
     private array $firstNames = [
         'Rajesh', 'Suresh', 'Amit', 'Vikram', 'Deepak', 'Ravi', 'Sanjay', 'Manoj', 'Arun', 'Nitin',
@@ -44,7 +43,7 @@ class MockUserSeeder extends Seeder
         'Creating beautiful spaces that tell your story',
         'Transforming homes with elegant design solutions',
         'Where creativity meets functionality',
-        'Modern interiors for the modern Bihar family',
+        'Modern interiors for every family',
         'Bringing international design standards to your home',
         'Award-winning interior design at affordable prices',
         'Your dream home, designed to perfection',
@@ -53,11 +52,11 @@ class MockUserSeeder extends Seeder
 
     private array $contractorTaglines = [
         'Quality construction, on time and on budget',
-        'Building Bihar, one project at a time',
+        'Building our country, one project at a time',
         'Trusted contractor with 10+ years experience',
         'Residential & commercial construction experts',
         'No compromise on quality, ever',
-        'Bihar\'s most reliable construction partner',
+        'Your most reliable construction partner',
         'From foundation to finish, we do it all',
         'Licensed, insured, and highly recommended',
     ];
@@ -74,15 +73,15 @@ class MockUserSeeder extends Seeder
     private array $supplierTaglines = [
         'Premium building materials at wholesale prices',
         'Direct manufacturer prices, no middlemen',
-        'Bulk orders with same-day delivery in Patna',
-        'Bihar\'s trusted material supplier since 2010',
+        'Bulk orders with same-day delivery',
+        'Trusted material supplier since 2010',
         'Quality guaranteed or money back',
         'Wide range of materials for all budgets',
     ];
 
     private array $builderTaglines = [
-        'Bihar\'s most trusted real estate developer',
-        'Premium apartments and villas across Bihar',
+        'Most trusted real estate developer',
+        'Premium apartments and villas across the nation',
         'Quality construction with modern amenities',
         'Delivering dream homes for 15+ years',
         'RERA registered developer',
@@ -95,40 +94,40 @@ class MockUserSeeder extends Seeder
         $roles = DB::table('roles')->pluck('id', 'slug');
         $categories = Category::all()->keyBy('name');
 
-        // ─── Interior Designers (20) ─────────────────────────────
+        // ─── Interior Designers (150) ─────────────────────────────
         $this->createProfessionals(
-            20, 'interior_designer', $roles['business'] ?? 2,
+            150, 'interior_designer', $roles['business'] ?? 2,
             'Interior Designer', $this->designerTaglines,
             'Interior Designers',
             $categories->firstWhere('name', 'like', '%Interior%')?->id ?? 1
         );
 
-        // ─── Contractors (20) ────────────────────────────────────
+        // ─── Contractors (150) ────────────────────────────────────
         $this->createProfessionals(
-            20, 'contractor', $roles['business'] ?? 2,
+            150, 'contractor', $roles['business'] ?? 2,
             'Contractor', $this->contractorTaglines,
             'Contractors',
             $categories->firstWhere('name', 'like', '%Contractor%')?->id ?? 2
         );
 
-        // ─── Architects (10) ─────────────────────────────────────
+        // ─── Architects (100) ─────────────────────────────────────
         $this->createProfessionals(
-            10, 'architect', $roles['business'] ?? 2,
+            100, 'architect', $roles['business'] ?? 2,
             'Architect', $this->designerTaglines,
             'Architects',
             $categories->firstWhere('name', 'like', '%Architect%')?->id ?? 3
         );
 
-        // ─── Skilled Workers (20) ────────────────────────────────
-        $this->createWorkers(20, $roles['worker'] ?? 5);
+        // ─── Skilled Workers (150) ────────────────────────────────
+        $this->createWorkers(150, $roles['worker'] ?? 5);
 
-        // ─── Suppliers (15) ──────────────────────────────────────
-        $this->createSuppliers(15, $roles['supplier'] ?? 4);
+        // ─── Suppliers (100) ──────────────────────────────────────
+        $this->createSuppliers(100, $roles['supplier'] ?? 4);
 
-        // ─── Builders (10) ───────────────────────────────────────
-        $this->createBuilders(10, $roles['builder'] ?? 3);
+        // ─── Builders (100) ───────────────────────────────────────
+        $this->createBuilders(100, $roles['builder'] ?? 3);
 
-        $this->command->info('✓ MockUserSeeder completed: 95 mock professional accounts created.');
+        $this->command->info('✓ MockUserSeeder completed: 750 mock professional accounts created.');
     }
 
     private function randomName(): array
@@ -140,12 +139,13 @@ class MockUserSeeder extends Seeder
 
     private function randomCity(): string
     {
-        return $this->biharCities[array_rand($this->biharCities)];
+        $locations = $this->getLocations();
+        return $locations[array_rand($locations)];
     }
 
-    private function randomDistrict(): string
+    private function randomDistrict(string $city): string
     {
-        return $this->biharDistricts[array_rand($this->biharDistricts)];
+        return $city; // Fallback district as the city name itself
     }
 
     private function randomPhone(): string
@@ -214,16 +214,16 @@ class MockUserSeeder extends Seeder
         int $categoryId
     ): void {
         $descriptions = [
-            "With years of experience in {$profession} work across Bihar, we bring quality and professionalism to every project. Our team is trained in the latest techniques and uses premium materials to ensure lasting results.",
-            "We are one of Patna's leading {$profession} firms, trusted by hundreds of satisfied clients. From concept to completion, we handle every detail with care.",
-            "Specializing in residential and commercial {$profession} projects throughout Bihar. We believe in transparent pricing, timely delivery, and exceptional craftsmanship.",
-            "Our {$profession} services combine traditional craftsmanship with modern design sensibilities. Based in Bihar, we serve clients across the state with professionalism and dedication.",
+            "With years of experience in {$profession} work, we bring quality and professionalism to every project. Our team is trained in the latest techniques and uses premium materials to ensure lasting results.",
+            "We are one of the leading {$profession} firms, trusted by hundreds of satisfied clients. From concept to completion, we handle every detail with care.",
+            "Specializing in residential and commercial {$profession} projects. We believe in transparent pricing, timely delivery, and exceptional craftsmanship.",
+            "Our {$profession} services combine traditional craftsmanship with modern design sensibilities. We serve clients with professionalism and dedication.",
         ];
 
         for ($i = 0; $i < $count; $i++) {
             $nameData = $this->randomName();
             $city     = $this->randomCity();
-            $district = $this->randomDistrict();
+            $district = $this->randomDistrict($city);
             $email    = strtolower(Str::slug($nameData['first']) . '.' . Str::slug($nameData['last']) . rand(1, 999) . '@gmail.com');
             $seed     = rand(1000, 9999);
 
@@ -260,8 +260,8 @@ class MockUserSeeder extends Seeder
                 'email'            => $user->email,
                 'city'             => $city,
                 'district'         => $district,
-                'state'            => 'Bihar',
-                'address'          => 'Plot ' . rand(1, 999) . ', ' . $city . ', Bihar',
+                'state'            => 'State',
+                'address'          => 'Plot ' . rand(1, 999) . ', ' . $city,
                 'years_experience' => $yearsExp,
                 'budget_tier'      => ['Under ₹50,000', '₹50,000 - ₹2 Lakhs', '₹2 Lakhs - ₹10 Lakhs', '₹10 Lakhs+'][rand(0, 3)],
                 'team_size'        => rand(2, 25),
@@ -316,11 +316,11 @@ class MockUserSeeder extends Seeder
                 'skill'            => $skill,
                 'phone'            => $user->phone,
                 'city'             => $city,
-                'district'         => $this->randomDistrict(),
+                'district'         => $this->randomDistrict($city),
                 'experience_years' => rand(1, 12),
                 'daily_rate'       => $dailyRates[array_rand($dailyRates)],
                 'is_available'     => (bool) rand(0, 1),
-                'bio'              => "Experienced {$skill} based in {$city}, Bihar. Available for residential and commercial projects. {$nameData['first']} brings {$skill} expertise with a commitment to quality and punctuality.",
+                'bio'              => "Experienced {$skill} based in {$city}. Available for residential and commercial projects. {$nameData['first']} brings {$skill} expertise with a commitment to quality and punctuality.",
                 'status'           => 'active',
                 'is_verified'      => $isVerified,
             ]);
@@ -372,7 +372,7 @@ class MockUserSeeder extends Seeder
                 'phone'        => $user->phone,
                 'email'        => $user->email,
                 'city'         => $city,
-                'district'     => $this->randomDistrict(),
+                'district'     => $this->randomDistrict($city),
                 'cover_image'  => "https://picsum.photos/seed/{$seed}/800/400",
                 'status'       => 'active',
                 'is_verified'  => $isVerified,
@@ -421,7 +421,7 @@ class MockUserSeeder extends Seeder
                 'phone'                  => $user->phone,
                 'email'                  => $user->email,
                 'city'                   => $city,
-                'district'               => $this->randomDistrict(),
+                'district'               => $this->randomDistrict($city),
                 'cover_image'            => "https://picsum.photos/seed/{$seed}/800/400",
                 'status'                 => 'active',
                 'is_verified'            => true,

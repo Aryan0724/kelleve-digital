@@ -5,9 +5,10 @@ import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Phone, Mail, User, Send, ExternalLink, MessageSquare } from "lucide-react";
+import { Phone, Mail, User, Send, ExternalLink, MessageSquare, CheckCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store/useAuthStore";
 
 function locationName(value: any) {
   return typeof value === "string" ? value : value?.name || "Location not set";
@@ -21,6 +22,8 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
   const [submitting, setSubmitting] = useState(false);
   const [messaging, setMessaging] = useState<number | null>(null);
   const router = useRouter();
+  const { user } = useAuthStore();
+  const [acceptingId, setAcceptingId] = useState<number | null>(null);
 
   const handleMessage = async (requirementId: number, reqType?: string) => {
     setMessaging(requirementId);
@@ -63,6 +66,21 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
       alert(err.response?.data?.message || "Failed to submit bid.");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleAcceptAward = async (requirementId: number, reqType?: string) => {
+    if (!confirm("Are you sure you want to accept this project and start work?")) return;
+    setAcceptingId(requirementId);
+    try {
+      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+      await api.patch(`/requirements/${requirementId}/accept-award${typeStr}`);
+      alert("Project accepted! Status updated to In Progress.");
+      onRefresh();
+    } catch (e: any) {
+      alert(e.response?.data?.message || "Failed to accept project.");
+    } finally {
+      setAcceptingId(null);
     }
   };
 
@@ -118,6 +136,23 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                       >
                         <Send className="w-4 h-4 mr-2" /> 
                         {biddingId === unlock.requirement.id ? "Cancel Bid" : "Submit Bid"}
+                      </Button>
+                    )}
+                    {/* DEBUG INFO */}
+                    <div className="text-xs text-red-500">
+                      Req ID: {unlock.requirement?.id} | 
+                      Req Status: {unlock.requirement?.status} | 
+                      Prof ID: {unlock.requirement?.professional_id} | 
+                      User ID: {user?.id}
+                    </div>
+                    {unlock.requirement?.status === 'awarded' && (Number(unlock.requirement?.professional_id) === Number(user?.id) || Number(unlock.requirement?.worker_id) === Number(user?.id) || Number(unlock.requirement?.supplier_id) === Number(user?.id) || Number(unlock.requirement?.awarded_vendor_id) === Number(user?.id)) && (
+                      <Button
+                        onClick={() => handleAcceptAward(unlock.requirement.id, unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project'))}
+                        className="bg-green-600 hover:bg-green-700 w-full text-white"
+                        disabled={acceptingId === unlock.requirement.id}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-2" />
+                        {acceptingId === unlock.requirement.id ? "Accepting..." : "Accept Award"}
                       </Button>
                     )}
                       <Button 

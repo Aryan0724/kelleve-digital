@@ -1,460 +1,94 @@
 <?php
-namespace Database\Seeders;
-use Illuminate\Database\Seeder;
-use App\Models\Blog;
-use Illuminate\Support\Str;
-class BlogSeeder extends Seeder {
-  public function run(): void {
-  Blog::unguard();
 
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Darbhanga (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Darbhanga (2026 Guide)-1'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Darbhanga (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Darbhanga (2026 Guide). Our experts from Darbhanga have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(15),
-            'cover_image' => 'https://picsum.photos/seed/blog1/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Darbhanga (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Darbhanga (2026 Guide)-2'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Darbhanga (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Darbhanga (2026 Guide). Our experts from Darbhanga have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(18),
-            'cover_image' => 'https://picsum.photos/seed/blog2/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Patna (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Patna (2026 Guide)-3'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(47),
-            'cover_image' => 'https://picsum.photos/seed/blog3/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Patna (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Patna (2026 Guide)-4'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(13),
-            'cover_image' => 'https://picsum.photos/seed/blog4/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Gaya (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Gaya (2026 Guide)-5'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Gaya (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Gaya (2026 Guide). Our experts from Gaya have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(51),
-            'cover_image' => 'https://picsum.photos/seed/blog5/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Patna (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Patna (2026 Guide)-6'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(28),
-            'cover_image' => 'https://picsum.photos/seed/blog6/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'House Construction Cost in Purnia (2026 Guide)', 'slug' => Str::slug('House Construction Cost in Purnia (2026 Guide)-7'),
-            'excerpt' => 'Discover everything you need to know about House Construction Cost in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on House Construction Cost in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(90),
-            'cover_image' => 'https://picsum.photos/seed/blog7/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Muzaffarpur (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Muzaffarpur (2026 Guide)-8'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Muzaffarpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Muzaffarpur (2026 Guide). Our experts from Muzaffarpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(11),
-            'cover_image' => 'https://picsum.photos/seed/blog8/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Gaya (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Gaya (2026 Guide)-9'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Gaya (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Gaya (2026 Guide). Our experts from Gaya have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(3),
-            'cover_image' => 'https://picsum.photos/seed/blog9/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Bhagalpur (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Bhagalpur (2026 Guide)-10'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(62),
-            'cover_image' => 'https://picsum.photos/seed/blog10/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'House Construction Cost in Bhagalpur (2026 Guide)', 'slug' => Str::slug('House Construction Cost in Bhagalpur (2026 Guide)-11'),
-            'excerpt' => 'Discover everything you need to know about House Construction Cost in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on House Construction Cost in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(83),
-            'cover_image' => 'https://picsum.photos/seed/blog11/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Purnia (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Purnia (2026 Guide)-12'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(26),
-            'cover_image' => 'https://picsum.photos/seed/blog12/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Patna (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Patna (2026 Guide)-13'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(74),
-            'cover_image' => 'https://picsum.photos/seed/blog13/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'House Construction Cost in Patna (2026 Guide)', 'slug' => Str::slug('House Construction Cost in Patna (2026 Guide)-14'),
-            'excerpt' => 'Discover everything you need to know about House Construction Cost in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on House Construction Cost in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(69),
-            'cover_image' => 'https://picsum.photos/seed/blog14/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Purnia (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Purnia (2026 Guide)-15'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(94),
-            'cover_image' => 'https://picsum.photos/seed/blog15/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Modular Kitchen Cost in Purnia (2026 Guide)', 'slug' => Str::slug('Modular Kitchen Cost in Purnia (2026 Guide)-16'),
-            'excerpt' => 'Discover everything you need to know about Modular Kitchen Cost in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Modular Kitchen Cost in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(52),
-            'cover_image' => 'https://picsum.photos/seed/blog16/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Patna (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Patna (2026 Guide)-17'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(62),
-            'cover_image' => 'https://picsum.photos/seed/blog17/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Bhagalpur (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Bhagalpur (2026 Guide)-18'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(12),
-            'cover_image' => 'https://picsum.photos/seed/blog18/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Patna (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Patna (2026 Guide)-19'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(3),
-            'cover_image' => 'https://picsum.photos/seed/blog19/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Darbhanga (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Darbhanga (2026 Guide)-20'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Darbhanga (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Darbhanga (2026 Guide). Our experts from Darbhanga have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(28),
-            'cover_image' => 'https://picsum.photos/seed/blog20/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Purnia (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Purnia (2026 Guide)-21'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(20),
-            'cover_image' => 'https://picsum.photos/seed/blog21/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Gaya (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Gaya (2026 Guide)-22'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Gaya (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Gaya (2026 Guide). Our experts from Gaya have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(7),
-            'cover_image' => 'https://picsum.photos/seed/blog22/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Muzaffarpur (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Muzaffarpur (2026 Guide)-23'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Muzaffarpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Muzaffarpur (2026 Guide). Our experts from Muzaffarpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(19),
-            'cover_image' => 'https://picsum.photos/seed/blog23/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Bhagalpur (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Bhagalpur (2026 Guide)-24'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(30),
-            'cover_image' => 'https://picsum.photos/seed/blog24/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Purnia (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Purnia (2026 Guide)-25'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(14),
-            'cover_image' => 'https://picsum.photos/seed/blog25/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Gaya (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Gaya (2026 Guide)-26'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Gaya (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Gaya (2026 Guide). Our experts from Gaya have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(31),
-            'cover_image' => 'https://picsum.photos/seed/blog26/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Patna (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Patna (2026 Guide)-27'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(43),
-            'cover_image' => 'https://picsum.photos/seed/blog27/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Purnia (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Purnia (2026 Guide)-28'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(20),
-            'cover_image' => 'https://picsum.photos/seed/blog28/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Muzaffarpur (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Muzaffarpur (2026 Guide)-29'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Muzaffarpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Muzaffarpur (2026 Guide). Our experts from Muzaffarpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(77),
-            'cover_image' => 'https://picsum.photos/seed/blog29/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Purnia (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Purnia (2026 Guide)-30'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(8),
-            'cover_image' => 'https://picsum.photos/seed/blog30/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Purnia (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Purnia (2026 Guide)-31'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(38),
-            'cover_image' => 'https://picsum.photos/seed/blog31/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Purnia (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Purnia (2026 Guide)-32'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(75),
-            'cover_image' => 'https://picsum.photos/seed/blog32/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Darbhanga (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Darbhanga (2026 Guide)-33'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Darbhanga (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Darbhanga (2026 Guide). Our experts from Darbhanga have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(47),
-            'cover_image' => 'https://picsum.photos/seed/blog33/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Patna (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Patna (2026 Guide)-34'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Patna (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Patna (2026 Guide). Our experts from Patna have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(10),
-            'cover_image' => 'https://picsum.photos/seed/blog34/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Gaya (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Gaya (2026 Guide)-35'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Gaya (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Gaya (2026 Guide). Our experts from Gaya have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(2),
-            'cover_image' => 'https://picsum.photos/seed/blog35/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Modular Kitchen Cost in Gaya (2026 Guide)', 'slug' => Str::slug('Modular Kitchen Cost in Gaya (2026 Guide)-36'),
-            'excerpt' => 'Discover everything you need to know about Modular Kitchen Cost in Gaya (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Modular Kitchen Cost in Gaya (2026 Guide). Our experts from Gaya have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(77),
-            'cover_image' => 'https://picsum.photos/seed/blog36/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'House Construction Cost in Darbhanga (2026 Guide)', 'slug' => Str::slug('House Construction Cost in Darbhanga (2026 Guide)-37'),
-            'excerpt' => 'Discover everything you need to know about House Construction Cost in Darbhanga (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on House Construction Cost in Darbhanga (2026 Guide). Our experts from Darbhanga have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(29),
-            'cover_image' => 'https://picsum.photos/seed/blog37/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Bhagalpur (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Bhagalpur (2026 Guide)-38'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(83),
-            'cover_image' => 'https://picsum.photos/seed/blog38/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'House Construction Cost in Muzaffarpur (2026 Guide)', 'slug' => Str::slug('House Construction Cost in Muzaffarpur (2026 Guide)-39'),
-            'excerpt' => 'Discover everything you need to know about House Construction Cost in Muzaffarpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on House Construction Cost in Muzaffarpur (2026 Guide). Our experts from Muzaffarpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(59),
-            'cover_image' => 'https://picsum.photos/seed/blog39/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Bhagalpur (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Bhagalpur (2026 Guide)-40'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(15),
-            'cover_image' => 'https://picsum.photos/seed/blog40/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Darbhanga (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Darbhanga (2026 Guide)-41'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Darbhanga (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Darbhanga (2026 Guide). Our experts from Darbhanga have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(66),
-            'cover_image' => 'https://picsum.photos/seed/blog41/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Modular Kitchen Cost in Muzaffarpur (2026 Guide)', 'slug' => Str::slug('Modular Kitchen Cost in Muzaffarpur (2026 Guide)-42'),
-            'excerpt' => 'Discover everything you need to know about Modular Kitchen Cost in Muzaffarpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Modular Kitchen Cost in Muzaffarpur (2026 Guide). Our experts from Muzaffarpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(32),
-            'cover_image' => 'https://picsum.photos/seed/blog42/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Bhagalpur (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Bhagalpur (2026 Guide)-43'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(40),
-            'cover_image' => 'https://picsum.photos/seed/blog43/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'House Construction Cost in Purnia (2026 Guide)', 'slug' => Str::slug('House Construction Cost in Purnia (2026 Guide)-44'),
-            'excerpt' => 'Discover everything you need to know about House Construction Cost in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on House Construction Cost in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(54),
-            'cover_image' => 'https://picsum.photos/seed/blog44/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Choosing the Right Architect in Muzaffarpur (2026 Guide)', 'slug' => Str::slug('Choosing the Right Architect in Muzaffarpur (2026 Guide)-45'),
-            'excerpt' => 'Discover everything you need to know about Choosing the Right Architect in Muzaffarpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Choosing the Right Architect in Muzaffarpur (2026 Guide). Our experts from Muzaffarpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(2),
-            'cover_image' => 'https://picsum.photos/seed/blog45/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Best Tiles for Home Construction in Muzaffarpur (2026 Guide)', 'slug' => Str::slug('Best Tiles for Home Construction in Muzaffarpur (2026 Guide)-46'),
-            'excerpt' => 'Discover everything you need to know about Best Tiles for Home Construction in Muzaffarpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Best Tiles for Home Construction in Muzaffarpur (2026 Guide). Our experts from Muzaffarpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(45),
-            'cover_image' => 'https://picsum.photos/seed/blog46/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Modular Kitchen Cost in Gaya (2026 Guide)', 'slug' => Str::slug('Modular Kitchen Cost in Gaya (2026 Guide)-47'),
-            'excerpt' => 'Discover everything you need to know about Modular Kitchen Cost in Gaya (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Modular Kitchen Cost in Gaya (2026 Guide). Our experts from Gaya have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(71),
-            'cover_image' => 'https://picsum.photos/seed/blog47/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'House Construction Cost in Bhagalpur (2026 Guide)', 'slug' => Str::slug('House Construction Cost in Bhagalpur (2026 Guide)-48'),
-            'excerpt' => 'Discover everything you need to know about House Construction Cost in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on House Construction Cost in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(89),
-            'cover_image' => 'https://picsum.photos/seed/blog48/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Interior Design Trends in Purnia (2026 Guide)', 'slug' => Str::slug('Interior Design Trends in Purnia (2026 Guide)-49'),
-            'excerpt' => 'Discover everything you need to know about Interior Design Trends in Purnia (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Interior Design Trends in Purnia (2026 Guide). Our experts from Purnia have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(51),
-            'cover_image' => 'https://picsum.photos/seed/blog49/800/400',
-            'category' => 'General'
-        ]);
-        
-        Blog::create([
-            'author_id' => 1, 'title' => 'Modular Kitchen Cost in Bhagalpur (2026 Guide)', 'slug' => Str::slug('Modular Kitchen Cost in Bhagalpur (2026 Guide)-50'),
-            'excerpt' => 'Discover everything you need to know about Modular Kitchen Cost in Bhagalpur (2026 Guide). Read our comprehensive guide.',
-            'content' => '<h3>Introduction</h3><p>This is a detailed guide on Modular Kitchen Cost in Bhagalpur (2026 Guide). Our experts from Bhagalpur have shared their valuable insights.</p><p>Make sure to hire verified professionals.</p>',
-            'status' => 'published', 'published_at' => now()->subDays(22),
-            'cover_image' => 'https://picsum.photos/seed/blog50/800/400',
-            'category' => 'General'
-        ]);
-          }
+namespace Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
+use Carbon\Carbon;
+
+class BlogSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $authorId = DB::table('users')->where('role', 'admin')->value('id');
+        if (!$authorId) {
+            $authorId = 1; // Fallback
+        }
+
+        $blogs = [
+            [
+                'title' => 'Top 10 Interior Design Trends for 2026',
+                'slug' => 'top-10-interior-design-trends-2026',
+                'content' => '<h2>Embracing the Future of Design</h2><p>As we step into 2026, interior design is taking a bold leap forward. The emphasis is on sustainable materials, smart home integration, and biophilic design. Homeowners are increasingly looking for ways to bring nature indoors, utilizing large windows, indoor plants, and natural textures like wood and stone.</p><h3>Smart Homes are the New Normal</h3><p>Integration of IoT devices into the very fabric of our homes is no longer a luxury but a standard. From automated lighting that adjusts to your circadian rhythm to climate control that learns your preferences, technology is making homes more comfortable and energy-efficient.</p>',
+                'excerpt' => 'Discover the cutting-edge trends shaping interior design this year, from biophilic elements to smart home integration.',
+                'image_url' => 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1000',
+                'author_id' => $authorId,
+                'status' => 'published',
+                'published_at' => Carbon::now()->subDays(5),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'title' => 'How to Choose the Right Contractor for Your Home Renovation',
+                'slug' => 'how-to-choose-the-right-contractor',
+                'content' => '<h2>The Key to a Successful Renovation</h2><p>Finding the right contractor can make or break your home renovation project. It is crucial to do your research before signing any contracts.</p><h3>Check Credentials and Reviews</h3><p>Always verify the contractor\'s license and insurance. Read online reviews and ask for references from past clients. A reputable contractor will be happy to provide this information. Platform like FindMyInterior makes this easier by verifying all listed professionals.</p><h3>Get Multiple Quotes</h3><p>Don\'t settle for the first quote you receive. Compare estimates from at least three different contractors to ensure you are getting a fair price.</p>',
+                'excerpt' => 'A comprehensive guide to finding, vetting, and hiring the best contractor for your next home project.',
+                'image_url' => 'https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=1000',
+                'author_id' => $authorId,
+                'status' => 'published',
+                'published_at' => Carbon::now()->subDays(10),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'title' => 'Maximizing Space in Small Apartments',
+                'slug' => 'maximizing-space-small-apartments',
+                'content' => '<h2>Living Large in Small Spaces</h2><p>Urban living often means dealing with limited square footage. However, with the right design strategies, even the smallest apartment can feel spacious and functional.</p><h3>Multifunctional Furniture</h3><p>Invest in pieces that serve dual purposes, such as a sofa bed, a coffee table with hidden storage, or a fold-out dining table. Vertical space is your best friend—use tall shelving units to draw the eye upward and maximize storage.</p><h3>Light and Color</h3><p>Light colors make rooms feel larger and brighter. Use mirrors strategically to reflect natural light and create the illusion of more space.</p>',
+                'excerpt' => 'Clever design hacks and furniture choices to make your compact apartment feel incredibly spacious.',
+                'image_url' => 'https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?auto=format&fit=crop&q=80&w=1000',
+                'author_id' => $authorId,
+                'status' => 'published',
+                'published_at' => Carbon::now()->subDays(15),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'title' => 'The Ultimate Guide to Kitchen Remodeling',
+                'slug' => 'ultimate-guide-kitchen-remodeling',
+                'content' => '<h2>Planning Your Dream Kitchen</h2><p>A kitchen remodel is one of the most rewarding home improvement projects. It enhances functionality and significantly boosts your home\'s value.</p><h3>The Work Triangle</h3><p>The layout is the most important aspect of kitchen design. Keep the classic work triangle in mind: the distance between the sink, stove, and refrigerator should be optimized for efficiency.</p><h3>Choosing Materials</h3><p>Select durable materials for countertops and flooring. Quartz and granite remain popular choices for their resilience and aesthetic appeal.</p>',
+                'excerpt' => 'Everything you need to know before tearing down cabinets, from layout planning to material selection.',
+                'image_url' => 'https://images.unsplash.com/photo-1556910103-1c02745a872f?auto=format&fit=crop&q=80&w=1000',
+                'author_id' => $authorId,
+                'status' => 'published',
+                'published_at' => Carbon::now()->subDays(20),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
+            [
+                'title' => 'Sustainable Architecture: Building for Tomorrow',
+                'slug' => 'sustainable-architecture-building-for-tomorrow',
+                'content' => '<h2>Eco-Friendly Design Principles</h2><p>Sustainable architecture is not just a trend; it is a necessity. Builders and architects are adopting green practices to minimize environmental impact.</p><h3>Energy Efficiency</h3><p>Passive design strategies, such as optimizing window placement for natural heating and cooling, can drastically reduce energy consumption. Solar panels and high-efficiency HVAC systems further contribute to a home\'s sustainability.</p><h3>Locally Sourced Materials</h3><p>Using locally sourced, recycled, or renewable materials reduces the carbon footprint associated with transportation and manufacturing.</p>',
+                'excerpt' => 'Explore how modern architects are incorporating green practices and eco-friendly materials into new builds.',
+                'image_url' => 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?auto=format&fit=crop&q=80&w=1000',
+                'author_id' => $authorId,
+                'status' => 'published',
+                'published_at' => Carbon::now()->subDays(25),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ]
+        ];
+
+        foreach ($blogs as $blog) {
+            DB::table('blogs')->updateOrInsert(
+                ['slug' => $blog['slug']],
+                $blog
+            );
+        }
+    }
 }

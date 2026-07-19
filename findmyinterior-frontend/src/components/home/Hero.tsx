@@ -33,7 +33,7 @@ export function Hero() {
   const isPro = user && ['interior_designer', 'architect', 'contractor', 'builder', 'supplier'].includes(user.role);
   const isWorker = user?.role === 'worker';
 
-  const [availableCities, setAvailableCities] = useState<string[]>(["Patna"]); // Default to Patna until loaded
+  const [availableCities, setAvailableCities] = useState<string[]>([]);
 
   useEffect(() => {
     api.get("/locations?active_only=1").then(res => {
@@ -58,10 +58,9 @@ export function Hero() {
   );
 
   const availableServices = [
-    "Interior Designer", "Interior Company", "Interior Project", 
-    "Contractor", "Construction", "Construction Company", 
-    "Architect", "Builder", "Painter", "False Ceiling", 
-    "Carpenter", "Plumber", "Electrician", "Tiles Supplier", "Hardware Supplier"
+    "Interior Designer", "Interior Company", "Architect", 
+    "Civil Contractor", "Builder", "Material Supplier", "Skilled Worker",
+    "Modular Kitchen", "Painter", "Electrician", "Plumber", "Carpenter"
   ];
 
   const filteredServices = availableServices.filter(s => 

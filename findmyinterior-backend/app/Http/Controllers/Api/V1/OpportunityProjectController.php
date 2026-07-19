@@ -155,8 +155,9 @@ class OpportunityProjectController extends Controller
         $user        = Auth::user();
 
         $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
+        $isProfessional = ($user->id === $requirement->professional_id) || ($user->id === $requirement->awarded_vendor_id);
 
-        if ($user->id !== $requirement->user_id && !$isAdmin) {
+        if ($user->id !== $requirement->user_id && !$isAdmin && !$isProfessional) {
             return $this->error('Unauthorized', 403);
         }
 

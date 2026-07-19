@@ -113,18 +113,26 @@ class Listing extends Model
     public function scopeSearch($query, string $term)
     {
         $term = strtolower($term);
-        // Remove trailing 's' to match singular forms when plural is searched (e.g., 'contractors' -> 'contractor')
-        $singularTerm = rtrim($term, 's');
+        $words = array_filter(explode(' ', $term));
         
-        return $query->where(function ($q) use ($term, $singularTerm) {
-            $q->whereRaw('LOWER(title) LIKE ?', ["%{$term}%"])
-              ->orWhereRaw('LOWER(title) LIKE ?', ["%{$singularTerm}%"])
-              ->orWhereRaw('LOWER(description) LIKE ?', ["%{$term}%"])
-              ->orWhereRaw('LOWER(description) LIKE ?', ["%{$singularTerm}%"])
-              ->orWhereHas('category', function ($catQ) use ($term, $singularTerm) {
-                  $catQ->whereRaw('LOWER(name) LIKE ?', ["%{$term}%"])
-                       ->orWhereRaw('LOWER(name) LIKE ?', ["%{$singularTerm}%"]);
-              });
+        if (empty($words)) {
+            return $query;
+        }
+
+        return $query->where(function ($q) use ($words) {
+            foreach ($words as $word) {
+                $singularWord = rtrim($word, 's');
+                $q->orWhere(function ($subQ) use ($word, $singularWord) {
+                    $subQ->whereRaw('LOWER(title) LIKE ?', ["%{$word}%"])
+                         ->orWhereRaw('LOWER(title) LIKE ?', ["%{$singularWord}%"])
+                         ->orWhereRaw('LOWER(description) LIKE ?', ["%{$word}%"])
+                         ->orWhereRaw('LOWER(description) LIKE ?', ["%{$singularWord}%"])
+                         ->orWhereHas('category', function ($catQ) use ($word, $singularWord) {
+                             $catQ->whereRaw('LOWER(name) LIKE ?', ["%{$word}%"])
+                                  ->orWhereRaw('LOWER(name) LIKE ?', ["%{$singularWord}%"]);
+                         });
+                });
+            }
         });
     }
 

@@ -33,6 +33,8 @@ class LocationController extends Controller
         if (!isset($validated['is_active'])) $validated['is_active'] = true;
         
         $location = Location::create($validated);
+        \Illuminate\Support\Facades\Cache::forget('locations_dropdown_active');
+        \Illuminate\Support\Facades\Cache::forget('locations_dropdown_all');
         return response()->json(['success' => true, 'data' => $location], 201);
     }
 
@@ -50,12 +52,16 @@ class LocationController extends Controller
         }
         
         $location->update($validated);
+        \Illuminate\Support\Facades\Cache::forget('locations_dropdown_active');
+        \Illuminate\Support\Facades\Cache::forget('locations_dropdown_all');
         return response()->json(['success' => true, 'data' => $location]);
     }
 
     public function destroy($id)
     {
         Location::findOrFail($id)->delete();
+        \Illuminate\Support\Facades\Cache::forget('locations_dropdown_active');
+        \Illuminate\Support\Facades\Cache::forget('locations_dropdown_all');
         return response()->json(['success' => true]);
     }
 }

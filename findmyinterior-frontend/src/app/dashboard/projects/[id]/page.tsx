@@ -45,6 +45,17 @@ export default function ProjectDetail() {
     }
   };
 
+  const handleAcceptProject = async () => {
+    if (!confirm("Are you sure you want to accept this awarded project?")) return;
+    try {
+      await api.patch(`/requirements/${project.id}/accept-award?requirement_type=project`);
+      alert("Project accepted and moved to In Progress!");
+      window.location.reload();
+    } catch (e: any) {
+      alert("Failed to accept project: " + (e.response?.data?.message || e.message));
+    }
+  };
+
   const handleMarkProgress = async (status: string) => {
     try {
       await api.post(`/projects/${project.id}/progress`, { status });
@@ -81,13 +92,18 @@ export default function ProjectDetail() {
               </Button>
             )}
             
-            {isProfessional && project.status !== 'completed' && project.status !== 'cancelled' && (
+            {isProfessional && project.status === 'awarded' && (
+              <Button onClick={handleAcceptProject} className="bg-blue-600 hover:bg-blue-700">
+                <CheckCircle className="w-4 h-4 mr-2" /> Accept Project
+              </Button>
+            )}
+
+            {isProfessional && (project.status === 'in_progress' || project.status === 'on_hold') && (
               <select 
                 onChange={(e) => handleMarkProgress(e.target.value)}
                 value={project.status}
                 className="h-10 px-3 rounded-md border border-slate-300 text-sm font-medium focus:ring-2 focus:ring-blue-500"
               >
-                <option value="awarded">Awarded</option>
                 <option value="in_progress">In Progress</option>
                 <option value="on_hold">On Hold</option>
               </select>

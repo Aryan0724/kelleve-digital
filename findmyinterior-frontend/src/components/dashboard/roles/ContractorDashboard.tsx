@@ -108,7 +108,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
-                {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
+                {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "My Business Listing")}
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
               </div>
             </div>

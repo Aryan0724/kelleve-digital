@@ -1,0 +1,390 @@
+import Image from "next/image";
+import { Search, MapPin, CheckCircle, Users, Building, Grid, Search as SearchIcon, Utensils, Hotel, PlusSquare, GraduationCap, HardHat, Car, Smartphone, Sparkles, MoreHorizontal, Store, Megaphone, MessageCircle, CreditCard, Presentation, BookOpen } from "lucide-react";
+import Link from "next/link";
+
+export default function Home() {
+  return (
+    <div className="min-h-screen flex flex-col font-sans bg-[#f9fafb]">
+      {/* Top Header */}
+      <div className="bg-navy text-navy-foreground py-2 px-6 flex justify-between items-center text-sm">
+        <div className="flex gap-6">
+          <span className="flex items-center gap-2">✉ support@truedial.com</span>
+          <span className="flex items-center gap-2">📞 95349 00999</span>
+        </div>
+        <div className="flex gap-6">
+          <span>Download App ▶ 🍎</span>
+          <Link href="/login" className="hover:text-primary transition">Login / Sign Up</Link>
+        </div>
+      </div>
+
+      {/* Main Navbar */}
+      <header className="bg-white py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-2">
+          <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-xl">T</div>
+          <span className="text-2xl font-bold text-navy">truedial</span>
+        </div>
+        <nav className="hidden md:flex gap-6 text-gray-700 font-medium">
+          <Link href="/" className="hover:text-primary">Home</Link>
+          <Link href="/categories" className="hover:text-primary flex items-center gap-1">Categories <ChevronDown className="w-4 h-4"/></Link>
+          <Link href="/services" className="hover:text-primary flex items-center gap-1">Services <ChevronDown className="w-4 h-4"/></Link>
+          <Link href="/offers" className="hover:text-primary">Offers</Link>
+          <Link href="/academy" className="hover:text-primary">Academy</Link>
+          <Link href="/podcast" className="hover:text-primary">Podcast</Link>
+          <Link href="/td-news" className="hover:text-primary">TD News</Link>
+          <Link href="/contact" className="hover:text-primary">Contact</Link>
+        </nav>
+        <button className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-orange-600 transition">
+          Register Business
+        </button>
+      </header>
+
+      {/* Hero Section */}
+      <section className="bg-white py-12 md:py-20 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
+        {/* Left Content */}
+        <div className="flex-1 z-10 max-w-2xl">
+          <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">
+            India’s Emerging <br />
+            <span className="text-primary">Business Growth</span> <br />
+            Platform
+          </h1>
+          <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 uppercase tracking-wide">
+            Beyond Listing. <br />
+            We Help Businesses <span className="text-primary">Grow.</span>
+          </h2>
+          <p className="text-gray-600 mb-10 max-w-md text-lg">
+            List your business, get discovered, attract more customers and grow with our powerful tools, marketing solutions and business services.
+          </p>
+
+          {/* Search Bar Component */}
+          <div className="bg-white p-3 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-3 border border-gray-100 max-w-3xl">
+            <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
+              <Grid className="text-gray-400 w-5 h-5" />
+              <input type="text" placeholder="Select Category" className="bg-transparent outline-none w-full text-sm" />
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
+              <MapPin className="text-gray-400 w-5 h-5" />
+              <input type="text" placeholder="Select City" className="bg-transparent outline-none w-full text-sm" />
+            </div>
+            <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
+              <SearchIcon className="text-gray-400 w-5 h-5" />
+              <input type="text" placeholder="What are you looking for?" className="bg-transparent outline-none w-full text-sm" />
+            </div>
+            <button className="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-orange-600 w-full md:w-auto">
+              Search
+            </button>
+          </div>
+          
+          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-500">
+            <span className="font-medium text-gray-700">Popular Searches:</span>
+            <span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200">Restaurants</span>
+            <span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200">Hotels</span>
+            <span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200">Hospitals</span>
+            <span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200">Interior Designers</span>
+          </div>
+        </div>
+
+        {/* Right Images (Mockup) */}
+        <div className="flex-1 relative z-10 flex justify-center items-center">
+          <div className="bg-gray-200 w-72 h-[500px] rounded-[2.5rem] shadow-2xl border-[8px] border-gray-800 relative overflow-hidden flex flex-col">
+            <div className="bg-navy p-4 flex flex-col items-center">
+               <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm mb-2">T</div>
+               <div className="bg-white/20 rounded w-full py-1 px-2 text-xs text-white flex items-center gap-2">
+                 <SearchIcon className="w-3 h-3" /> Search business...
+               </div>
+            </div>
+            <div className="bg-white flex-1 p-4">
+               {/* Phone mock content */}
+               <div className="h-24 bg-gray-100 rounded-lg mb-4"></div>
+               <div className="grid grid-cols-3 gap-2">
+                 <div className="h-16 bg-gray-100 rounded-md"></div>
+                 <div className="h-16 bg-gray-100 rounded-md"></div>
+                 <div className="h-16 bg-gray-100 rounded-md"></div>
+                 <div className="h-16 bg-gray-100 rounded-md"></div>
+                 <div className="h-16 bg-gray-100 rounded-md"></div>
+                 <div className="h-16 bg-gray-100 rounded-md"></div>
+               </div>
+            </div>
+          </div>
+          
+          {/* Privilege Card Float */}
+          <div className="absolute -right-4 bottom-10 bg-gradient-to-r from-gray-900 to-black p-5 rounded-xl shadow-2xl border border-gray-700 text-yellow-500 w-64 transform rotate-6">
+            <div className="flex justify-between items-center mb-4">
+              <span className="font-bold text-white flex items-center gap-1"><div className="w-4 h-4 bg-primary text-white rounded-full flex justify-center items-center text-[8px]">T</div> truedial</span>
+              <span className="text-[10px] uppercase">Privilege Card</span>
+            </div>
+            <div className="font-mono text-sm tracking-widest text-white mb-2">1234 5678 9123 4567</div>
+            <div className="flex justify-between items-end">
+              <span className="text-xs text-gray-300">RAHUL KUMAR</span>
+              <span className="text-[10px] text-gray-400">Valid: 12/28</span>
+            </div>
+          </div>
+        </div>
+        
+        {/* Background Decorative Blob */}
+        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-orange-50 to-transparent -z-10 rounded-bl-[100px]"></div>
+      </section>
+
+      {/* Stats Section */}
+      <section className="bg-white border-y border-gray-200 py-8">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100 text-center">
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2 text-2xl font-bold text-navy"><CheckCircle className="text-primary" /> 50K+</div>
+            <p className="text-gray-500 text-sm mt-1">Verified Businesses</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2 text-2xl font-bold text-navy"><Users className="text-primary" /> 1M+</div>
+            <p className="text-gray-500 text-sm mt-1">Happy Customers</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2 text-2xl font-bold text-navy"><Building className="text-primary" /> 500+</div>
+            <p className="text-gray-500 text-sm mt-1">Cities Covered</p>
+          </div>
+          <div className="flex flex-col items-center">
+            <div className="flex items-center gap-2 text-2xl font-bold text-navy"><Sparkles className="text-primary" /> 20+</div>
+            <p className="text-gray-500 text-sm mt-1">Business Services</p>
+          </div>
+        </div>
+      </section>
+
+      {/* Categories Section */}
+      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="flex justify-between items-end mb-8">
+          <h3 className="text-2xl font-bold text-navy">Explore Top Categories</h3>
+          <Link href="/categories" className="text-primary font-medium hover:underline text-sm flex items-center gap-1">View All Categories &gt;</Link>
+        </div>
+        <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+          {[
+            { name: "Restaurants", icon: Utensils },
+            { name: "Hotels", icon: Hotel },
+            { name: "Hospitals", icon: PlusSquare },
+            { name: "Education", icon: GraduationCap },
+            { name: "Interior & Constr.", icon: HardHat },
+            { name: "Automobile", icon: Car },
+            { name: "Electronics", icon: Smartphone },
+            { name: "More", icon: MoreHorizontal },
+          ].map((cat, i) => (
+            <div key={i} className="flex flex-col items-center justify-center p-6 bg-white border border-gray-100 rounded-xl hover:shadow-md transition cursor-pointer hover:border-primary group">
+              <cat.icon className="w-10 h-10 text-navy mb-3 group-hover:text-primary transition" />
+              <span className="text-xs font-semibold text-center text-gray-700">{cat.name}</span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Solutions Section */}
+      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto w-full bg-white rounded-3xl mb-16 shadow-sm border border-gray-50">
+        <h3 className="text-2xl font-bold text-navy text-center mb-12">Powerful Solutions for Your Business Growth</h3>
+        <div className="grid grid-cols-2 md:grid-cols-6 gap-6 text-center">
+          {[
+            { title: "Business Listing", icon: Store, desc: "Get discovered by thousands of potential customers." },
+            { title: "Digital Marketing", icon: Megaphone, desc: "Grow your business with our digital marketing solutions." },
+            { title: "SMS & WhatsApp", icon: MessageCircle, desc: "Reach your customers directly with powerful campaigns." },
+            { title: "Privilege Card", icon: CreditCard, desc: "Increase customer loyalty with our multi-city privilege card." },
+            { title: "Business Consulting", icon: Presentation, desc: "Expert guidance for startup, registration, trademark & more." },
+            { title: "TD Academy", icon: BookOpen, desc: "Learn, grow and build your career with industry courses." },
+          ].map((sol, i) => (
+            <div key={i} className="flex flex-col items-center p-4 border border-gray-100 rounded-xl hover:shadow-lg transition group bg-gray-50 hover:bg-white">
+              <div className="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center mb-4 text-primary group-hover:bg-primary group-hover:text-white transition">
+                <sol.icon className="w-6 h-6" />
+              </div>
+              <h4 className="font-bold text-sm text-navy mb-2">{sol.title}</h4>
+              <p className="text-xs text-gray-500 leading-relaxed">{sol.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Today's Best Offers */}
+      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="flex justify-between items-end mb-8">
+          <h3 className="text-2xl font-bold text-navy">Today's Best Offers</h3>
+          <Link href="/offers" className="text-primary font-medium hover:underline text-sm flex items-center gap-1">View All Offers &gt;</Link>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {[
+            {
+              title: "The Urban Bites Restaurant",
+              category: "Restaurant",
+              discount: "20% OFF",
+              validity: "31 May 2025",
+              img: "bg-orange-100"
+            },
+            {
+              title: "Hotel Blue Moon Grand",
+              category: "Hotel",
+              discount: "15% OFF",
+              validity: "25 May 2025",
+              img: "bg-blue-100"
+            },
+            {
+              title: "Dr. Smita Verma Dental Clinic",
+              category: "Healthcare",
+              discount: "Flat 10% OFF",
+              validity: "30 May 2025",
+              img: "bg-teal-100"
+            },
+            {
+              title: "Kleve Interior Studio",
+              category: "Interior",
+              discount: "25% OFF",
+              validity: "28 May 2025",
+              img: "bg-amber-100"
+            }
+          ].map((offer, i) => (
+            <div key={i} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition flex flex-col">
+              <div className={`h-40 w-full ${offer.img} relative`}>
+                <div className="absolute bottom-2 left-2 bg-navy text-white text-xs font-bold px-2 py-1 rounded">{offer.discount}</div>
+              </div>
+              <div className="p-4 flex flex-col flex-1">
+                <h4 className="font-bold text-navy text-lg leading-tight mb-1">{offer.title}</h4>
+                <p className="text-xs text-gray-500 mb-2">{offer.category}</p>
+                <p className="text-xs text-gray-400 mt-auto mb-4">Valid Till: {offer.validity}</p>
+                <button className="w-full bg-orange-100 text-primary font-medium py-2 rounded hover:bg-primary hover:text-white transition">
+                  View Offer
+                </button>
+              </div>
+            </div>
+          ))}
+
+          {/* Privilege Card Banner */}
+          <div className="bg-navy rounded-xl overflow-hidden text-white flex flex-col justify-center items-start p-6 col-span-1 md:col-span-1 border border-navy shadow-lg relative">
+             <h3 className="text-xl font-bold mb-2">Get Multi City Privilege Card</h3>
+             <p className="text-sm text-gray-300 mb-6">One Card. Multiple Cities. Unlimited Benefits.</p>
+             <button className="bg-primary text-white font-medium py-2 px-6 rounded hover:bg-orange-600 transition z-10">
+               Know More
+             </button>
+             {/* small card graphic */}
+             <div className="absolute -bottom-10 -right-10 w-40 h-24 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl transform -rotate-12 opacity-50"></div>
+          </div>
+        </div>
+      </section>
+
+      {/* Footer Features */}
+      <div className="bg-navy py-6 border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-6 flex justify-around items-center text-white text-sm">
+          <div className="flex items-center gap-3"><CheckCircle className="text-primary w-6 h-6"/> <span className="font-medium">100%<br/>Verified Businesses</span></div>
+          <div className="flex items-center gap-3"><Sparkles className="text-primary w-6 h-6"/> <span className="font-medium">Best<br/>Discounts & Offers</span></div>
+          <div className="flex items-center gap-3"><Lock className="text-primary w-6 h-6"/> <span className="font-medium">Secure<br/>& Trusted Platform</span></div>
+          <div className="flex items-center gap-3"><Headphones className="text-primary w-6 h-6"/> <span className="font-medium">24x7<br/>Customer Support</span></div>
+        </div>
+      </div>
+
+      {/* Newsletter & Footer */}
+      <footer className="bg-white pt-12 pb-6 px-6 md:px-12">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-center mb-12 border-b border-gray-100 pb-8">
+            <div>
+              <h4 className="font-bold text-navy text-xl mb-1">Stay Updated with TRUEDIAL</h4>
+              <p className="text-sm text-gray-500">Get the latest offers, business news and platform updates.</p>
+            </div>
+            <div className="flex w-full md:w-auto mt-4 md:mt-0 gap-2">
+              <input type="email" placeholder="Enter your email address" className="border border-gray-300 rounded px-4 py-2 w-full md:w-72 outline-none focus:border-primary" />
+              <button className="bg-primary text-white px-6 py-2 rounded font-medium hover:bg-orange-600">Subscribe</button>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
+            <div className="col-span-1 md:col-span-1">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">T</div>
+                <span className="text-xl font-bold text-navy">truedial</span>
+              </div>
+              <p className="text-xs text-gray-500 leading-relaxed mb-6">
+                TRUEDIAL is India's emerging business growth platform helping businesses grow beyond listing with advanced marketing, technology and consulting solutions.
+              </p>
+              <div className="flex gap-4">
+                <Facebook className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer"/>
+                <Instagram className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer"/>
+                <Twitter className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer"/>
+                <Linkedin className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer"/>
+              </div>
+            </div>
+
+            <div>
+              <h5 className="font-bold text-navy mb-4 text-sm">Top Categories</h5>
+              <ul className="space-y-3 text-xs text-gray-500">
+                <li className="hover:text-primary cursor-pointer">Restaurants</li>
+                <li className="hover:text-primary cursor-pointer">Hotels</li>
+                <li className="hover:text-primary cursor-pointer">Hospitals</li>
+                <li className="hover:text-primary cursor-pointer">Education</li>
+                <li className="hover:text-primary cursor-pointer">Interior & Construction</li>
+                <li className="hover:text-primary cursor-pointer">More Categories</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-bold text-navy mb-4 text-sm">Quick Links</h5>
+              <ul className="space-y-3 text-xs text-gray-500">
+                <li className="hover:text-primary cursor-pointer">About Us</li>
+                <li className="hover:text-primary cursor-pointer">Services</li>
+                <li className="hover:text-primary cursor-pointer">Offers</li>
+                <li className="hover:text-primary cursor-pointer">TD Academy</li>
+                <li className="hover:text-primary cursor-pointer">Podcast</li>
+                <li className="hover:text-primary cursor-pointer">TD News</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-bold text-navy mb-4 text-sm">For Businesses</h5>
+              <ul className="space-y-3 text-xs text-gray-500">
+                <li className="hover:text-primary cursor-pointer">Register Business</li>
+                <li className="hover:text-primary cursor-pointer">Business Login</li>
+                <li className="hover:text-primary cursor-pointer">Marketing Solutions</li>
+                <li className="hover:text-primary cursor-pointer">Consulting Services</li>
+                <li className="hover:text-primary cursor-pointer">SMS / WhatsApp Campaign</li>
+                <li className="hover:text-primary cursor-pointer">Business Resources</li>
+              </ul>
+            </div>
+
+            <div>
+              <h5 className="font-bold text-navy mb-4 text-sm">Support</h5>
+              <ul className="space-y-3 text-xs text-gray-500 mb-6">
+                <li className="hover:text-primary cursor-pointer">Help Center</li>
+                <li className="hover:text-primary cursor-pointer">Terms & Conditions</li>
+                <li className="hover:text-primary cursor-pointer">Privacy Policy</li>
+                <li className="hover:text-primary cursor-pointer">Refund Policy</li>
+                <li className="hover:text-primary cursor-pointer">Contact Us</li>
+              </ul>
+              <h5 className="font-bold text-navy mb-3 text-sm">Download App</h5>
+              <div className="flex gap-2">
+                <div className="bg-black text-white px-3 py-1.5 rounded cursor-pointer text-xs flex items-center gap-1">Play Store</div>
+                <div className="bg-black text-white px-3 py-1.5 rounded cursor-pointer text-xs flex items-center gap-1">App Store</div>
+              </div>
+            </div>
+          </div>
+
+          <div className="text-center text-xs text-gray-400 pt-6 border-t border-gray-100">
+            &copy; 2026 Truedial pvt. ltd. All rights reserved.
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+function ChevronDown(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="m6 9 6 6 6-6"/>
+    </svg>
+  )
+}
+function Lock(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+    </svg>
+  )
+}
+function Headphones(props: any) {
+  return (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
+    </svg>
+  )
+}
+function Facebook(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>; }
+function Instagram(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>; }
+function Twitter(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>; }
+function Linkedin(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>; }

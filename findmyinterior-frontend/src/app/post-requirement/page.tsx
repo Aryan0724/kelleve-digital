@@ -88,8 +88,8 @@ function PostRequirementContent() {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
-    city: "Patna",
-    district: "Patna",
+    city: "",
+    district: "",
     budget: "",
     
     // Project specific
@@ -777,7 +777,7 @@ function PostRequirementContent() {
                       {locations.map((loc) => (
                         <SelectItem key={loc.id} value={loc.name}>{loc.name}</SelectItem>
                       ))}
-                      {locations.length === 0 && <SelectItem value="Patna">Patna</SelectItem>}
+
                     </SelectContent>
                   </Select>
                 </div>

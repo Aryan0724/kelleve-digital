@@ -409,6 +409,13 @@ export function CompleteProfileTab() {
               <h3 className="text-xl font-bold text-slate-900">{user?.name}</h3>
               <p className="text-sm text-slate-500 mb-2">{user?.email}</p>
               <TrustBadge level={user?.verification_level ?? "basic"} score={user?.trust_score} />
+              {(isBusiness || isWorker) && (
+                <div className="mt-3">
+                  <Button variant="outline" size="sm" onClick={() => window.open(`/professionals/${user?.id}`, '_blank')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                    <Globe className="w-4 h-4 mr-2" /> View Public Listing
+                  </Button>
+                </div>
+              )}
             </div>
             {/* Completion ring */}
             <div className="flex flex-col items-center gap-1 shrink-0">
@@ -462,13 +469,18 @@ export function CompleteProfileTab() {
                       {locations.map((loc) => (
                         <SelectItem key={loc.id} value={loc.name}>{loc.name}</SelectItem>
                       ))}
-                      {locations.length === 0 && <SelectItem value="Patna">Patna</SelectItem>}
+
                     </SelectContent>
                   </Select>
                 </div>
                 <Field label="District" icon={MapPin}>
                   <Input required name="district" value={formData.district} onChange={handleChange} placeholder="e.g. Patna" />
                 </Field>
+                <div className="md:col-span-2">
+                  <Field label="Full Address" icon={MapPin}>
+                    <Textarea name="address" value={formData.address} onChange={handleChange} placeholder="Your full business or home address..." rows={2} />
+                  </Field>
+                </div>
               </div>
 
               {/* Worker Specific Info */}
@@ -533,19 +545,27 @@ export function CompleteProfileTab() {
                       </Field>
                     </div>
                   )}
+
+                  {profileType === 'builder' && (
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <Field label="Total Projects" icon={Building2}>
+                        <Input type="number" min="0" name="total_projects" value={formData.total_projects} onChange={handleChange} placeholder="e.g. 50" />
+                      </Field>
+                    </div>
+                  )}
                   
-                  {(profileType === 'listing' || profileType === 'supplier') && (
+                  {(profileType === 'listing' || profileType === 'supplier' || profileType === 'builder') && (
                     <Field label="Description / Bio" icon={UserCircle2}>
                       <Textarea required name="description" value={formData.description} onChange={handleChange} placeholder="Describe your services, specialities, etc." rows={4} />
                     </Field>
                   )}
                   
                   <div className="border-t pt-6 mt-6 grid grid-cols-1 md:grid-cols-2 gap-6 bg-slate-50 p-4 rounded-lg">
-                    <Field label="GST Number *" icon={Hash}>
-                      <Input name="gst_number" required value={formData.gst_number} onChange={handleChange} placeholder="22AAAAA0000A1Z5" pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$" title="Please enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z5)" />
+                    <Field label="GST Number (Optional)" icon={Hash}>
+                      <Input name="gst_number" value={formData.gst_number} onChange={handleChange} placeholder="22AAAAA0000A1Z5" pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$" title="Please enter a valid 15-character GST number (e.g. 22AAAAA0000A1Z5)" />
                     </Field>
-                    <Field label="PAN Number *" icon={Hash}>
-                      <Input name="pan_number" required value={formData.pan_number} onChange={handleChange} placeholder="ABCDE1234F" pattern="^[A-Z]{5}[0-9]{4}[A-Z]{1}$" title="Please enter a valid 10-character PAN number (e.g. ABCDE1234F)" />
+                    <Field label="PAN Number (Optional)" icon={Hash}>
+                      <Input name="pan_number" value={formData.pan_number} onChange={handleChange} placeholder="ABCDE1234F" pattern="^[A-Z]{5}[0-9]{4}[A-Z]{1}$" title="Please enter a valid 10-character PAN number (e.g. ABCDE1234F)" />
                     </Field>
                   </div>
                 </>
@@ -557,28 +577,11 @@ export function CompleteProfileTab() {
                   <h4 className="text-sm font-bold text-slate-900 mb-2">Advanced Details</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Field label="Primary Service Offered" icon={Briefcase}>
-                      <select name="services" value={formData.services} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                        <option value="">Select Service</option>
-                        <option value="Complete Home Interior">Complete Home Interior</option>
-                        <option value="Modular Kitchen">Modular Kitchen</option>
-                        <option value="False Ceiling">False Ceiling</option>
-                        <option value="Wardrobe & Storage">Wardrobe & Storage</option>
-                        <option value="Painting & Decor">Painting & Decor</option>
-                        <option value="Plumbing & Electrical">Plumbing & Electrical</option>
-                        <option value="Flooring & Tiling">Flooring & Tiling</option>
-                        <option value="Civil Work">Civil Work</option>
-                      </select>
+                    <Field label="Services Offered (comma separated)" icon={Briefcase}>
+                      <Input name="services" value={formData.services} onChange={handleChange} placeholder="e.g. Modular Kitchen, False Ceiling" />
                     </Field>
-                    <Field label="Key Achievements" icon={Star}>
-                      <select name="achievements" value={formData.achievements} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                        <option value="">Select Achievement</option>
-                        <option value="10+ Projects Completed">10+ Projects Completed</option>
-                        <option value="50+ Projects Completed">50+ Projects Completed</option>
-                        <option value="100+ Projects Completed">100+ Projects Completed</option>
-                        <option value="Award Winning Designer">Award Winning Designer</option>
-                        <option value="Top Rated Professional">Top Rated Professional</option>
-                      </select>
+                    <Field label="Key Achievements (comma separated)" icon={Star}>
+                      <Input name="achievements" value={formData.achievements} onChange={handleChange} placeholder="e.g. 50+ Projects Completed, Award Winning" />
                     </Field>
                     
                     <Field label="Availability" icon={CheckCircle2}>
@@ -599,18 +602,8 @@ export function CompleteProfileTab() {
                       </select>
                     </Field>
                     
-                    <Field label="Primary Language Spoken" icon={Globe}>
-                      <select name="languages" value={formData.languages} onChange={handleChange as any} className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-                        <option value="">Select Language</option>
-                        <option value="English">English</option>
-                        <option value="Hindi">Hindi</option>
-                        <option value="Marathi">Marathi</option>
-                        <option value="Gujarati">Gujarati</option>
-                        <option value="Tamil">Tamil</option>
-                        <option value="Telugu">Telugu</option>
-                        <option value="Kannada">Kannada</option>
-                        <option value="Bengali">Bengali</option>
-                      </select>
+                    <Field label="Languages Spoken (comma separated)" icon={Globe}>
+                      <Input name="languages" value={formData.languages} onChange={handleChange} placeholder="e.g. English, Hindi, Marathi" />
                     </Field>
                   </div>
                   

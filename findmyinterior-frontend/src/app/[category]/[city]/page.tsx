@@ -18,7 +18,7 @@ const validCategories: Record<string, { title: string, searchParam: string, icon
   'builders': { title: 'Builders', searchParam: 'Builder', icon: 'Building' }
 };
 
-const validCities = ['patna', 'gaya', 'muzaffarpur', 'bhagalpur', 'darbhanga', 'hajipur', 'purnia'];
+
 
 export function generateMetadata({ params }: Props): Metadata {
   const cat = params.category.toLowerCase();
@@ -48,7 +48,7 @@ export default function CategoryCityLandingPage({ params }: Props) {
   const cat = params.category.toLowerCase();
   const city = params.city.toLowerCase();
 
-  if (!validCategories[cat] || !validCities.includes(city)) {
+  if (!validCategories[cat]) {
     notFound();
   }
 

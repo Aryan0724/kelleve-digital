@@ -15,8 +15,8 @@ export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly =
   const filteredBids = statuses 
     ? bids.filter(b => statuses.includes(b.status))
     : showAwardedOnly 
-      ? bids.filter(b => b.status === 'awarded' || b.status === 'completed') 
-      : bids.filter(b => b.status !== 'awarded' && b.status !== 'completed'); // Hide awarded from normal bids tab if we have a dedicated tab
+      ? bids.filter(b => b.status === 'awarded' || b.status === 'completed' || b.status === 'accepted') 
+      : bids.filter(b => b.status !== 'awarded' && b.status !== 'completed' && b.status !== 'accepted'); // Hide awarded from normal bids tab if we have a dedicated tab
 
   const router = useRouter();
   const [messaging, setMessaging] = useState<number | null>(null);
@@ -144,6 +144,26 @@ export function MyBidsTab({ bids, title = "My Submitted Bids", showAwardedOnly =
                       >
                         <MessageSquare className="w-4 h-4 mr-2" /> 
                         {messaging === bid.id ? "Opening..." : "Message Customer"}
+                      </Button>
+                    )}
+                    {bid.requirement?.status === 'awarded' && bid.status === 'accepted' && (
+                      <Button
+                        onClick={async () => {
+                          try {
+                            const reqType = bid.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (bid.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project');
+                            const typeStr = `?requirement_type=${reqType}`;
+                            await api.patch(`/requirements/${bid.requirement_id}/accept-award${typeStr}`);
+                            alert("Project successfully accepted! Status updated to In Progress.");
+                            window.location.reload();
+                          } catch (err: any) {
+                            alert(err.response?.data?.message || "Failed to accept award.");
+                          }
+                        }}
+                        size="sm"
+                        className="w-full bg-green-600 hover:bg-green-700 text-white mt-2"
+                      >
+                        <CheckCircle2 className="w-4 h-4 mr-2" />
+                        Accept Award
                       </Button>
                     )}
                 </div>

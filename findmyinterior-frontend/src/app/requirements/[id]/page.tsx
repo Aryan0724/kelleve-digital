@@ -655,7 +655,7 @@ export default function RequirementDetail() {
               ) : (
                 <>
                   {/* Professional Award Action Block */}
-                  {requirement.status === 'awarded' && requirement.professional_id === user?.id && (
+                  {requirement.status === 'awarded' && (Number(requirement.professional_id) === Number(user?.id) || Number(requirement.worker_id) === Number(user?.id) || Number(requirement.supplier_id) === Number(user?.id) || Number(requirement.awarded_vendor_id) === Number(user?.id)) && (
                     <div className="bg-[#f0fdf4] border border-[#bbf7d0] rounded-xl p-6 relative overflow-hidden mb-6">
                       <div className="flex justify-between items-start mb-2">
                         <div>

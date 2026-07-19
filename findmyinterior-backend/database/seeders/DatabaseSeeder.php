@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             AdminSeeder::class,           // Creates admin user
             DistrictSeeder::class,        // Bihar's 38 districts
             CitySeeder::class,            // Major cities per district
+            LocationSeeder::class,        // Service Locations
             CategorySeeder::class,        // 10 marketplace categories
             SubscriptionPlanSeeder::class, // Basic, Professional, Premium
 

@@ -145,7 +145,7 @@ class JobController extends Controller
         $job = WorkerJob::findOrFail($id);
         $user = Auth::user();
         
-        if ($user->id !== $job->user_id && $user->id !== $job->worker_id) {
+        if ($user->id !== $job->user_id && $user->id !== $job->worker_id && !in_array('admin', $user->roles->pluck('slug')->toArray())) {
             return $this->error('Unauthorized', 403);
         }
 

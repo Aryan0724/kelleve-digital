@@ -148,7 +148,7 @@ class RfqController extends Controller
         $rfq = Rfq::findOrFail($id);
         $user = Auth::user();
         
-        if ($user->id !== $rfq->user_id && $user->id !== $rfq->supplier_id) {
+        if ($user->id !== $rfq->user_id && $user->id !== $rfq->supplier_id && !in_array('admin', $user->roles->pluck('slug')->toArray())) {
             return $this->error('Unauthorized', 403);
         }
 

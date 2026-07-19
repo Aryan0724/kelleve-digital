@@ -40,7 +40,7 @@ class MilestoneController extends Controller
         // We use professional_id from the model (assuming it's set after award)
         $professionalId = $requirement->professional_id ?? $requirement->worker_id ?? $requirement->supplier_id;
         
-        if ($professionalId !== $request->user()->id) {
+        if ($professionalId !== $request->user()->id && !in_array('admin', $request->user()->roles->pluck('slug')->toArray())) {
             return $this->error('Unauthorized', 403);
         }
 
@@ -86,7 +86,7 @@ class MilestoneController extends Controller
         $requirement = $this->getRequirementModel($id, $type);
         
         $professionalId = $requirement->professional_id ?? $requirement->worker_id ?? $requirement->supplier_id;
-        if ($professionalId !== $request->user()->id && $requirement->user_id !== $request->user()->id) {
+        if ($professionalId !== $request->user()->id && $requirement->user_id !== $request->user()->id && !in_array('admin', $request->user()->roles->pluck('slug')->toArray())) {
             return $this->error('Unauthorized', 403);
         }
 
@@ -128,8 +128,8 @@ class MilestoneController extends Controller
         $type = $request->query('requirement_type', 'project');
         $requirement = $this->getRequirementModel($id, $type);
         
-        // Only the customer can mark as paid
-        if ($requirement->user_id !== $request->user()->id) {
+        // Only the customer or admin can mark as paid
+        if ($requirement->user_id !== $request->user()->id && !in_array('admin', $request->user()->roles->pluck('slug')->toArray())) {
             return $this->error('Unauthorized', 403);
         }
 

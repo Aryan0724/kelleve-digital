@@ -11,7 +11,7 @@ import { ProfessionalsPagination } from "@/components/professionals/Professional
 
 export const metadata: Metadata = {
   title: "Find Professionals",
-  description: "Browse verified interior designers, architects, and contractors in Bihar.",
+  description: "Browse verified interior designers, architects, and contractors in your area.",
 };
 
 async function getProfessionals(searchParams: any) {
@@ -43,7 +43,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
       {/* Header & Search */}
       <div className="mb-8 bg-slate-50 p-6 rounded-xl border">
         <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">Find Interior Designers & Contractors</h1>
-        <p className="text-slate-500 mb-6">Browse verified professionals for your home project in Bihar.</p>
+        <p className="text-slate-500 mb-6">Browse verified professionals for your home project {resolvedSearchParams.city ? `in ${resolvedSearchParams.city}` : 'in your area'}.</p>
         
         <form className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">

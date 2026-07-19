@@ -162,7 +162,6 @@ export default function AdminDashboard() {
   }, [selectedTable]);
 
   const refreshAll = useCallback(async () => {
-    setLoading(true);
     try {
       await Promise.all([fetchDashboard(), fetchUsers(), fetchListings(), fetchRequirements(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchInquiries(), fetchBlogs(), fetchPlans(), fetchCategories()]);
     } finally {
@@ -658,29 +657,6 @@ export default function AdminDashboard() {
           </Card>
         )}
 
-        {activeTab === "cms" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Content Management (Blogs)</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AdminTable
-                headers={["Title", "Author", "Status", "Published", "Action"]}
-                rows={blogs.map((item) => [
-                  <div key="title" className="font-semibold">{item.title}</div>,
-                  <div key="author">{item.author?.name}</div>,
-                  <Badge key="status" variant={item.status === 'published' ? 'default' : 'secondary'}>{item.status}</Badge>,
-                  <div key="date">{item.published_at ? new Date(item.published_at).toLocaleDateString() : '-'}</div>,
-                  <div key="actions" className="flex justify-end gap-2">
-                    <Button size="sm" variant="destructive" onClick={() => runAction(`del-blog-${item.id}`, () => api.delete(`/admin/blogs/${item.id}`))}>
-                      Delete
-                    </Button>
-                  </div>
-                ])}
-              />
-            </CardContent>
-          </Card>
-        )}
 
         {activeTab === "subscriptions" && (
           <SubscriptionAdminPanel />

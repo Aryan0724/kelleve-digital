@@ -11,7 +11,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
-  const [locations, setLocations] = useState<string[]>(["Patna"]);
+  const [locations, setLocations] = useState<string[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {

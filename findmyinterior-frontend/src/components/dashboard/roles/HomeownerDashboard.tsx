@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -16,8 +16,18 @@ import Link from "next/link";
 
 export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { user, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("dashboard");
+  
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || "dashboard");
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
   const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = async () => {
@@ -363,6 +373,15 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                                   }}
                                 >
                                   Award Job
+                                </Button>
+                              )}
+                              {bid.is_awarded && (
+                                <Button
+                                  size="sm"
+                                  className="bg-amber-500 hover:bg-amber-600 text-white"
+                                  onClick={() => setReviewModal({ isOpen: true, professionalId: bid.professional?.id, requirementId: bid.requirement_id })}
+                                >
+                                  <Star className="w-4 h-4 mr-1 fill-white" /> Write Review
                                 </Button>
                               )}
                             </div>

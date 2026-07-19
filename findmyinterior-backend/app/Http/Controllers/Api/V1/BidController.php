@@ -317,8 +317,8 @@ class BidController extends Controller
             return $this->error('Unauthorized', 403);
         }
 
-        if ($requirement->status !== 'in_progress') {
-            return $this->error("Cannot complete a project that is {$requirement->status}. Project must be 'in_progress'.", 400);
+        if (!in_array($requirement->status, ['in_progress', 'awarded'])) {
+            return $this->error("Cannot complete a project that is {$requirement->status}. Project must be 'in_progress' or 'awarded'.", 400);
         }
 
         $this->bidService->completeRequirement($requirement, $request->user());
