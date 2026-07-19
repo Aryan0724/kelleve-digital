@@ -432,11 +432,11 @@ export function RoleBasedHomepage() {
                 : config.greeting}
             </h2>
             <p className="text-white/75 text-sm md:text-base max-w-lg">{config.tagline}</p>
-            <div className="flex flex-wrap items-center gap-3 mt-5">
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-3 mt-5 w-full">
               {config.ctas.map((cta: any) => (
-                <Link key={cta.label} href={cta.href}>
+                <Link key={cta.label} href={cta.href} className="w-full sm:w-auto">
                   <button
-                    className={`flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    className={`w-full sm:w-auto justify-center flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
                       cta.primary
                         ? "bg-[#E8701A] hover:bg-orange-500 text-white shadow-lg"
                         : "bg-white/15 hover:bg-white/25 text-white border border-white/30"

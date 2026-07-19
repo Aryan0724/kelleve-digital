@@ -79,11 +79,11 @@ export function Hero() {
     <section className="relative w-full min-h-[500px] flex items-center bg-white">
       {/* Background Image with Gradient Fade */}
       <div 
-        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center"
+        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100"
       />
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-white via-white/90 to-transparent w-full md:w-[70%]" />
+      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent w-full md:w-[70%]" />
       
-      <div className="container relative z-40 mx-auto px-4 py-12 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
+      <div className="container relative z-40 mx-auto px-4 py-10 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
         
         {/* Left Content */}
         <div className="w-full lg:w-[60%] flex flex-col">
@@ -135,41 +135,44 @@ export function Hero() {
           )}
 
           {/* Value Props */}
-          <div className="flex flex-wrap items-center gap-x-6 gap-y-3 mb-10 p-4 rounded-2xl glass-panel opacity-0 animate-fade-in-up delay-100">
+          <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-x-6 gap-y-4 mb-10 p-4 rounded-2xl glass-panel opacity-0 animate-fade-in-up delay-100">
             {isWorker ? (
               <>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <ShieldCheck className="w-5 h-5 text-[#E8701A] mr-2" /> Verified Jobs
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Verified Jobs
                 </div>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <FileText className="w-5 h-5 text-[#E8701A] mr-2" /> Direct Contacts
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <FileText className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Direct Contacts
                 </div>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <IndianRupee className="w-5 h-5 text-[#E8701A] mr-2" /> Best Daily Rates
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <IndianRupee className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Best Daily Rates
                 </div>
               </>
             ) : isPro ? (
               <>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <ShieldCheck className="w-5 h-5 text-[#E8701A] mr-2" /> Verified Leads
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Verified Leads
                 </div>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <FileText className="w-5 h-5 text-[#E8701A] mr-2" /> Direct Clients
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <FileText className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Direct Clients
                 </div>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <IndianRupee className="w-5 h-5 text-[#E8701A] mr-2" /> Zero Commission
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <IndianRupee className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Zero Commission
                 </div>
               </>
             ) : (
               <>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <ShieldCheck className="w-5 h-5 text-[#E8701A] mr-2" /> Verified Pros
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Verified Pros
                 </div>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <FileText className="w-5 h-5 text-[#E8701A] mr-2" /> Get Multiple Quotes
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <FileText className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Multiple Quotes
                 </div>
-                <div className="flex items-center text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
-                  <IndianRupee className="w-5 h-5 text-[#E8701A] mr-2" /> Best Prices
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <IndianRupee className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Best Prices
+                </div>
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 hover:text-[#E8701A] transition-colors cursor-default">
+                  <CheckCircle2 className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> On-Time
                 </div>
               </>
             )}
@@ -179,8 +182,12 @@ export function Hero() {
           {!isWorker ? (
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-              className="w-full max-w-3xl bg-white/95 backdrop-blur-xl p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/60 flex flex-col md:flex-row gap-2 relative z-50 opacity-0 animate-fade-in-up delay-200"
+              className="w-full max-w-3xl bg-white/95 md:bg-white backdrop-blur-xl p-3 md:p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] border border-white/60 flex flex-col relative z-50 opacity-0 animate-fade-in-up delay-200"
             >
+              <div className="w-full text-center md:hidden mb-2 pt-1 pb-2 border-b border-gray-100">
+                <span className="text-[10px] sm:text-xs font-bold text-[#0a1c3a] tracking-wider uppercase">FIND THE RIGHT PROFESSIONAL FOR YOUR PROJECT</span>
+              </div>
+              <div className="flex flex-col md:flex-row gap-2 w-full">
               {/* City */}
               <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 cursor-pointer hover:bg-gray-50 rounded-lg transition relative">
                 <span className="text-[0.65rem] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Select City</span>
@@ -296,10 +303,11 @@ export function Hero() {
               {/* Button */}
               <button 
                 type="submit"
-                className="bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white font-bold text-sm px-8 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center whitespace-nowrap h-full"
+                className="w-full md:w-auto bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white font-bold text-sm px-8 py-4 rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center whitespace-nowrap md:h-full mt-2 md:mt-0"
               >
                 SEARCH PROS <span className="ml-2 transition-transform duration-300 group-hover:translate-x-1">→</span>
               </button>
+              </div>
             </form>
           ) : (
             <div className="opacity-0 animate-fade-in-up delay-200">

@@ -49,7 +49,7 @@ export function Categories({ categories }: { categories?: any[] }) {
 
         {/* Grid */}
         {displayCategories.length > 0 && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-between gap-4">
+          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-between gap-3 md:gap-4">
             {displayCategories.map((category, idx) => (
               <Link 
                 href={`/professionals?category=${category.slug || category.name.replace(/ /g, '-')}`}

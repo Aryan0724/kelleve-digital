@@ -30,29 +30,29 @@ export function TrustFooter() {
       <div className="w-full bg-[#0a1c3a] text-white py-4 md:py-0 md:h-20 flex items-center">
         <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-6">
           
-          <div className="flex flex-wrap md:flex-nowrap items-center gap-6 md:gap-8 flex-1">
-            <div className="flex items-start gap-3">
+          <div className="grid grid-cols-2 md:flex md:flex-nowrap items-start md:items-center gap-4 md:gap-8 flex-1 w-full">
+            <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2 md:gap-3">
               <ShieldCheck className="w-6 h-6 text-[#E8701A] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-sm font-bold">Verified & Trusted</span>
                 <span className="text-[10px] text-gray-300">Only verified professionals<br/>and businesses</span>
               </div>
             </div>
-            <div className="flex items-start gap-3">
+            <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2 md:gap-3">
               <Search className="w-6 h-6 text-[#E8701A] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-sm font-bold">Transparent Pricing</span>
                 <span className="text-[10px] text-gray-300">No hidden charges<br/>&nbsp;</span>
               </div>
             </div>
-            <div className="flex items-start gap-3">
+            <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2 md:gap-3">
               <Clock className="w-6 h-6 text-[#E8701A] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-sm font-bold">Save Time & Money</span>
                 <span className="text-[10px] text-gray-300">Compare & hire the best<br/>experts</span>
               </div>
             </div>
-            <div className="flex items-start gap-3">
+            <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2 md:gap-3">
               <Lock className="w-6 h-6 text-[#E8701A] shrink-0" />
               <div className="flex flex-col">
                 <span className="text-sm font-bold">Secure & Safe</span>

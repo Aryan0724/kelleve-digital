@@ -13,7 +13,7 @@ import { DesignerDashboard } from "@/components/dashboard/roles/DesignerDashboar
 import { BuilderDashboard } from "@/components/dashboard/roles/BuilderDashboard";
 
 export default function UserDashboard() {
-  const { user, token } = useAuthStore();
+  const { user, token, _hasHydrated } = useAuthStore();
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -35,15 +35,16 @@ export default function UserDashboard() {
   }, []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !_hasHydrated) return;
     if (!token) {
       router.push("/login");
       return;
     }
     fetchDashboard();
-  }, [token, mounted, router]);
+  }, [token, mounted, _hasHydrated, router]);
 
-  if (!mounted || !user || loading) return <div className="p-20 text-center">Loading dashboard...</div>;
+  if (!mounted || !_hasHydrated || loading) return <div className="p-20 text-center">Loading dashboard...</div>;
+  if (!user) return null;
 
   switch (user.role) {
     case 'homeowner':

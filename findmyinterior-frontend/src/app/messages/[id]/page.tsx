@@ -38,10 +38,9 @@ interface Message {
   created_at: string;
 }
 
-export default function ConversationPage() {
-  const params = useParams();
+export default function ConversationPage({ params }: { params: { id: string } }) {
   const router = useRouter();
-  const { user, token } = useAuthStore();
+  const { user, token, _hasHydrated } = useAuthStore();
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -85,7 +84,8 @@ export default function ConversationPage() {
   };
 
   useEffect(() => {
-    if (mounted && !token) {
+    if (!mounted || !_hasHydrated) return;
+    if (!token) {
       router.push("/login");
       return;
     }

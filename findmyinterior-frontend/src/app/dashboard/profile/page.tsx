@@ -14,7 +14,7 @@ import { CheckCircle2, User, Building, Image as ImageIcon } from "lucide-react";
 import Link from "next/link";
 
 export default function ProfilePage() {
-  const { user, token } = useAuthStore();
+  const { user, token, _hasHydrated } = useAuthStore();
   const router = useRouter();
   
   const [loading, setLoading] = useState(true);
@@ -50,7 +50,7 @@ export default function ProfilePage() {
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    if (!mounted) return;
+    if (!mounted || !_hasHydrated) return;
     if (!token) {
       router.push("/login");
       return;
@@ -105,7 +105,7 @@ export default function ProfilePage() {
     };
 
     fetchData();
-  }, [token, router, user, mounted]);
+  }, [token, router, user, mounted, _hasHydrated]);
 
   const handleSaveListing = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -56,7 +56,7 @@ const formatter = new Intl.NumberFormat("en-IN", {
 });
 
 export default function AdminDashboard() {
-  const { user, token } = useAuthStore();
+  const { user, token, _hasHydrated } = useAuthStore();
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<AdminTab>("overview");
   const [dashboard, setDashboard] = useState<any>(null);
@@ -170,12 +170,13 @@ export default function AdminDashboard() {
   }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers, fetchListings, fetchDbTables, fetchInquiries, fetchBlogs, fetchPlans, fetchCategories]);
 
   useEffect(() => {
+    if (!_hasHydrated) return;
     if (!token || !isAdmin) {
       router.push("/login");
       return;
     }
     refreshAll();
-  }, [token, isAdmin, router, refreshAll]);
+  }, [token, isAdmin, router, refreshAll, _hasHydrated]);
 
   useEffect(() => {
     if (token && isAdmin) fetchUsers();

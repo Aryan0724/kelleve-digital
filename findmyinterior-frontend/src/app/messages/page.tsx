@@ -41,7 +41,7 @@ interface Conversation {
 
 export default function InboxPage() {
   const router = useRouter();
-  const { user, token } = useAuthStore();
+  const { user, token, _hasHydrated } = useAuthStore();
   const [conversations, setConversations] = useState<Conversation[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -57,12 +57,13 @@ export default function InboxPage() {
   };
 
   useEffect(() => {
+    if (!_hasHydrated) return;
     if (!token) {
       router.push("/login");
       return;
     }
     fetchConversations();
-  }, [token, router]);
+  }, [token, router, _hasHydrated]);
 
   if (!user) return null;
   const isCustomer = user.role === 'customer' || user.role === 'homeowner';
