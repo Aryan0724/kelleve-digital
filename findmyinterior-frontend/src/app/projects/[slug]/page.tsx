@@ -5,7 +5,7 @@ import { notFound } from "next/navigation";
 
 async function getProject(slug: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://find-my-interior-1.onrender.com/api/v1'}/builder-projects/${slug}`, {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/builder-projects/${slug}`, {
       cache: 'no-store'
     });
     if (!res.ok) {

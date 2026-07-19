@@ -10,7 +10,7 @@ function findAndReplace(dir) {
     } else if (fullPath.endsWith('.tsx') || fullPath.endsWith('.ts')) {
       let content = fs.readFileSync(fullPath, 'utf8');
       if (content.includes('http://localhost:8000/api/v1')) {
-        content = content.replace(/http:\/\/localhost:8000\/api\/v1/g, 'https://find-my-interior-1.onrender.com/api/v1');
+        content = content.replace(/http:\/\/localhost:8000\/api\/v1/g, 'http://localhost:8000/api/v1');
         fs.writeFileSync(fullPath, content, 'utf8');
         console.log('Updated', fullPath);
       }

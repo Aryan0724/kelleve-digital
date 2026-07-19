@@ -1,12 +1,12 @@
 <?php
 /**
  * FINAL LIVE PRODUCTION ACCEPTANCE TEST
- * Target: https://find-my-interior-1.onrender.com/api/v1
+ * Target: http://localhost:8000/api/v1
  * 
  * Tests every user role lifecycle end-to-end against the deployed API.
  */
 
-$BASE = 'https://find-my-interior-1.onrender.com/api/v1';
+$BASE = 'http://localhost:8000/api/v1';
 $results = [];
 $PASS = "\033[32mPASS\033[0m";
 $FAIL = "\033[31mFAIL\033[0m";

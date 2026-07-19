@@ -21,7 +21,7 @@ const fileBlob = new Blob([buffer], { type: 'image/png' });
 formData.append('image', fileBlob, 'dummy.png');
 
 console.log('Sending request...');
-fetch('https://find-my-interior-1.onrender.com/api/v1/projects', {
+fetch('http://localhost:8000/api/v1/projects', {
   method: 'POST',
   headers: {
     'Authorization': 'Bearer aryan123'

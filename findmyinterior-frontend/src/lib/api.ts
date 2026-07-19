@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from './store/useAuthStore';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'https://find-my-interior-1.onrender.com/api/v1',
+  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
   timeout: 120000, // 2 minutes to accommodate Render free tier cold starts
   headers: {
     'Accept': 'application/json',

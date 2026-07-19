@@ -333,7 +333,7 @@ function PostRequirementContent() {
 
 
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'https://find-my-interior-1.onrender.com/api/v1';
+      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
       const fullUrl = editId ? `${baseUrl}${endpoint}/${editId}` : `${baseUrl}${endpoint}`;
       
       if (editId) {

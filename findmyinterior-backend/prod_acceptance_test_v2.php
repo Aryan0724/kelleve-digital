@@ -1,7 +1,7 @@
 <?php
 /**
  * FINAL LIVE PRODUCTION ACCEPTANCE TEST v2
- * Target: https://find-my-interior-1.onrender.com/api/v1
+ * Target: http://localhost:8000/api/v1
  * 
  * ALL ROUTES VERIFIED AGAINST: php artisan route:list
  * ALL RESPONSE STRUCTURES VERIFIED AGAINST: AuthController source
@@ -20,7 +20,7 @@
  * - api() always gets array for data
  */
 
-$BASE = 'https://find-my-interior-1.onrender.com/api/v1';
+$BASE = 'http://localhost:8000/api/v1';
 $results  = [];
 $PASS = 'PASS';
 $FAIL = 'FAIL';

@@ -3,7 +3,7 @@ import { Metadata } from "next";
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   try {
     const { id } = await params;
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'https://find-my-interior-1.onrender.com/api/v1'}/requirements/${id}`);
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/requirements/${id}`);
     if (!res.ok) throw new Error('Failed to fetch');
     const json = await res.json();
     const req = json.data;
