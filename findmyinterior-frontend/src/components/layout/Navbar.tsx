@@ -127,7 +127,7 @@ export function Navbar() {
           
           {/* Logo */}
           <Link href="/" className="flex items-center flex-shrink-0 group py-2">
-            <img src="/logo.jpg" alt="Find My Interior" className="h-20 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:brightness-200" />
+            <img src="/logo.jpg" alt="Find My Interior" className="h-20 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:bg-white dark:p-1 dark:rounded-md" />
           </Link>
 
           {/* Center Search Container */}

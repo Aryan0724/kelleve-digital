@@ -36,17 +36,17 @@ export function Stats({ stats }: { stats?: any }) {
   ];
 
   return (
-    <div className="w-full bg-[#f8f9fa] pt-4 pb-8">
+    <div className="w-full bg-[#f8f9fa] dark:bg-background pt-4 pb-8 transition-colors duration-300">
       <div className="container mx-auto px-4 relative z-30 -mt-10">
-        <div className="bg-white rounded-xl shadow-md border border-gray-100 p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 justify-items-center md:justify-items-start">
+        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-md border border-gray-100 dark:border-slate-800 p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 justify-items-center md:justify-items-start transition-colors duration-300">
           {displayStats.map((stat, idx) => (
             <div key={idx} className="flex flex-col lg:flex-row items-center lg:items-start text-center lg:text-left space-y-2 lg:space-y-0 lg:space-x-3 w-full">
               <div className="shrink-0">
                 {stat.icon}
               </div>
               <div className="flex flex-col">
-                <span className="text-xl font-bold text-[#0a1c3a] leading-none mb-1">{stat.value}</span>
-                <span className="text-xs font-medium text-gray-500 leading-none">{stat.label}</span>
+                <span className="text-xl font-bold text-[#0a1c3a] dark:text-white leading-none mb-1">{stat.value}</span>
+                <span className="text-xs font-medium text-gray-500 dark:text-gray-400 leading-none">{stat.label}</span>
               </div>
             </div>
           ))}

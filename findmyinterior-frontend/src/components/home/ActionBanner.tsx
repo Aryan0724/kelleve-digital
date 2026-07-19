@@ -30,19 +30,19 @@ export function ActionBanner() {
   ];
 
   return (
-    <section className="w-full bg-white border-y border-gray-200 py-6">
+    <section className="w-full bg-white dark:bg-slate-900 border-y border-gray-200 dark:border-slate-800 py-6 transition-colors duration-300">
       <div className="container mx-auto px-4">
-        <div className="flex flex-col lg:flex-row justify-between gap-6 divide-y lg:divide-y-0 lg:divide-x divide-gray-200">
+        <div className="flex flex-col lg:flex-row justify-between gap-6 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-slate-800">
           {actions.map((action, idx) => (
             <div key={idx} className={`flex items-start gap-4 ${idx !== 0 ? 'pt-4 lg:pt-0 lg:pl-6' : ''} flex-1`}>
               <div className="shrink-0 mt-1">
                 {action.icon}
               </div>
               <div className="flex flex-col">
-                <h4 className="text-xs font-bold text-[#0a1c3a] uppercase tracking-wide mb-1">
+                <h4 className="text-xs font-bold text-[#0a1c3a] dark:text-white uppercase tracking-wide mb-1">
                   {action.title}
                 </h4>
-                <p className="text-[11px] text-gray-500 leading-snug font-medium">
+                <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-snug font-medium">
                   {action.desc}
                 </p>
               </div>

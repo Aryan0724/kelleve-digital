@@ -79,9 +79,9 @@ export function Hero() {
     <section className="relative w-full min-h-[500px] flex items-center bg-white dark:bg-background">
       {/* Background Image with Gradient Fade */}
       <div 
-        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100"
+        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100 dark:opacity-20 md:dark:opacity-30"
       />
-      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-[#0a1c3a]/80 dark:md:bg-gradient-to-r dark:md:from-[#0a1c3a] dark:md:via-[#0a1c3a]/90 dark:md:to-transparent w-full md:w-[70%]" />
+      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-background/90 dark:md:bg-gradient-to-r dark:md:from-background dark:md:via-background/95 dark:md:to-transparent w-full md:w-[70%]" />
       
       <div className="container relative z-40 mx-auto px-4 py-10 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
         
@@ -135,7 +135,7 @@ export function Hero() {
           )}
 
           {/* Value Props */}
-          <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-x-6 gap-y-4 mb-10 p-4 rounded-2xl premium-glass opacity-0 animate-fade-in-up delay-100">
+          <div className="grid grid-cols-2 md:flex md:flex-wrap items-center gap-x-6 gap-y-4 mb-10 p-4 rounded-2xl bg-white/80 dark:bg-white/5 border border-white/20 dark:border-white/10 backdrop-blur-md opacity-0 animate-fade-in-up delay-100">
             {isWorker ? (
               <>
                 <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">

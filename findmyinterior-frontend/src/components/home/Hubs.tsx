@@ -117,11 +117,11 @@ export function Hubs({ homeData }: { homeData?: any }) {
   ];
 
   return (
-    <section className="w-full bg-[#f8f9fa] pb-12">
+    <section className="w-full bg-[#f8f9fa] dark:bg-background pb-12 transition-colors duration-300">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
           {hubs.map((hub, idx) => (
-            <div key={idx} className="bg-[#f2f4f8] rounded-xl overflow-hidden flex flex-col p-4 shadow-sm border border-gray-100 h-full">
+            <div key={idx} className="bg-[#f2f4f8] dark:bg-slate-800 rounded-xl overflow-hidden flex flex-col p-4 shadow-sm border border-gray-100 dark:border-slate-700 h-full">
               {/* Header */}
               <div className="flex justify-between items-center mb-3">
                 <h3 className={`text-[10px] font-extrabold uppercase tracking-widest ${hub.titleColor}`}>
@@ -133,8 +133,8 @@ export function Hubs({ homeData }: { homeData?: any }) {
               </div>
               
               {/* Content Grid */}
-              <div className="bg-white rounded-lg p-3 flex-1 flex flex-row lg:flex-col xl:flex-row gap-3 border border-gray-200">
-                <div className="w-24 h-24 lg:w-full lg:h-32 xl:w-24 xl:h-24 shrink-0 relative rounded-md overflow-hidden bg-gray-100">
+              <div className="bg-white dark:bg-slate-900 rounded-lg p-3 flex-1 flex flex-row lg:flex-col xl:flex-row gap-3 border border-gray-200 dark:border-slate-700">
+                <div className="w-24 h-24 lg:w-full lg:h-32 xl:w-24 xl:h-24 shrink-0 relative rounded-md overflow-hidden bg-gray-100 dark:bg-slate-800">
                   <Image 
                     src={hub.image} 
                     alt={hub.title} 

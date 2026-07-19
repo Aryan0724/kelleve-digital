@@ -11,14 +11,14 @@ export function TrustFooter() {
   return (
     <section className="w-full flex flex-col font-sans">
       {/* Ecosystem Banner */}
-      <div className="w-full bg-[#f8f9fa] py-6 border-b border-gray-200">
+      <div className="w-full bg-[#f8f9fa] dark:bg-background py-6 border-b border-gray-200 dark:border-slate-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
           <h4 className="text-[10px] font-extrabold text-gray-500 tracking-widest uppercase mb-4">
             POWERED BY KLEVE ECOSYSTEM
           </h4>
           <div className="flex flex-wrap items-center gap-4 md:gap-8 justify-center lg:justify-start">
             {brands.map((brand, idx) => (
-              <div key={idx} className="flex items-center text-sm font-bold text-gray-600 grayscale hover:grayscale-0 transition-all cursor-pointer">
+              <div key={idx} className="flex items-center text-sm font-bold text-gray-600 dark:text-gray-400 grayscale hover:grayscale-0 transition-all cursor-pointer">
                 {brand}
               </div>
             ))}
