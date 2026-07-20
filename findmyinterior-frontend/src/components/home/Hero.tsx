@@ -79,9 +79,9 @@ export function Hero() {
     <section className="relative w-full min-h-[500px] flex items-center bg-white dark:bg-background">
       {/* Background Image with Gradient Fade */}
       <div 
-        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100 dark:opacity-30 md:dark:opacity-50"
+        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100 dark:opacity-40 md:dark:opacity-100"
       />
-      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-background/90 dark:md:bg-gradient-to-r dark:md:from-background dark:md:via-background/80 dark:md:to-transparent w-full" />
+      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-background/95 dark:md:bg-gradient-to-r dark:md:from-background dark:md:via-background/70 dark:md:via-70% dark:md:to-background/10 w-full" />
       
       <div className="container relative z-40 mx-auto px-4 py-10 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
         
