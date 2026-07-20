@@ -79,9 +79,9 @@ export function Hero() {
     <section className="relative w-full min-h-[500px] flex items-center bg-white dark:bg-background">
       {/* Background Image with Gradient Fade */}
       <div 
-        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100 dark:opacity-20 md:dark:opacity-30"
+        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100 dark:opacity-30 md:dark:opacity-50"
       />
-      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-background/90 dark:md:bg-gradient-to-r dark:md:from-background dark:md:via-background/95 dark:md:to-transparent w-full md:w-[70%]" />
+      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-background/90 dark:md:bg-gradient-to-r dark:md:from-background dark:md:via-background/80 dark:md:to-transparent w-full" />
       
       <div className="container relative z-40 mx-auto px-4 py-10 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
         
@@ -190,7 +190,7 @@ export function Hero() {
               <div className="flex flex-col md:flex-row gap-2 w-full">
               {/* City */}
               <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition relative">
-                <span className="text-[0.65rem] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Select City</span>
+                <span className="text-[0.65rem] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider mb-0.5">Select City</span>
                 <div className="flex items-center justify-between">
                   <input 
                     type="text"
@@ -228,7 +228,7 @@ export function Hero() {
 
               {/* Service */}
               <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition relative">
-                <span className="text-[0.65rem] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Select Service</span>
+                <span className="text-[0.65rem] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider mb-0.5">Select Service</span>
                 <div className="flex items-center justify-between">
                   <input 
                     type="text"
@@ -267,7 +267,7 @@ export function Hero() {
 
               {/* Budget */}
               <div className="flex-1 flex flex-col justify-center px-4 py-2 border-b md:border-b-0 md:border-r border-gray-200 dark:border-white/10 cursor-pointer hover:bg-gray-50 dark:hover:bg-white/5 rounded-lg transition relative">
-                <span className="text-[0.65rem] text-gray-500 font-medium uppercase tracking-wider mb-0.5">Select Budget</span>
+                <span className="text-[0.65rem] text-gray-500 dark:text-gray-400 font-medium uppercase tracking-wider mb-0.5">Select Budget</span>
                 <div 
                   className="flex items-center justify-between w-full"
                   onClick={() => setShowBudgetDropdown(!showBudgetDropdown)}
@@ -323,12 +323,12 @@ export function Hero() {
           {/* Popular Searches */}
           {isCustomer && (
             <div className="mt-6 flex flex-wrap items-center gap-3 text-xs opacity-0 animate-fade-in-up delay-300">
-              <span className="font-semibold text-gray-700 mr-1 uppercase tracking-wider">Popular Searches:</span>
+              <span className="font-semibold text-gray-700 dark:text-gray-300 mr-1 uppercase tracking-wider">Popular Searches:</span>
               {["Interior Designer", "Modular Kitchen", "Painter", "False Ceiling", "Carpenter", "Architect"].map((term) => (
                 <Link 
                   key={term} 
                   href={`/professionals?search=${encodeURIComponent(term)}`}
-                  className="bg-white/60 hover:bg-white backdrop-blur-sm text-gray-700 border border-gray-200 hover:border-orange-300 hover:text-orange-600 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md"
+                  className="bg-white/60 hover:bg-white dark:bg-white/10 dark:hover:bg-white/20 backdrop-blur-sm text-gray-700 dark:text-gray-300 border border-gray-200 dark:border-white/10 hover:border-orange-300 dark:hover:border-orange-500/50 hover:text-orange-600 dark:hover:text-orange-400 px-3.5 py-1.5 rounded-full cursor-pointer transition-all duration-300 shadow-sm hover:shadow-md"
                 >
                   {term}
                 </Link>

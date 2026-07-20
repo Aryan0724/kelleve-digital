@@ -38,11 +38,11 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
                   <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-1 line-clamp-1">
                     {pro.business_name} <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
                   </h3>
-                  <p className="text-sm text-gray-500 line-clamp-1">{pro.category?.name || "Professional"}</p>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{pro.category?.name || "Professional"}</p>
                 </div>
               </div>
               <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
-                <div className="flex items-center gap-1 text-sm font-medium text-gray-700">
+                <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
                   {pro.rating || "4.5"} <span className="text-gray-400 font-normal">({pro.review_count || 0})</span>
                 </div>

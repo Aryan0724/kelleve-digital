@@ -17,17 +17,17 @@ export function Hubs({ homeData }: { homeData?: any }) {
       image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?q=80&w=600&auto=format&fit=crop",
       content: firstProject ? (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstProject.title}</h4>
-          <p className="text-xs text-gray-500 mb-0.5 line-clamp-1">{firstProject.city}</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Budget: ₹{firstProject.budget}</p>
-          <p className="text-xs text-gray-500">Live Requirement</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1 line-clamp-1">{firstProject.title}</h4>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5 line-clamp-1">{firstProject.city}</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-0.5">Budget: ₹{firstProject.budget}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Live Requirement</p>
         </>
       ) : (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Live Requirements</h4>
-          <p className="text-xs text-gray-500 mb-0.5">Across Bihar</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Multiple Budgets</p>
-          <p className="text-xs text-gray-500">Submit Quotes</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1">Live Requirements</h4>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Across Bihar</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-0.5">Multiple Budgets</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Submit Quotes</p>
         </>
       ),
     },
@@ -40,17 +40,17 @@ export function Hubs({ homeData }: { homeData?: any }) {
       image: firstProject?.images?.[0] || "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?q=80&w=600&auto=format&fit=crop",
       content: firstProject ? (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstProject.title}</h4>
-          <p className="text-xs text-gray-500 mb-0.5">{firstProject.builder?.business_name || "Top Builder"}</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Location: {firstProject.city}</p>
-          <p className="text-xs text-gray-500">Requirements Available</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1 line-clamp-1">{firstProject.title}</h4>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{firstProject.builder?.business_name || "Top Builder"}</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-0.5">Location: {firstProject.city}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Requirements Available</p>
         </>
       ) : (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Builder Projects</h4>
-          <p className="text-xs text-gray-500 mb-0.5">Verified Builders</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Major Cities</p>
-          <p className="text-xs text-gray-500">Requirements Available</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1">Builder Projects</h4>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">Verified Builders</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-0.5">Major Cities</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Requirements Available</p>
         </>
       ),
     },
@@ -63,17 +63,17 @@ export function Hubs({ homeData }: { homeData?: any }) {
       image: firstPossession?.images?.[0] || "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=600&auto=format&fit=crop",
       content: firstPossession ? (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstPossession.title}</h4>
-          <p className="text-xs text-gray-500 mb-0.5">{firstPossession.builder?.business_name || "Top Builder"}</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Possession: {firstPossession.possession_date}</p>
-          <p className="text-xs text-gray-500">Interior Leads Expected</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1 line-clamp-1">{firstPossession.title}</h4>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">{firstPossession.builder?.business_name || "Top Builder"}</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-0.5">Possession: {firstPossession.possession_date}</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Interior Leads Expected</p>
         </>
       ) : (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Upcoming Flats</h4>
-          <p className="text-xs text-gray-500 mb-0.5">New Societies</p>
-          <p className="text-xs font-semibold text-gray-700 mb-0.5">Ready to Move</p>
-          <p className="text-xs text-gray-500">Interior Leads Expected</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1">Upcoming Flats</h4>
+          <p className="text-xs text-gray-500 dark:text-gray-400 mb-0.5">New Societies</p>
+          <p className="text-xs font-semibold text-gray-700 dark:text-gray-300 mb-0.5">Ready to Move</p>
+          <p className="text-xs text-gray-500 dark:text-gray-400">Interior Leads Expected</p>
         </>
       ),
     },
@@ -86,13 +86,13 @@ export function Hubs({ homeData }: { homeData?: any }) {
       image: firstWorker?.image_url || "https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?q=80&w=600&auto=format&fit=crop",
       content: firstWorker ? (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstWorker.name}</h4>
-          <p className="text-xs text-gray-600 mt-1 leading-snug">Available {firstWorker.skills || "Worker"}</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1 line-clamp-1">{firstWorker.name}</h4>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 leading-snug">Available {firstWorker.skills || "Worker"}</p>
         </>
       ) : (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1">Find Verified<br/>Skilled Workers</h4>
-          <p className="text-xs text-gray-600 mt-2 leading-snug">Carpenter, Electrician, Plumber, Painter & more</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1">Find Verified<br/>Skilled Workers</h4>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-2 leading-snug">Carpenter, Electrician, Plumber, Painter & more</p>
         </>
       ),
     },
@@ -105,12 +105,12 @@ export function Hubs({ homeData }: { homeData?: any }) {
       image: firstSupplier?.image_url || "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=600&auto=format&fit=crop",
       content: firstSupplier ? (
         <>
-          <h4 className="font-bold text-[#0a1c3a] text-sm mb-1 line-clamp-1">{firstSupplier.business_name}</h4>
-          <p className="text-xs text-gray-600 mt-1 leading-snug">{firstSupplier.city}</p>
+          <h4 className="font-bold text-[#0a1c3a] dark:text-gray-100 text-sm mb-1 line-clamp-1">{firstSupplier.business_name}</h4>
+          <p className="text-xs text-gray-600 dark:text-gray-400 mt-1 leading-snug">{firstSupplier.city}</p>
         </>
       ) : (
         <>
-          <p className="text-xs text-gray-600 leading-snug">Tiles, Plywood, Hardware, Lighting, Sanitary, Kitchen Hardware & More</p>
+          <p className="text-xs text-gray-600 dark:text-gray-400 leading-snug">Tiles, Plywood, Hardware, Lighting, Sanitary, Kitchen Hardware & More</p>
         </>
       ),
     },
