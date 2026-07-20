@@ -1,42 +1,13 @@
 import Image from "next/image";
 import { Search, MapPin, CheckCircle, Users, Building, Grid, Search as SearchIcon, Utensils, Hotel, PlusSquare, GraduationCap, HardHat, Car, Smartphone, Sparkles, MoreHorizontal, Store, Megaphone, MessageCircle, CreditCard, Presentation, BookOpen } from "lucide-react";
 import Link from "next/link";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#f9fafb]">
-      {/* Top Header */}
-      <div className="bg-navy text-navy-foreground py-2 px-6 flex justify-between items-center text-sm">
-        <div className="flex gap-6">
-          <span className="flex items-center gap-2">✉ support@truedial.com</span>
-          <span className="flex items-center gap-2">📞 95349 00999</span>
-        </div>
-        <div className="flex gap-6">
-          <span>Download App ▶ 🍎</span>
-          <Link href="/login" className="hover:text-primary transition">Login / Sign Up</Link>
-        </div>
-      </div>
-
-      {/* Main Navbar */}
-      <header className="bg-white py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-xl">T</div>
-          <span className="text-2xl font-bold text-navy">truedial</span>
-        </div>
-        <nav className="hidden md:flex gap-6 text-gray-700 font-medium">
-          <Link href="/" className="hover:text-primary">Home</Link>
-          <Link href="/categories" className="hover:text-primary flex items-center gap-1">Categories <ChevronDown className="w-4 h-4"/></Link>
-          <Link href="/services" className="hover:text-primary flex items-center gap-1">Services <ChevronDown className="w-4 h-4"/></Link>
-          <Link href="/offers" className="hover:text-primary">Offers</Link>
-          <Link href="/academy" className="hover:text-primary">Academy</Link>
-          <Link href="/podcast" className="hover:text-primary">Podcast</Link>
-          <Link href="/td-news" className="hover:text-primary">TD News</Link>
-          <Link href="/contact" className="hover:text-primary">Contact</Link>
-        </nav>
-        <button className="bg-primary text-white px-6 py-2 rounded-md font-medium hover:bg-orange-600 transition">
-          Register Business
-        </button>
-      </header>
+      <Navbar />
 
       {/* Hero Section */}
       <section className="bg-white py-12 md:py-20 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
@@ -260,105 +231,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer Features */}
-      <div className="bg-navy py-6 border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-6 flex justify-around items-center text-white text-sm">
-          <div className="flex items-center gap-3"><CheckCircle className="text-primary w-6 h-6"/> <span className="font-medium">100%<br/>Verified Businesses</span></div>
-          <div className="flex items-center gap-3"><Sparkles className="text-primary w-6 h-6"/> <span className="font-medium">Best<br/>Discounts & Offers</span></div>
-          <div className="flex items-center gap-3"><Lock className="text-primary w-6 h-6"/> <span className="font-medium">Secure<br/>& Trusted Platform</span></div>
-          <div className="flex items-center gap-3"><Headphones className="text-primary w-6 h-6"/> <span className="font-medium">24x7<br/>Customer Support</span></div>
-        </div>
-      </div>
-
-      {/* Newsletter & Footer */}
-      <footer className="bg-white pt-12 pb-6 px-6 md:px-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-center mb-12 border-b border-gray-100 pb-8">
-            <div>
-              <h4 className="font-bold text-navy text-xl mb-1">Stay Updated with TRUEDIAL</h4>
-              <p className="text-sm text-gray-500">Get the latest offers, business news and platform updates.</p>
-            </div>
-            <div className="flex w-full md:w-auto mt-4 md:mt-0 gap-2">
-              <input type="email" placeholder="Enter your email address" className="border border-gray-300 rounded px-4 py-2 w-full md:w-72 outline-none focus:border-primary" />
-              <button className="bg-primary text-white px-6 py-2 rounded font-medium hover:bg-orange-600">Subscribe</button>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
-            <div className="col-span-1 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">T</div>
-                <span className="text-xl font-bold text-navy">truedial</span>
-              </div>
-              <p className="text-xs text-gray-500 leading-relaxed mb-6">
-                TRUEDIAL is India's emerging business growth platform helping businesses grow beyond listing with advanced marketing, technology and consulting solutions.
-              </p>
-              <div className="flex gap-4">
-                <Facebook className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer"/>
-                <Instagram className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer"/>
-                <Twitter className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer"/>
-                <Linkedin className="w-5 h-5 text-gray-400 hover:text-primary cursor-pointer"/>
-              </div>
-            </div>
-
-            <div>
-              <h5 className="font-bold text-navy mb-4 text-sm">Top Categories</h5>
-              <ul className="space-y-3 text-xs text-gray-500">
-                <li className="hover:text-primary cursor-pointer">Restaurants</li>
-                <li className="hover:text-primary cursor-pointer">Hotels</li>
-                <li className="hover:text-primary cursor-pointer">Hospitals</li>
-                <li className="hover:text-primary cursor-pointer">Education</li>
-                <li className="hover:text-primary cursor-pointer">Interior & Construction</li>
-                <li className="hover:text-primary cursor-pointer">More Categories</li>
-              </ul>
-            </div>
-
-            <div>
-              <h5 className="font-bold text-navy mb-4 text-sm">Quick Links</h5>
-              <ul className="space-y-3 text-xs text-gray-500">
-                <li className="hover:text-primary cursor-pointer">About Us</li>
-                <li className="hover:text-primary cursor-pointer">Services</li>
-                <li className="hover:text-primary cursor-pointer">Offers</li>
-                <li className="hover:text-primary cursor-pointer">TD Academy</li>
-                <li className="hover:text-primary cursor-pointer">Podcast</li>
-                <li className="hover:text-primary cursor-pointer">TD News</li>
-              </ul>
-            </div>
-
-            <div>
-              <h5 className="font-bold text-navy mb-4 text-sm">For Businesses</h5>
-              <ul className="space-y-3 text-xs text-gray-500">
-                <li className="hover:text-primary cursor-pointer">Register Business</li>
-                <li className="hover:text-primary cursor-pointer">Business Login</li>
-                <li className="hover:text-primary cursor-pointer">Marketing Solutions</li>
-                <li className="hover:text-primary cursor-pointer">Consulting Services</li>
-                <li className="hover:text-primary cursor-pointer">SMS / WhatsApp Campaign</li>
-                <li className="hover:text-primary cursor-pointer">Business Resources</li>
-              </ul>
-            </div>
-
-            <div>
-              <h5 className="font-bold text-navy mb-4 text-sm">Support</h5>
-              <ul className="space-y-3 text-xs text-gray-500 mb-6">
-                <li className="hover:text-primary cursor-pointer">Help Center</li>
-                <li className="hover:text-primary cursor-pointer">Terms & Conditions</li>
-                <li className="hover:text-primary cursor-pointer">Privacy Policy</li>
-                <li className="hover:text-primary cursor-pointer">Refund Policy</li>
-                <li className="hover:text-primary cursor-pointer">Contact Us</li>
-              </ul>
-              <h5 className="font-bold text-navy mb-3 text-sm">Download App</h5>
-              <div className="flex gap-2">
-                <div className="bg-black text-white px-3 py-1.5 rounded cursor-pointer text-xs flex items-center gap-1">Play Store</div>
-                <div className="bg-black text-white px-3 py-1.5 rounded cursor-pointer text-xs flex items-center gap-1">App Store</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="text-center text-xs text-gray-400 pt-6 border-t border-gray-100">
-            &copy; 2026 Truedial pvt. ltd. All rights reserved.
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

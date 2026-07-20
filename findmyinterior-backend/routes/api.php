@@ -360,3 +360,13 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
 
 
 
+// -------------------------------------------------------------
+// TRUEDIAL MULTI-TENANT ROUTES
+// -------------------------------------------------------------
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/privilege-cards', [App\Http\Controllers\PrivilegeCardController::class, 'index']);
+    Route::post('/privilege-cards/claim', [App\Http\Controllers\PrivilegeCardController::class, 'claim']);
+    
+    Route::get('/offers', [App\Http\Controllers\OfferController::class, 'index']);
+    Route::post('/offers/claim', [App\Http\Controllers\OfferController::class, 'claim']);
+});

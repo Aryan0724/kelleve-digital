@@ -22,6 +22,7 @@ class Listing extends Model
         'gst_number', 'pan_number', 'budget_tier',
         'phone_clicks', 'whatsapp_clicks', 'website_clicks',
         'services', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
+        'platform',
     ];
 
     protected $casts = [
