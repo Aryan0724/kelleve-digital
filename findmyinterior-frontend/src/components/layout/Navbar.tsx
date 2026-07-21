@@ -50,6 +50,13 @@ export function Navbar() {
 
   useEffect(() => setMounted(true), []);
 
+  // Close mobile menu on route change
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [router]);
+
+  const closeMobileMenu = () => setIsMobileMenuOpen(false);
+
   const handleLogout = async () => {
     try {
       await api.post("/auth/logout");
@@ -57,6 +64,7 @@ export function Navbar() {
       console.error("Logout error", err);
     }
     logout();
+    closeMobileMenu();
     router.push("/login");
   };
 
@@ -74,7 +82,7 @@ export function Navbar() {
       {/* 1. TOP DARK BAR */}
       <div className="w-full bg-[#0a1c3a] text-white/90 text-xs py-1.5 px-4 hidden md:flex justify-between items-center">
         <div>
-          Bihar's No.1 Home Improvement & Interior Marketplace
+          Bihar's No.1 Home Improvement &amp; Interior Marketplace
         </div>
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
@@ -116,7 +124,7 @@ export function Navbar() {
           )}
           <Link href="/help" className="hover:text-white flex items-center space-x-1">
             <HelpCircle className="w-3.5 h-3.5" />
-            <span>Help & Support</span>
+            <span>Help &amp; Support</span>
           </Link>
         </div>
       </div>
@@ -133,8 +141,8 @@ export function Navbar() {
           {/* Center Search Container */}
           <SmartSearch />
 
-          {/* Right Action Buttons */}
-          <div className="hidden xl:flex items-center space-x-3">
+          {/* Right Action Buttons — hidden on lg and below */}
+          <div className="hidden lg:flex items-center space-x-3">
             <Link href="/messages" className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50">
               <MessageCircle className="w-5 h-5" />
               <span className="absolute top-1 right-1 w-2 h-2 bg-[#E8701A] rounded-full ring-2 ring-white"></span>
@@ -215,10 +223,11 @@ export function Navbar() {
             )}
           </div>
 
-          {/* Mobile Menu Toggle */}
+          {/* Mobile Menu Toggle — visible on lg and below */}
           <button 
-            className="xl:hidden p-2 text-gray-600 dark:text-white hover:text-[#0a1c3a] dark:hover:text-gray-300 focus:outline-none"
+            className="lg:hidden p-2 text-gray-600 dark:text-white hover:text-[#0a1c3a] dark:hover:text-gray-300 focus:outline-none rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
             onClick={() => setIsMobileMenuOpen(true)}
+            aria-label="Open menu"
           >
             <Menu className="w-7 h-7" />
           </button>
@@ -278,64 +287,105 @@ export function Navbar() {
         </div>
       </div>
 
-      {/* MOBILE MENU */}
+      {/* MOBILE MENU OVERLAY */}
       {isMobileMenuOpen && (
-        <div className="fixed inset-0 z-50 premium-glass flex flex-col xl:hidden">
-          <div className="flex items-center justify-between p-4 border-b dark:border-white/10">
-            <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="flex items-center">
-              <img src="/logo.jpg" alt="Find My Interior" className="h-12 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
-            </Link>
-            <Button variant="ghost" size="icon" onClick={() => setIsMobileMenuOpen(false)}>
-              <X className="h-6 w-6 text-gray-700 dark:text-gray-300" />
-            </Button>
-          </div>
-          <div className="flex-1 overflow-y-auto p-4 flex flex-col gap-4">
-            <div className="flex justify-between items-center mb-4">
-              <span className="font-semibold text-gray-700 dark:text-gray-300">Theme</span>
-              {mounted && (
-                <button
-                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                  className="p-2 border rounded-full bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-300"
-                >
-                  {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                </button>
-              )}
+        <div
+          className="fixed inset-0 z-50 bg-black/50 lg:hidden"
+          onClick={closeMobileMenu}
+        >
+          {/* Slide-in drawer */}
+          <div
+            className="absolute top-0 right-0 h-full w-80 max-w-full bg-white dark:bg-[#0a1c3a] shadow-2xl flex flex-col overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Drawer Header */}
+            <div className="flex items-center justify-between p-4 border-b dark:border-white/10">
+              <Link href="/" onClick={closeMobileMenu} className="flex items-center">
+                <img src="/logo.jpg" alt="Find My Interior" className="h-12 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
+              </Link>
+              <button
+                onClick={closeMobileMenu}
+                className="p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+                aria-label="Close menu"
+              >
+                <X className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+              </button>
             </div>
-            {isAuthenticated ? (
-              <>
-                <Link href="/dashboard" onClick={() => setIsMobileMenuOpen(false)} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center gap-2 font-medium">
-                  <LayoutDashboard className="w-5 h-5" /> Dashboard
-                </Link>
-                <Link href="/messages" onClick={() => setIsMobileMenuOpen(false)} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center gap-2 font-medium">
-                  <MessageSquare className="w-5 h-5" /> Messages
-                </Link>
-                <Link href="/post-requirement" onClick={() => setIsMobileMenuOpen(false)} className="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-lg flex items-center gap-2 font-medium">
-                  <ClipboardList className="w-5 h-5" /> Post Requirement
-                </Link>
-                {(user?.isAdmin || user?.role === 'admin') && (
-                  <Link href="/admin" onClick={() => setIsMobileMenuOpen(false)} className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg flex items-center gap-2 font-medium">
-                    <ShieldAlert className="w-5 h-5" /> Admin Panel
-                  </Link>
+
+            {/* Drawer Body */}
+            <div className="flex-1 p-4 flex flex-col gap-3">
+              {/* Theme Toggle */}
+              <div className="flex justify-between items-center mb-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <span className="font-semibold text-gray-700 dark:text-gray-300 text-sm">Theme</span>
+                {mounted && (
+                  <button
+                    onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                    className="p-2 border rounded-full bg-white dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-100 transition-colors"
+                  >
+                    {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+                  </button>
                 )}
-                <button onClick={() => { handleLogout(); setIsMobileMenuOpen(false); }} className="p-3 text-red-600 bg-red-50/50 dark:bg-red-900/10 rounded-lg flex items-center gap-2 font-medium text-left">
-                  <LogOut className="w-5 h-5" /> Logout
-                </button>
-              </>
-            ) : (
-              <>
-                <Link href="/login" onClick={() => setIsMobileMenuOpen(false)} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg font-medium text-center">Login</Link>
-                <Link href="/register" onClick={() => setIsMobileMenuOpen(false)} className="p-3 bg-[#0a1c3a] text-white rounded-lg font-medium text-center">Register</Link>
-              </>
-            )}
-            
-            <hr className="my-2 border-gray-200 dark:border-gray-800" />
-            <h3 className="font-semibold text-gray-500 uppercase text-xs tracking-wider mb-2">Categories</h3>
-            <Link href="/professionals?search=Interior+Designer" onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-sm text-gray-700 dark:text-gray-300">Interior Designers</Link>
-            <Link href="/professionals?search=Architect" onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-sm text-gray-700 dark:text-gray-300">Architects</Link>
-            <Link href="/professionals?search=Contractor" onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-sm text-gray-700 dark:text-gray-300">Contractors</Link>
-            <Link href="/professionals?search=Skilled+Worker" onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-sm text-gray-700 dark:text-gray-300">Skilled Workers</Link>
-            <Link href="/projects" onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-sm text-gray-700 dark:text-gray-300">Projects</Link>
-            <Link href="/help" onClick={() => setIsMobileMenuOpen(false)} className="p-2 text-sm text-gray-700 dark:text-gray-300">Help & Support</Link>
+              </div>
+
+              {/* Auth Links */}
+              {isAuthenticated ? (
+                <>
+                  <Link href="/dashboard" onClick={closeMobileMenu} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center gap-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <LayoutDashboard className="w-5 h-5 text-[#0a1c3a] dark:text-white" /> Dashboard
+                  </Link>
+                  <Link href="/messages" onClick={closeMobileMenu} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center gap-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
+                    <MessageSquare className="w-5 h-5 text-[#0a1c3a] dark:text-white" /> Messages
+                  </Link>
+                  <Link href="/post-requirement" onClick={closeMobileMenu} className="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-lg flex items-center gap-3 font-medium hover:bg-orange-100 transition-colors">
+                    <ClipboardList className="w-5 h-5" /> Post Requirement
+                  </Link>
+                  {(user?.isAdmin || user?.role === 'admin') && (
+                    <Link href="/admin" onClick={closeMobileMenu} className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg flex items-center gap-3 font-medium hover:bg-red-100 transition-colors">
+                      <ShieldAlert className="w-5 h-5" /> Admin Panel
+                    </Link>
+                  )}
+                  <button onClick={handleLogout} className="p-3 text-red-600 bg-red-50/50 dark:bg-red-900/10 rounded-lg flex items-center gap-3 font-medium text-left hover:bg-red-100 transition-colors w-full">
+                    <LogOut className="w-5 h-5" /> Logout
+                  </button>
+                </>
+              ) : (
+                <>
+                  <Link href="/login" onClick={closeMobileMenu} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg font-medium text-center text-gray-800 dark:text-gray-200 hover:bg-gray-100 transition-colors">Login</Link>
+                  <Link href="/register" onClick={closeMobileMenu} className="p-3 bg-[#0a1c3a] text-white rounded-lg font-medium text-center hover:bg-[#1a2c4a] transition-colors">Register</Link>
+                  <Link href="/register" onClick={closeMobileMenu} className="p-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg font-medium text-center text-gray-800 dark:text-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
+                    <Briefcase className="w-4 h-4" /> List Your Business
+                  </Link>
+                </>
+              )}
+              
+              <hr className="my-1 border-gray-200 dark:border-gray-700" />
+              <h3 className="font-semibold text-gray-400 uppercase text-xs tracking-wider px-1">Browse Categories</h3>
+              
+              <Link href="/professionals?search=Interior+Designer" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <Sofa className="w-4 h-4 text-[#E8701A]" /> Interior Designers
+              </Link>
+              <Link href="/professionals?search=Architect" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <Building2 className="w-4 h-4 text-[#E8701A]" /> Architects
+              </Link>
+              <Link href="/professionals?search=Contractor" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <HardHat className="w-4 h-4 text-[#E8701A]" /> Contractors
+              </Link>
+              <Link href="/professionals?search=Skilled+Worker" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <Hammer className="w-4 h-4 text-[#E8701A]" /> Skilled Workers
+              </Link>
+              <Link href="/professionals?search=Supplier" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <Truck className="w-4 h-4 text-[#E8701A]" /> Suppliers
+              </Link>
+              <Link href="/projects" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <Home className="w-4 h-4 text-[#E8701A]" /> Projects
+              </Link>
+              <Link href="/help" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <HelpCircle className="w-4 h-4 text-[#E8701A]" /> Help &amp; Support
+              </Link>
+              <Link href="/contact" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                <PhoneCall className="w-4 h-4 text-[#E8701A]" /> Contact Us
+              </Link>
+            </div>
           </div>
         </div>
       )}

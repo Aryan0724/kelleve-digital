@@ -27,30 +27,30 @@ export default function Home() {
           </p>
 
           {/* Search Bar Component */}
-          <div className="bg-white p-3 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-3 border border-gray-100 max-w-3xl">
+          <form action="/search" className="bg-white p-3 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-3 border border-gray-100 max-w-3xl">
             <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
               <Grid className="text-gray-400 w-5 h-5" />
-              <input type="text" placeholder="Select Category" className="bg-transparent outline-none w-full text-sm" />
+              <input type="text" name="category" placeholder="Select Category" className="bg-transparent outline-none w-full text-sm" />
             </div>
             <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
               <MapPin className="text-gray-400 w-5 h-5" />
-              <input type="text" placeholder="Select City" className="bg-transparent outline-none w-full text-sm" />
+              <input type="text" name="city" placeholder="Select City" className="bg-transparent outline-none w-full text-sm" />
             </div>
             <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
               <SearchIcon className="text-gray-400 w-5 h-5" />
-              <input type="text" placeholder="What are you looking for?" className="bg-transparent outline-none w-full text-sm" />
+              <input type="text" name="q" placeholder="What are you looking for?" className="bg-transparent outline-none w-full text-sm" />
             </div>
-            <button className="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-orange-600 w-full md:w-auto">
+            <button type="submit" className="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-orange-600 w-full md:w-auto transition">
               Search
             </button>
-          </div>
+          </form>
           
           <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-500">
             <span className="font-medium text-gray-700">Popular Searches:</span>
-            <span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200">Restaurants</span>
-            <span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200">Hotels</span>
-            <span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200">Hospitals</span>
-            <span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200">Interior Designers</span>
+            <Link href="/search?q=Restaurants"><span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200 transition inline-block">Restaurants</span></Link>
+            <Link href="/search?q=Hotels"><span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200 transition inline-block">Hotels</span></Link>
+            <Link href="/search?q=Hospitals"><span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200 transition inline-block">Hospitals</span></Link>
+            <Link href="/search?q=Interior%20Designers"><span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200 transition inline-block">Interior Designers</span></Link>
           </div>
         </div>
 
@@ -211,9 +211,11 @@ export default function Home() {
                 <h4 className="font-bold text-navy text-lg leading-tight mb-1">{offer.title}</h4>
                 <p className="text-xs text-gray-500 mb-2">{offer.category}</p>
                 <p className="text-xs text-gray-400 mt-auto mb-4">Valid Till: {offer.validity}</p>
-                <button className="w-full bg-orange-100 text-primary font-medium py-2 rounded hover:bg-primary hover:text-white transition">
-                  View Offer
-                </button>
+                <Link href={`/businesses/sample-slug-${i}`}>
+                  <button className="w-full bg-orange-100 text-primary font-medium py-2 rounded hover:bg-primary hover:text-white transition">
+                    View Profile
+                  </button>
+                </Link>
               </div>
             </div>
           ))}
@@ -222,9 +224,11 @@ export default function Home() {
           <div className="bg-navy rounded-xl overflow-hidden text-white flex flex-col justify-center items-start p-6 col-span-1 md:col-span-1 border border-navy shadow-lg relative">
              <h3 className="text-xl font-bold mb-2">Get Multi City Privilege Card</h3>
              <p className="text-sm text-gray-300 mb-6">One Card. Multiple Cities. Unlimited Benefits.</p>
-             <button className="bg-primary text-white font-medium py-2 px-6 rounded hover:bg-orange-600 transition z-10">
-               Know More
-             </button>
+             <Link href="/offers">
+               <button className="bg-primary text-white font-medium py-2 px-6 rounded hover:bg-orange-600 transition z-10">
+                 Know More
+               </button>
+             </Link>
              {/* small card graphic */}
              <div className="absolute -bottom-10 -right-10 w-40 h-24 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl transform -rotate-12 opacity-50"></div>
           </div>

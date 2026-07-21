@@ -1,133 +1,173 @@
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Star, MapPin, Phone, Mail, Globe, Clock, ShieldCheck, Share2, Heart, MessageSquare } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { TrueDialAPI } from "@/lib/api";
+import { Star, MapPin, Phone, Mail, ShieldCheck, Clock, Share2, Heart, CheckCircle2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import InquiryForm from "@/components/forms/InquiryForm";
+import Link from "next/link";
 
-export default function BusinessProfilePage({ params }: { params: { slug: string } }) {
+export default async function BusinessProfilePage({ params }: { params: { slug: string } }) {
+  const response = await TrueDialAPI.getListingBySlug(params.slug);
+  const business = response.data;
+
+  if (!business) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <Navbar />
+        <div className="flex-1 flex flex-col items-center justify-center p-12 text-center">
+          <h1 className="text-4xl font-bold mb-4">Business Not Found</h1>
+          <p className="text-muted-foreground mb-8">The business you are looking for does not exist or has been removed.</p>
+          <Link href="/search"><Button>Return to Search</Button></Link>
+        </div>
+        <Footer />
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-background">
       <Navbar />
-      
-      {/* Hero Gallery Area */}
-      <div className="h-[40vh] md:h-[50vh] bg-navy relative overflow-hidden group">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-70 group-hover:scale-105 transition-transform duration-700"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-transparent flex items-end">
-          <div className="max-w-7xl mx-auto w-full px-6 md:px-12 pb-8 flex flex-col md:flex-row justify-between items-end gap-6">
-            <div className="w-full md:w-auto animate-fade-in-up">
-              <Badge variant="secondary" className="bg-primary/20 text-primary hover:bg-primary/30 mb-4 backdrop-blur-md border border-primary/20"><Star className="w-3 h-3 mr-1 fill-primary"/> TRUEDIAL Premium</Badge>
-              <h1 className="text-3xl md:text-5xl font-bold text-navy dark:text-white mb-2">The Grand Palace Restaurant</h1>
-              <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap">
-                <span className="flex items-center gap-1"><MapPin className="w-4 h-4"/> Kankarbagh, Patna</span>
-                <span className="flex items-center gap-1"><Star className="w-4 h-4 fill-primary text-primary"/> 4.9 (128 Reviews)</span>
-                <span className="flex items-center gap-1"><Badge className="bg-green-100 text-green-700 hover:bg-green-100 px-2 py-0 h-6"><ShieldCheck className="w-3 h-3 mr-1"/> Verified</Badge></span>
-              </div>
+
+      {/* Hero Gallery */}
+      <div className="w-full h-[40vh] bg-navy relative overflow-hidden group">
+        <div 
+          className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-105"
+          style={{ backgroundImage: `url('${business.gallery && business.gallery[0] ? business.gallery[0] : 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070'}')` }}
+        ></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent"></div>
+        
+        <div className="absolute bottom-0 left-0 right-0 p-6 md:p-12 max-w-7xl mx-auto flex justify-between items-end">
+          <div className="text-white animate-fade-in-up">
+            <div className="flex items-center gap-2 mb-2">
+              <Badge className="bg-primary/20 text-primary border border-primary/50 backdrop-blur-md">
+                {business.category?.name || "Business"}
+              </Badge>
+              {business.rating >= 4.5 && (
+                <Badge className="bg-green-500/20 text-green-400 border border-green-500/50 backdrop-blur-md">
+                  <ShieldCheck className="w-3 h-3 mr-1" /> Verified Premium
+                </Badge>
+              )}
             </div>
-            
-            <div className="flex gap-3 w-full md:w-auto animate-fade-in-up" style={{animationDelay: "0.1s"}}>
-              <Button size="icon" variant="outline" className="bg-background/50 backdrop-blur-md border-border text-foreground hover:bg-background/80 rounded-full h-12 w-12"><Share2 className="w-5 h-5"/></Button>
-              <Button size="icon" variant="outline" className="bg-background/50 backdrop-blur-md border-border text-foreground hover:bg-background/80 rounded-full h-12 w-12"><Heart className="w-5 h-5"/></Button>
-              <Button size="lg" className="rounded-full h-12 px-8 shadow-lg shadow-primary/20">Contact Business</Button>
+            <h1 className="text-3xl md:text-5xl font-bold mb-2">{business.title}</h1>
+            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-300">
+              <span className="flex items-center gap-1"><MapPin className="w-4 h-4" /> {business.address || business.city}</span>
+              <span className="flex items-center gap-1"><Clock className="w-4 h-4" /> Open Now (9 AM - 9 PM)</span>
             </div>
+          </div>
+          
+          <div className="hidden md:flex gap-3">
+            <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20 backdrop-blur-md">
+              <Share2 className="w-4 h-4 mr-2" /> Share
+            </Button>
+            <Button variant="outline" className="bg-white/10 text-white border-white/20 hover:bg-white/20 backdrop-blur-md">
+              <Heart className="w-4 h-4 mr-2" /> Save
+            </Button>
           </div>
         </div>
       </div>
 
-      <main className="flex-1 bg-background py-12 px-6 md:px-12 max-w-7xl mx-auto w-full grid grid-cols-1 lg:grid-cols-3 gap-8">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-6 md:px-12 py-12 flex flex-col lg:flex-row gap-12">
+        
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-8">
-          <section className="premium-card p-8 rounded-xl animate-fade-in">
-            <h2 className="text-xl font-bold text-navy dark:text-white mb-4">About the Business</h2>
-            <p className="text-muted-foreground leading-relaxed">
-              Premium dining experience offering authentic North Indian, Chinese, and Continental cuisines. Perfect for family gatherings and corporate events. We pride ourselves on sourcing the freshest ingredients and providing world-class hospitality to our guests.
+        <div className="flex-[2] space-y-12">
+          
+          {/* About Section */}
+          <section>
+            <h2 className="text-2xl font-bold text-navy dark:text-white mb-4">About {business.title}</h2>
+            <p className="text-muted-foreground leading-relaxed text-lg">
+              {business.description || "This business has not provided a description yet."}
             </p>
-            <div className="mt-6 flex flex-wrap gap-2">
-              <Badge variant="outline">Fine Dining</Badge>
-              <Badge variant="outline">Valet Parking</Badge>
-              <Badge variant="outline">Private Dining</Badge>
-              <Badge variant="outline">Live Music</Badge>
-            </div>
           </section>
 
-          <section className="premium-card p-8 rounded-xl animate-fade-in">
-            <h2 className="text-xl font-bold text-navy dark:text-white mb-6">Ratings & Reviews</h2>
-            <div className="flex items-center gap-6 mb-8">
-              <div className="text-center">
-                <div className="text-5xl font-bold text-navy dark:text-white">4.9</div>
-                <div className="flex items-center justify-center gap-1 my-2">
-                  {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-primary text-primary" />)}
-                </div>
-                <div className="text-sm text-muted-foreground">128 Ratings</div>
-              </div>
-              <div className="flex-1 space-y-2">
-                {/* Rating bars */}
-                {[5,4,3,2,1].map(num => (
-                  <div key={num} className="flex items-center gap-2 text-sm">
-                    <span className="w-3">{num}</span>
-                    <Star className="w-3 h-3 text-muted-foreground" />
-                    <div className="flex-1 h-2 bg-secondary rounded-full overflow-hidden">
-                      <div className="h-full bg-primary rounded-full" style={{width: num === 5 ? '80%' : num === 4 ? '15%' : '2%'}}></div>
-                    </div>
+          {/* Features */}
+          {business.features && business.features.length > 0 && (
+            <section>
+              <h2 className="text-2xl font-bold text-navy dark:text-white mb-4">Highlights</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {business.features.map((feature: string, idx: number) => (
+                  <div key={idx} className="flex items-center gap-2 p-3 bg-muted/30 rounded-lg">
+                    <CheckCircle2 className="w-5 h-5 text-primary" />
+                    <span className="font-medium">{feature}</span>
                   </div>
                 ))}
               </div>
+            </section>
+          )}
+
+          {/* Reviews */}
+          <section>
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold text-navy dark:text-white">Customer Reviews</h2>
+              <div className="flex items-center gap-2 bg-muted/20 px-4 py-2 rounded-lg">
+                <div className="flex">
+                  {[...Array(5)].map((_, i) => <Star key={i} className={`w-5 h-5 ${i < Math.floor(business.rating || 5) ? 'fill-primary text-primary' : 'fill-muted text-muted'}`} />)}
+                </div>
+                <span className="font-bold text-lg">{business.rating || "5.0"}</span>
+                <span className="text-muted-foreground text-sm">({business.reviews_count || 0})</span>
+              </div>
             </div>
             
-            <Button variant="outline" className="w-full"><MessageSquare className="w-4 h-4 mr-2" /> Write a Review</Button>
+            <div className="space-y-4">
+              <div className="p-6 border border-border rounded-xl">
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">R</div>
+                    <div>
+                      <h4 className="font-bold">Rahul Verma</h4>
+                      <span className="text-xs text-muted-foreground">2 days ago</span>
+                    </div>
+                  </div>
+                  <div className="flex">
+                    {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-primary text-primary" />)}
+                  </div>
+                </div>
+                <p className="text-muted-foreground">Excellent service and very professional. Highly recommended for anyone looking for quality work in this area.</p>
+              </div>
+            </div>
           </section>
         </div>
 
-        {/* Sidebar */}
-        <div className="space-y-6">
-          <div className="premium-card p-6 rounded-xl animate-fade-in-up" style={{animationDelay: "0.2s"}}>
-            <h3 className="font-bold text-navy dark:text-white mb-6 border-b border-border pb-2">Contact Info</h3>
-            <ul className="space-y-4">
-              <li className="flex items-start gap-3">
-                <MapPin className="w-5 h-5 text-primary shrink-0 mt-0.5" />
-                <span className="text-sm text-muted-foreground">Plot 42, Main Road, Kankarbagh, Patna, Bihar 800020</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary shrink-0" />
-                <span className="text-sm text-muted-foreground">+91 98765 43210</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary shrink-0" />
-                <span className="text-sm text-muted-foreground">contact@grandpalace.com</span>
-              </li>
-              <li className="flex items-center gap-3">
-                <Globe className="w-5 h-5 text-primary shrink-0" />
-                <span className="text-sm text-primary cursor-pointer hover:underline">www.grandpalace.com</span>
-              </li>
-            </ul>
-          </div>
+        {/* Sidebar - Sticky Contact Form */}
+        <aside className="flex-1">
+          <div className="sticky top-24 space-y-6">
+            
+            {/* Contact Info Card */}
+            <div className="premium-card p-6 rounded-2xl shadow-xl border border-border/50">
+              <h3 className="text-xl font-bold text-navy dark:text-white mb-6">Contact Information</h3>
+              
+              <div className="space-y-4 mb-8">
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
+                    <Phone className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground block">Phone</span>
+                    <a href={`tel:${business.phone}`} className="font-bold hover:text-primary transition">{business.phone || "Not provided"}</a>
+                  </div>
+                </div>
+                
+                <div className="flex items-start gap-4">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 text-primary">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <span className="text-sm text-muted-foreground block">Email</span>
+                    <a href={`mailto:${business.email}`} className="font-bold hover:text-primary transition">{business.email || "Not provided"}</a>
+                  </div>
+                </div>
+              </div>
 
-          <div className="premium-card p-6 rounded-xl animate-fade-in-up" style={{animationDelay: "0.3s"}}>
-            <h3 className="font-bold text-navy dark:text-white mb-6 border-b border-border pb-2">Operating Hours</h3>
-            <ul className="space-y-3 text-sm text-muted-foreground">
-              <li className="flex justify-between items-center"><span className="font-medium">Monday</span> <span>11:00 AM - 11:00 PM</span></li>
-              <li className="flex justify-between items-center"><span className="font-medium">Tuesday</span> <span>11:00 AM - 11:00 PM</span></li>
-              <li className="flex justify-between items-center"><span className="font-medium">Wednesday</span> <span>11:00 AM - 11:00 PM</span></li>
-              <li className="flex justify-between items-center"><span className="font-medium">Thursday</span> <span>11:00 AM - 11:00 PM</span></li>
-              <li className="flex justify-between items-center"><span className="font-medium">Friday</span> <span>11:00 AM - 11:30 PM</span></li>
-              <li className="flex justify-between items-center"><span className="font-medium">Saturday</span> <span>11:00 AM - 11:30 PM</span></li>
-              <li className="flex justify-between items-center text-primary"><span className="font-medium">Sunday</span> <span>11:00 AM - 11:30 PM</span></li>
-            </ul>
+              <div className="pt-6 border-t border-border">
+                <h3 className="font-bold text-navy dark:text-white mb-4">Send an Inquiry</h3>
+                <InquiryForm listingId={business.id} />
+              </div>
+            </div>
+
           </div>
-          
-          <div className="premium-card p-6 rounded-xl bg-gradient-to-br from-primary/10 to-transparent border-primary/20 animate-fade-in-up" style={{animationDelay: "0.4s"}}>
-             <h3 className="font-bold text-navy dark:text-white mb-2">Request a Quote</h3>
-             <p className="text-xs text-muted-foreground mb-4">Send a direct message to this business for specific inquiries.</p>
-             <div className="space-y-3">
-               <Input placeholder="Your Name" className="bg-background" />
-               <Input placeholder="Phone Number" className="bg-background" />
-               <textarea className="w-full bg-background border border-border rounded-md p-3 text-sm outline-none focus:ring-1 focus:ring-primary h-24 resize-none" placeholder="Message / Requirement"></textarea>
-               <Button className="w-full">Send Message</Button>
-             </div>
-          </div>
-        </div>
+        </aside>
+
       </main>
-
       <Footer />
     </div>
   );

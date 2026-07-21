@@ -22,10 +22,10 @@ export default function Footer() {
               <h4 className="font-bold text-navy dark:text-white text-xl mb-1">Stay Updated with TRUEDIAL</h4>
               <p className="text-sm text-muted-foreground">Get the latest offers, business news and platform updates.</p>
             </div>
-            <div className="flex w-full md:w-auto mt-4 md:mt-0 gap-2">
-              <input type="email" placeholder="Enter your email address" className="bg-input/50 border border-border rounded px-4 py-2 w-full md:w-72 outline-none focus:border-primary text-foreground" />
-              <button className="bg-primary text-primary-foreground px-6 py-2 rounded font-medium hover:bg-primary/90 transition">Subscribe</button>
-            </div>
+            <form className="flex" action="#">
+              <input type="email" placeholder="Enter your email" className="bg-background text-foreground px-4 py-2 rounded-l focus:outline-none flex-1 border border-border" />
+              <button type="submit" className="bg-primary text-primary-foreground px-6 py-2 rounded-r font-medium hover:bg-primary/90 transition">Subscribe</button>
+            </form>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
@@ -38,10 +38,10 @@ export default function Footer() {
                 TRUEDIAL is India's emerging business growth platform helping businesses grow beyond listing with advanced marketing, technology and consulting solutions.
               </p>
               <div className="flex gap-4">
-                <a href="#" className="text-muted-foreground hover:text-primary transition cursor-pointer">Facebook</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition cursor-pointer">Instagram</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition cursor-pointer">Twitter</a>
-                <a href="#" className="text-muted-foreground hover:text-primary transition cursor-pointer">LinkedIn</a>
+                <a href="https://facebook.com" target="_blank" className="text-muted-foreground hover:text-primary transition cursor-pointer">Facebook</a>
+                <a href="https://instagram.com" target="_blank" className="text-muted-foreground hover:text-primary transition cursor-pointer">Instagram</a>
+                <a href="https://twitter.com" target="_blank" className="text-muted-foreground hover:text-primary transition cursor-pointer">Twitter</a>
+                <a href="https://linkedin.com" target="_blank" className="text-muted-foreground hover:text-primary transition cursor-pointer">LinkedIn</a>
               </div>
             </div>
 

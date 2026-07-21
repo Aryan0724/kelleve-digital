@@ -123,6 +123,7 @@ function PostRequirementContent() {
 
   useEffect(() => {
     setMounted(true);
+    window.scrollTo({ top: 0, behavior: 'instant' });
     
     // Fetch locations
     api.get("/locations?active_only=1").then(res => {
@@ -237,6 +238,7 @@ function PostRequirementContent() {
     }
     setError("");
     setStep(2);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBack = () => {
@@ -403,7 +405,7 @@ function PostRequirementContent() {
               {OPPORTUNITY_TYPES.map((opp) => (
                 <div 
                   key={opp.id}
-                  onClick={() => setSelectedType(opp.id)}
+                  onClick={() => { setSelectedType(opp.id); setStep(2); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
                   className={`p-4 border rounded-xl cursor-pointer transition-all ${selectedType === opp.id ? 'border-orange-600 bg-orange-50 ring-2 ring-orange-100' : 'hover:border-slate-300 bg-white'}`}
                 >
                   <h3 className="font-semibold text-lg">{opp.label}</h3>
@@ -809,10 +811,6 @@ function PostRequirementContent() {
         <CardFooter className="flex justify-between border-t pt-6">
           {step === 1 ? (
             <>
-              <div />
-              <Button onClick={handleNext} disabled={!selectedType} className="bg-[#0a1c3a] hover:bg-[#1a2c4a]">
-                Next Step
-              </Button>
             </>
           ) : (
             <>

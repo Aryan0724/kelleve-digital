@@ -21,6 +21,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           <Link href="/dashboard/business/marketing" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
             <Megaphone className="w-5 h-5" /> Marketing (SMS)
           </Link>
+          <Link href="/dashboard/business/offers" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
+            <Star className="w-5 h-5" /> Manage Offers
+          </Link>
           <Link href="/dashboard/business/reviews" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
             <Star className="w-5 h-5" /> Reviews & Ratings
           </Link>
@@ -40,9 +43,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
         
         <div className="p-4 border-t border-white/10">
-          <button className="flex items-center gap-3 px-3 py-2.5 rounded-md text-red-400 hover:text-red-300 hover:bg-white/5 transition w-full">
+          <Link href="/login" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-red-400 hover:text-red-300 hover:bg-white/5 transition w-full">
             <LogOut className="w-5 h-5" /> Logout
-          </button>
+          </Link>
         </div>
       </aside>
 
@@ -52,10 +55,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0">
           <h2 className="font-semibold text-foreground">Business Dashboard</h2>
           <div className="flex items-center gap-4">
-            <button className="relative text-muted-foreground hover:text-foreground transition">
-              <MessageSquare className="w-5 h-5" />
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-red-500 rounded-full border-2 border-card"></span>
-            </button>
+            <Link href="/dashboard/messages" className="relative text-muted-foreground hover:text-foreground transition">
+              <MessageSquare className="w-6 h-6" />
+              <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full">3</span>
+            </Link>
             <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm">
               JP
             </div>

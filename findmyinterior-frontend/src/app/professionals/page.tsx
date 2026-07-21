@@ -4,14 +4,15 @@ import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Metadata } from "next";
-import { Search, MapPin, Star, ShieldCheck, Filter } from "lucide-react";
+import { Search, MapPin, Star, ShieldCheck } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfessionalsFilters } from "@/components/professionals/ProfessionalsFilters";
 import { ProfessionalsPagination } from "@/components/professionals/ProfessionalsPagination";
+import { ProfessionalTypeSwitcher } from "@/components/professionals/ProfessionalTypeSwitcher";
 
 export const metadata: Metadata = {
-  title: "Find Professionals",
-  description: "Browse verified interior designers, architects, and contractors in your area.",
+  title: "Find Professionals | Find My Interior",
+  description: "Browse verified interior designers, architects, contractors, and more in Bihar. Get multiple quotes.",
 };
 
 async function getProfessionals(searchParams: any) {
@@ -34,6 +35,13 @@ async function getProfessionals(searchParams: any) {
   }
 }
 
+function formatLocation(city?: string, district?: string): string {
+  const parts = [city, district, "Bihar", "India"].filter(Boolean);
+  // Deduplicate adjacent identical values
+  const unique = parts.filter((v, i) => v !== parts[i - 1]);
+  return unique.join(", ");
+}
+
 export default async function ProfessionalsPage({ searchParams }: { searchParams: Promise<any> }) {
   const resolvedSearchParams = await searchParams;
   const { data: listings, meta, error } = await getProfessionals(resolvedSearchParams);
@@ -41,9 +49,9 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
   return (
     <div className="container mx-auto px-4 py-8">
       {/* Header & Search */}
-      <div className="mb-8 bg-slate-50 p-6 rounded-xl border">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">Find Interior Designers & Contractors</h1>
-        <p className="text-slate-500 mb-6">Browse verified professionals for your home project {resolvedSearchParams.city ? `in ${resolvedSearchParams.city}` : 'in your area'}.</p>
+      <div className="mb-6 bg-slate-50 p-6 rounded-xl border">
+        <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">Find Interior Designers &amp; Contractors</h1>
+        <p className="text-slate-500 mb-6">Browse verified professionals for your home project {resolvedSearchParams.city ? `in ${resolvedSearchParams.city}` : 'in Bihar'}.</p>
         
         <form className="flex flex-col md:flex-row gap-3">
           <div className="relative flex-1">
@@ -57,6 +65,9 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
           <Button type="submit" size="lg" className="h-12 px-8 bg-orange-600 hover:bg-orange-700">Search</Button>
         </form>
       </div>
+
+      {/* Professional Type Switcher Chips */}
+      <ProfessionalTypeSwitcher currentSearch={resolvedSearchParams.search || ''} />
 
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Filters Sidebar */}
@@ -104,7 +115,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                     
                     <div className="flex items-center text-sm text-slate-500 mb-4">
                       <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                      <span className="line-clamp-1">{listing.city}, {listing.district}</span>
+                      <span className="line-clamp-1">{formatLocation(listing.city, listing.district)}</span>
                     </div>
 
                     <div className="flex items-center gap-1 mb-4 w-full">

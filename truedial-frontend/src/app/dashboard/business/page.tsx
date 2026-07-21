@@ -1,4 +1,5 @@
 import { TrendingUp, Users, Eye, Star, ArrowUpRight } from "lucide-react";
+import Link from "next/link";
 
 export default function BusinessDashboard() {
   return (
@@ -57,7 +58,7 @@ export default function BusinessDashboard() {
         <div className="lg:col-span-2 premium-card rounded-xl overflow-hidden">
           <div className="p-6 border-b border-border flex justify-between items-center">
             <h3 className="font-bold text-navy dark:text-white">Recent Leads</h3>
-            <button className="text-sm text-primary font-medium hover:underline">View All</button>
+            <Link href="/dashboard/business/leads" className="text-sm text-primary font-medium hover:underline">View All</Link>
           </div>
           <div className="divide-y divide-border">
             {[1, 2, 3, 4].map((lead) => (
@@ -71,7 +72,9 @@ export default function BusinessDashboard() {
                 </div>
                 <div className="text-right">
                   <span className="text-xs text-muted-foreground block mb-1">Just now</span>
-                  <button className="text-xs bg-primary text-white px-3 py-1 rounded-full font-medium">Respond</button>
+                  <Link href="/dashboard/business/leads">
+                    <button className="text-xs bg-primary text-white px-3 py-1 rounded-full font-medium">Respond</button>
+                  </Link>
                 </div>
               </div>
             ))}
@@ -86,14 +89,22 @@ export default function BusinessDashboard() {
             <div className="inline-block px-3 py-1 bg-primary text-white text-xs font-bold rounded-full mb-3 shadow-md">PREMIUM SELLER</div>
             <h4 className="font-bold text-foreground">Annual Growth Plan</h4>
             <p className="text-xs text-muted-foreground mt-1 mb-4">Valid till: 24th Oct 2027</p>
-            <button className="w-full text-sm font-medium border border-primary text-primary py-2 rounded-md hover:bg-primary/5 transition">Upgrade Plan</button>
+            <Link href="/dashboard/business/subscription">
+              <button className="w-full text-sm font-medium border border-primary text-primary py-2 rounded-md hover:bg-primary/5 transition">Upgrade Plan</button>
+            </Link>
           </div>
 
           <h3 className="font-bold text-navy dark:text-white mb-4 mt-auto">Quick Actions</h3>
           <div className="space-y-2">
-            <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Send SMS Campaign</button>
-            <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Update Gallery</button>
-            <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Post an Offer</button>
+            <Link href="/dashboard/business/campaigns">
+              <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Send SMS Campaign</button>
+            </Link>
+            <Link href="/dashboard/business/gallery">
+              <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Update Gallery</button>
+            </Link>
+            <Link href="/dashboard/business/offers">
+              <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Post an Offer</button>
+            </Link>
           </div>
         </div>
       </div>

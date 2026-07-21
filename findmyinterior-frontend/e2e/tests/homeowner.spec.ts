@@ -64,8 +64,7 @@ test.describe('Homeowner E2E Journey', () => {
     // Select Interior Design type by explicitly finding the correct card
     await page.locator('div.border.rounded-xl', { hasText: 'Interior Design' }).first().click();
     
-    // Click Next Step
-    await page.getByRole('button', { name: /next step/i }).click();
+    // Clicking the card auto-advances to step 2
     
     // Fill in project details in step 2
     const ts = Date.now();

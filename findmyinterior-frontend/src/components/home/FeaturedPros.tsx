@@ -58,7 +58,7 @@ export function FeaturedPros({ listings }: { listings: any[] }) {
                   
                   <div className="flex items-center text-sm text-slate-500 mb-4">
                     <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-                    <span className="line-clamp-1">{listing.city}, {listing.district}</span>
+                    <span className="line-clamp-1">{[listing.city, listing.district, 'Bihar', 'India'].filter(Boolean).join(', ')}</span>
                   </div>
 
                   <div className="flex items-center gap-1 mb-4">

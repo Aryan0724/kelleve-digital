@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { User, Mail, Phone, Lock, Building, ArrowRight, ShieldCheck, CheckCircle } from "lucide-react";
+import { registerAction } from "@/app/actions/auth";
 
-export default function RegisterPage() {
+export default function RegisterPage({ searchParams }: { searchParams: { error?: string } }) {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
       {/* Right Panel - Branding (Swapped for Register) */}
@@ -36,9 +37,15 @@ export default function RegisterPage() {
           </div>
 
           <h2 className="text-3xl font-bold text-navy dark:text-white mb-2">Create Account</h2>
-          <p className="text-muted-foreground mb-8">Join TrueDial today and take your business online.</p>
+          <p className="text-muted-foreground mb-6">Join TrueDial today and take your business online.</p>
 
-          <form className="space-y-5" action="/dashboard/business">
+          {searchParams.error && (
+            <div className="bg-red-50 text-red-600 border border-red-200 p-3 rounded-md text-sm font-medium mb-6">
+              {searchParams.error}
+            </div>
+          )}
+
+          <form className="space-y-5" action={registerAction}>
             {/* Account Type Toggle */}
             <div className="flex p-1 bg-muted rounded-lg mb-6">
               <div className="flex-1 text-center py-2 bg-background shadow-sm rounded-md text-sm font-semibold text-foreground cursor-pointer">Business Account</div>
@@ -50,23 +57,15 @@ export default function RegisterPage() {
                 <label className="text-xs font-medium text-foreground">First Name</label>
                 <div className="relative">
                   <User className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                  <Input type="text" placeholder="John" className="pl-9 bg-background focus:ring-primary" required />
+                  <Input type="text" name="first_name" placeholder="John" className="pl-9 bg-background focus:ring-primary" required />
                 </div>
               </div>
               <div className="space-y-2">
                 <label className="text-xs font-medium text-foreground">Last Name</label>
                 <div className="relative">
                   <User className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                  <Input type="text" placeholder="Doe" className="pl-9 bg-background focus:ring-primary" required />
+                  <Input type="text" name="last_name" placeholder="Doe" className="pl-9 bg-background focus:ring-primary" required />
                 </div>
-              </div>
-            </div>
-
-            <div className="space-y-2">
-              <label className="text-xs font-medium text-foreground">Business Name</label>
-              <div className="relative">
-                <Building className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                <Input type="text" placeholder="e.g. John's Restaurant" className="pl-9 bg-background focus:ring-primary" required />
               </div>
             </div>
 
@@ -74,7 +73,7 @@ export default function RegisterPage() {
               <label className="text-xs font-medium text-foreground">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                <Input type="email" placeholder="john@company.com" className="pl-9 bg-background focus:ring-primary" required />
+                <Input type="email" name="email" placeholder="john@company.com" className="pl-9 bg-background focus:ring-primary" required />
               </div>
             </div>
 
@@ -82,7 +81,7 @@ export default function RegisterPage() {
               <label className="text-xs font-medium text-foreground">Phone Number</label>
               <div className="relative">
                 <Phone className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                <Input type="tel" placeholder="+91 98765 43210" className="pl-9 bg-background focus:ring-primary" required />
+                <Input type="tel" name="phone" placeholder="+91 98765 43210" className="pl-9 bg-background focus:ring-primary" required />
               </div>
             </div>
 
@@ -90,7 +89,7 @@ export default function RegisterPage() {
               <label className="text-xs font-medium text-foreground">Password</label>
               <div className="relative">
                 <Lock className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-                <Input type="password" placeholder="Create a strong password" className="pl-9 bg-background focus:ring-primary" required />
+                <Input type="password" name="password" placeholder="Create a strong password" className="pl-9 bg-background focus:ring-primary" required />
               </div>
             </div>
 

@@ -78,7 +78,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                     {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business" className="flex-shrink-0 ml-2"><ShieldCheck className="h-8 w-8 text-green-500" /></span>}
                   </div>
                   <div className="flex items-center text-slate-500 mb-2">
-                    <MapPin className="h-4 w-4 mr-1" /> {listing.address}, {listing.city}, {listing.district}
+                    <MapPin className="h-4 w-4 mr-1" /> {[listing.address, listing.city, listing.district, 'Bihar', 'India'].filter(Boolean).join(', ')}
                   </div>
                   <div className="flex items-center gap-3">
                     <Badge variant="secondary">{listing.category?.name}</Badge>

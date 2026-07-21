@@ -1,4 +1,5 @@
-import { ShieldCheck, Search, Clock, Lock, Phone } from "lucide-react";
+import { ShieldCheck, Search, Clock, Lock, Phone, MessageCircle, Mail } from "lucide-react";
+import Link from "next/link";
 
 export function TrustFooter() {
   const brands = [
@@ -7,6 +8,9 @@ export function TrustFooter() {
     "Bathroom Makers", "GharNirman", "Ceeniesta", "Exterior Expert", 
     "Zero Degree", "Red Leaf"
   ];
+
+  const phone = "+919304355011";
+  const phoneDisplay = "+91 93043 55011";
 
   return (
     <section className="w-full flex flex-col font-sans">
@@ -34,7 +38,7 @@ export function TrustFooter() {
             <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2 md:gap-3">
               <ShieldCheck className="w-6 h-6 text-[#E8701A] shrink-0" />
               <div className="flex flex-col">
-                <span className="text-sm font-bold">Verified & Trusted</span>
+                <span className="text-sm font-bold">Verified &amp; Trusted</span>
                 <span className="text-[10px] text-gray-300">Only verified professionals<br/>and businesses</span>
               </div>
             </div>
@@ -48,25 +52,49 @@ export function TrustFooter() {
             <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2 md:gap-3">
               <Clock className="w-6 h-6 text-[#E8701A] shrink-0" />
               <div className="flex flex-col">
-                <span className="text-sm font-bold">Save Time & Money</span>
-                <span className="text-[10px] text-gray-300">Compare & hire the best<br/>experts</span>
+                <span className="text-sm font-bold">Save Time &amp; Money</span>
+                <span className="text-[10px] text-gray-300">Compare &amp; hire the best<br/>experts</span>
               </div>
             </div>
             <div className="flex flex-col md:flex-row items-center md:items-start text-center md:text-left gap-2 md:gap-3">
               <Lock className="w-6 h-6 text-[#E8701A] shrink-0" />
               <div className="flex flex-col">
-                <span className="text-sm font-bold">Secure & Safe</span>
+                <span className="text-sm font-bold">Secure &amp; Safe</span>
                 <span className="text-[10px] text-gray-300">100% secure transactions<br/>and data protection</span>
               </div>
             </div>
           </div>
 
-          {/* Contact Box */}
-          <div className="bg-[#E8701A] px-6 py-4 rounded-xl flex items-center justify-center gap-4 shrink-0 md:-mr-4 shadow-lg w-full md:w-auto">
-            <Phone className="w-8 h-8 text-white" />
-            <div className="flex flex-col">
-              <span className="text-xs font-semibold text-white/90">Need Help? Call Us Now!</span>
-              <span className="text-xl font-bold tracking-wide">+91 93043 55011</span>
+          {/* Contact Box — fully clickable */}
+          <div className="bg-[#E8701A] px-6 py-4 rounded-xl shrink-0 md:-mr-4 shadow-lg w-full md:w-auto">
+            <p className="text-xs font-semibold text-white/90 mb-2 text-center">Need Help?</p>
+            <div className="flex flex-col gap-2">
+              {/* Call */}
+              <a
+                href={`tel:${phone}`}
+                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 transition-colors rounded-lg px-3 py-2"
+              >
+                <Phone className="w-4 h-4 text-white shrink-0" />
+                <span className="text-sm font-bold tracking-wide text-white">{phoneDisplay}</span>
+              </a>
+              {/* WhatsApp */}
+              <a
+                href={`https://wa.me/${phone}?text=Hi, I need help with FindMyInterior.`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-[#25D366]/80 hover:bg-[#25D366] transition-colors rounded-lg px-3 py-2"
+              >
+                <MessageCircle className="w-4 h-4 text-white shrink-0" />
+                <span className="text-sm font-bold text-white">Chat on WhatsApp</span>
+              </a>
+              {/* Contact Form */}
+              <Link
+                href="/contact"
+                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 transition-colors rounded-lg px-3 py-2"
+              >
+                <Mail className="w-4 h-4 text-white shrink-0" />
+                <span className="text-sm font-bold text-white">Send Message</span>
+              </Link>
             </div>
           </div>
           

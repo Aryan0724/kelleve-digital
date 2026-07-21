@@ -2,8 +2,9 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
+import { loginAction } from "@/app/actions/auth";
 
-export default function LoginPage() {
+export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
       {/* Left Panel - Branding */}
@@ -35,14 +36,20 @@ export default function LoginPage() {
           </div>
 
           <h2 className="text-3xl font-bold text-navy dark:text-white mb-2">Login to your account</h2>
-          <p className="text-muted-foreground mb-8">Enter your credentials to access your TrueDial dashboard.</p>
+          <p className="text-muted-foreground mb-6">Enter your credentials to access your TrueDial dashboard.</p>
 
-          <form className="space-y-6" action="/dashboard/business">
+          {searchParams.error && (
+            <div className="bg-red-50 text-red-600 border border-red-200 p-3 rounded-md text-sm font-medium mb-6">
+              {searchParams.error}
+            </div>
+          )}
+
+          <form className="space-y-6" action={loginAction}>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-foreground">Email Address or Phone</label>
+              <label className="text-sm font-medium text-foreground">Email Address</label>
               <div className="relative">
                 <Mail className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                <Input type="text" placeholder="name@company.com" className="pl-10 h-12 bg-background border-border focus:ring-primary" required />
+                <Input type="email" name="email" placeholder="name@company.com" className="pl-10 h-12 bg-background border-border focus:ring-primary" required />
               </div>
             </div>
 
@@ -53,7 +60,7 @@ export default function LoginPage() {
               </div>
               <div className="relative">
                 <Lock className="absolute left-3 top-3 w-5 h-5 text-muted-foreground" />
-                <Input type="password" placeholder="••••••••" className="pl-10 h-12 bg-background border-border focus:ring-primary" required />
+                <Input type="password" name="password" placeholder="••••••••" className="pl-10 h-12 bg-background border-border focus:ring-primary" required />
               </div>
             </div>
 

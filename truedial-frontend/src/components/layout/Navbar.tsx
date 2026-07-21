@@ -23,20 +23,27 @@ export default function Navbar() {
           <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
         </Link>
         <nav className="hidden md:flex gap-6 text-foreground/80 font-medium">
-          <Link href="/" className="hover:text-primary transition">Home</Link>
-          <Link href="/categories" className="hover:text-primary flex items-center gap-1 transition">Categories <ChevronDown className="w-4 h-4"/></Link>
-          <Link href="/services" className="hover:text-primary flex items-center gap-1 transition">Services <ChevronDown className="w-4 h-4"/></Link>
-          <Link href="/offers" className="hover:text-primary transition">Offers</Link>
-          <Link href="/academy" className="hover:text-primary transition">Academy</Link>
-          <Link href="/podcast" className="hover:text-primary transition">Podcast</Link>
-          <Link href="/td-news" className="hover:text-primary transition">TD News</Link>
-          <Link href="/contact" className="hover:text-primary transition">Contact</Link>
+          <Link href="/" className="text-foreground hover:text-primary transition font-medium">Home</Link>
+          <div className="relative group">
+            <Link href="/categories" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">Categories <ChevronDown className="w-4 h-4"/></Link>
+          </div>
+          <div className="relative group">
+            <Link href="/search" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">Services <ChevronDown className="w-4 h-4"/></Link>
+          </div>
+          <Link href="/offers" className="text-foreground hover:text-primary transition font-medium">Offers</Link>
+          <Link href="/academy" className="text-foreground hover:text-primary transition font-medium">Academy</Link>
+          <Link href="#" className="text-foreground hover:text-primary transition font-medium">Podcast</Link>
+          <Link href="#" className="text-foreground hover:text-primary transition font-medium">TD News</Link>
+          <Link href="#" className="text-foreground hover:text-primary transition font-medium">Contact</Link>
         </nav>
-        <Link href="/register">
-          <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition">
-            Register Business
-          </button>
-        </Link>
+        <div className="hidden lg:flex items-center gap-4">
+          <Link href="/login" className="text-foreground font-medium hover:text-primary transition">Login</Link>
+          <Link href="/register">
+            <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition">
+              Add Your Business
+            </button>
+          </Link>
+        </div>
       </header>
     </>
   );

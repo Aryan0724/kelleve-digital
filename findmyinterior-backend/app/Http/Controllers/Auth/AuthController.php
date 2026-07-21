@@ -30,31 +30,53 @@ class AuthController extends Controller
         ]);
         Log::info("AuthController::register - validation passed");
 
-        $user = User::create([
-            'name'     => $data['name'],
-            'email'    => $data['email'],
-            'phone'    => $data['phone'] ?? null,
-            'password' => Hash::make($data['password']),
-        ]);
-        Log::info("AuthController::register - user created");
+        try {
+            $user = User::create([
+                'name'     => $data['name'],
+                'email'    => $data['email'],
+                'phone'    => $data['phone'] ?? null,
+                'password' => Hash::make($data['password']),
+                'is_active' => true,
+            ]);
+            Log::info("AuthController::register - user created, id={$user->id}");
 
-        $role = \App\Models\Role::where('slug', $data['role'])->first();
-        if ($role) {
-            $user->roles()->attach($role->id);
+            // Attach role
+            $role = \App\Models\Role::where('slug', $data['role'])->first();
+            if ($role) {
+                $user->roles()->attach($role->id);
+            } else {
+                Log::warning("AuthController::register - role '{$data['role']}' not found in roles table");
+            }
+            Log::info("AuthController::register - role attached");
+
+            // Auto-create wallet for every new user
+            \Illuminate\Support\Facades\DB::table('wallets')->insertOrIgnore([
+                'user_id'    => $user->id,
+                'balance'    => 0.00,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+            Log::info("AuthController::register - wallet created");
+
+            $token = $user->createToken('api-token')->plainTextToken;
+            Log::info("AuthController::register - token created");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Registration successful.',
+                'data'    => [
+                    'user'  => new UserResource($user),
+                    'token' => $token,
+                ],
+            ], 201);
+
+        } catch (\Throwable $e) {
+            Log::error("AuthController::register - failed: " . $e->getMessage(), ['trace' => $e->getTraceAsString()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Registration failed due to a server error. Please try again.',
+            ], 500);
         }
-        Log::info("AuthController::register - role attached");
-
-        $token = $user->createToken('api-token')->plainTextToken;
-        Log::info("AuthController::register - token created");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Registration successful.',
-            'data'    => [
-                'user'  => new UserResource($user),
-                'token' => $token,
-            ],
-        ], 201);
     }
 
     /**

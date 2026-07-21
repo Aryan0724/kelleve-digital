@@ -1,7 +1,31 @@
 import { CreditCard, ShieldCheck, MapPin, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { cookies } from "next/headers";
 
-export default function UserDashboard() {
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://findmyinterior.com/api/v1";
+
+async function getPrivilegeCard() {
+  const token = cookies().get("auth_token")?.value;
+  if (!token) return null;
+  
+  try {
+    const res = await fetch(`${API_BASE}/privilege-cards`, {
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        "Accept": "application/json"
+      },
+      next: { revalidate: 0 }
+    });
+    const data = await res.json();
+    return data.success ? data.data : null;
+  } catch (e) {
+    return null;
+  }
+}
+
+export default async function UserDashboard() {
+  const card = await getPrivilegeCard();
+
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up">
       <div>
@@ -29,7 +53,7 @@ export default function UserDashboard() {
           
           <div className="mt-8">
             <div className="text-sm text-white/70 tracking-widest mb-1">MEMBER ID</div>
-            <div className="text-3xl font-mono tracking-widest drop-shadow-md">TD-8492-4921</div>
+            <div className="text-3xl font-mono tracking-widest drop-shadow-md">{card ? card.card_number : "TD-8492-4921"}</div>
           </div>
 
           <div className="flex justify-between items-end mt-4">
@@ -39,7 +63,7 @@ export default function UserDashboard() {
             </div>
             <div className="text-right">
               <div className="text-xs text-white/70 tracking-widest mb-1">VALID THRU</div>
-              <div className="text-lg font-bold font-mono">12/26</div>
+              <div className="text-lg font-bold font-mono">{card ? new Date(card.valid_until).toLocaleDateString() : "12/26"}</div>
             </div>
           </div>
         </div>
@@ -52,7 +76,7 @@ export default function UserDashboard() {
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
-            <h4 className="font-bold text-sm text-foreground">Status: Active</h4>
+            <h4 className="font-bold text-sm text-foreground">Status: {card ? card.status : "Active"}</h4>
             <p className="text-xs text-muted-foreground">Your card is verified and ready to use at partner outlets.</p>
           </div>
         </div>
