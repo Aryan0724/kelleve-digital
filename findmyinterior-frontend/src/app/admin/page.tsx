@@ -284,7 +284,7 @@ export default function AdminDashboard() {
                     <div key={payment.id} className="flex items-center justify-between border-b pb-3">
                       <div>
                         <div className="font-semibold">{payment.user?.name || "User"}</div>
-                        <div className="text-sm text-slate-500 capitalize">{payment.purpose?.replaceAll("_", " ")}</div>
+                        <div className="text-sm text-slate-500 capitalize">{payment.purpose?.replace(/_/g, " ")}</div>
                       </div>
                       <div className="text-right">
                         <div className="font-bold">{formatter.format(Number(payment.amount || 0))}</div>
@@ -557,7 +557,7 @@ export default function AdminDashboard() {
                     <div className="font-semibold">{item.user?.name || "User"}</div>
                     <div className="text-slate-500">{item.user?.email}</div>
                   </div>,
-                  <div key="purpose" className="capitalize">{item.purpose?.replaceAll("_", " ")}</div>,
+                  <div key="purpose" className="capitalize">{item.purpose?.replace(/_/g, " ")}</div>,
                   <div key="amount" className="font-semibold">{formatter.format(Number(item.amount || 0))}</div>,
                   <Badge key="status" variant={item.status === "success" ? "default" : "secondary"}>{item.status}</Badge>,
                   <div key="date">{new Date(item.created_at).toLocaleDateString()}</div>,
