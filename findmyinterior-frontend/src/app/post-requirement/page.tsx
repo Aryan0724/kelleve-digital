@@ -406,10 +406,10 @@ function PostRequirementContent() {
                 <div 
                   key={opp.id}
                   onClick={() => { setSelectedType(opp.id); setStep(2); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  className={`p-4 border rounded-xl cursor-pointer transition-all ${selectedType === opp.id ? 'border-orange-600 bg-orange-50 ring-2 ring-orange-100' : 'hover:border-slate-300 bg-white'}`}
+                  className={`p-4 border rounded-xl cursor-pointer transition-all ${selectedType === opp.id ? 'border-orange-600 bg-orange-50 dark:bg-orange-950/30 ring-2 ring-orange-100 dark:ring-orange-900' : 'hover:border-slate-300 bg-white dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-500'}`}
                 >
-                  <h3 className="font-semibold text-lg">{opp.label}</h3>
-                  <p className="text-sm text-slate-500">Post a request for {opp.label.toLowerCase()}</p>
+                  <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100">{opp.label}</h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Post a request for {opp.label.toLowerCase()}</p>
                 </div>
               ))}
             </div>

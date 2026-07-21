@@ -48,12 +48,12 @@ export default function Footer() {
             <div>
               <h5 className="font-bold text-navy dark:text-white mb-4 text-sm">Top Categories</h5>
               <ul className="space-y-3 text-xs text-muted-foreground">
-                <li className="hover:text-primary cursor-pointer transition">Restaurants</li>
-                <li className="hover:text-primary cursor-pointer transition">Hotels</li>
-                <li className="hover:text-primary cursor-pointer transition">Hospitals</li>
-                <li className="hover:text-primary cursor-pointer transition">Education</li>
-                <li className="hover:text-primary cursor-pointer transition">Interior & Construction</li>
-                <li className="hover:text-primary cursor-pointer transition">More Categories</li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/categories?q=Restaurants">Restaurants</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/categories?q=Hotels">Hotels</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/categories?q=Hospitals">Hospitals</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/categories?q=Education">Education</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/categories?q=Interior">Interior & Construction</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/categories">More Categories</Link></li>
               </ul>
             </div>
 
@@ -74,20 +74,20 @@ export default function Footer() {
               <ul className="space-y-3 text-xs text-muted-foreground">
                 <li className="hover:text-primary cursor-pointer transition"><Link href="/register">Register Business</Link></li>
                 <li className="hover:text-primary cursor-pointer transition"><Link href="/login">Business Login</Link></li>
-                <li className="hover:text-primary cursor-pointer transition">Marketing Solutions</li>
-                <li className="hover:text-primary cursor-pointer transition">Consulting Services</li>
-                <li className="hover:text-primary cursor-pointer transition">SMS / WhatsApp Campaign</li>
-                <li className="hover:text-primary cursor-pointer transition">Business Resources</li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/marketing">Marketing Solutions</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/consulting">Consulting Services</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/campaigns">SMS / WhatsApp Campaign</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/resources">Business Resources</Link></li>
               </ul>
             </div>
 
             <div>
               <h5 className="font-bold text-navy dark:text-white mb-4 text-sm">Support</h5>
               <ul className="space-y-3 text-xs text-muted-foreground mb-6">
-                <li className="hover:text-primary cursor-pointer transition">Help Center</li>
-                <li className="hover:text-primary cursor-pointer transition">Terms & Conditions</li>
-                <li className="hover:text-primary cursor-pointer transition">Privacy Policy</li>
-                <li className="hover:text-primary cursor-pointer transition">Refund Policy</li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/help">Help Center</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/terms">Terms & Conditions</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/privacy">Privacy Policy</Link></li>
+                <li className="hover:text-primary cursor-pointer transition"><Link href="/refunds">Refund Policy</Link></li>
                 <li className="hover:text-primary cursor-pointer transition"><Link href="/contact">Contact Us</Link></li>
               </ul>
               <h5 className="font-bold text-navy dark:text-white mb-3 text-sm">Download App</h5>
