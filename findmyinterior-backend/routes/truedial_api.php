@@ -21,6 +21,12 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::put('/businesses/me/products', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'updateProducts']);
         Route::put('/businesses/me/services', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'updateServices']);
         
+        // Media Layer
+        Route::post('/media', [\App\Modules\Truedial\Controllers\Vendor\MediaController::class, 'store']);
+        Route::delete('/media/{id}', [\App\Modules\Truedial\Controllers\Vendor\MediaController::class, 'destroy']);
+        Route::put('/media/order', [\App\Modules\Truedial\Controllers\Vendor\MediaController::class, 'updateOrder']);
+        Route::put('/media/{id}/cover', [\App\Modules\Truedial\Controllers\Vendor\MediaController::class, 'setCover']);
+        
         // Privilege Cards
         Route::post('/privilege-cards/generate', [\App\Modules\Truedial\Controllers\PrivilegeCardController::class, 'generate']);
         Route::get('/privilege-cards/my-cards', [\App\Modules\Truedial\Controllers\PrivilegeCardController::class, 'myCards']);

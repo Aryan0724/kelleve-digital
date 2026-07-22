@@ -5,6 +5,7 @@ import { Plus, Trash2, Edit2, Package, Wrench, Save, CheckCircle } from "lucide-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
+import { MediaUploader } from "@/components/shared/MediaUploader";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
@@ -164,15 +165,20 @@ export default function CatalogPage() {
                       ) : (
                         <Package className="w-10 h-10 text-gray-300" />
                       )}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 hover:opacity-100 transition flex flex-col items-center justify-center p-4">
-                        <label className="text-xs text-white mb-2 text-center font-medium">Image URL</label>
-                        <Input 
-                          value={p.image} 
-                          onChange={(e) => updateProduct(i, 'image', e.target.value)} 
-                          placeholder="https://..." 
-                          className="bg-white text-black h-8 text-xs" 
-                        />
-                      </div>
+                      {p.id ? (
+                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-2 opacity-0 hover:opacity-100 transition">
+                          <MediaUploader
+                            modelType="product"
+                            modelId={p.id}
+                            collectionName="product_images"
+                            onUploadSuccess={(media) => updateProduct(i, 'image', media[0]?.url || media[0]?.file_name)}
+                          />
+                        </div>
+                      ) : (
+                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center p-4">
+                          <span className="text-white text-xs font-medium">Save product to upload images</span>
+                        </div>
+                      )}
                     </div>
                   </div>
                   <div className="w-full md:w-2/3 space-y-4">

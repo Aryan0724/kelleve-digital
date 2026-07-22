@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { Building2, MapPin, Phone, Globe, Save } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { MediaUploader } from "@/components/shared/MediaUploader";
 
 export default function BusinessProfilePage() {
   const [profile, setProfile] = useState<any>(null);
@@ -180,6 +181,18 @@ export default function BusinessProfilePage() {
           </Button>
         </form>
       </div>
+
+      {profile?.id && (
+        <div className="premium-card p-6 rounded-xl mt-6">
+          <h2 className="text-xl font-bold text-navy dark:text-white mb-4">Gallery Images</h2>
+          <MediaUploader
+            modelType="listing"
+            modelId={profile.id}
+            collectionName="gallery"
+            initialMedia={profile.media || []}
+          />
+        </div>
+      )}
     </div>
   );
 }

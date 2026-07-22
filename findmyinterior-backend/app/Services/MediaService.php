@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\ProcessMediaVariants;
 use App\Models\Media;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\UploadedFile;
@@ -34,7 +35,12 @@ class MediaService
             'sort_order' => $attributes['sort_order'] ?? 0,
         ]);
 
-        return $model->media()->save($media);
+        $media = $model->media()->save($media);
+        
+        // Dispatch job to generate variants
+        ProcessMediaVariants::dispatch($media);
+        
+        return $media;
     }
 
     protected function storeFile($file, string $disk): string
