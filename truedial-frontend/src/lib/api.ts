@@ -27,6 +27,28 @@ export class TrueDialAPI {
     }
   }
 
+  static async autocompleteSearch(q: string) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/public/search/autocomplete?q=${encodeURIComponent(q)}`, { next: { revalidate: 60 } });
+      if (!res.ok) throw new Error("Failed to fetch autocomplete results");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: [] };
+    }
+  }
+
+  static async getListingReviews(slug: string, page = 1) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/public/businesses/${slug}/reviews?page=${page}`, { next: { revalidate: 60 } });
+      if (!res.ok) throw new Error("Failed to fetch reviews");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: [] };
+    }
+  }
+
   static async getListingBySlug(slug: string) {
     try {
       const res = await fetch(`${API_BASE_URL}/listings/${slug}`, { next: { revalidate: 60 } });
@@ -89,6 +111,56 @@ export class TrueDialAPI {
       console.error(error);
       // Mock successful inquiry submission
       return { success: true, message: "Inquiry submitted successfully!" };
+    }
+  }
+
+  // Vendor Reputation Management
+  static async getVendorReviews(page = 1) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/reviews?page=${page}`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!res.ok) throw new Error("Failed to fetch vendor reviews");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: [] };
+    }
+  }
+
+  static async replyToReview(reviewId: number, body: string) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/reviews/${reviewId}/reply`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ body })
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false };
+    }
+  }
+
+  static async reportReview(reviewId: number, reason: string, notes: string = "") {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/reviews/${reviewId}/report`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify({ reason, notes })
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false };
     }
   }
 }

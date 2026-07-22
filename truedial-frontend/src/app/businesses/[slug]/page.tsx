@@ -5,6 +5,7 @@ import { Star, MapPin, Phone, Mail, ShieldCheck, Clock, Share2, Heart, CheckCirc
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import InquiryForm from "@/components/forms/InquiryForm";
+import ReviewSection from "@/components/reviews/ReviewSection";
 import Link from "next/link";
 
 export default async function BusinessProfilePage({ params }: { params: { slug: string } }) {
@@ -120,36 +121,7 @@ export default async function BusinessProfilePage({ params }: { params: { slug: 
           )}
 
           {/* Reviews */}
-          <section>
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold text-navy dark:text-white">Customer Reviews</h2>
-              <div className="flex items-center gap-2 bg-muted/20 px-4 py-2 rounded-lg">
-                <div className="flex">
-                  {[...Array(5)].map((_, i) => <Star key={i} className={`w-5 h-5 ${i < Math.floor(business.rating || 5) ? 'fill-primary text-primary' : 'fill-muted text-muted'}`} />)}
-                </div>
-                <span className="font-bold text-lg">{business.rating || "5.0"}</span>
-                <span className="text-muted-foreground text-sm">({business.reviews_count || 0})</span>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div className="p-6 border border-border rounded-xl">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold">R</div>
-                    <div>
-                      <h4 className="font-bold">Rahul Verma</h4>
-                      <span className="text-xs text-muted-foreground">2 days ago</span>
-                    </div>
-                  </div>
-                  <div className="flex">
-                    {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-primary text-primary" />)}
-                  </div>
-                </div>
-                <p className="text-muted-foreground">Excellent service and very professional. Highly recommended for anyone looking for quality work in this area.</p>
-              </div>
-            </div>
-          </section>
+          <ReviewSection listing={businessDTO.basicInfo} />
         </div>
 
         {/* Sidebar - Sticky Contact Form */}

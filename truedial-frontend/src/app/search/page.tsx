@@ -1,136 +1,192 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
+import { TrueDialAPI } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import { Search, MapPin, Star, ShieldCheck, ChevronRight } from "lucide-react";
-import Link from "next/link";
+import BusinessCard, { BusinessCardProps } from "@/components/shared/BusinessCard";
+import { SlidersHorizontal, MapPin, Star, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { TrueDialAPI } from "@/lib/api";
 
-export default async function SearchPage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined }
-}) {
-  const query = typeof searchParams.q === 'string' ? searchParams.q : '';
-  const category = typeof searchParams.category === 'string' ? searchParams.category : '';
-  const city = typeof searchParams.city === 'string' ? searchParams.city : '';
+export default function SearchPage() {
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  
+  const [query, setQuery] = useState(searchParams.get("q") || "");
+  const [results, setResults] = useState<BusinessCardProps[]>([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Filters
+  const [verifiedOnly, setVerifiedOnly] = useState(searchParams.get("verified") === "true");
+  const [premiumOnly, setPremiumOnly] = useState(searchParams.get("premium") === "true");
+  const [minRating, setMinRating] = useState(searchParams.get("min_rating") || "");
 
-  const response = await TrueDialAPI.getListings({ query, category, city });
-  const listings = response.success ? response.data : [];
+  useEffect(() => {
+    fetchResults();
+  }, [searchParams]);
+
+  const fetchResults = async () => {
+    setLoading(true);
+    try {
+      const q = searchParams.get("q") || "";
+      const verified = searchParams.get("verified") || "";
+      const premium = searchParams.get("premium") || "";
+      const min_rating = searchParams.get("min_rating") || "";
+      
+      const response = await TrueDialAPI.searchBusinesses({ q, verified, premium, min_rating });
+      
+      // Map API response to BusinessCardProps
+      const mapped = response.data.data.map((listing: any) => ({
+        id: listing.id,
+        slug: listing.slug,
+        title: listing.title,
+        category: listing.category?.name,
+        locality: listing.address || listing.city,
+        rating: listing.avg_rating,
+        is_verified: listing.is_verified,
+        is_premium: listing.is_premium,
+        cover_image: listing.gallery?.[0]?.url || listing.cover_image,
+        phone: listing.phone,
+        whatsapp: listing.whatsapp
+      }));
+      
+      setResults(mapped);
+    } catch (error) {
+      console.error("Search failed", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const applyFilters = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    
+    if (query) params.set("q", query);
+    else params.delete("q");
+    
+    if (verifiedOnly) params.set("verified", "true");
+    else params.delete("verified");
+    
+    if (premiumOnly) params.set("premium", "true");
+    else params.delete("premium");
+
+    if (minRating) params.set("min_rating", minRating);
+    else params.delete("min_rating");
+
+    router.push(`/search?${params.toString()}`);
+  };
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-slate-900">
       <Navbar />
-      
-      {/* Search Header */}
-      <div className="bg-navy py-12 px-6 md:px-12 text-center text-white">
-        <h1 className="text-3xl font-bold mb-6">Find Verified Businesses</h1>
-        <form action="/search" className="max-w-4xl mx-auto flex flex-col md:flex-row gap-2">
-          <div className="flex-1 flex items-center bg-white rounded-md px-4 py-3 text-navy">
-            <MapPin className="text-gray-400 mr-2 w-5 h-5" />
-            <input type="text" name="city" defaultValue={city} placeholder="City or Pincode" className="w-full outline-none bg-transparent" />
-          </div>
-          <div className="flex-1 flex items-center bg-white rounded-md px-4 py-3 text-navy">
-            <Search className="text-gray-400 mr-2 w-5 h-5" />
-            <input type="text" name="category" defaultValue={category} placeholder="Category (e.g. Restaurants)" className="w-full outline-none bg-transparent" />
-          </div>
-          <div className="flex-[2] flex items-center bg-white rounded-md px-4 py-3 text-navy">
-            <Search className="text-gray-400 mr-2 w-5 h-5" />
-            <input type="text" name="q" defaultValue={query} placeholder="Search business name..." className="w-full outline-none bg-transparent" />
-          </div>
-          <Button type="submit" size="lg" className="h-auto py-3">Search</Button>
-        </form>
-      </div>
 
-      <main className="flex-1 bg-background py-8 px-6 md:px-12 flex flex-col md:flex-row gap-8 max-w-7xl mx-auto w-full">
-        {/* Filters Sidebar */}
-        <aside className="w-full md:w-64 flex-shrink-0">
-          <div className="premium-card p-6 rounded-xl sticky top-24">
-            <h3 className="font-bold text-navy dark:text-white mb-4 border-b border-border pb-2">Filters</h3>
-            
-            <div className="mb-6">
-              <h4 className="font-semibold text-sm mb-3">Verification</h4>
-              <label className="flex items-center gap-2 text-sm text-muted-foreground mb-2 cursor-pointer hover:text-primary transition">
-                <input type="checkbox" className="rounded border-border text-primary focus:ring-primary" /> Verified Businesses Only
-              </label>
-              <label className="flex items-center gap-2 text-sm text-muted-foreground cursor-pointer hover:text-primary transition">
-                <input type="checkbox" className="rounded border-border text-primary focus:ring-primary" /> TRUEDIAL Premium
-              </label>
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 py-8 flex flex-col lg:flex-row gap-8">
+        
+        {/* Sidebar Filters */}
+        <aside className="w-full lg:w-72 flex-shrink-0">
+          <div className="bg-white dark:bg-slate-800 p-6 rounded-2xl shadow-sm border border-border sticky top-24">
+            <div className="flex items-center gap-2 mb-6 pb-4 border-b border-border">
+              <SlidersHorizontal className="w-5 h-5 text-primary" />
+              <h2 className="font-bold text-lg">Filters</h2>
             </div>
 
-            <div className="mb-6">
-              <h4 className="font-semibold text-sm mb-3">Rating</h4>
-              {[4, 3, 2, 1].map((rating) => (
-                <label key={rating} className="flex items-center gap-2 text-sm text-muted-foreground mb-2 cursor-pointer hover:text-primary transition">
-                  <input type="radio" name="rating" className="border-border text-primary focus:ring-primary" /> {rating}.0+ Stars
-                </label>
-              ))}
+            <div className="space-y-6">
+              {/* Keyword Filter */}
+              <div>
+                <label className="text-sm font-semibold mb-2 block">Search Term</label>
+                <input 
+                  type="text" 
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="e.g. Plumbers, Doctors..."
+                  className="w-full p-2 border rounded-md dark:bg-slate-900 dark:border-slate-700"
+                />
+              </div>
+
+              {/* Status Filters */}
+              <div>
+                <label className="text-sm font-semibold mb-3 block">Quality</label>
+                <div className="space-y-3">
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={verifiedOnly}
+                      onChange={(e) => setVerifiedOnly(e.target.checked)}
+                      className="rounded text-primary focus:ring-primary h-4 w-4"
+                    />
+                    <span className="flex items-center gap-1 text-sm"><ShieldCheck className="w-4 h-4 text-green-500" /> Verified Only</span>
+                  </label>
+                  <label className="flex items-center gap-2 cursor-pointer">
+                    <input 
+                      type="checkbox" 
+                      checked={premiumOnly}
+                      onChange={(e) => setPremiumOnly(e.target.checked)}
+                      className="rounded text-primary focus:ring-primary h-4 w-4"
+                    />
+                    <span className="text-sm">Premium Businesses</span>
+                  </label>
+                </div>
+              </div>
+
+              {/* Rating Filter */}
+              <div>
+                <label className="text-sm font-semibold mb-3 block">Minimum Rating</label>
+                <select 
+                  value={minRating} 
+                  onChange={(e) => setMinRating(e.target.value)}
+                  className="w-full p-2 border rounded-md dark:bg-slate-900 dark:border-slate-700 text-sm"
+                >
+                  <option value="">Any Rating</option>
+                  <option value="4.5">4.5+ Stars</option>
+                  <option value="4.0">4.0+ Stars</option>
+                  <option value="3.0">3.0+ Stars</option>
+                </select>
+              </div>
+
+              <Button onClick={applyFilters} className="w-full">
+                Apply Filters
+              </Button>
             </div>
           </div>
         </aside>
 
         {/* Results */}
-        <section className="flex-1 flex flex-col gap-6">
-          <div className="flex justify-between items-center mb-2">
-            <h2 className="text-xl font-bold text-navy dark:text-white">
-              {listings.length} Results Found
-            </h2>
-            <select className="bg-background border border-border rounded-md px-3 py-1.5 text-sm text-muted-foreground outline-none">
-              <option>Sort by: Relevance</option>
-              <option>Highest Rated</option>
-              <option>Nearest</option>
-            </select>
+        <div className="flex-1">
+          <div className="mb-6 flex justify-between items-center">
+            <h1 className="text-2xl font-bold">
+              {searchParams.get("q") ? `Results for "${searchParams.get("q")}"` : "All Businesses"}
+            </h1>
+            <span className="text-muted-foreground text-sm">
+              {loading ? "Searching..." : `${results.length} found`}
+            </span>
           </div>
 
-          {listings.map((listing: any, idx: number) => (
-            <Link href={`/businesses/${listing.slug}`} key={idx}>
-              <div className="premium-card rounded-xl overflow-hidden flex flex-col sm:flex-row group cursor-pointer animate-fade-in-up" style={{animationDelay: `${idx * 0.1}s`}}>
-                <div 
-                  className="w-full sm:w-64 h-48 sm:h-auto bg-cover bg-center"
-                  style={{ backgroundImage: `url('${listing.gallery && listing.gallery[0] ? listing.gallery[0] : 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070'}')` }}
-                ></div>
-                <div className="p-6 flex-1 flex flex-col">
-                  <div className="flex justify-between items-start mb-2">
-                    <div>
-                      <h3 className="text-xl font-bold text-navy dark:text-white group-hover:text-primary transition">{listing.title}</h3>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground mt-1">
-                        <MapPin className="w-4 h-4" /> {listing.address || listing.city}
-                      </div>
-                    </div>
-                    {listing.rating >= 4.5 && (
-                      <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
-                        <ShieldCheck className="w-3 h-3 mr-1"/> Verified
-                      </Badge>
-                    )}
-                  </div>
-                  
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(Math.floor(listing.rating || 5))].map((_, i) => <Star key={i} className="w-4 h-4 fill-primary text-primary" />)}
-                    <span className="text-sm font-semibold ml-1">{listing.rating || "5.0"}</span>
-                    <span className="text-xs text-muted-foreground ml-1">({listing.reviews_count || 0} Reviews)</span>
-                  </div>
-                  
-                  <p className="text-sm text-muted-foreground line-clamp-2 mb-4 flex-1">
-                    {listing.description}
-                  </p>
-
-                  <div className="flex gap-3 mt-auto pt-4 border-t border-border">
-                    <Button className="flex-1">Contact Now</Button>
-                    <Button variant="outline" className="flex-1">View Details</Button>
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-
-          {listings.length === 0 && (
-             <div className="text-center py-20 bg-muted/20 rounded-xl">
-               <h3 className="text-xl font-bold text-navy dark:text-white mb-2">No businesses found</h3>
-               <p className="text-muted-foreground">Try adjusting your filters or search terms.</p>
-             </div>
+          {loading ? (
+            <div className="flex justify-center items-center py-20">
+              <Loader2 className="w-8 h-8 animate-spin text-primary" />
+            </div>
+          ) : results.length > 0 ? (
+            <div className="flex flex-col gap-6">
+              {results.map((biz) => (
+                <BusinessCard key={biz.id} {...biz} />
+              ))}
+            </div>
+          ) : (
+            <div className="bg-white dark:bg-slate-800 rounded-2xl p-12 text-center border border-border shadow-sm">
+              <MapPin className="w-12 h-12 text-muted mx-auto mb-4" />
+              <h3 className="text-xl font-bold mb-2">No businesses found</h3>
+              <p className="text-muted-foreground mb-6">Try adjusting your filters or searching for something else.</p>
+              <Button variant="outline" onClick={() => {
+                setQuery(""); setVerifiedOnly(false); setPremiumOnly(false); setMinRating("");
+                router.push('/search');
+              }}>
+                Clear all filters
+              </Button>
+            </div>
           )}
+        </div>
 
-        </section>
       </main>
 
       <Footer />

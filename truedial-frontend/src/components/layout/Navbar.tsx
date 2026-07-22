@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { ChevronDown, SearchIcon } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import AutocompleteSearch from "@/components/shared/AutocompleteSearch";
 
 export default function Navbar() {
   return (
@@ -17,12 +18,17 @@ export default function Navbar() {
       </div>
 
       {/* Main Navbar */}
-      <header className="bg-background py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm border-b border-border">
-        <Link href="/" className="flex items-center gap-2">
+      <header className="bg-background py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm border-b border-border gap-6">
+        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
           <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl">T</div>
           <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
         </Link>
-        <nav className="hidden md:flex gap-6 text-foreground/80 font-medium">
+        
+        <div className="flex-1 max-w-xl mx-auto hidden md:block">
+          <AutocompleteSearch />
+        </div>
+
+        <nav className="hidden lg:flex gap-6 text-foreground/80 font-medium whitespace-nowrap">
           <Link href="/" className="text-foreground hover:text-primary transition font-medium">Home</Link>
           <div className="relative group">
             <Link href="/categories" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">Categories <ChevronDown className="w-4 h-4"/></Link>
