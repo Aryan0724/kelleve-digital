@@ -8,8 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
 
-type Product = { name: string; description: string; price: number | ''; image: string };
-type Service = { name: string; description: string; price: number | '' };
+type Product = { id?: number; name: string; description: string; price: number | ''; image: string };
+type Service = { id?: number; name: string; description: string; price: number | '' };
 
 export default function CatalogPage() {
   const [activeTab, setActiveTab] = useState<'products'|'services'>('products');
@@ -28,8 +28,23 @@ export default function CatalogPage() {
         });
         const data = await res.json();
         if (data.success && data.data) {
-          setProducts(data.data.products || []);
-          setServices(data.data.services || []);
+          // Map relational array to the expected shape
+          const mappedProducts = (data.data.listing_products || []).map((p: any) => ({
+             id: p.id,
+             name: p.name,
+             description: p.description || '',
+             price: p.price || '',
+             image: p.media?.length > 0 ? p.media[0].file_name : ''
+          }));
+          setProducts(mappedProducts);
+
+          const mappedServices = (data.data.listing_services || []).map((s: any) => ({
+             id: s.id,
+             name: s.name,
+             description: s.description || '',
+             price: s.price_starting_at || s.price || ''
+          }));
+          setServices(mappedServices);
         }
       } catch (err) {
         console.error(err);
