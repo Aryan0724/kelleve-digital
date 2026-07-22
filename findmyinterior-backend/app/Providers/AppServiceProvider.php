@@ -22,6 +22,8 @@ use App\Models\ListingProduct;
 use App\Models\ListingService;
 use App\Models\Media;
 use App\Observers\BusinessCacheObserver;
+use App\Modules\Truedial\Contracts\SearchProviderInterface;
+use App\Modules\Truedial\Providers\SqlSearchProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -30,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(SearchProviderInterface::class, SqlSearchProvider::class);
     }
 
     /**

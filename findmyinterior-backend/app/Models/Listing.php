@@ -81,12 +81,12 @@ class Listing extends Model
 
     public function reviews(): HasMany
     {
-        return $this->hasMany(Review::class, 'reviewed_user_id', 'user_id');
+        return $this->hasMany(Review::class, 'listing_id');
     }
 
     public function approvedReviews(): HasMany
     {
-        return $this->hasMany(Review::class, 'reviewed_user_id', 'user_id')->where('is_approved', true);
+        return $this->hasMany(Review::class, 'listing_id')->where('status', 'approved');
     }
 
     public function inquiries(): MorphMany
@@ -171,8 +171,25 @@ class Listing extends Model
 
     public function recalculateRating(): void
     {
-        $stats = $this->approvedReviews()->selectRaw('AVG(rating) as avg, COUNT(*) as cnt')->first();
-        $this->update(['avg_rating' => round($stats->avg ?? 0, 2), 'review_count' => $stats->cnt ?? 0,
+        $stats = $this->approvedReviews()
+            ->selectRaw('
+                AVG(rating) as avg, 
+                COUNT(*) as cnt,
+                SUM(CASE WHEN rating = 5 THEN 1 ELSE 0 END) as five_star,
+                SUM(CASE WHEN rating = 4 THEN 1 ELSE 0 END) as four_star,
+                SUM(CASE WHEN rating = 3 THEN 1 ELSE 0 END) as three_star,
+                SUM(CASE WHEN rating = 2 THEN 1 ELSE 0 END) as two_star,
+                SUM(CASE WHEN rating = 1 THEN 1 ELSE 0 END) as one_star
+            ')->first();
+            
+        $this->update([
+            'avg_rating' => round($stats->avg ?? 0, 2), 
+            'review_count' => $stats->cnt ?? 0,
+            'five_star' => $stats->five_star ?? 0,
+            'four_star' => $stats->four_star ?? 0,
+            'three_star' => $stats->three_star ?? 0,
+            'two_star' => $stats->two_star ?? 0,
+            'one_star' => $stats->one_star ?? 0,
         ]);
     }
 }

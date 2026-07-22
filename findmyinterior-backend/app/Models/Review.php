@@ -17,14 +17,13 @@ class Review extends Model
         'project_id',
         'reviewer_id',
         'reviewed_user_id',
+        'listing_id',
         'rating',
         'title',
         'body',
         'role_of_reviewer',
-        'is_approved',
+        'status',
         'user_id',
-        'reviewable_type',
-        'reviewable_id',
     ];
 
     protected $casts = [];
@@ -51,11 +50,31 @@ class Review extends Model
         return $this->belongsTo(User::class, 'user_id');
     }
 
+    public function listing(): BelongsTo
+    {
+        return $this->belongsTo(Listing::class);
+    }
+
+    public function replies(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ReviewReply::class);
+    }
+
+    public function helpfulVotes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(ReviewHelpfulVote::class);
+    }
+
+    public function media(): \Illuminate\Database\Eloquent\Relations\MorphMany
+    {
+        return $this->morphMany(Media::class, 'model');
+    }
+
     // ─── Scopes ───────────────────────────────────────────────────────────────
 
     public function scopeApproved($query)
     {
-        return $query->where('is_approved', true);
+        return $query->where('status', 'approved');
     }
 
     // ─── Boot ─────────────────────────────────────────────────────────────────
@@ -64,26 +83,16 @@ class Review extends Model
     {
         // After a review is approved/created, recalculate the parent's rating
         static::saved(function (Review $review) {
-            if ($review->is_approved) {
-                // Support both old morph and new relation
-                $parent = null;
-                if (method_exists($review, 'reviewedUser') && $review->reviewedUser) {
-                    $parent = $review->reviewedUser;
-                }
-                
-                if ($parent && method_exists($parent, 'recalculateRating')) {
-                    $parent->recalculateRating();
+            if ($review->status === 'approved' && $review->listing_id) {
+                if ($review->listing) {
+                    $review->listing->recalculateRating();
                 }
             }
         });
 
         static::deleted(function (Review $review) {
-            $parent = null;
-            if (method_exists($review, 'reviewedUser') && $review->reviewedUser) {
-                $parent = $review->reviewedUser;
-            }
-            if ($parent && method_exists($parent, 'recalculateRating')) {
-                $parent->recalculateRating();
+            if ($review->listing_id && $review->listing) {
+                $review->listing->recalculateRating();
             }
         });
     }
