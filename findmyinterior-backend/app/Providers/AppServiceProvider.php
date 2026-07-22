@@ -17,6 +17,11 @@ use App\Observers\MessageObserver;
 use App\Observers\ReviewObserver;
 use App\Observers\ContactUnlockObserver;
 use App\Observers\RequirementObserver;
+use App\Models\Listing;
+use App\Models\ListingProduct;
+use App\Models\ListingService;
+use App\Models\Media;
+use App\Observers\BusinessCacheObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -55,6 +60,12 @@ class AppServiceProvider extends ServiceProvider
         Review::observe(ReviewObserver::class);
         ContactUnlock::observe(ContactUnlockObserver::class);
         Requirement::observe(RequirementObserver::class);
+
+        // Cache Observers
+        Listing::observe(BusinessCacheObserver::class);
+        ListingProduct::observe(BusinessCacheObserver::class);
+        ListingService::observe(BusinessCacheObserver::class);
+        Media::observe(BusinessCacheObserver::class);
 
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(600)->by($request->user()?->id ?: $request->ip());

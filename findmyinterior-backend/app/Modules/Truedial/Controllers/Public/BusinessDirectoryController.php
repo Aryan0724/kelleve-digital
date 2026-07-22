@@ -8,15 +8,19 @@ use Illuminate\Http\Request;
 use App\Core\Tenancy\TenantContext;
 use Illuminate\Support\Facades\Auth;
 
+use App\Modules\Truedial\Services\BusinessPageService;
+
 class BusinessDirectoryController extends Controller
 {
     use \App\Traits\ApiResponse;
 
     protected TenantContext $tenantContext;
+    protected BusinessPageService $businessPageService;
 
-    public function __construct(TenantContext $tenantContext)
+    public function __construct(TenantContext $tenantContext, BusinessPageService $businessPageService)
     {
         $this->tenantContext = $tenantContext;
+        $this->businessPageService = $businessPageService;
     }
 
     public function index(Request $request)
@@ -39,14 +43,17 @@ class BusinessDirectoryController extends Controller
 
     public function show($slug)
     {
-        $business = Listing::forCurrentTenant()->with(['category', 'city', 'gallery', 'reviews'])
-            ->where('status', 'active')
-            ->where('slug', $slug)
-            ->firstOrFail();
+        $businessDTO = $this->businessPageService->getBusinessProfile($slug);
 
-        $business->incrementViews();
+        \App\Modules\Truedial\Services\AnalyticsEventService::track(
+            $this->tenantContext->getTenantId(),
+            'view',
+            'listing',
+            $businessDTO->basicInfo['id'],
+            auth('sanctum')->id()
+        );
 
-        return $this->success($business);
+        return $this->success($businessDTO);
     }
 
 }
