@@ -18,6 +18,8 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::get('/my-business', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'myBusiness']);
         Route::post('/businesses', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'store']);
         Route::put('/businesses/{id}', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'update']);
+        Route::put('/businesses/me/products', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'updateProducts']);
+        Route::put('/businesses/me/services', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'updateServices']);
         
         // Privilege Cards
         Route::post('/privilege-cards/generate', [\App\Modules\Truedial\Controllers\PrivilegeCardController::class, 'generate']);

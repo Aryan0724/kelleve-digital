@@ -1,0 +1,1613 @@
+
+==================================================
+CMD: docker ps -a
+==================================================
+CONTAINER ID   IMAGE                       COMMAND                  CREATED             STATUS                          PORTS                                                                          NAMES
+426e4a0cdec0   find-my-interior-frontend   "docker-entrypoint.s…"   About an hour ago   Restarting (1) 53 seconds ago                                                                                  fmi_frontend
+cd14f781bfcc   find-my-interior-backend    "docker-php-entrypoi…"   4 days ago          Up 5 hours                      80/tcp, 9000/tcp, 0.0.0.0:8000->8000/tcp, [::]:8000->8000/tcp                  fmi_backend
+41472a73b607   nginx:alpine                "/docker-entrypoint.…"   5 days ago          Up 5 days                       0.0.0.0:80->80/tcp, [::]:80->80/tcp, 0.0.0.0:443->443/tcp, [::]:443->443/tcp   fmi_nginx
+d91930a287fe   redis:alpine                "docker-entrypoint.s…"   6 days ago          Up 6 days                       0.0.0.0:6379->6379/tcp, [::]:6379->6379/tcp                                    fmi_redis
+969da7903f10   mysql:8.0                   "docker-entrypoint.s…"   6 days ago          Up 6 days                       0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp, 33060/tcp                         fmi_mysql
+
+==================================================
+CMD: docker compose ps
+==================================================
+
+STDERR:
+no configuration file provided: not found
+
+==================================================
+CMD: docker stats --no-stream
+==================================================
+CONTAINER ID   NAME           CPU %     MEM USAGE / LIMIT    MEM %     NET I/O           BLOCK I/O         PIDS
+426e4a0cdec0   fmi_frontend   0.00%     0B / 0B              0.00%     0B / 0B           0B / 0B           0
+cd14f781bfcc   fmi_backend    0.02%     55.71MiB / 7.75GiB   0.70%     7.09MB / 3.45MB   541kB / 352kB     7
+41472a73b607   fmi_nginx      0.00%     3.82MiB / 7.75GiB    0.05%     252MB / 263MB     1.93MB / 905kB    2
+d91930a287fe   fmi_redis      0.19%     5.938MiB / 7.75GiB   0.07%     107kB / 83.7kB    106kB / 4.1kB     7
+969da7903f10   fmi_mysql      0.52%     494.8MiB / 7.75GiB   6.24%     51.3MB / 434MB    13.9MB / 3.53GB   41
+
+==================================================
+CMD: docker logs fmi_backend --tail=300
+==================================================
+
+STDERR:
+127.0.0.1 -  21/Jul/2026:19:06:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:10 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:11 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:11 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:11 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:15 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:16 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:16 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:16 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:16 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:16 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:16 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:16 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:19 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:19 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:21 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:22 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:22 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:23 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:23 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:23 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:23 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:23 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:23 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:24 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:25 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:25 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:25 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:25 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:25 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:25 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:25 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:27 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:32 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:34 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:34 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:39 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:39 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:39 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:39 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:39 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:40 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:40 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:40 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:45 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:45 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:46 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:46 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:46 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:46 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:46 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:46 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:47 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:48 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:48 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:48 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:48 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:48 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:48 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:48 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:06:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:07:30 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:07:31 +0000 "POST /index.php" 201
+127.0.0.1 -  21/Jul/2026:19:07:31 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:07:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:07:31 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:07:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:07:45 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:07:45 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:07:45 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:07:45 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:07:45 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:07:45 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:07:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:08:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:08:57 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:08:57 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:08:57 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:08:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:08:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:08:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:17 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:18 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:19 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:20 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:21 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:21 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:21 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:24 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:26 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:26 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:26 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:28 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:09:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:29 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:32 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:32 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:35 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:35 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:35 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:43 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:50 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:50 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:50 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:51 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:09:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:09:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:10:21 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:10:28 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:10:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:10:51 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:10:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:10:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:09 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:28 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:11:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:41 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:11:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:11:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:00 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:07 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:07 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:07 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:28 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:12:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:34 +0000 "POST /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:37 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:12:39 +0000 "GET /index.php" 401
+127.0.0.1 -  21/Jul/2026:19:12:44 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:13:29 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:13:29 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:13:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:13:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:14:14 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:14:28 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:14:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:14:30 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:14:30 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:14:30 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:14:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:14:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:15:05 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:15:39 +0000 "HEAD /index.php" 404
+127.0.0.1 -  21/Jul/2026:19:15:39 +0000 "GET /index.php" 404
+127.0.0.1 -  21/Jul/2026:19:15:52 +0000 "HEAD /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:15:52 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:15:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:15:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:16:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:16:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:17:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:17:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:18:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:18:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:19:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:19:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:20:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:20:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:21:13 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:21:13 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:21:27 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:21:27 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:21:57 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:21:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:22:27 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:22:27 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:22:57 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:22:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:23:27 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:23:27 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:23:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:23:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:24:27 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:24:27 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:24:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:24:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:25:28 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:25:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:26:29 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:26:29 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:27:30 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:27:30 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:28:31 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:28:31 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:29:32 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:29:32 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:30:33 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:30:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:30:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:30:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:31:28 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:31:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:31:57 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:31:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:32:28 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:32:28 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:32:58 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:32:58 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:33:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:33:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:34:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:34:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:35:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:35:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:36:54 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:36:54 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:37:04 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:37:04 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:37:16 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:37:16 +0000 "POST /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:49:29 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:50:26 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:50:26 +0000 "POST /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:50:26 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:50:26 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:50:26 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:50:26 +0000 "OPTIONS /index.php" 204
+127.0.0.1 -  21/Jul/2026:19:50:26 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:50:26 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:55:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:56:46 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:56:46 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:56:47 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:56:50 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:57:07 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:57:07 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:57:08 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:19:57:13 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:08:19 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:08:19 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:08:57 +0000 "POST /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:08:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:08:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:08:57 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:09:07 +0000 "GET /index.php" 404
+127.0.0.1 -  21/Jul/2026:20:09:09 +0000 "POST /index.php" 404
+127.0.0.1 -  21/Jul/2026:20:09:11 +0000 "GET /index.php" 404
+127.0.0.1 -  21/Jul/2026:20:09:25 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:09:44 +0000 "POST /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:10:04 +0000 "POST /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:10:04 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:10:04 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:10:04 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:10:10 +0000 "GET /index.php" 404
+127.0.0.1 -  21/Jul/2026:20:10:12 +0000 "POST /index.php" 404
+127.0.0.1 -  21/Jul/2026:20:10:14 +0000 "GET /index.php" 404
+127.0.0.1 -  21/Jul/2026:20:10:33 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:10:53 +0000 "GET /index.php" 200
+127.0.0.1 -  21/Jul/2026:20:11:01 +0000 "GET /index.php" 200
+
+==================================================
+CMD: docker logs fmi_mysql --tail=300
+==================================================
+2026-07-15 07:45:45+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.0.46-1.el9 started.
+2026-07-15 07:45:45+00:00 [Note] [Entrypoint]: Switching to dedicated user 'mysql'
+2026-07-15 07:45:45+00:00 [Note] [Entrypoint]: Entrypoint script for MySQL Server 8.0.46-1.el9 started.
+'/var/lib/mysql/mysql.sock' -> '/var/run/mysqld/mysqld.sock'
+
+STDERR:
+2026-07-15T07:45:46.430296Z 0 [Warning] [MY-011068] [Server] The syntax '--skip-host-cache' is deprecated and will be removed in a future release. Please use SET GLOBAL host_cache_size=0 instead.
+2026-07-15T07:45:46.431200Z 0 [System] [MY-010116] [Server] /usr/sbin/mysqld (mysqld 8.0.46) starting as process 1
+2026-07-15T07:45:46.435909Z 1 [System] [MY-013576] [InnoDB] InnoDB initialization has started.
+2026-07-15T07:45:46.548009Z 1 [System] [MY-013577] [InnoDB] InnoDB initialization has ended.
+2026-07-15T07:45:46.640533Z 0 [Warning] [MY-010068] [Server] CA certificate ca.pem is self signed.
+2026-07-15T07:45:46.640691Z 0 [System] [MY-013602] [Server] Channel mysql_main configured to support TLS. Encrypted connections are now supported for this channel.
+2026-07-15T07:45:46.642141Z 0 [Warning] [MY-011810] [Server] Insecure configuration for --pid-file: Location '/var/run/mysqld' in the path is accessible to all OS users. Consider choosing a different directory.
+2026-07-15T07:45:46.651103Z 0 [System] [MY-011323] [Server] X Plugin ready for connections. Bind-address: '::' port: 33060, socket: /var/run/mysqld/mysqlx.sock
+2026-07-15T07:45:46.651272Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.46'  socket: '/var/run/mysqld/mysqld.sock'  port: 3306  MySQL Community Server - GPL.
+
+==================================================
+CMD: docker logs fmi_redis --tail=300
+==================================================
+Starting Redis Server
+1:C 15 Jul 2026 07:45:45.615 # WARNING Memory overcommit must be enabled! Without it, a background save or replication may fail under low memory condition. Being disabled, it can also cause failures without low memory condition, see https://github.com/jemalloc/jemalloc/issues/1328. To fix this issue add 'vm.overcommit_memory = 1' to /etc/sysctl.conf and then reboot or run the command 'sysctl vm.overcommit_memory=1' for this to take effect.
+1:C 15 Jul 2026 07:45:45.615 * oO0OoO0OoO0Oo Redis is starting oO0OoO0OoO0Oo
+1:C 15 Jul 2026 07:45:45.615 * Redis version=8.8.0, bits=64, commit=00000000, modified=1, pid=1, just started
+1:C 15 Jul 2026 07:45:45.615 * Configuration loaded
+1:M 15 Jul 2026 07:45:45.616 * Increased maximum number of open files to 10032 (it was originally set to 1024).
+1:M 15 Jul 2026 07:45:45.616 * monotonic clock: POSIX clock_gettime
+1:M 15 Jul 2026 07:45:45.616 * Running mode=standalone, port=6379.
+1:M 15 Jul 2026 07:45:45.617 * <bf> RedisBloom version 8.8.0 (Git=unknown)
+1:M 15 Jul 2026 07:45:45.617 * <bf> Registering configuration options: [
+1:M 15 Jul 2026 07:45:45.617 * <bf> 	{ bf-error-rate       :      0.01 }
+1:M 15 Jul 2026 07:45:45.617 * <bf> 	{ bf-initial-size     :       100 }
+1:M 15 Jul 2026 07:45:45.617 * <bf> 	{ bf-expansion-factor :         2 }
+1:M 15 Jul 2026 07:45:45.617 * <bf> 	{ cf-bucket-size      :         2 }
+1:M 15 Jul 2026 07:45:45.617 * <bf> 	{ cf-initial-size     :      1024 }
+1:M 15 Jul 2026 07:45:45.617 * <bf> 	{ cf-max-iterations   :        20 }
+1:M 15 Jul 2026 07:45:45.617 * <bf> 	{ cf-expansion-factor :         1 }
+1:M 15 Jul 2026 07:45:45.617 * <bf> 	{ cf-max-expansions   :        32 }
+1:M 15 Jul 2026 07:45:45.617 * <bf> ]
+1:M 15 Jul 2026 07:45:45.617 * Module 'bf' loaded from /usr/local/lib/redis/modules//redisbloom.so
+1:M 15 Jul 2026 07:45:45.620 * <search> search-workers default: 2 (min of MAX_WORKER_THREADS=16 and CPU cores)
+1:M 15 Jul 2026 07:45:45.621 * <search> Redis version found by RedisSearch : 8.8.0 - oss
+1:M 15 Jul 2026 07:45:45.621 * <search> RediSearch version 8.8.0 (Git=d2ae026)
+1:M 15 Jul 2026 07:45:45.621 * <search> Low level api version 1 initialized successfully
+1:M 15 Jul 2026 07:45:45.621 * <search> gc: ON, prefix min length: 2, min word length to stem: 4, prefix max expansions: 200, query timeout (ms): 500, timeout policy: return, oom policy: return, cursor read size: 1000, cursor max idle (ms): 300000, max doctable size: 1000000, max number of search results:  1000000, default scorer: BM25STD, 
+1:M 15 Jul 2026 07:45:45.621 * <search> Initialized thread pools!
+1:M 15 Jul 2026 07:45:45.621 * <search> Enabled workers threadpool of size 2
+1:M 15 Jul 2026 07:45:45.622 * <search> Subscribe to config changes
+1:M 15 Jul 2026 07:45:45.622 * <search> Subscribe to cluster slot migration events
+1:M 15 Jul 2026 07:45:45.622 * <search> Enabled role change notification
+1:M 15 Jul 2026 07:45:45.623 * <search> Cluster configuration: AUTO partitions, type: 0, coordinator timeout: 0ms
+1:M 15 Jul 2026 07:45:45.623 * Module 'search' loaded from /usr/local/lib/redis/modules//redisearch.so
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> RedisTimeSeries version 80800, git_sha=42ca4f1078fca732b7f9256adbf25914d67e1cc9
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> Redis version found by RedisTimeSeries : 8.8.0 - oss
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> Registering configuration options: [
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-compaction-policy   :              }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-num-threads         :            3 }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-libmr-protocol      :     INTERNAL }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-retention-policy    :            0 }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-duplicate-policy    :        block }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-chunk-size-bytes    :         4096 }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-encoding            :   compressed }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-ignore-max-time-diff:            0 }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> 	{ ts-ignore-max-val-diff :     0.000000 }
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> ]
+1:M 15 Jul 2026 07:45:45.623 * <timeseries> Detected redis oss
+1:M 15 Jul 2026 07:45:45.625 * <timeseries> Subscribe to ASM events
+1:M 15 Jul 2026 07:45:45.625 * <timeseries> Enabled diskless replication
+1:M 15 Jul 2026 07:45:45.626 * Module 'timeseries' loaded from /usr/local/lib/redis/modules//redistimeseries.so
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Created new data type 'ReJSON-RL'
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> version: 80800 git sha: unknown branch: unknown
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Exported RedisJSON_V1 API
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Exported RedisJSON_V2 API
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Exported RedisJSON_V3 API
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Exported RedisJSON_V4 API
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Exported RedisJSON_V5 API
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Exported RedisJSON_V6 API
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Exported RedisJSON_V7 API
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Enabled diskless replication
+1:M 15 Jul 2026 07:45:45.626 * <ReJSON> Initialized shared string cache, thread safe: true.
+1:M 15 Jul 2026 07:45:45.626 * Module 'ReJSON' loaded from /usr/local/lib/redis/modules//rejson.so
+1:M 15 Jul 2026 07:45:45.626 * <search> Acquired RedisJSON_V7 API
+1:M 15 Jul 2026 07:45:45.626 * Server initialized
+1:M 15 Jul 2026 07:45:45.626 * Ready to accept connections tcp
+1:M 15 Jul 2026 07:45:45.626 # WARNING: Redis does not require authentication and is not protected by network restrictions. Redis will accept connections from any IP address on any network interface.
+1:M 19 Jul 2026 15:22:32.906 * BGSAVE done, 1 keys saved, 0 keys skipped, 211 bytes written.
+1:M 19 Jul 2026 15:22:32.907 * DB saved on disk
+
+==================================================
+CMD: docker logs fmi_frontend --tail=300
+==================================================
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 100ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 96ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 98ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 92ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 101ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 90ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 104ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 106ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 94ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 96ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 100ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 93ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 95ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 96ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 102ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 104ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 85ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 110ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 101ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 93ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 94ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 103ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 88ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 89ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 90ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 99ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 95ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 95ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 96ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 91ms
+
+STDERR:
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+
+==================================================
+CMD: docker exec fmi_backend tail -300 /var/log/nginx/error.log
+==================================================
+2026/07/18 05:49:17 [warn] 15#15: *319 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/1/00/0000000001 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects?type=builder"
+2026/07/18 05:49:40 [warn] 16#16: *326 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/2/00/0000000002 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 05:49:53 [warn] 16#16: *332 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/3/00/0000000003 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 05:57:58 [warn] 16#16: *482 a client request body is buffered to a temporary file /var/lib/nginx/tmp/client_body/0000000004, client: 172.18.0.6, server: localhost, request: "POST /api/v1/verification/upload HTTP/1.1", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/18 05:58:12 [warn] 16#16: *492 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/5/00/0000000005 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/verification/status HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/18 10:23:46 [warn] 15#15: *1036 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/6/00/0000000006 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 10:23:57 [warn] 15#15: *1044 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/7/00/0000000007 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects?type=builder"
+2026/07/18 10:39:59 [warn] 15#15: *1110 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/8/00/0000000008 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects?type=builder"
+2026/07/18 13:03:32 [warn] 16#16: *1200 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/9/00/0000000009 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 16:28:24 [warn] 15#15: *1556 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/0/01/0000000010 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 16:32:29 [warn] 16#16: *1702 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/1/01/0000000011 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 16:32:50 [warn] 16#16: *1712 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/2/01/0000000012 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 16:39:18 [warn] 15#15: *2004 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/3/01/0000000013 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 16:40:15 [warn] 16#16: *2030 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/4/01/0000000014 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 16:41:04 [warn] 15#15: *2058 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/5/01/0000000015 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 16:43:49 [warn] 16#16: *2148 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/6/01/0000000016 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 16:45:38 [warn] 16#16: *2252 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/7/01/0000000017 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 16:46:12 [warn] 16#16: *2267 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/8/01/0000000018 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects?type=builder"
+2026/07/18 16:49:18 [warn] 15#15: *2378 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/9/01/0000000019 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 16:59:32 [warn] 15#15: *2650 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/0/02/0000000020 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/users?filter=real HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 16:59:33 [warn] 16#16: *2665 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/1/02/0000000021 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/users?filter=real HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 16:59:51 [warn] 16#16: *2669 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/2/02/0000000022 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 17:05:36 [warn] 15#15: *2925 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/3/02/0000000023 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects?type=builder"
+2026/07/18 17:06:37 [warn] 16#16: *2954 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/4/02/0000000024 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/18 17:08:50 [warn] 16#16: *3018 a client request body is buffered to a temporary file /var/lib/nginx/tmp/client_body/0000000025, client: 172.18.0.6, server: localhost, request: "POST /api/v1/projects HTTP/1.1", host: "findmyinterior.com", referrer: "https://findmyinterior.com/post-requirement"
+2026/07/18 17:09:08 [warn] 16#16: *3050 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/6/02/0000000026 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects?type=builder"
+2026/07/18 17:11:49 [warn] 15#15: *3155 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/7/02/0000000027 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/18 17:13:55 [warn] 16#16: *3204 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/8/02/0000000028 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/19 06:22:39 [warn] 16#16: *3638 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/9/02/0000000029 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/conversations HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/messages"
+2026/07/19 06:23:15 [warn] 15#15: *3670 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/0/03/0000000030 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 06:25:32 [warn] 16#16: *3702 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/1/03/0000000031 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 06:25:36 [warn] 15#15: *3730 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/2/03/0000000032 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 06:26:18 [warn] 15#15: *3770 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/3/03/0000000033 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 06:50:59 [warn] 16#16: *3830 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/4/03/0000000034 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 06:51:04 [warn] 15#15: *3858 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/5/03/0000000035 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 06:51:12 [warn] 16#16: *3876 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/6/03/0000000036 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 06:51:14 [warn] 16#16: *3878 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/7/03/0000000037 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 07:09:40 [warn] 15#15: *3962 a client request body is buffered to a temporary file /var/lib/nginx/tmp/client_body/0000000038, client: 172.18.0.6, server: localhost, request: "POST /api/v1/projects HTTP/1.1", host: "findmyinterior.com", referrer: "https://findmyinterior.com/post-requirement"
+2026/07/19 07:23:38 [warn] 15#15: *4046 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/9/03/0000000039 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/19 07:29:26 [warn] 16#16: *4137 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/0/04/0000000040 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects?type=builder"
+2026/07/19 07:30:24 [warn] 16#16: *4168 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/1/04/0000000041 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/19 07:31:57 [warn] 15#15: *4210 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/2/04/0000000042 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/19 07:32:29 [warn] 16#16: *4226 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/3/04/0000000043 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects?type=builder"
+2026/07/19 07:37:19 [warn] 15#15: *4345 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/4/04/0000000044 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/19 07:40:18 [warn] 15#15: *4428 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/5/04/0000000045 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 07:49:30 [warn] 16#16: *4662 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/6/04/0000000046 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 07:49:43 [warn] 15#15: *4692 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/7/04/0000000047 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/19 07:55:43 [warn] 16#16: *4734 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/8/04/0000000048 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/20 04:49:53 [warn] 16#16: *5554 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/9/04/0000000049 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/projects HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/projects"
+2026/07/20 08:33:23 [warn] 16#16: *6016 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/0/05/0000000050 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/20 08:33:51 [warn] 16#16: *6063 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/1/05/0000000051 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/20 08:34:30 [warn] 16#16: *6084 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/2/05/0000000052 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/20 09:00:04 [warn] 16#16: *6200 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/3/05/0000000053 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/20 12:02:58 [error] 15#15: *6346 client intended to send too large body: 1056055 bytes, client: 172.18.0.6, server: localhost, request: "POST /api/v1/verification/upload HTTP/1.1", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:03:14 [warn] 15#15: *6349 a client request body is buffered to a temporary file /var/lib/nginx/tmp/client_body/0000000054, client: 172.18.0.6, server: localhost, request: "POST /api/v1/verification/upload HTTP/1.1", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:03:16 [warn] 15#15: *6351 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/5/05/0000000055 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/verification/status HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:03:27 [warn] 15#15: *6355 a client request body is buffered to a temporary file /var/lib/nginx/tmp/client_body/0000000056, client: 172.18.0.6, server: localhost, request: "POST /api/v1/verification/upload HTTP/1.1", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:03:27 [warn] 15#15: *6355 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/7/05/0000000057 while reading upstream, client: 172.18.0.6, server: localhost, request: "POST /api/v1/verification/upload HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:03:28 [warn] 15#15: *6357 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/8/05/0000000058 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/verification/status HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:03:36 [warn] 15#15: *6363 a client request body is buffered to a temporary file /var/lib/nginx/tmp/client_body/0000000059, client: 172.18.0.6, server: localhost, request: "POST /api/v1/verification/upload HTTP/1.1", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:03:36 [warn] 15#15: *6363 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/0/06/0000000060 while reading upstream, client: 172.18.0.6, server: localhost, request: "POST /api/v1/verification/upload HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:03:38 [warn] 15#15: *6365 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/1/06/0000000061 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/verification/status HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/dashboard"
+2026/07/20 12:05:49 [warn] 15#15: *6421 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/2/06/0000000062 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/verifications?filter=pending HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+2026/07/20 12:07:06 [warn] 16#16: *6435 an upstream response is buffered to a temporary file /var/lib/nginx/tmp/fastcgi/3/06/0000000063 while reading upstream, client: 172.18.0.6, server: localhost, request: "GET /api/v1/admin/requirements HTTP/1.1", upstream: "fastcgi://127.0.0.1:9000", host: "findmyinterior.com", referrer: "https://findmyinterior.com/admin"
+
+==================================================
+CMD: docker exec fmi_backend tail -300 /var/log/nginx/access.log
+==================================================
+172.18.0.6 - - [21/Jul/2026:19:06:09 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:09 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:09 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:09 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:09 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:10 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12308 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:11 +0000] "GET /api/v1/listings/pooja-chauhan-contractor-pune-Gsn5 HTTP/1.1" 200 1046 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:11 +0000] "GET /api/v1/listings/manoj-tiwari-architect-darbhanga-gCbe HTTP/1.1" 200 1113 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:11 +0000] "GET /api/v1/listings/puja-srivastava-architect-jodhpur-EcVZ HTTP/1.1" 200 1078 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:15 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12308 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:16 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:16 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:16 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:16 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:16 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:16 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:16 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:19 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12308 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:19 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:20 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:20 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:20 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:20 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:20 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:20 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:21 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:06:22 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12308 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:22 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:23 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:23 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:23 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:23 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:23 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:23 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:24 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12308 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:25 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:25 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:25 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:25 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:25 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:25 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:25 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:27 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12294 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:28 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:28 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:28 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:28 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:28 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:28 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:28 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:32 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12308 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:33 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:33 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:33 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:33 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:33 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:34 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:34 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:39 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12308 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:39 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:39 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:39 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:40 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:40 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:40 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:40 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:41 +0000] "GET /api/v1/listings/pooja-chauhan-contractor-pune-Gsn5 HTTP/1.1" 200 1046 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:41 +0000] "GET /api/v1/listings/puja-srivastava-architect-jodhpur-EcVZ HTTP/1.1" 200 1078 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:41 +0000] "GET /api/v1/listings/manoj-tiwari-architect-darbhanga-gCbe HTTP/1.1" 200 1113 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:41 +0000] "GET /api/v1/listings/dinesh-dubey-architect-ahmedabad-z6sQ HTTP/1.1" 200 1082 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:41 +0000] "GET /api/v1/listings/lakshmi-mishra-contractor-madurai-SZzN HTTP/1.1" 200 1109 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:41 +0000] "GET /api/v1/listings/arjun-verma-contractor-hyderabad-Ec0K HTTP/1.1" 200 1045 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:45 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12268 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:45 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:46 +0000] "GET /api/v1/listings/manoj-tiwari-architect-darbhanga-gCbe HTTP/1.1" 200 1113 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:46 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:46 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:46 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:46 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:46 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:47 +0000] "GET /api/v1/listings?search=Contractor HTTP/1.1" 200 12294 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:48 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:06:48 +0000] "GET /api/v1/listings/gopal-verma-architect-jodhpur-VKJZ HTTP/1.1" 200 1073 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:48 +0000] "GET /api/v1/listings/kavita-sharma-architect-raipur-24Ne HTTP/1.1" 200 1060 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:48 +0000] "GET /api/v1/listings/ashok-jha-architect-trivandrum-YLMR HTTP/1.1" 200 1065 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:48 +0000] "GET /api/v1/listings/nitin-thakur-contractor-visakhapatnam-rb4d HTTP/1.1" 200 1080 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:48 +0000] "GET /api/v1/listings/ramesh-tiwari-contractor-katihar-Fe80 HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:48 +0000] "GET /api/v1/listings/lakshmi-shah-architect-coimbatore-CztC HTTP/1.1" 200 1085 "-" "node" "172.18.0.1"
+172.18.0.6 - - [21/Jul/2026:19:06:57 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:07:30 +0000] "OPTIONS /api/v1/auth/register HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:31 +0000] "POST /api/v1/auth/register HTTP/1.1" 201 444 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:31 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:31 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:31 +0000] "OPTIONS /api/v1/user/dashboard HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:31 +0000] "GET /api/v1/user/dashboard HTTP/1.1" 200 98936 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:45 +0000] "OPTIONS /api/v1/locations?active_only=1 HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:45 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:45 +0000] "OPTIONS /api/v1/user/dashboard HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:45 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:45 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:45 +0000] "GET /api/v1/user/dashboard HTTP/1.1" 200 98913 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:07:57 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:08:57 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:08:57 +0000] "OPTIONS /api/v1/locations?active_only=1 HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:08:57 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:08:57 +0000] "OPTIONS /api/v1/user/dashboard HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:08:57 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:08:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:08:58 +0000] "GET /api/v1/user/dashboard HTTP/1.1" 200 98913 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:17 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:18 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:19 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:20 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:20 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:20 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:20 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:21 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:21 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:21 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:24 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:26 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:26 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:26 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:28 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:28 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:28 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:28 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:29 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:31 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:32 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:32 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:33 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:33 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:33 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:35 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:35 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:35 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:43 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:09:50 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22368 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:09:50 +0000] "GET /api/v1/user/dashboard HTTP/1.1" 200 1766 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:09:50 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22368 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:09:51 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:09:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:09:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:10:21 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:10:28 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:10:28 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:10:51 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:10:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:10:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:11:09 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:09 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22368 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:09 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:09 +0000] "GET /api/v1/user/dashboard HTTP/1.1" 200 1766 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:09 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22368 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:28 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:11:28 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:11:31 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:31 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22345 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:31 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:31 +0000] "GET /api/v1/user/dashboard HTTP/1.1" 200 1766 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:31 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22368 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:41 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:41 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22368 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:41 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:41 +0000] "GET /api/v1/user/dashboard HTTP/1.1" 200 1766 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:41 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22368 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:11:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:11:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:12:00 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:12:07 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:12:07 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:12:07 +0000] "GET /api/v1/user/dashboard HTTP/1.1" 200 1766 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:12:28 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:12:28 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:12:31 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:12:34 +0000] "POST /api/v1/auth/logout HTTP/1.1" 200 64 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:12:37 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:12:39 +0000] "GET /api/v1/notifications HTTP/1.1" 401 41 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:12:44 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/login" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:13:29 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:13:29 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:13:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:13:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:14:14 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/login" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:14:28 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:14:28 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:14:30 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:14:30 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22345 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:14:30 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:14:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:14:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:15:05 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/dashboard" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:15:39 +0000] "HEAD /api/v1 HTTP/1.1" 404 0 "-" "Go-http-client/1.1" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:15:39 +0000] "GET /api/v1 HTTP/1.1" 404 8959 "-" "Go-http-client/1.1" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:15:52 +0000] "HEAD /api/v1/health HTTP/1.1" 200 0 "-" "Go-http-client/1.1" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:15:52 +0000] "GET /api/v1/health HTTP/1.1" 200 49 "-" "Go-http-client/1.1" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:15:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:15:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:16:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:16:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:17:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:17:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:18:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:18:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:19:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:19:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:20:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:20:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:21:13 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:21:13 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:21:27 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:21:27 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:21:57 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:21:57 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:22:27 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:22:27 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:22:57 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:22:57 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:23:27 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:23:27 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:23:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:23:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:24:27 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:24:27 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:24:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:24:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:25:28 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:25:28 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:26:29 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:26:29 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:27:30 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:27:30 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:28:31 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:28:31 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:29:32 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:29:32 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:30:33 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:30:33 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:30:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:30:59 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:31:28 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:31:28 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:31:57 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:31:57 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:32:28 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:32:28 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:32:58 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:32:58 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:33:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:33:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:34:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:34:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:35:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:35:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:36:54 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:36:54 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:37:04 +0000] "OPTIONS /api/v1/notifications HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:37:04 +0000] "GET /api/v1/notifications HTTP/1.1" 200 12 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:37:16 +0000] "OPTIONS /api/v1/auth/logout HTTP/1.1" 204 0 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:37:16 +0000] "POST /api/v1/auth/logout HTTP/1.1" 200 64 "https://www.findmyinterior.com/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:49:29 +0000] "GET /api/v1/categories HTTP/1.1" 200 3089 "-" "node" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:50:26 +0000] "OPTIONS /api/v1/auth/login HTTP/1.1" 204 0 "http://localhost:8081/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:50:26 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 454 "http://localhost:8081/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:50:26 +0000] "OPTIONS /api/v1/auth/me HTTP/1.1" 204 0 "http://localhost:8081/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:50:26 +0000] "GET /api/v1/auth/me HTTP/1.1" 200 353 "http://localhost:8081/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:50:26 +0000] "OPTIONS /api/v1/categories HTTP/1.1" 204 0 "http://localhost:8081/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:50:26 +0000] "OPTIONS /api/v1/listings HTTP/1.1" 204 0 "http://localhost:8081/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:50:26 +0000] "GET /api/v1/categories HTTP/1.1" 200 3089 "http://localhost:8081/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:50:26 +0000] "GET /api/v1/listings HTTP/1.1" 200 12460 "http://localhost:8081/" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:19:55:57 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/post-requirement" "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:56:47 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:56:47 +0000] "GET /api/v1/homepage HTTP/1.1" 200 23923 "https://findmyinterior.com/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:56:47 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:56:50 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/post-requirement" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:57:07 +0000] "GET /api/v1/homepage HTTP/1.1" 200 22345 "https://findmyinterior.com/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:57:07 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:57:08 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/post-requirement" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:19:57:14 +0000] "GET /api/v1/locations?active_only=1 HTTP/1.1" 200 1774 "https://findmyinterior.com/post-requirement" "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/150.0.0.0 Mobile Safari/537.36" "223.233.70.115"
+172.18.0.6 - - [21/Jul/2026:20:08:19 +0000] "GET /api/v1/categories HTTP/1.1" 200 3089 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:08:19 +0000] "GET /api/v1/listings HTTP/1.1" 200 12461 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:08:57 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 454 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:08:57 +0000] "GET /api/v1/auth/me HTTP/1.1" 200 353 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:08:57 +0000] "GET /api/v1/categories HTTP/1.1" 200 3089 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:08:57 +0000] "GET /api/v1/listings HTTP/1.1" 200 12447 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:09:07 +0000] "GET /api/v1/privilege-cards HTTP/1.1" 404 8975 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:09:09 +0000] "POST /api/v1/privilege-cards/generate HTTP/1.1" 404 8991 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:09:11 +0000] "GET /api/v1/offers HTTP/1.1" 404 8973 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:09:25 +0000] "GET /api/v1/listings?city=Patna&q=Builder& HTTP/1.1" 200 10411 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:09:44 +0000] "POST /api/v1/auth/logout HTTP/1.1" 200 64 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:04 +0000] "POST /api/v1/auth/login HTTP/1.1" 200 454 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:04 +0000] "GET /api/v1/auth/me HTTP/1.1" 200 353 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:04 +0000] "GET /api/v1/categories HTTP/1.1" 200 3089 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:04 +0000] "GET /api/v1/listings HTTP/1.1" 200 12464 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:10 +0000] "GET /api/v1/privilege-cards HTTP/1.1" 404 8975 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:12 +0000] "POST /api/v1/privilege-cards/generate HTTP/1.1" 404 8984 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:14 +0000] "GET /api/v1/offers HTTP/1.1" 404 8966 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:33 +0000] "GET /api/v1/listings?city=Patna&q=Interior%20designer& HTTP/1.1" 200 10411 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:10:53 +0000] "GET /api/v1/listings?city=Patna&q=Interior%20designer& HTTP/1.1" 200 10411 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+172.18.0.6 - - [21/Jul/2026:20:11:01 +0000] "GET /api/v1/listings? HTTP/1.1" 200 12460 "-" "Expo/1017756 CFNetwork/3860.600.12 Darwin/25.5.0" "223.188.128.126"
+
+==================================================
+CMD: docker exec fmi_backend tail -300 /var/log/php8-fpm.log
+==================================================
+
+STDERR:
+tail: can't open '/var/log/php8-fpm.log': No such file or directory
+tail: no files
+
+==================================================
+CMD: docker exec fmi_backend tail -300 /var/log/php8.2-fpm.log
+==================================================
+
+STDERR:
+tail: can't open '/var/log/php8.2-fpm.log': No such file or directory
+tail: no files
+
+==================================================
+CMD: docker exec fmi_backend tail -300 /var/log/php8.3-fpm.log
+==================================================
+
+STDERR:
+tail: can't open '/var/log/php8.3-fpm.log': No such file or directory
+tail: no files
+
+==================================================
+CMD: docker exec fmi_backend tail -300 /var/log/php8.4-fpm.log
+==================================================
+
+STDERR:
+tail: can't open '/var/log/php8.4-fpm.log': No such file or directory
+tail: no files
+
+==================================================
+CMD: docker exec fmi_backend tail -300 /var/log/php8-fpm-slow.log
+==================================================
+
+STDERR:
+tail: can't open '/var/log/php8-fpm-slow.log': No such file or directory
+tail: no files
+
+==================================================
+CMD: docker exec fmi_backend tail -300 storage/logs/laravel.log
+==================================================
+# Hello yukta,
+
+You have a new message from Kleve world india.
+
+View Dashboard: http://localhost:3000/dashboard
+
+Regards,
+FindMyInterior
+
+If you're having trouble clicking the "View Dashboard" button, copy and paste the URL below
+into your web browser: [http://localhost:3000/dashboard](http://localhost:3000/dashboard)
+
+© 2026 FindMyInterior. All rights reserved.
+
+--FWOyC8Rr
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en">
+<head>
+<title>FindMyInterior</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<style>
+@media only screen and (max-width: 600px) {
+.inner-body {
+width: 100% !important;
+}
+
+.footer {
+width: 100% !important;
+}
+}
+
+@media only screen and (max-width: 500px) {
+.button {
+width: 100% !important;
+}
+}
+</style>
+
+</head>
+<body style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -webkit-text-size-adjust: none; background-color: #ffffff; color: #52525b; height: 100%; line-height: 1.4; margin: 0; padding: 0; width: 100% !important;">
+
+<table class="wrapper" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%; background-color: #fafafa; margin: 0; padding: 0; width: 100%;">
+<tr>
+<td align="center" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative;">
+<table class="content" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%; margin: 0; padding: 0; width: 100%;">
+<tr>
+<td class="header" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; padding: 25px 0; text-align: center;">
+<a href="https://findmyinterior.com" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; color: #18181b; font-size: 19px; font-weight: bold; text-decoration: none; display: inline-block;">
+FindMyInterior
+</a>
+</td>
+</tr>
+
+<!-- Email Body -->
+<tr>
+<td class="body" width="100%" cellpadding="0" cellspacing="0" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%; background-color: #fafafa; border-bottom: 1px solid #fafafa; border-top: 1px solid #fafafa; margin: 0; padding: 0; width: 100%; border: hidden !important;">
+<table class="inner-body" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 570px; background-color: #ffffff; border-color: #e4e4e7; border-radius: 4px; border-width: 1px; box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1); margin: 0 auto; padding: 0; width: 570px;">
+<!-- Body content -->
+<tr>
+<td class="content-cell" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; max-width: 100vw; padding: 32px;">
+<h1 style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; color: #18181b; font-size: 18px; font-weight: bold; margin-top: 0; text-align: start;">Hello yukta,</h1>
+<p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">You have a new message from Kleve world india.</p>
+<table class="action" align="center" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 100%; margin: 30px auto; padding: 0; text-align: center; width: 100%; float: unset;">
+<tr>
+<td align="center" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative;">
+<table width="100%" border="0" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative;">
+<tr>
+<td align="center" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative;">
+<table border="0" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative;">
+<tr>
+<td style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative;">
+<a href="http://localhost:3000/dashboard" class="button button-primary" target="_blank" rel="noopener" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -webkit-text-size-adjust: none; border-radius: 4px; color: #fff; display: inline-block; overflow: hidden; text-decoration: none; background-color: #18181b; border-bottom: 8px solid #18181b; border-left: 18px solid #18181b; border-right: 18px solid #18181b; border-top: 8px solid #18181b; word-break: break-all;">View Dashboard</a>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+<p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; font-size: 16px; line-height: 1.5em; margin-top: 0; text-align: left;">Regards,<br>
+FindMyInterior</p>
+
+
+<table class="subcopy" width="100%" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; border-top: 1px solid #e4e4e7; margin-top: 25px; padding-top: 25px;">
+<tr>
+<td style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative;">
+<p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; line-height: 1.5em; margin-top: 0; text-align: left; font-size: 14px;">If you're having trouble clicking the "View Dashboard" button, copy and paste the URL below
+into your web browser: <span class="break-all" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; word-break: break-all;"><a href="http://localhost:3000/dashboard" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; color: #18181b; word-break: break-all;">http://localhost:3000/dashboard</a></span></p>
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+
+<tr>
+<td style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative;">
+<table class="footer" align="center" width="570" cellpadding="0" cellspacing="0" role="presentation" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; -premailer-cellpadding: 0; -premailer-cellspacing: 0; -premailer-width: 570px; margin: 0 auto; padding: 0; text-align: center; width: 570px;">
+<tr>
+<td class="content-cell" align="center" style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; max-width: 100vw; padding: 32px;">
+<p style="box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol'; position: relative; line-height: 1.5em; margin-top: 0; color: #a1a1aa; font-size: 12px; text-align: center;">© 2026 FindMyInterior. All rights reserved.</p>
+
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</td>
+</tr>
+</table>
+</body>
+</html>
+--FWOyC8Rr--
+  
+[2026-07-18 17:03:47] production.INFO: Mock WhatsApp Message Sent to 9432156562 {"content":"You have a new message from Kleve world india regarding your project."} 
+[2026-07-18 17:22:44] production.ERROR: SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'is_verified' in where clause is ambiguous (Connection: mysql, Host: db, Port: 3306, Database: findmyinterior, SQL: select count(*) as `aggregate` from `listings` inner join `users` on `users`.`id` = `listings`.`user_id` where `status` = active and `is_verified` = 1 and ((LOWER(title) LIKE %interior% or LOWER(title) LIKE %interior% or LOWER(description) LIKE %interior% or LOWER(description) LIKE %interior% or exists (select * from `categories` where `listings`.`category_id` = `categories`.`id` and (LOWER(name) LIKE %interior% or LOWER(name) LIKE %interior%))) or (LOWER(title) LIKE %designer% or LOWER(title) LIKE %designer% or LOWER(description) LIKE %designer% or LOWER(description) LIKE %designer% or exists (select * from `categories` where `listings`.`category_id` = `categories`.`id` and (LOWER(name) LIKE %designer% or LOWER(name) LIKE %designer%)))) and `listings`.`deleted_at` is null) {"exception":"[object] (Illuminate\\Database\\QueryException(code: 23000): SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'is_verified' in where clause is ambiguous (Connection: mysql, Host: db, Port: 3306, Database: findmyinterior, SQL: select count(*) as `aggregate` from `listings` inner join `users` on `users`.`id` = `listings`.`user_id` where `status` = active and `is_verified` = 1 and ((LOWER(title) LIKE %interior% or LOWER(title) LIKE %interior% or LOWER(description) LIKE %interior% or LOWER(description) LIKE %interior% or exists (select * from `categories` where `listings`.`category_id` = `categories`.`id` and (LOWER(name) LIKE %interior% or LOWER(name) LIKE %interior%))) or (LOWER(title) LIKE %designer% or LOWER(title) LIKE %designer% or LOWER(description) LIKE %designer% or LOWER(description) LIKE %designer% or exists (select * from `categories` where `listings`.`category_id` = `categories`.`id` and (LOWER(name) LIKE %designer% or LOWER(name) LIKE %designer%)))) and `listings`.`deleted_at` is null) at /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Connection.php:841)
+[stacktrace]
+#0 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Connection.php(797): Illuminate\\Database\\Connection->runQueryCallback('select count(*)...', Array, Object(Closure))
+#1 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Connection.php(412): Illuminate\\Database\\Connection->run('select count(*)...', Array, Object(Closure))
+#2 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3573): Illuminate\\Database\\Connection->select('select count(*)...', Array, true, Array)
+#3 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3557): Illuminate\\Database\\Query\\Builder->runSelect()
+#4 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3752): Illuminate\\Database\\Query\\Builder->get()
+#5 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3711): Illuminate\\Database\\Query\\Builder->runPaginationCountQuery(Array)
+#6 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1126): Illuminate\\Database\\Query\\Builder->getCountForPagination()
+#7 /var/www/html/app/Http/Controllers/Public/ListingController.php(78): Illuminate\\Database\\Eloquent\\Builder->paginate(12)
+#8 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): App\\Http\\Controllers\\Public\\ListingController->index(Object(Illuminate\\Http\\Request))
+#9 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(275): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\Public\\ListingController), 'index')
+#10 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(215): Illuminate\\Routing\\Route->runController()
+#11 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\\Routing\\Route->run()
+#12 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Routing\\Router->{closure:Illuminate\\Routing\\Router::runRouteWithinStack():821}(Object(Illuminate\\Http\\Request))
+#13 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(52): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}(Object(Illuminate\\Http\\Request))
+#14 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#15 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(168): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#16 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(129): Illuminate\\Routing\\Middleware\\ThrottleRequests->handleRequest(Object(Illuminate\\Http\\Request), Object(Closure), Array)
+#17 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(90): Illuminate\\Routing\\Middleware\\ThrottleRequests->handleRequestUsingNamedLimiter(Object(Illuminate\\Http\\Request), Object(Closure), 'api', Object(Closure))
+#18 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Routing\\Middleware\\ThrottleRequests->handle(Object(Illuminate\\Http\\Request), Object(Closure), 'api')
+#19 /var/www/html/app/Http/Middleware/SecureHeadersMiddleware.php(18): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#20 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App\\Http\\Middleware\\SecureHeadersMiddleware->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#21 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(74): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#22 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#23 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#24 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#25 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#26 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#27 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#28 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#29 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Foundation\\Http\\Kernel->{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():197}(Object(Illuminate\\Http\\Request))
+#30 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}(Object(Illuminate\\Http\\Request))
+#31 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#32 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#33 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#34 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#36 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#37 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(109): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#39 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#40 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(74): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#41 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#42 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#43 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#44 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#45 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#46 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(28): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#47 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\ValidatePathEncoding->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#48 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#49 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#50 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#51 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#52 /var/www/html/public/index.php(23): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
+#53 {main}
+
+[previous exception] [object] (PDOException(code: 23000): SQLSTATE[23000]: Integrity constraint violation: 1052 Column 'is_verified' in where clause is ambiguous at /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Connection.php:421)
+[stacktrace]
+#0 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Connection.php(421): PDO->prepare('select count(*)...')
+#1 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Connection.php(830): Illuminate\\Database\\Connection->{closure:Illuminate\\Database\\Connection::select():412}('select count(*)...', Array)
+#2 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Connection.php(797): Illuminate\\Database\\Connection->runQueryCallback('select count(*)...', Array, Object(Closure))
+#3 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Connection.php(412): Illuminate\\Database\\Connection->run('select count(*)...', Array, Object(Closure))
+#4 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3573): Illuminate\\Database\\Connection->select('select count(*)...', Array, true, Array)
+#5 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3557): Illuminate\\Database\\Query\\Builder->runSelect()
+#6 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3752): Illuminate\\Database\\Query\\Builder->get()
+#7 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Query/Builder.php(3711): Illuminate\\Database\\Query\\Builder->runPaginationCountQuery(Array)
+#8 /var/www/html/vendor/laravel/framework/src/Illuminate/Database/Eloquent/Builder.php(1126): Illuminate\\Database\\Query\\Builder->getCountForPagination()
+#9 /var/www/html/app/Http/Controllers/Public/ListingController.php(78): Illuminate\\Database\\Eloquent\\Builder->paginate(12)
+#10 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/ControllerDispatcher.php(46): App\\Http\\Controllers\\Public\\ListingController->index(Object(Illuminate\\Http\\Request))
+#11 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(275): Illuminate\\Routing\\ControllerDispatcher->dispatch(Object(Illuminate\\Routing\\Route), Object(App\\Http\\Controllers\\Public\\ListingController), 'index')
+#12 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Route.php(215): Illuminate\\Routing\\Route->runController()
+#13 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(822): Illuminate\\Routing\\Route->run()
+#14 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Routing\\Router->{closure:Illuminate\\Routing\\Router::runRouteWithinStack():821}(Object(Illuminate\\Http\\Request))
+#15 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Middleware/SubstituteBindings.php(52): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}(Object(Illuminate\\Http\\Request))
+#16 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Routing\\Middleware\\SubstituteBindings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#17 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(168): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#18 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(129): Illuminate\\Routing\\Middleware\\ThrottleRequests->handleRequest(Object(Illuminate\\Http\\Request), Object(Closure), Array)
+#19 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Middleware/ThrottleRequests.php(90): Illuminate\\Routing\\Middleware\\ThrottleRequests->handleRequestUsingNamedLimiter(Object(Illuminate\\Http\\Request), Object(Closure), 'api', Object(Closure))
+#20 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Routing\\Middleware\\ThrottleRequests->handle(Object(Illuminate\\Http\\Request), Object(Closure), 'api')
+#21 /var/www/html/app/Http/Middleware/SecureHeadersMiddleware.php(18): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#22 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): App\\Http\\Middleware\\SecureHeadersMiddleware->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#23 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(74): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#24 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#25 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#26 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(821): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#27 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(800): Illuminate\\Routing\\Router->runRouteWithinStack(Object(Illuminate\\Routing\\Route), Object(Illuminate\\Http\\Request))
+#28 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(764): Illuminate\\Routing\\Router->runRoute(Object(Illuminate\\Http\\Request), Object(Illuminate\\Routing\\Route))
+#29 /var/www/html/vendor/laravel/framework/src/Illuminate/Routing/Router.php(753): Illuminate\\Routing\\Router->dispatchToRoute(Object(Illuminate\\Http\\Request))
+#30 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(200): Illuminate\\Routing\\Router->dispatch(Object(Illuminate\\Http\\Request))
+#31 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(180): Illuminate\\Foundation\\Http\\Kernel->{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():197}(Object(Illuminate\\Http\\Request))
+#32 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}(Object(Illuminate\\Http\\Request))
+#33 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/ConvertEmptyStringsToNull.php(31): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#34 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#35 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TransformsRequest.php(21): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#36 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/TrimStrings.php(51): Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#37 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Foundation\\Http\\Middleware\\TrimStrings->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#38 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePostSize.php(27): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#39 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\ValidatePostSize->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#40 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/PreventRequestsDuringMaintenance.php(109): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#41 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#42 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/HandleCors.php(74): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#43 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\HandleCors->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#44 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/TrustProxies.php(58): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#45 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\TrustProxies->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#46 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Middleware/InvokeDeferredCallbacks.php(22): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#47 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#48 /var/www/html/vendor/laravel/framework/src/Illuminate/Http/Middleware/ValidatePathEncoding.php(28): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#49 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(219): Illuminate\\Http\\Middleware\\ValidatePathEncoding->handle(Object(Illuminate\\Http\\Request), Object(Closure))
+#50 /var/www/html/vendor/laravel/framework/src/Illuminate/Pipeline/Pipeline.php(137): Illuminate\\Pipeline\\Pipeline->{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}(Object(Illuminate\\Http\\Request))
+#51 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(175): Illuminate\\Pipeline\\Pipeline->then(Object(Closure))
+#52 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Http/Kernel.php(144): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#53 /var/www/html/vendor/laravel/framework/src/Illuminate/Foundation/Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#54 /var/www/html/public/index.php(23): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
+#55 {main}
+"} 
+[2026-07-18 17:29:51] production.INFO: AuthController::register - start  
+[2026-07-18 17:29:57] production.INFO: AuthController::register - start  
+[2026-07-18 17:29:57] production.INFO: AuthController::register - validation passed  
+[2026-07-18 17:29:57] production.INFO: AuthController::register - user created  
+[2026-07-18 17:29:57] production.INFO: AuthController::register - role attached  
+[2026-07-18 17:29:57] production.INFO: AuthController::register - token created  
+[2026-07-18 17:31:37] production.INFO: AuthController::register - start  
+[2026-07-18 17:31:42] production.INFO: AuthController::register - start  
+[2026-07-18 17:31:42] production.INFO: AuthController::register - validation passed  
+[2026-07-18 17:31:42] production.INFO: AuthController::register - user created  
+[2026-07-18 17:31:42] production.INFO: AuthController::register - role attached  
+[2026-07-18 17:31:42] production.INFO: AuthController::register - token created  
+[2026-07-19 07:08:53] production.WARNING: Auth failure: Invalid credentials attempted for email aryantiwari0725@gmail.com  
+[2026-07-19 07:09:08] production.INFO: AuthController::register - start  
+[2026-07-19 07:09:08] production.INFO: AuthController::register - validation passed  
+[2026-07-19 07:09:09] production.INFO: AuthController::register - user created  
+[2026-07-19 07:09:09] production.INFO: AuthController::register - role attached  
+[2026-07-19 07:09:09] production.INFO: AuthController::register - token created  
+[2026-07-19 08:56:23] production.INFO: AuthController::register - start  
+[2026-07-19 08:56:23] production.INFO: AuthController::register - validation passed  
+[2026-07-19 08:56:23] production.INFO: AuthController::register - user created  
+[2026-07-19 08:56:23] production.INFO: AuthController::register - role attached  
+[2026-07-19 08:56:23] production.INFO: AuthController::register - token created  
+[2026-07-19 12:57:28] production.WARNING: Auth failure: Invalid credentials attempted for email aryantiwari@findmyinterior.com  
+[2026-07-19 12:57:32] production.WARNING: Auth failure: Invalid credentials attempted for email aryantiwari@findmyinterior.com  
+[2026-07-20 08:13:12] production.WARNING: Auth failure: Invalid credentials attempted for email aryantiwari@findmyinterior.com  
+[2026-07-20 11:58:31] production.INFO: AuthController::register - start  
+[2026-07-20 11:58:31] production.INFO: AuthController::register - validation passed  
+[2026-07-20 11:58:31] production.INFO: AuthController::register - user created  
+[2026-07-20 11:58:31] production.INFO: AuthController::register - role attached  
+[2026-07-20 11:58:31] production.INFO: AuthController::register - token created  
+[2026-07-21 15:40:08] production.INFO: AuthController::register - start  
+[2026-07-21 15:40:08] production.INFO: AuthController::register - validation passed  
+[2026-07-21 15:40:08] production.INFO: AuthController::register - user created  
+[2026-07-21 15:40:08] production.INFO: AuthController::register - role attached  
+[2026-07-21 15:40:08] production.INFO: AuthController::register - token created  
+[2026-07-21 15:47:02] production.INFO: AuthController::register - start  
+[2026-07-21 15:47:28] production.INFO: AuthController::register - start  
+[2026-07-21 15:47:28] production.INFO: AuthController::register - validation passed  
+[2026-07-21 15:47:28] production.INFO: AuthController::register - user created  
+[2026-07-21 15:47:28] production.INFO: AuthController::register - role attached  
+[2026-07-21 15:47:28] production.INFO: AuthController::register - token created  
+[2026-07-21 15:47:46] production.INFO: AuthController::register - start  
+[2026-07-21 15:47:46] production.INFO: AuthController::register - validation passed  
+[2026-07-21 15:47:46] production.INFO: AuthController::register - user created  
+[2026-07-21 15:47:46] production.INFO: AuthController::register - role attached  
+[2026-07-21 15:47:46] production.INFO: AuthController::register - token created  
+[2026-07-21 16:09:51] production.INFO: AuthController::register - start  
+[2026-07-21 16:09:51] production.INFO: AuthController::register - validation passed  
+[2026-07-21 16:09:51] production.INFO: AuthController::register - user created  
+[2026-07-21 16:09:51] production.INFO: AuthController::register - role attached  
+[2026-07-21 16:09:51] production.INFO: AuthController::register - token created  
+[2026-07-21 19:07:31] production.INFO: AuthController::register - start  
+[2026-07-21 19:07:31] production.INFO: AuthController::register - validation passed  
+[2026-07-21 19:07:31] production.INFO: AuthController::register - user created  
+[2026-07-21 19:07:31] production.INFO: AuthController::register - role attached  
+[2026-07-21 19:07:31] production.INFO: AuthController::register - token created  
+
+==================================================
+CMD: docker exec fmi_backend php artisan migrate:status
+==================================================
+
+  Migration name .............................................. Batch / Status  
+  0001_01_01_000001_create_cache_table ............................... [1] Ran  
+  0001_01_01_000002_create_jobs_table ................................ [1] Ran  
+  2026_01_01_000001_create_users_table ............................... [1] Ran  
+  2026_01_01_000002_create_districts_table ........................... [1] Ran  
+  2026_01_01_000003_create_cities_table .............................. [1] Ran  
+  2026_01_01_000004_create_categories_table .......................... [1] Ran  
+  2026_01_01_000005_create_listings_table ............................ [1] Ran  
+  2026_01_01_000006_create_listing_galleries_table ................... [1] Ran  
+  2026_01_01_000007_create_requirements_table ........................ [1] Ran  
+  2026_01_01_000008_create_requirement_images_table .................. [1] Ran  
+  2026_01_01_000009_create_builders_table ............................ [1] Ran  
+  2026_01_01_000010_create_builder_projects_table .................... [1] Ran  
+  2026_01_01_000011_create_builder_project_images_table .............. [1] Ran  
+  2026_01_01_000012_create_suppliers_table ........................... [1] Ran  
+  2026_01_01_000013_create_supplier_products_table ................... [1] Ran  
+  2026_01_01_000014_create_supplier_product_images_table ............. [1] Ran  
+  2026_01_01_000015_create_workers_table ............................. [1] Ran  
+  2026_01_01_000016_create_reviews_table ............................. [1] Ran  
+  2026_01_01_000017_create_inquiries_table ........................... [1] Ran  
+  2026_01_01_000018_create_blogs_table ............................... [1] Ran  
+  2026_01_01_000019_create_blog_tags_table ........................... [1] Ran  
+  2026_01_01_000020_create_payments_table ............................ [1] Ran  
+  2026_01_01_000021_create_subscription_plans_table .................. [1] Ran  
+  2026_01_01_000022_create_user_subscriptions_table .................. [1] Ran  
+  2026_01_01_000023_create_contact_unlocks_table ..................... [1] Ran  
+  2026_01_01_000024_create_seo_pages_table ........................... [1] Ran  
+  2026_01_01_000025_add_fulltext_indexes ............................. [1] Ran  
+  2026_01_01_000030_alter_columns_to_longtext ........................ [3] Ran  
+  2026_06_12_174304_create_bids_table ................................ [1] Ran  
+  2026_06_12_181240_create_roles_table ............................... [1] Ran  
+  2026_06_12_181240_create_user_roles_table .......................... [1] Ran  
+  2026_06_12_181240_create_wallets_table ............................. [1] Ran  
+  2026_06_12_181241_create_wallet_transactions_table ................. [1] Ran  
+  2026_06_12_181242_create_advertisements_table ...................... [1] Ran  
+  2026_06_12_181242_create_vendor_metrics_table ...................... [1] Ran  
+  2026_06_12_181244_create_labour_requirements_table ................. [1] Ran  
+  2026_06_12_181244_z_create_labour_applications_table ............... [1] Ran  
+  2026_06_12_181245_create_tenders_table ............................. [1] Ran  
+  2026_06_12_181245_z_create_tender_quotes_table ..................... [1] Ran  
+  2026_06_12_181246_create_activity_timelines_table .................. [1] Ran  
+  2026_06_12_181246_create_saved_projects_table ...................... [1] Ran  
+  2026_06_12_181246_create_saved_vendors_table ....................... [1] Ran  
+  2026_06_12_183250_create_personal_access_tokens_table .............. [1] Ran  
+  2026_06_12_190918_create_conversations_table ....................... [1] Ran  
+  2026_06_12_190918_create_messages_table ............................ [1] Ran  
+  2026_06_12_190919_create_message_attachments_table ................. [1] Ran  
+  2026_06_12_194801_create_requirement_recommendations_table ......... [1] Ran  
+  2026_06_12_194820_add_notification_limit_to_users_table ............ [1] Ran  
+  2026_06_12_200111_add_is_verified_and_fix_listings_and_bids_status . [1] Ran  
+  2026_06_13_000000_add_funnel_fields_to_metrics_and_recommendations . [1] Ran  
+  2026_06_13_051315_add_is_verified_to_entities_tables ............... [1] Ran  
+  2026_06_19_114527_add_business_fields_to_listings_table ............ [1] Ran  
+  2026_06_19_135620_create_notifications_table ....................... [1] Ran  
+  2026_06_20_050915_update_roles_for_ecosystem ....................... [1] Ran  
+  2026_06_20_070751_update_requirements_for_ecosystem ................ [1] Ran  
+  2026_06_20_073322_update_status_enums_for_bids_and_opportunities ... [1] Ran  
+  2026_06_20_073728_update_bids_table_with_advanced_fields ........... [1] Ran  
+  2026_06_20_073737_create_projects_table ............................ [1] Ran  
+  2026_06_20_073746_create_activity_logs_table ....................... [1] Ran  
+  2026_06_20_074728_update_conversations_for_projects ................ [1] Ran  
+  2026_06_20_074748_update_reviews_for_projects ...................... [1] Ran  
+  2026_06_20_134734_update_users_table_for_primary_role .............. [1] Ran  
+  2026_06_20_135124_create_opportunity_types_table ................... [1] Ran  
+  2026_06_20_135323_rename_requirements_to_projects .................. [1] Ran  
+  2026_06_20_135346_create_rfqs_table ................................ [1] Ran  
+  2026_06_20_135347_create_worker_jobs_table ......................... [1] Ran  
+  2026_06_20_141418_create_shortlists_table .......................... [1] Ran  
+  2026_06_22_052657_add_budget_tier_to_listings_table ................ [1] Ran  
+  2026_06_22_053024_add_click_metrics_to_listings_table .............. [1] Ran  
+  2026_06_24_023541_create_user_documents_table ...................... [1] Ran  
+  2026_06_24_023544_add_trust_fields_to_users_table .................. [1] Ran  
+  2026_06_24_055950_update_admin_credentials_to_aryan ................ [1] Ran  
+  2026_06_25_094106_add_is_mock_to_users_table ....................... [1] Ran  
+  2026_06_27_142943_add_extra_profile_fields_to_vendors_tables ....... [1] Ran  
+  2026_06_27_143942_add_extra_profile_fields_to_vendors_tables ....... [1] Ran  
+  2026_06_27_150130_make_bids_polymorphic ............................ [1] Ran  
+  2026_06_27_203102_add_requirement_type_to_bids_table ............... [1] Ran  
+  2026_06_27_203522_make_contact_unlocks_polymorphic ................. [1] Ran  
+  2026_06_27_203523_make_requirement_recommendations_polymorphic ..... [1] Ran  
+  2026_06_28_032813_add_common_fields_to_rfqs_and_worker_jobs_table .. [1] Ran  
+  2026_06_28_040100_make_saved_projects_polymorphic .................. [1] Ran  
+  2026_06_30_085402_add_missing_columns_to_opportunity_tables ........ [1] Ran  
+  2026_06_30_095003_add_image_to_opportunity_tables .................. [1] Ran  
+  2026_07_01_161023_create_sessions_table ............................ [1] Ran  
+  2026_07_02_000001_add_image_to_projects_table ...................... [1] Ran  
+  2026_07_02_000002_fix_requirement_images_foreign_key ............... [1] Ran  
+  2026_07_02_000003_change_avatar_to_text_in_users_table ............. [1] Ran  
+  2026_07_02_000004_add_image_columns_to_rfqs_and_worker_jobs ........ [1] Ran  
+  2026_07_02_052631_add_unlock_price_to_requirements_tables .......... [1] Ran  
+  2026_07_02_065300_add_views_count_to_opportunity_tables ............ [1] Ran  
+  2026_07_02_083217_add_unlock_price_to_projects_table ............... [1] Ran  
+  2026_07_02_164935_create_project_milestones_table .................. [1] Ran  
+  2026_07_02_170639_add_payment_status_to_requirements_tables ........ [1] Ran  
+  2026_07_03_110004_fix_polymorphic_unique_constraints ............... [2] Ran  
+  2026_07_04_021223_create_locations_table ........................... [2] Ran  
+  2026_07_04_021224_create_settings_table ............................ [2] Ran  
+  2026_07_04_133021_create_contact_messages_table .................... [2] Ran  
+
+
+==================================================
+CMD: docker exec fmi_backend php artisan tinker --execute="DB::select('SELECT 1');"
+==================================================
+
+==================================================
+CMD: free -h
+==================================================
+               total        used        free      shared  buff/cache   available
+Mem:           7.7Gi       1.4Gi       917Mi        25Mi       5.8Gi       6.4Gi
+Swap:             0B          0B          0B
+
+==================================================
+CMD: dmesg -T | grep -Ei 'oom|killed process'
+==================================================
+
+==================================================
+CMD: systemctl status nginx
+==================================================
+
+STDERR:
+Unit nginx.service could not be found.
+
+==================================================
+CMD: systemctl status php8.4-fpm
+==================================================
+
+STDERR:
+Unit php8.4-fpm.service could not be found.
+
+==================================================
+CMD: systemctl status php8.3-fpm
+==================================================
+
+STDERR:
+Unit php8.3-fpm.service could not be found.
+
+==================================================
+CMD: systemctl status php8.2-fpm
+==================================================
+
+STDERR:
+Unit php8.2-fpm.service could not be found.
+
+==================================================
+CMD: tail -200 /var/log/nginx/error.log
+==================================================
+
+STDERR:
+tail: cannot open '/var/log/nginx/error.log' for reading: No such file or directory
+
+==================================================
+CMD: tail -200 /var/log/php8.4-fpm.log
+==================================================
+
+STDERR:
+tail: cannot open '/var/log/php8.4-fpm.log' for reading: No such file or directory
+
+==================================================
+CMD: tail -200 storage/logs/laravel.log
+==================================================
+
+STDERR:
+tail: cannot open 'storage/logs/laravel.log' for reading: No such file or directory

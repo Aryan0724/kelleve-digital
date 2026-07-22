@@ -1,0 +1,10 @@
+import paramiko
+client = paramiko.SSHClient()
+client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+client.connect('187.127.164.142', username='root', password='Truedial@1111')
+stdin, stdout, stderr = client.exec_command('docker inspect fmi_nginx | grep -i working_dir')
+print(stdout.read().decode('utf-8'))
+stdin, stdout, stderr = client.exec_command('docker inspect fmi_nginx | grep -i compose')
+print(stdout.read().decode('utf-8'))
+stdin, stdout, stderr = client.exec_command('docker inspect fmi_nginx | grep -A 10 Binds')
+print(stdout.read().decode('utf-8'))

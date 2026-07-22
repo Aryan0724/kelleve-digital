@@ -90,4 +90,41 @@ class BusinessController extends Controller
 
         return $this->success($business, 'Business updated successfully');
     }
+
+    public function updateProducts(Request $request)
+    {
+        $business = Listing::forCurrentTenant()
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'products' => 'present|array',
+            'products.*.name' => 'required|string|max:255',
+            'products.*.description' => 'nullable|string',
+            'products.*.price' => 'nullable|numeric',
+            'products.*.image' => 'nullable|string',
+        ]);
+
+        $business->update(['products' => $validated['products']]);
+
+        return $this->success($business, 'Products updated successfully');
+    }
+
+    public function updateServices(Request $request)
+    {
+        $business = Listing::forCurrentTenant()
+            ->where('user_id', Auth::id())
+            ->firstOrFail();
+
+        $validated = $request->validate([
+            'services' => 'present|array',
+            'services.*.name' => 'required|string|max:255',
+            'services.*.description' => 'nullable|string',
+            'services.*.price' => 'nullable|numeric',
+        ]);
+
+        $business->update(['services' => $validated['services']]);
+
+        return $this->success($business, 'Services updated successfully');
+    }
 }

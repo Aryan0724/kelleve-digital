@@ -1,0 +1,507 @@
+# TRUEDIAL PLATFORM IMPLEMENTATION BIBLE
+Version: 1.0
+
+Status: Master Development Specification
+
+Project Type:
+Enterprise Multi-Tenant Business Growth Platform
+
+Platform Owner:
+TRUEDIAL Pvt. Ltd.
+
+Technology Stack
+
+Frontend
+- React.js (Website)
+- Flutter (Android)
+- Flutter (iOS)
+
+Backend
+- Laravel
+
+Database
+- PostgreSQL
+
+Cache
+- Redis
+
+Storage
+- S3 Compatible Storage
+
+Maps
+- Google Maps
+
+Authentication
+- OTP
+- Google Login
+- Apple Login
+
+Payments
+- Razorpay
+
+Communication
+- WhatsApp Business API
+- SMS Gateway
+- SMTP
+- Firebase Push Notifications
+
+AI
+- OpenRouter
+- Gemini
+- OpenAI
+- Anthropic
+
+----------------------------------------------------------------------
+
+# 1. PROJECT VISION
+
+TRUEDIAL is NOT a Business Listing Website.
+
+TRUEDIAL is NOT another JustDial.
+
+TRUEDIAL is NOT another IndiaMart.
+
+TRUEDIAL is a Business Growth Operating System.
+
+The platform exists to help businesses:
+
+• Get Discovered
+• Acquire Customers
+• Manage Customers
+• Market Automatically
+• Sell Services
+• Increase Revenue
+• Build Trust
+• Use AI
+• Learn Business
+• Hire Employees
+• Build Brand
+
+Everything inside TRUEDIAL should contribute toward business growth.
+
+----------------------------------------------------------------------
+
+# 2. PLATFORM PHILOSOPHY
+
+The company will own multiple products.
+
+Example
+
+Find My Interior
+
+TRUEDIAL
+
+Future Marketplace
+
+Healthcare Marketplace
+
+Education Marketplace
+
+Legal Marketplace
+
+Tourism Marketplace
+
+All products MUST operate from ONE platform.
+
+There will NEVER be independent codebases.
+
+There will NEVER be separate authentication systems.
+
+There will NEVER be duplicate notification systems.
+
+There will NEVER be duplicate payment systems.
+
+The platform must be modular.
+
+Products become tenants.
+
+----------------------------------------------------------------------
+
+# 3. MULTI TENANT ARCHITECTURE
+
+The entire ecosystem must follow Domain Based Multi-Tenancy.
+
+Example
+
+findmyinterior.com
+
+↓
+
+Tenant Resolver
+
+↓
+
+Tenant = FindMyInterior
+
+↓
+
+Load
+
+Brand
+Theme
+Modules
+Permissions
+Routes
+Configuration
+
+--------------------------------------------
+
+truedial.in
+
+↓
+
+Tenant Resolver
+
+↓
+
+Tenant = TrueDial
+
+↓
+
+Load
+
+Brand
+Theme
+Modules
+Permissions
+Configuration
+
+--------------------------------------------
+
+futuremarketplace.com
+
+↓
+
+Tenant Resolver
+
+↓
+
+Tenant = FutureMarketplace
+
+--------------------------------------------
+
+Every request MUST pass through Tenant Middleware.
+
+The middleware MUST determine
+
+Current Tenant
+
+Current Brand
+
+Enabled Modules
+
+Theme
+
+Subscription
+
+Permissions
+
+Storage Location
+
+Feature Flags
+
+No request may bypass tenant resolution.
+
+----------------------------------------------------------------------
+
+# 4. CORE PLATFORM
+
+The platform consists of TWO layers.
+
+Layer 1
+
+Shared Platform
+
+Layer 2
+
+Tenant Modules
+
+Everything reusable belongs inside Shared Platform.
+
+Everything business specific belongs inside Tenant Modules.
+
+----------------------------------------------------------------------
+
+# 5. SHARED PLATFORM SERVICES
+
+These services MUST NEVER be duplicated.
+
+Authentication
+
+Authorization
+
+User Profiles
+
+Roles
+
+Permissions
+
+Wallet
+
+Payments
+
+Reviews
+
+Media Library
+
+File Uploads
+
+Notification Engine
+
+Email Engine
+
+SMS Engine
+
+WhatsApp Engine
+
+Push Notifications
+
+Search Engine
+
+Analytics
+
+AI Gateway
+
+CRM Core
+
+Audit Logs
+
+Settings
+
+Feature Flags
+
+Activity Timeline
+
+Queue System
+
+Scheduler
+
+API Authentication
+
+Rate Limiter
+
+Logging
+
+Monitoring
+
+Caching
+
+Storage
+
+All tenants reuse these services.
+
+----------------------------------------------------------------------
+
+# 6. TENANT MODULES
+
+Products become modules.
+
+Example
+
+Tenant
+
+Find My Interior
+
+Modules
+
+Requirements
+
+Contractors
+
+Workers
+
+Suppliers
+
+Projects
+
+Bids
+
+Marketplace
+
+-----------------------------------------
+
+Tenant
+
+TRUEDIAL
+
+Modules
+
+Business Directory
+
+Privilege Cards
+
+Discount Engine
+
+CRM
+
+Marketing
+
+SMS Campaign
+
+WhatsApp Campaign
+
+Email Campaign
+
+Push Notifications
+
+Academy
+
+Internships
+
+Jobs
+
+Podcast
+
+TD News
+
+Business Consulting
+
+AI Business Center
+
+Vendor Dashboard
+
+Customer App
+
+Admin Dashboard
+
+Each tenant decides which modules are enabled.
+
+No module may assume it is globally available.
+
+----------------------------------------------------------------------
+
+# 7. DATABASE STRATEGY
+
+One PostgreSQL Database.
+
+Never create separate databases for products unless legally required.
+
+Every tenant-aware table MUST contain:
+
+tenant_id
+
+Example
+
+Businesses
+
+Offers
+
+Campaigns
+
+Coupons
+
+Academy
+
+Podcasts
+
+News
+
+Jobs
+
+Internships
+
+Consulting
+
+Subscriptions
+
+Invoices
+
+Wallet Transactions
+
+Messages
+
+Leads
+
+CRM
+
+All tenant scoped.
+
+Global tables
+
+Users
+
+Roles
+
+Permissions
+
+Countries
+
+States
+
+Cities
+
+Languages
+
+Currencies
+
+Media Types
+
+Notification Templates
+
+Prompt Library
+
+AI Models
+
+Global Configuration
+
+These remain shared.
+
+----------------------------------------------------------------------
+
+# 8. DOMAIN MANAGEMENT
+
+Each tenant owns its own domain.
+
+Examples
+
+findmyinterior.com
+
+truedial.in
+
+futuremarketplace.com
+
+Each domain points to the SAME Laravel Backend.
+
+Nginx routes incoming traffic.
+
+Tenant Resolver loads corresponding tenant.
+
+No duplicate deployments.
+
+One deployment.
+
+Many domains.
+
+----------------------------------------------------------------------
+
+# 9. AUTHENTICATION
+
+Only ONE authentication service exists.
+
+Users register once.
+
+Users may log into every tenant.
+
+Authentication methods
+
+OTP
+
+Email
+
+Google
+
+Apple
+
+Future
+
+Passkeys
+
+OAuth
+
+JWT
+
+Session
+
+SSO Ready
+
+No tenant may maintain independent user credentials.

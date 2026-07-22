@@ -1,0 +1,50 @@
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 101ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 102ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 92ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 100ms
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.5:3000
+✓ Ready in 118ms
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
+Error: Could not find a production build in the '.next' directory. Try building your app with 'next build' before starting the production server. https://nextjs.org/docs/messages/production-start-no-build-id
+    at ignore-listed frames
