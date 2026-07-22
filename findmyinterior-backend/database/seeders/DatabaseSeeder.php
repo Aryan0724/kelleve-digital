@@ -28,6 +28,8 @@ class DatabaseSeeder extends Seeder
             BlogSeeder::class,
             SeoPageSeeder::class,
             MockUserSeeder::class,   // 95 realistic mock professional accounts
+            FindMyInteriorSeeder::class, // FMI test users
+            TruedialSeeder::class,       // Truedial test users
         ]);
     }
 }

@@ -6,7 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class SavedVendor extends Model
 {
-    protected $fillable = ['user_id', 'vendor_id'];
+    use \App\Traits\TenantAwareTrait;
+
+    protected $fillable = ['tenant_id', 'user_id', 'vendor_id'];
 
     public function user()
     {

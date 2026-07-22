@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class PrivilegeCard extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\TenantAwareTrait;
 
     protected $fillable = [
+        'tenant_id',
         'user_id',
         'card_number',
         'status',

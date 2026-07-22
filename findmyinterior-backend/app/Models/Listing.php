@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Listing extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory, SoftDeletes, \App\Traits\TenantAwareTrait;
 
     protected $fillable = [
         'user_id', 'category_id', 'city_id', 'district_id',
@@ -22,7 +22,7 @@ class Listing extends Model
         'gst_number', 'pan_number', 'budget_tier',
         'phone_clicks', 'whatsapp_clicks', 'website_clicks',
         'services', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
-        'platform',
+        'tenant_id',
     ];
 
     protected $casts = [
@@ -72,6 +72,11 @@ class Listing extends Model
     public function inquiries(): MorphMany
     {
         return $this->morphMany(Inquiry::class, 'inquirable');
+    }
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
     }
 
     // ─── Scopes ───────────────────────────────────────────────────────────────

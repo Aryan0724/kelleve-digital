@@ -12,7 +12,7 @@ use App\Services\RecommendationEngineService;
 
 class GenerateRequirementRecommendations implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, \App\Traits\TenantAwareJob;
 
     protected $requirement;
 

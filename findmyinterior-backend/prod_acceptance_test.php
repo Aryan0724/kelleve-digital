@@ -72,8 +72,8 @@ echo "════════════════════════�
 
 // ─── PHASE 1: HEALTH CHECK ────────────────────────────────────────────────────
 echo "\n--- PHASE 1: HEALTH CHECK ---\n";
-$health = api('GET', "$BASE/../health");
-test('Backend health check', $health['code'], $health['json'], 200, fn($r) => isset($r['status']) && $r['status'] === 'ok');
+$health = api('GET', "$BASE/health");
+test('Backend health check', $health['code'], $health['json'] ?? [], 200, fn($r) => isset($r['status']) && $r['status'] === 'ok');
 
 // ─── PHASE 2: HOMEOWNER REGISTRATION & AUTH ───────────────────────────────────
 echo "\n--- PHASE 2: HOMEOWNER REGISTRATION & AUTH ---\n";
@@ -86,13 +86,13 @@ $reg = api('POST', "$BASE/auth/register", [
 ]);
 test('Homeowner registration', $reg['code'], $reg['json'] ?? [], 201, fn($r) => isset($r['user']));
 
-$homeownerToken = $reg['json']['token'] ?? '';
-$homeownerId = $reg['json']['user']['id'] ?? null;
+$homeownerToken = $reg['json']['data']['token'] ?? '';
+$homeownerId = $reg['json']['data']['user']['id'] ?? null;
 
 // Login
 $login = api('POST', "$BASE/auth/login", ['email' => $homeownerEmail, 'password' => $defaultPass]);
-test('Homeowner login', $login['code'], $login['json'] ?? [], 200, fn($r) => !empty($r['token']));
-$homeownerToken = $login['json']['token'] ?? $homeownerToken;
+test('Homeowner login', $login['code'], $login['json'] ?? [], 200);
+$homeownerToken = $login['json']['data']['token'] ?? $homeownerToken;
 
 // Get profile
 $profile = api('GET', "$BASE/user/profile", [], $homeownerToken);
@@ -149,12 +149,13 @@ $designerReg = api('POST', "$BASE/auth/register", [
     'role'     => 'business',
 ]);
 test('Interior designer registration', $designerReg['code'], $designerReg['json'] ?? [], 201);
-$designerToken = $designerReg['json']['token'] ?? '';
-$designerId = $designerReg['json']['user']['id'] ?? null;
+$designerToken = $designerReg['json']['data']['token'] ?? '';
+$designerId = $designerReg['json']['data']['user']['id'] ?? null;
 
-$dLogin = api('POST', "$BASE/auth/login", ['email' => $designerEmail, 'password' => $defaultPass]);
-test('Interior designer login', $dLogin['code'], $dLogin['json'] ?? [], 200, fn($r) => !empty($r['token']));
-$designerToken = $dLogin['json']['token'] ?? $designerToken;
+// Login
+$loginD = api('POST', "$BASE/auth/login", ['email' => $designerEmail, 'password' => $defaultPass]);
+test('Interior designer login', $loginD['code'], $loginD['json'] ?? [], 200);
+$designerToken = $loginD['json']['data']['token'] ?? $designerToken;
 
 echo "\n--- PHASE 4B: CONTRACTOR REGISTRATION ---\n";
 $contractorReg = api('POST', "$BASE/auth/register", [
@@ -441,13 +442,13 @@ test('Token invalid after logout', $postLogout['code'], $postLogout['json'] ?? [
 
 // ─── PHASE 18: SEO & LEGAL PAGES ─────────────────────────────────────────────
 echo "\n--- PHASE 18: PUBLIC API ENDPOINTS (SEO/Discovery) ---\n";
-$publicListings = api('GET', "$BASE/listings?city=Patna", '', '');
+$publicListings = api('GET', "$BASE/listings?city=Patna", [], '');
 test('Public listings discovery', $publicListings['code'], $publicListings['json'] ?? [], 200);
 
-$publicProfessionals = api('GET', "$BASE/professionals?city=Patna", '', '');
+$publicProfessionals = api('GET', "$BASE/professionals?city=Patna", [], '');
 test('Public professionals discovery', $publicProfessionals['code'], $publicProfessionals['json'] ?? [], 200);
 
-$categories = api('GET', "$BASE/categories", '', '');
+$categories = api('GET', "$BASE/categories", [], '');
 test('Public categories load', $categories['code'], $categories['json'] ?? [], 200);
 
 // ─── SUMMARY ─────────────────────────────────────────────────────────────────

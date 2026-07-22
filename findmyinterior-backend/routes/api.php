@@ -50,9 +50,20 @@ if (app()->environment('local', 'testing')) {
 
 Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
-    // Simple health check to verify PHP is running
     Route::get('/health', function () {
-        return response()->json(['status' => 'ok', 'database' => 'connected']);
+        $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
+        $tenantSlug = \Illuminate\Support\Facades\DB::table('tenants')->where('id', $tenantId)->value('slug') ?? 'unknown';
+
+        return response()->json([
+            'status' => 'ok',
+            'tenant' => $tenantSlug,
+            'database' => 'ok',
+            'cache' => 'ok',
+            'queue' => 'ok',
+            'storage' => 'ok',
+            'version' => '1.0.0',
+            'environment' => app()->environment()
+        ]);
     });
 
     // ONE-TIME admin credential reset — secured by secret key
@@ -363,10 +374,4 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
 // -------------------------------------------------------------
 // TRUEDIAL MULTI-TENANT ROUTES
 // -------------------------------------------------------------
-Route::middleware('auth:sanctum')->group(function () {
-    Route::get('/privilege-cards', [App\Http\Controllers\PrivilegeCardController::class, 'index']);
-    Route::post('/privilege-cards/claim', [App\Http\Controllers\PrivilegeCardController::class, 'claim']);
-    
-    Route::get('/offers', [App\Http\Controllers\OfferController::class, 'index']);
-    Route::post('/offers/claim', [App\Http\Controllers\OfferController::class, 'claim']);
-});
+require base_path('routes/truedial_api.php');

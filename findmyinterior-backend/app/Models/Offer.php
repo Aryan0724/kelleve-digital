@@ -7,9 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 
 class Offer extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\TenantAwareTrait;
 
     protected $fillable = [
+        'tenant_id',
         'listing_id',
         'title',
         'description',

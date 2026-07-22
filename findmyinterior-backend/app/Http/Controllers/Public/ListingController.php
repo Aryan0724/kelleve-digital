@@ -16,7 +16,7 @@ class ListingController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Listing::active()
+        $query = Listing::forCurrentTenant()->active()
             ->with(['category', 'user'])
             ->withCount(['approvedReviews as review_count']);
 
@@ -94,7 +94,7 @@ class ListingController extends Controller
      */
     public function show(Request $request, string $slug): JsonResponse
     {
-        $query = Listing::active()
+        $query = Listing::forCurrentTenant()->active()
             ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user']);
 
         if (is_numeric($slug)) {
@@ -198,7 +198,7 @@ class ListingController extends Controller
             'type' => ['required', 'in:phone,whatsapp,website']
         ]);
 
-        $listing = Listing::findOrFail($id);
+        $listing = Listing::forCurrentTenant()->findOrFail($id);
         $field = $data['type'] . '_clicks';
         $listing->increment($field);
 

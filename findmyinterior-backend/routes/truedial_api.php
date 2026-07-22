@@ -1,0 +1,29 @@
+<?php
+
+use Illuminate\Support\Facades\Route;
+
+// Truedial specific routes
+Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
+    
+    // Public business search
+    Route::get('/public/businesses', [\App\Modules\Truedial\Controllers\Public\BusinessDirectoryController::class, 'index']);
+    Route::get('/public/businesses/{slug}', [\App\Modules\Truedial\Controllers\Public\BusinessDirectoryController::class, 'show']);
+    
+    // Offers
+    Route::get('/public/offers', [\App\Modules\Truedial\Controllers\OfferController::class, 'index']);
+    Route::get('/public/offers/{id}', [\App\Modules\Truedial\Controllers\OfferController::class, 'show']);
+    
+    // Auth protected vendor routes
+    Route::prefix('vendor')->middleware(['auth:sanctum'])->group(function () {
+        Route::get('/my-business', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'myBusiness']);
+        Route::post('/businesses', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'store']);
+        Route::put('/businesses/{id}', [\App\Modules\Truedial\Controllers\Vendor\BusinessController::class, 'update']);
+        
+        // Privilege Cards
+        Route::post('/privilege-cards/generate', [\App\Modules\Truedial\Controllers\PrivilegeCardController::class, 'generate']);
+        Route::get('/privilege-cards/my-cards', [\App\Modules\Truedial\Controllers\PrivilegeCardController::class, 'myCards']);
+        
+        // Offers management
+        Route::post('/offers', [\App\Modules\Truedial\Controllers\OfferController::class, 'store']);
+    });
+});

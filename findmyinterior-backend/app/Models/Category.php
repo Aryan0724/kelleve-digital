@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 class Category extends Model
 {
-    use HasFactory;
+    use HasFactory, \App\Traits\TenantAwareTrait;
 
     protected $fillable = [
         'name',
@@ -19,7 +19,7 @@ class Category extends Model
         'parent_id',
         'sort_order',
         'is_active',
-        'platform',
+        'tenant_id',
     ];
 
     protected $casts = [
@@ -45,6 +45,11 @@ class Category extends Model
     public function requirements(): HasMany
     {
         return $this->hasMany(Requirement::class);
+    }
+
+    public function tenant(): BelongsTo
+    {
+        return $this->belongsTo(Tenant::class);
     }
 
     // ─── Scopes ───────────────────────────────────────────────────────────────

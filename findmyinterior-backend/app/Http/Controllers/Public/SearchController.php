@@ -36,7 +36,8 @@ class SearchController extends Controller
 
         if (in_array($type, ['all', 'listings'])) {
             $results['listings'] = ListingResource::collection(
-                Listing::active()
+                Listing::forCurrentTenant()
+                    ->active()
                     ->search($term)
                     ->with(['category'])
                     ->orderByDesc('is_verified')

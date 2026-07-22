@@ -32,6 +32,9 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 # Configure Nginx
 COPY docker/nginx.conf /etc/nginx/http.d/default.conf
 
+# Configure PHP-FPM
+COPY docker/www.conf /usr/local/etc/php-fpm.d/www.conf
+
 # Configure Supervisord to run both Nginx and PHP-FPM
 COPY docker/supervisord.conf /etc/supervisord.conf
 
