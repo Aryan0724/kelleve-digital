@@ -24,7 +24,8 @@ class MediaControllerTest extends TestCase
     public function test_vendor_can_upload_media_to_listing()
     {
         $tenant = Tenant::factory()->create();
-        $user = User::factory()->create(['tenant_id' => $tenant->id]);
+        $user = User::factory()->create();
+        $user->tenants()->attach($tenant->id, ['role_id' => null, 'status' => 'active']);
         $listing = Listing::factory()->create(['tenant_id' => $tenant->id, 'user_id' => $user->id]);
 
         $file = UploadedFile::fake()->image('test.jpg');

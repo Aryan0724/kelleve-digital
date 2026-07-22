@@ -36,6 +36,8 @@ return new class extends Migration
             
             // Drop platform column
             Schema::table('categories', function (Blueprint $table) {
+                // Drop index if using SQLite compatibility (Laravel handles it safely mostly, but we drop index first)
+                $table->dropIndex(['platform']);
                 $table->dropColumn('platform');
             });
         } else {
@@ -47,6 +49,7 @@ return new class extends Migration
             DB::statement("UPDATE listings SET tenant_id = 2 WHERE platform = 'truedial'");
             
             Schema::table('listings', function (Blueprint $table) {
+                $table->dropIndex(['platform']);
                 $table->dropColumn('platform');
             });
         } else {

@@ -21,6 +21,7 @@ return new class extends Migration
             ->update(['status' => 'approved']);
 
         Schema::table('reviews', function (Blueprint $table) {
+            $table->dropIndex(['is_approved']);
             $table->dropColumn('is_approved');
             
             // Depending on DB driver, sqlite might not support dropping foreign keys cleanly inline

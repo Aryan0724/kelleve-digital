@@ -40,12 +40,20 @@ class SqlSearchProvider implements SearchProviderInterface
             $query->where('avg_rating', '>=', (float) $filters['min_rating']);
         }
 
+        if (!empty($filters['offers'])) {
+            $query->whereHas('offers', function($q) {
+                $q->where('status', 'active')
+                  ->where(function($sub) {
+                      $sub->whereNull('valid_until')->orWhere('valid_until', '>', now());
+                  });
+            });
+        }
+
         // Distance / Haversine (if lat/lng provided)
         $hasLocation = !empty($filters['lat']) && !empty($filters['lng']);
         
         // Define ranking score
-        // Score = (40 × Premium) + (20 × Featured) + (15 × Verified) + (10 × Rating) + (8 × Review Count) + (5 × Completeness) + (2 × Recency)
-        // Note: Completeness could be mocked if not available, Recency by id or created_at
+        // Score = (40 × Premium) + (20 × Featured) + (15 × Verified) + (10 × Rating) + (8 × Review Count) + (5 × Has Active Offer) + (2 × Completeness)
         // In SQLite testing, boolean might be 0/1, in MySQL it's tinyint.
         
         $scoreRaw = "
@@ -53,7 +61,8 @@ class SqlSearchProvider implements SearchProviderInterface
             (IFNULL(is_featured, 0) * 20) +
             (IFNULL(is_verified, 0) * 15) +
             (IFNULL(avg_rating, 0) * 10) +
-            (IFNULL(review_count, 0) * 8)
+            (IFNULL(review_count, 0) * 8) +
+            ((SELECT COUNT(*) FROM offers WHERE offers.listing_id = listings.id AND offers.status = 'active' AND (offers.valid_until IS NULL OR offers.valid_until > CURRENT_TIMESTAMP)) > 0) * 5
         ";
         
         // We add this score as a selected column

@@ -53,9 +53,20 @@ class MediaController extends Controller
             return $this->error('Invalid model type', 400);
         }
         
-        $model = $allowedModels[$modelClass]::where('tenant_id', $tenantId)->find($request->input('model_id'));
+        $model = $allowedModels[$modelClass]::where('tenant_id', $tenantId);
+        
+        $userId = auth()->id();
+        if ($modelClass === 'listing') {
+            $model = $model->where('user_id', $userId);
+        } else {
+            $model = $model->whereHas('listing', function($q) use ($userId) {
+                $q->where('user_id', $userId);
+            });
+        }
+        
+        $model = $model->find($request->input('model_id'));
         if (!$model) {
-            return $this->error('Model not found', 404);
+            return $this->error('Model not found or access denied', 404);
         }
 
         $uploadedMedia = [];

@@ -22,8 +22,8 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
     });
     
     // Offers
-    Route::get('/public/offers', [OfferController::class, 'index']);
-    Route::get('/public/offers/{id}', [OfferController::class, 'show']);
+    Route::get('/public/offers', [\App\Modules\Truedial\Controllers\Public\OfferController::class, 'index']);
+    Route::get('/public/businesses/{slug}/offers', [\App\Modules\Truedial\Controllers\Public\OfferController::class, 'businessOffers']);
     
     // Auth protected vendor routes
     Route::prefix('vendor')->middleware(['auth:sanctum'])->group(function () {
@@ -49,7 +49,9 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::post('/reviews/{id}/report', [\App\Modules\Truedial\Controllers\Vendor\ReviewManagementController::class, 'report']);
         
         // Offers management
-        Route::post('/offers', [\App\Modules\Truedial\Controllers\OfferController::class, 'store']);
+        Route::get('/offers', [\App\Modules\Truedial\Controllers\Vendor\OfferManagementController::class, 'index']);
+        Route::post('/offers', [\App\Modules\Truedial\Controllers\Vendor\OfferManagementController::class, 'store']);
+        Route::put('/offers/{id}', [\App\Modules\Truedial\Controllers\Vendor\OfferManagementController::class, 'update']);
     });
     
     // Auth protected user routes

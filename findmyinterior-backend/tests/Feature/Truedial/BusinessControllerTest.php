@@ -24,7 +24,7 @@ class BusinessControllerTest extends TestCase
     {
         parent::setUp();
 
-        $this->tenant = Tenant::factory()->create(['name' => 'Truedial', 'slug' => 'truedial']);
+        $this->tenant = Tenant::firstOrCreate(['slug' => 'truedial'], ['name' => 'Truedial', 'domain' => 'truedial.test']);
         $this->user = User::factory()->create();
         
         $category = Category::factory()->create(['tenant_id' => $this->tenant->id]);

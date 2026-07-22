@@ -23,6 +23,7 @@ class SearchService
             'city'        => $params['city'] ?? null,
             'verified'    => $params['verified'] ?? false,
             'premium'     => $params['premium'] ?? false,
+            'offers'      => $params['offers'] ?? false,
             'min_rating'  => $params['min_rating'] ?? null,
             'lat'         => $params['lat'] ?? null,
             'lng'         => $params['lng'] ?? null,

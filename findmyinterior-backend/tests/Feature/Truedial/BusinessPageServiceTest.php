@@ -15,8 +15,7 @@ class BusinessPageServiceTest extends TestCase
     {
         $tenant = Tenant::factory()->create();
         $listing = Listing::factory()->create([
-            'tenant_id' => $tenant->id, 
-            'is_active' => true,
+            'tenant_id' => $tenant->id,
             'status' => 'active',
             'is_verified' => true
         ]);
