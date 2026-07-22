@@ -47,9 +47,19 @@ export default function RegisterPage({ searchParams }: { searchParams: { error?:
 
           <form className="space-y-5" action={registerAction}>
             {/* Account Type Toggle */}
-            <div className="flex p-1 bg-muted rounded-lg mb-6">
-              <div className="flex-1 text-center py-2 bg-background shadow-sm rounded-md text-sm font-semibold text-foreground cursor-pointer">Business Account</div>
-              <div className="flex-1 text-center py-2 text-sm font-medium text-muted-foreground hover:text-foreground cursor-pointer transition">Personal Account</div>
+            <div className="flex p-1 bg-muted rounded-lg mb-6 relative">
+              <label className="flex-1 cursor-pointer">
+                <input type="radio" name="role" value="business" className="peer sr-only" defaultChecked />
+                <div className="text-center py-2 rounded-md text-sm font-medium text-muted-foreground peer-checked:bg-background peer-checked:shadow-sm peer-checked:font-semibold peer-checked:text-foreground transition">
+                  Business Account
+                </div>
+              </label>
+              <label className="flex-1 cursor-pointer">
+                <input type="radio" name="role" value="customer" className="peer sr-only" />
+                <div className="text-center py-2 rounded-md text-sm font-medium text-muted-foreground peer-checked:bg-background peer-checked:shadow-sm peer-checked:font-semibold peer-checked:text-foreground transition">
+                  Personal Account
+                </div>
+              </label>
             </div>
 
             <div className="grid grid-cols-2 gap-4">
@@ -90,6 +100,14 @@ export default function RegisterPage({ searchParams }: { searchParams: { error?:
               <div className="relative">
                 <Lock className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
                 <Input type="password" name="password" placeholder="Create a strong password" className="pl-9 bg-background focus:ring-primary" required />
+              </div>
+            </div>
+            
+            <div className="space-y-2">
+              <label className="text-xs font-medium text-foreground">Confirm Password</label>
+              <div className="relative">
+                <Lock className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
+                <Input type="password" name="password_confirmation" placeholder="Confirm your password" className="pl-9 bg-background focus:ring-primary" required />
               </div>
             </div>
 

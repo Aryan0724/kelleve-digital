@@ -9,6 +9,7 @@ export async function loginAction(formData: FormData) {
   const email = formData.get("email");
   const password = formData.get("password");
 
+  let redirectPath = null;
   try {
     const res = await fetch(`${API_BASE}/auth/login`, {
       method: "POST",
@@ -19,18 +20,17 @@ export async function loginAction(formData: FormData) {
     const data = await res.json();
     
     if (data.token) {
-      cookies().set("auth_token", data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
-      // Redirect to dashboard on success
+      const cookieStore = await cookies();
+      cookieStore.set("auth_token", data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      redirectPath = "/dashboard/user";
     } else {
-      // Fallback for demo if backend is unavailable
-      cookies().set("auth_token", "mock_token_123", { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      redirectPath = `/login?error=${encodeURIComponent(data.message || "Invalid credentials")}`;
     }
   } catch (error) {
-    // Fallback for demo if backend is unavailable
-    cookies().set("auth_token", "mock_token_123", { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+    redirectPath = "/login?error=Network+error";
   }
   
-  redirect("/dashboard/user");
+  if (redirectPath) redirect(redirectPath);
 }
 
 export async function registerAction(formData: FormData) {
@@ -40,24 +40,29 @@ export async function registerAction(formData: FormData) {
   const email = formData.get("email");
   const phone = formData.get("phone");
   const password = formData.get("password");
+  const password_confirmation = formData.get("password_confirmation");
+  const role = formData.get("role") || "business";
 
+  let redirectPath = null;
   try {
     const res = await fetch(`${API_BASE}/auth/register`, {
       method: "POST",
       headers: { "Content-Type": "application/json", "Accept": "application/json" },
-      body: JSON.stringify({ name, email, phone, password }),
+      body: JSON.stringify({ name, email, phone, password, password_confirmation, role }),
     });
 
     const data = await res.json();
     
     if (data.token) {
-      cookies().set("auth_token", data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      const cookieStore = await cookies();
+      cookieStore.set("auth_token", data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      redirectPath = "/dashboard/user";
     } else {
-      cookies().set("auth_token", "mock_token_123", { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      redirectPath = `/register?error=${encodeURIComponent(data.message || "Registration failed")}`;
     }
   } catch (error) {
-    cookies().set("auth_token", "mock_token_123", { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+    redirectPath = "/register?error=Network+error";
   }
   
-  redirect("/dashboard/user");
+  if (redirectPath) redirect(redirectPath);
 }
