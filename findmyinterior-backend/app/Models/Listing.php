@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Listing extends Model
 {
-    use HasFactory, SoftDeletes, \App\Traits\TenantAwareTrait;
+    use HasFactory, SoftDeletes, \App\Traits\TenantAwareTrait, \App\Traits\HasMedia;
 
     protected $fillable = [
         'user_id', 'category_id', 'city_id', 'district_id',
@@ -23,6 +23,7 @@ class Listing extends Model
         'phone_clicks', 'whatsapp_clicks', 'website_clicks',
         'services', 'products', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
         'tenant_id',
+        'subscription_plan', 'subscription_status', 'verified_at', 'featured_until', 'premium_until',
     ];
 
     protected $casts = [
@@ -31,6 +32,9 @@ class Listing extends Model
         'achievements' => 'array',
         'languages' => 'array',
         'social_links' => 'array',
+        'verified_at' => 'datetime',
+        'featured_until' => 'datetime',
+        'premium_until' => 'datetime',
     ];
 
     // ─── Relationships ────────────────────────────────────────────────────────
@@ -58,6 +62,21 @@ class Listing extends Model
     public function gallery(): HasMany
     {
         return $this->hasMany(ListingGallery::class)->orderBy('sort_order');
+    }
+
+    public function listingProducts(): HasMany
+    {
+        return $this->hasMany(ListingProduct::class);
+    }
+
+    public function listingServices(): HasMany
+    {
+        return $this->hasMany(ListingService::class);
+    }
+
+    public function analyticsEvents(): MorphMany
+    {
+        return $this->morphMany(AnalyticsEvent::class, 'entity');
     }
 
     public function reviews(): HasMany

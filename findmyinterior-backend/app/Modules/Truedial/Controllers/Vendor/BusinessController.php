@@ -23,7 +23,7 @@ class BusinessController extends Controller
     {
         $business = Listing::forCurrentTenant()
             ->where('user_id', Auth::id())
-            ->with(['category', 'city', 'gallery'])
+            ->with(['category', 'city', 'gallery', 'listingProducts.media', 'listingServices.media'])
             ->first();
 
         if (!$business) {
@@ -91,7 +91,7 @@ class BusinessController extends Controller
         return $this->success($business, 'Business updated successfully');
     }
 
-    public function updateProducts(Request $request)
+    public function updateProducts(Request $request, \App\Services\ProductService $productService)
     {
         $business = Listing::forCurrentTenant()
             ->where('user_id', Auth::id())
@@ -99,18 +99,21 @@ class BusinessController extends Controller
 
         $validated = $request->validate([
             'products' => 'present|array',
+            'products.*.id' => 'nullable|exists:listing_products,id',
             'products.*.name' => 'required|string|max:255',
             'products.*.description' => 'nullable|string',
             'products.*.price' => 'nullable|numeric',
-            'products.*.image' => 'nullable|string',
+            'products.*.image' => 'nullable|string', // Base64
         ]);
 
-        $business->update(['products' => $validated['products']]);
+        $productService->syncProducts($business, $validated['products']);
+        
+        $business->load('listingProducts.media');
 
         return $this->success($business, 'Products updated successfully');
     }
 
-    public function updateServices(Request $request)
+    public function updateServices(Request $request, \App\Services\ServiceService $serviceService)
     {
         $business = Listing::forCurrentTenant()
             ->where('user_id', Auth::id())
@@ -118,12 +121,16 @@ class BusinessController extends Controller
 
         $validated = $request->validate([
             'services' => 'present|array',
+            'services.*.id' => 'nullable|exists:listing_services,id',
             'services.*.name' => 'required|string|max:255',
             'services.*.description' => 'nullable|string',
             'services.*.price' => 'nullable|numeric',
+            'services.*.image' => 'nullable|string', // Base64
         ]);
 
-        $business->update(['services' => $validated['services']]);
+        $serviceService->syncServices($business, $validated['services']);
+
+        $business->load('listingServices.media');
 
         return $this->success($business, 'Services updated successfully');
     }
