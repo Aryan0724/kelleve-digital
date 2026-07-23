@@ -2,7 +2,7 @@ import Link from "next/link";
 import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
 import AutocompleteSearch from "@/components/shared/AutocompleteSearch";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
+import { logout } from "@/app/actions/auth";
 
 export default async function Navbar() {
   const cookieStore = await cookies();
@@ -21,9 +21,11 @@ export default async function Navbar() {
           {isLoggedIn ? (
             <div className="flex gap-4">
               <Link href="/dashboard/user" className="hover:text-primary transition flex items-center gap-1"><LayoutDashboard className="w-4 h-4"/> Dashboard</Link>
-              <form action={async () => { "use server"; (await cookies()).delete("auth_token"); redirect("/"); }}>
-                <button type="submit" className="hover:text-primary transition flex items-center gap-1"><LogOut className="w-4 h-4"/> Logout</button>
-              </form>
+              <form action={logout}>
+          <button type="submit" className="hover:text-primary transition flex items-center gap-2">
+            <LogOut className="h-4 w-4" /> Logout
+          </button>
+        </form>
             </div>
           ) : (
             <Link href="/login" className="hover:text-primary transition">Login / Sign Up</Link>
