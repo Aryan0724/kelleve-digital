@@ -103,7 +103,7 @@ export default async function Home() {
                   </div>
                 </Link>
               ) : (
-                <Link href={`/search?category=${encodeURIComponent(cat.q)}`} key={i}>
+                <Link href={`/search?category=${encodeURIComponent(cat.q || '')}`} key={i}>
                   <div className="flex flex-col items-center justify-center p-4 rounded-2xl hover:bg-gray-50 transition cursor-pointer group text-center gap-3">
                     <div className={`w-14 h-14 rounded-full flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
                       <cat.icon className="w-6 h-6" />
