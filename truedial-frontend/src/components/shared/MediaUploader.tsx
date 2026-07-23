@@ -3,7 +3,7 @@
 import React, { useState, useCallback, useRef } from "react";
 import { UploadCloud, X, Star, GripVertical } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import api from "@/lib/api"; // Assuming axios instance is configured here
+import { TrueDialAPI } from "@/lib/api";
 
 export interface Media {
   id: number;
@@ -66,13 +66,11 @@ export function MediaUploader({
     files.forEach((file) => formData.append("files[]", file));
 
     try {
-      const response = await api.post("/v1/truedial/vendor/media", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      const response = await TrueDialAPI.uploadMedia(formData);
       
-      if (response.data?.data) {
-        setMediaList((prev) => [...prev, ...response.data.data]);
-        onUploadSuccess?.(response.data.data);
+      if (response.success && response.data) {
+        setMediaList((prev) => [...prev, ...response.data]);
+        onUploadSuccess?.(response.data);
       }
     } catch (error) {
       console.error("Upload failed", error);
@@ -85,7 +83,7 @@ export function MediaUploader({
 
   const handleDelete = async (id: number) => {
     try {
-      await api.delete(`/v1/truedial/vendor/media/${id}`);
+      await TrueDialAPI.deleteMedia(id);
       setMediaList((prev) => prev.filter((m) => m.id !== id));
     } catch (error) {
       console.error("Delete failed", error);
@@ -94,7 +92,7 @@ export function MediaUploader({
 
   const handleSetCover = async (id: number) => {
     try {
-      await api.put(`/v1/truedial/vendor/media/${id}/cover`);
+      await TrueDialAPI.setMediaCover(id);
       setMediaList((prev) =>
         prev.map((m) => ({ ...m, is_cover: m.id === id }))
       );

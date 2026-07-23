@@ -1,5 +1,8 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { TrueDialAPI } from "@/lib/api";
 import { Star, MapPin, Phone, MessageCircle, ShieldCheck } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -19,6 +22,7 @@ export interface BusinessCardProps {
 }
 
 export default function BusinessCard({
+  id,
   slug,
   title,
   category,
@@ -66,7 +70,7 @@ export default function BusinessCard({
               {category && <span className="text-sm text-primary font-medium">{category}</span>}
             </div>
 
-            {rating > 0 && (
+            {(rating ?? 0) > 0 && (
               <div className="flex items-center gap-1 bg-green-50 text-green-700 px-2 py-1 rounded font-bold text-sm">
                 <span>{rating}</span>
                 <Star className="w-3 h-3 fill-green-700" />
@@ -82,14 +86,32 @@ export default function BusinessCard({
 
         <div className="flex gap-3 mt-6 pt-4 border-t border-border">
           {phone && (
-            <a href={`tel:${phone}`} className="flex-1">
+            <a 
+              href={`tel:${phone}`} 
+              className="flex-1"
+              onClick={() => {
+                TrueDialAPI.trackEvent("PHONE_CLICK", "listing", Number(id), { 
+                  source: "business_card" 
+                });
+              }}
+            >
               <Button variant="outline" className="w-full font-semibold border-primary/20 hover:bg-primary/5 text-primary">
                 <Phone className="w-4 h-4 mr-2" /> Call
               </Button>
             </a>
           )}
           {whatsapp && (
-            <a href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`} target="_blank" rel="noreferrer" className="flex-1">
+            <a 
+              href={`https://wa.me/${whatsapp.replace(/[^0-9]/g, '')}`} 
+              target="_blank" 
+              rel="noreferrer" 
+              className="flex-1"
+              onClick={() => {
+                TrueDialAPI.trackEvent("WHATSAPP_CLICK", "listing", Number(id), { 
+                  source: "business_card" 
+                });
+              }}
+            >
               <Button className="w-full font-semibold bg-green-500 hover:bg-green-600 text-white">
                 <MessageCircle className="w-4 h-4 mr-2" /> WhatsApp
               </Button>

@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { User, Mail, Phone, Lock, Building, ArrowRight, ShieldCheck, CheckCircle } from "lucide-react";
 import { registerAction } from "@/app/actions/auth";
 
-export default function RegisterPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function RegisterPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const params = await searchParams;
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
       {/* Right Panel - Branding (Swapped for Register) */}
@@ -39,9 +40,9 @@ export default function RegisterPage({ searchParams }: { searchParams: { error?:
           <h2 className="text-3xl font-bold text-navy dark:text-white mb-2">Create Account</h2>
           <p className="text-muted-foreground mb-6">Join TrueDial today and take your business online.</p>
 
-          {searchParams.error && (
+          {params.error && (
             <div className="bg-red-50 text-red-600 border border-red-200 p-3 rounded-md text-sm font-medium mb-6">
-              {searchParams.error}
+              {params.error}
             </div>
           )}
 

@@ -4,7 +4,12 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
-export default function Home() {
+import { TrueDialAPI } from "@/lib/api";
+
+export default async function Home() {
+  const offersResponse = await TrueDialAPI.getPublicOffers();
+  const topOffers = offersResponse.success ? offersResponse.data.data.slice(0, 4) : [];
+  
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#f9fafb]">
       <Navbar />
@@ -173,52 +178,38 @@ export default function Home() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {[
-            {
-              title: "The Urban Bites Restaurant",
-              category: "Restaurant",
-              discount: "20% OFF",
-              validity: "31 May 2025",
-              img: "bg-orange-100"
-            },
-            {
-              title: "Hotel Blue Moon Grand",
-              category: "Hotel",
-              discount: "15% OFF",
-              validity: "25 May 2025",
-              img: "bg-blue-100"
-            },
-            {
-              title: "Dr. Smita Verma Dental Clinic",
-              category: "Healthcare",
-              discount: "Flat 10% OFF",
-              validity: "30 May 2025",
-              img: "bg-teal-100"
-            },
-            {
-              title: "Kleve Interior Studio",
-              category: "Interior",
-              discount: "25% OFF",
-              validity: "28 May 2025",
-              img: "bg-amber-100"
-            }
-          ].map((offer, i) => (
-            <div key={i} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition flex flex-col">
-              <div className={`h-40 w-full ${offer.img} relative`}>
-                <div className="absolute bottom-2 left-2 bg-navy text-white text-xs font-bold px-2 py-1 rounded">{offer.discount}</div>
+          {topOffers.length > 0 ? (
+            topOffers.map((offer: any) => (
+              <div key={offer.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition flex flex-col group">
+                <div className={`h-40 w-full relative bg-gray-100 overflow-hidden flex items-center justify-center`}>
+                  {offer.media && offer.media.length > 0 ? (
+                      <img src={offer.media[0].url} alt={offer.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                      <span className="text-gray-400">No Image</span>
+                  )}
+                  {offer.discount_type && offer.discount_value && (
+                      <div className="absolute bottom-2 left-2 bg-navy text-white text-xs font-bold px-2 py-1 rounded">
+                          {offer.discount_type === 'percentage' ? `${offer.discount_value}% OFF` : `₹${offer.discount_value} OFF`}
+                      </div>
+                  )}
+                </div>
+                <div className="p-4 flex flex-col flex-1">
+                  <h4 className="font-bold text-navy text-lg leading-tight mb-1 line-clamp-1" title={offer.title}>{offer.title}</h4>
+                  <p className="text-xs text-gray-500 mb-2">{offer.listing?.category || 'General'}</p>
+                  <p className="text-xs text-gray-400 mt-auto mb-4">Valid Till: {offer.valid_until ? new Date(offer.valid_until).toLocaleDateString() : 'Ongoing'}</p>
+                  <Link href={`/businesses/${offer.listing?.slug || '#'}`}>
+                    <button className="w-full bg-orange-100 text-primary font-medium py-2 rounded hover:bg-primary hover:text-white transition">
+                      View Profile
+                    </button>
+                  </Link>
+                </div>
               </div>
-              <div className="p-4 flex flex-col flex-1">
-                <h4 className="font-bold text-navy text-lg leading-tight mb-1">{offer.title}</h4>
-                <p className="text-xs text-gray-500 mb-2">{offer.category}</p>
-                <p className="text-xs text-gray-400 mt-auto mb-4">Valid Till: {offer.validity}</p>
-                <Link href={`/businesses/sample-slug-${i}`}>
-                  <button className="w-full bg-orange-100 text-primary font-medium py-2 rounded hover:bg-primary hover:text-white transition">
-                    View Profile
-                  </button>
-                </Link>
-              </div>
+            ))
+          ) : (
+            <div className="col-span-3 text-center py-8 text-gray-500">
+                No active offers found. Check back later!
             </div>
-          ))}
+          )}
 
           {/* Privilege Card Banner */}
           <div className="bg-navy rounded-xl overflow-hidden text-white flex flex-col justify-center items-start p-6 col-span-1 md:col-span-1 border border-navy shadow-lg relative">

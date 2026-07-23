@@ -19,9 +19,9 @@ export async function loginAction(formData: FormData) {
 
     const data = await res.json();
     
-    if (data.token) {
+    if (data.success && data.data?.token) {
       const cookieStore = await cookies();
-      cookieStore.set("auth_token", data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      cookieStore.set("auth_token", data.data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
       redirectPath = "/dashboard/user";
     } else {
       redirectPath = `/login?error=${encodeURIComponent(data.message || "Invalid credentials")}`;
@@ -53,9 +53,9 @@ export async function registerAction(formData: FormData) {
 
     const data = await res.json();
     
-    if (data.token) {
+    if (data.success && data.data?.token) {
       const cookieStore = await cookies();
-      cookieStore.set("auth_token", data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      cookieStore.set("auth_token", data.data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
       redirectPath = "/dashboard/user";
     } else {
       redirectPath = `/register?error=${encodeURIComponent(data.message || "Registration failed")}`;

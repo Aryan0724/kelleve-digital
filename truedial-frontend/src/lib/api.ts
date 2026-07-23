@@ -27,6 +27,18 @@ export class TrueDialAPI {
     }
   }
 
+  static async searchBusinesses(params: Record<string, string> = {}) {
+    try {
+      const queryParams = new URLSearchParams(params).toString();
+      const res = await fetch(`${API_BASE_URL}/truedial/public/search?${queryParams}`, { next: { revalidate: 60 } });
+      if (!res.ok) throw new Error("Failed to fetch search results");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: { data: [] } };
+    }
+  }
+
   static async autocompleteSearch(q: string) {
     try {
       const res = await fetch(`${API_BASE_URL}/truedial/public/search/autocomplete?q=${encodeURIComponent(q)}`, { next: { revalidate: 60 } });
@@ -51,7 +63,7 @@ export class TrueDialAPI {
 
   static async getListingBySlug(slug: string) {
     try {
-      const res = await fetch(`${API_BASE_URL}/listings/${slug}`, { next: { revalidate: 60 } });
+      const res = await fetch(`${API_BASE_URL}/truedial/public/businesses/${slug}`, { next: { revalidate: 60 } });
       if (!res.ok) throw new Error("Failed to fetch listing");
       return await res.json();
     } catch (error) {
@@ -161,6 +173,195 @@ export class TrueDialAPI {
     } catch (error) {
       console.error(error);
       return { success: false };
+    }
+  }
+
+  // Offers & Promotions
+  static async getVendorOffers() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/offers`, {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!res.ok) throw new Error("Failed to fetch vendor offers");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: [] };
+    }
+  }
+
+  static async createOffer(data: Record<string, any>) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/offers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error" };
+    }
+  }
+
+  static async updateOffer(id: number, data: Record<string, any>) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/offers/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error" };
+    }
+  }
+
+  static async getPublicOffers() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/public/offers`, { next: { revalidate: 60 } });
+      if (!res.ok) throw new Error("Failed to fetch offers");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: [] };
+    }
+  }
+
+  static async getBusinessOffers(slug: string) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/public/businesses/${slug}/offers`, { next: { revalidate: 60 } });
+      if (!res.ok) throw new Error("Failed to fetch business offers");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: [] };
+    }
+  }
+
+  // Analytics Tracking
+  static async uploadMedia(formData: FormData) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/media`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        },
+        body: formData
+      });
+      if (!res.ok) throw new Error("Failed to upload media");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: [] };
+    }
+  }
+
+  static async deleteMedia(id: number) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/media/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!res.ok) throw new Error("Failed to delete media");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false };
+    }
+  }
+
+  static async setMediaCover(id: number) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/media/${id}/cover`, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!res.ok) throw new Error("Failed to set media cover");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false };
+    }
+  }
+
+  static async trackEvent(eventType: string, entityType: string, entityId: number, metadata: Record<string, any> = {}) {
+    try {
+      // In browser environment, try to collect basic metadata if not provided
+      if (typeof window !== 'undefined') {
+        metadata.referrer = metadata.referrer || document.referrer;
+        metadata.device = metadata.device || (/Mobi|Android/i.test(navigator.userAgent) ? 'mobile' : 'desktop');
+      }
+
+      const res = await fetch(`${API_BASE_URL}/truedial/public/analytics/track`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          ...(typeof localStorage !== 'undefined' && localStorage.getItem('token') ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {})
+        },
+        body: JSON.stringify({
+          event_type: eventType,
+          entity_type: entityType,
+          entity_id: entityId,
+          metadata
+        })
+      });
+      return await res.json();
+    } catch (error) {
+      console.error('Tracking failed', error);
+      return { success: false };
+    }
+  }
+
+  static async getAnalyticsOverview(listingId?: number, period: string = '30d') {
+    try {
+      const url = new URL(`${API_BASE_URL}/truedial/vendor/analytics/overview`);
+      url.searchParams.append('period', period);
+      if (listingId) url.searchParams.append('listing_id', listingId.toString());
+
+      const res = await fetch(url.toString(), {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!res.ok) throw new Error("Failed to fetch analytics overview");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: { current: {}, previous: {}, trends: {} } };
+    }
+  }
+
+  static async getAnalyticsChart(listingId?: number, period: string = '30d') {
+    try {
+      const url = new URL(`${API_BASE_URL}/truedial/vendor/analytics/chart`);
+      url.searchParams.append('period', period);
+      if (listingId) url.searchParams.append('listing_id', listingId.toString());
+
+      const res = await fetch(url.toString(), {
+        headers: {
+          'Authorization': `Bearer ${localStorage.getItem('token')}`
+        }
+      });
+      if (!res.ok) throw new Error("Failed to fetch analytics chart");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: [] };
     }
   }
 }

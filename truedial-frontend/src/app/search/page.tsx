@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { TrueDialAPI } from "@/lib/api";
 import Navbar from "@/components/layout/Navbar";
@@ -9,7 +9,7 @@ import BusinessCard, { BusinessCardProps } from "@/components/shared/BusinessCar
 import { SlidersHorizontal, MapPin, Star, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
-export default function SearchPage() {
+function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   
@@ -37,7 +37,8 @@ export default function SearchPage() {
       const response = await TrueDialAPI.searchBusinesses({ q, verified, premium, min_rating });
       
       // Map API response to BusinessCardProps
-      const mapped = response.data.data.map((listing: any) => ({
+      const listings = Array.isArray(response.data.data) ? response.data.data : response.data.data.data;
+      const mapped = listings.map((listing: any) => ({
         id: listing.id,
         slug: listing.slug,
         title: listing.title,
@@ -191,5 +192,17 @@ export default function SearchPage() {
 
       <Footer />
     </div>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    }>
+      <SearchContent />
+    </Suspense>
   );
 }

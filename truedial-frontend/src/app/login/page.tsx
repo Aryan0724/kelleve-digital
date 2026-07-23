@@ -4,7 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Lock, Mail, ArrowRight, ShieldCheck } from "lucide-react";
 import { loginAction } from "@/app/actions/auth";
 
-export default function LoginPage({ searchParams }: { searchParams: { error?: string } }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ error?: string }> }) {
+  const params = await searchParams;
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
       {/* Left Panel - Branding */}
@@ -38,9 +39,9 @@ export default function LoginPage({ searchParams }: { searchParams: { error?: st
           <h2 className="text-3xl font-bold text-navy dark:text-white mb-2">Login to your account</h2>
           <p className="text-muted-foreground mb-6">Enter your credentials to access your TrueDial dashboard.</p>
 
-          {searchParams.error && (
+          {params.error && (
             <div className="bg-red-50 text-red-600 border border-red-200 p-3 rounded-md text-sm font-medium mb-6">
-              {searchParams.error}
+              {params.error}
             </div>
           )}
 
