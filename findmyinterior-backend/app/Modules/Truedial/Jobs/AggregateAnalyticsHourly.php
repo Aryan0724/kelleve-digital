@@ -119,37 +119,34 @@ class AggregateAnalyticsHourly implements ShouldQueue
             }
         }
 
-        // Upsert into analytics_daily
-        $upsertData = array_values($listingAggregates);
-        if (empty($upsertData)) {
-            return;
+        // Database agnostic update or insert
+        foreach ($listingAggregates as $listingId => $data) {
+            $record = DB::table('analytics_daily')
+                ->where('listing_id', $listingId)
+                ->where('date', $date)
+                ->first();
+
+            if ($record) {
+                // Update
+                $updateData = [];
+                foreach (['views', 'search_impressions', 'search_clicks', 'gallery_views', 'product_views', 'service_views', 'offer_views', 'offer_clicks', 'offer_copies', 'website_clicks', 'phone_clicks', 'whatsapp_clicks', 'direction_clicks', 'review_count', 'review_reply_count'] as $metric) {
+                    if (isset($data[$metric]) && $data[$metric] > 0) {
+                        $updateData[$metric] = $record->{$metric} + $data[$metric];
+                    }
+                }
+                if (!empty($updateData)) {
+                    $updateData['updated_at'] = now();
+                    DB::table('analytics_daily')
+                        ->where('id', $record->id)
+                        ->update($updateData);
+                }
+            } else {
+                // Insert
+                $data['created_at'] = now();
+                $data['updated_at'] = now();
+                DB::table('analytics_daily')->insert($data);
+            }
         }
-
-        // In MySQL, upsert increments values for existing rows
-        $updateColumns = [
-            'views' => DB::raw('analytics_daily.views + VALUES(views)'),
-            'search_impressions' => DB::raw('analytics_daily.search_impressions + VALUES(search_impressions)'),
-            'search_clicks' => DB::raw('analytics_daily.search_clicks + VALUES(search_clicks)'),
-            'gallery_views' => DB::raw('analytics_daily.gallery_views + VALUES(gallery_views)'),
-            'product_views' => DB::raw('analytics_daily.product_views + VALUES(product_views)'),
-            'service_views' => DB::raw('analytics_daily.service_views + VALUES(service_views)'),
-            'offer_views' => DB::raw('analytics_daily.offer_views + VALUES(offer_views)'),
-            'offer_clicks' => DB::raw('analytics_daily.offer_clicks + VALUES(offer_clicks)'),
-            'offer_copies' => DB::raw('analytics_daily.offer_copies + VALUES(offer_copies)'),
-            'website_clicks' => DB::raw('analytics_daily.website_clicks + VALUES(website_clicks)'),
-            'phone_clicks' => DB::raw('analytics_daily.phone_clicks + VALUES(phone_clicks)'),
-            'whatsapp_clicks' => DB::raw('analytics_daily.whatsapp_clicks + VALUES(whatsapp_clicks)'),
-            'direction_clicks' => DB::raw('analytics_daily.direction_clicks + VALUES(direction_clicks)'),
-            'review_count' => DB::raw('analytics_daily.review_count + VALUES(review_count)'),
-            'review_reply_count' => DB::raw('analytics_daily.review_reply_count + VALUES(review_reply_count)'),
-            'updated_at' => now(),
-        ];
-
-        DB::table('analytics_daily')->upsert(
-            $upsertData,
-            ['listing_id', 'date'],
-            $updateColumns
-        );
     }
     
     private function initListingArray($listingId, $date)

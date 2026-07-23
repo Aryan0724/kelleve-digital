@@ -234,7 +234,7 @@ class AdminController extends Controller
     public function approveReview(int $id): JsonResponse
     {
         $review = Review::findOrFail($id);
-        $review->update(['is_approved' => true]);
+        $review->update(['status' => 'approved']);
 
         return response()->json(['success' => true, 'message' => 'Review approved and published.']);
     }
