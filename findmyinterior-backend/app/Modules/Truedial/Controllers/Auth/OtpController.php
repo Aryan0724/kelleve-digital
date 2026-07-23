@@ -21,21 +21,35 @@ class OtpController extends Controller
 
         $phone = $request->input('phone');
         
-        // Generate a 6-digit OTP (In production, you would use a random generator)
-        // For development/staging, we will use a fixed OTP '123456' to save SMS costs
-        $otp = app()->environment('production') ? mt_rand(100000, 999999) : '123456';
+        // Generate a 6-digit OTP
+        $otp = mt_rand(100000, 999999);
         
         // Cache the OTP for 5 minutes
         $cacheKey = 'otp_' . $phone;
-        Cache::put($cacheKey, $otp, now()->addMinutes(5));
+        Cache::put($cacheKey, (string) $otp, now()->addMinutes(5));
         
-        // In a real scenario, integrate an SMS gateway here (e.g., Twilio, Msg91)
-        Log::info("OTP for {$phone} is {$otp}");
+        // Check if an SMS gateway is configured
+        $hasSmsGateway = !empty(config('services.msg91.auth_key')) || !empty(config('services.twilio.sid'));
+        
+        if ($hasSmsGateway) {
+            // TODO: Send via SMS gateway
+            Log::info("OTP for {$phone} is {$otp}");
+        } else {
+            // No SMS gateway — log and return OTP in response for testing
+            Log::info("OTP for {$phone} is {$otp} (no SMS gateway configured)");
+        }
 
-        return response()->json([
+        $response = [
             'success' => true,
             'message' => 'OTP sent successfully to ' . $phone,
-        ]);
+        ];
+
+        // If no SMS gateway, expose OTP in response so testing is possible
+        if (!$hasSmsGateway) {
+            $response['otp'] = $otp;
+        }
+
+        return response()->json($response);
     }
 
     /**
