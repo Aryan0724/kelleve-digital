@@ -3,7 +3,6 @@
 import { useState, useEffect } from "react";
 import { TrueDialAPI } from "@/lib/api";
 import { Star, Filter, MessageSquare, Flag, ThumbsUp, AlertCircle, ChevronDown, CheckCircle } from "lucide-react";
-import Navbar from "@/components/layout/Navbar";
 
 export default function VendorReputationCenter() {
   const [reviews, setReviews] = useState<any[]>([]);
@@ -99,7 +98,6 @@ export default function VendorReputationCenter() {
 
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      <Navbar />
       
       <main className="max-w-7xl mx-auto px-6 py-12">
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
