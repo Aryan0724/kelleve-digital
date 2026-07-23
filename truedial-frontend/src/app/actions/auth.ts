@@ -75,3 +75,38 @@ export async function registerAction(formData: FormData) {
   
   if (redirectPath) redirect(redirectPath);
 }
+
+export async function sendOtpAction(phone: string) {
+  try {
+    const res = await fetch(`${API_BASE}/truedial/auth/otp/send`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ phone }),
+    });
+    const data = await res.json();
+    return data;
+  } catch (error) {
+    return { success: false, message: "Network error" };
+  }
+}
+
+export async function verifyOtpAction(phone: string, otp: string, company_name?: string) {
+  try {
+    const res = await fetch(`${API_BASE}/truedial/auth/otp/verify`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "Accept": "application/json" },
+      body: JSON.stringify({ phone, otp, company_name }),
+    });
+    const data = await res.json();
+    
+    if (data.success && data.token) {
+      const cookieStore = await cookies();
+      const isSecure = process.env.NEXT_PUBLIC_API_URL?.startsWith("https") || false;
+      cookieStore.set("auth_token", data.token, { httpOnly: true, secure: isSecure, maxAge: 86400 * 30 });
+      return { success: true, user: data.user };
+    }
+    return data;
+  } catch (error) {
+    return { success: false, message: "Network error" };
+  }
+}

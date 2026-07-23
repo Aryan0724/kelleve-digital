@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0">
           <h2 className="font-semibold text-foreground">Business Dashboard</h2>
           <div className="flex items-center gap-4">
-            <Link href="/dashboard/messages" className="relative text-muted-foreground hover:text-foreground transition">
+            <Link href="/dashboard/business/leads" className="relative text-muted-foreground hover:text-foreground transition">
               <MessageSquare className="w-6 h-6" />
               <span className="absolute -top-1 -right-1 w-4 h-4 bg-red-500 text-white text-[10px] font-bold flex items-center justify-center rounded-full">3</span>
             </Link>

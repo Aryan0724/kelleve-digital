@@ -3,6 +3,7 @@ import { Search, MapPin, CheckCircle, Users, Building, Grid, Search as SearchIco
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import PostRequirementButton from "@/components/PostRequirementButton";
 
 import { TrueDialAPI } from "@/lib/api";
 
@@ -38,9 +39,15 @@ export default async function Home() {
               <SearchIcon className="text-primary w-6 h-6 shrink-0" />
               <input type="text" name="q" placeholder="Search business name..." className="bg-transparent outline-none w-full text-base font-medium" />
             </div>
-            <button type="submit" className="bg-primary text-white px-10 py-4 rounded-xl font-bold hover:bg-orange-600 w-full md:w-auto transition shadow-lg shadow-primary/30 text-lg">
-              Search
-            </button>
+            <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
+              <button type="submit" className="bg-primary text-white px-10 py-4 rounded-xl font-bold hover:bg-orange-600 w-full md:w-auto transition shadow-lg shadow-primary/30 text-lg">
+                Search
+              </button>
+              
+              <div className="hidden md:block w-px bg-gray-200 mx-1 self-stretch"></div>
+              
+              <PostRequirementButton />
+            </div>
           </form>
           
           <div className="mt-6 flex flex-wrap justify-center items-center gap-3 text-sm text-gray-500">

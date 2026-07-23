@@ -1,843 +1,185 @@
-# FINDMYINTERIOR.COM
+# FINDMYINTERIOR.COM (TRUEDIAL V1.0) API CONTRACT
 
-# API_SPECIFICATION.md
-
-Version: 1.0
-
+Version: 1.0 (TrueDial Integrated)
 Backend: Laravel 12
-
 Authentication: Laravel Sanctum
-
 Response Format: JSON
-
-Base URL:
-
-/api/v1
+Base URL: `/api/v1`
 
 ---
 
-# API STRUCTURE
+## 1. STANDARD FORMATS
 
-Modules:
-
-1. Authentication
-2. Users
-3. Listings
-4. Categories
-5. Requirements
-6. Builders
-7. Suppliers
-8. Workers
-9. Inquiries
-10. Blogs
-11. Payments
-12. Subscriptions
-13. Admin
-
----
-
-# STANDARD RESPONSE FORMAT
-
-Success:
-
+### 1.1 Success Response
 ```json
 {
   "success": true,
   "message": "Operation successful",
-  "data": {}
+  "data": { ... }
 }
 ```
 
-Error:
-
+### 1.2 Error Response
 ```json
 {
   "success": false,
   "message": "Error message",
-  "errors": []
+  "errors": {
+    "field_name": ["Validation error message"]
+  }
 }
 ```
 
----
-
-# AUTHENTICATION
-
-## Register
-
-POST
-
-/api/v1/auth/register
-
-Request
-
+### 1.3 Pagination Format (Laravel Standard)
 ```json
 {
-  "name": "",
-  "email": "",
-  "phone": "",
-  "password": ""
-}
-```
-
-Response
-
-```json
-{
-  "token": ""
-}
-```
-
----
-
-## Login
-
-POST
-
-/api/v1/auth/login
-
-Request
-
-```json
-{
-  "email": "",
-  "password": ""
+  "success": true,
+  "message": null,
+  "data": {
+    "data": [
+       // items here
+    ],
+    "current_page": 1,
+    "first_page_url": "...",
+    "from": 1,
+    "last_page": 5,
+    "last_page_url": "...",
+    "links": [],
+    "next_page_url": "...",
+    "path": "...",
+    "per_page": 15,
+    "prev_page_url": null,
+    "to": 15,
+    "total": 75
+  }
 }
 ```
 
 ---
 
-## Logout
+## 2. AUTHENTICATION ENDPOINTS
 
-POST
+### `POST /auth/register`
+- **Body**: `name`, `email`, `phone`, `password`, `password_confirmation`
+- **Returns**: User object and Sanctum `token` inside `data` object.
 
-/api/v1/auth/logout
+### `POST /auth/login`
+- **Body**: `email`, `password`
+- **Returns**: User object and Sanctum `token` inside `data` object.
 
----
-
-## Current User
-
-GET
-
-/api/v1/auth/me
-
----
-
-# USERS
-
-## User Profile
-
-GET
-
-/api/v1/users/profile
-
----
-
-## Update Profile
-
-PUT
-
-/api/v1/users/profile
-
-Request
-
-```json
-{
-  "name": "",
-  "phone": "",
-  "city": ""
-}
-```
-
----
-
-# CATEGORIES
-
-## All Categories
-
-GET
-
-/api/v1/categories
-
----
-
-## Single Category
-
-GET
-
-/api/v1/categories/{id}
-
----
-
-# LISTINGS
-
-## All Listings
-
-GET
-
-/api/v1/listings
-
-Filters
-
-?category=
-
-?city=
-
-?district=
-
-?featured=
-
-?page=
-
----
-
-## Featured Listings
-
-GET
-
-/api/v1/listings/featured
-
----
-
-## Single Listing
-
-GET
-
-/api/v1/listings/{slug}
-
----
-
-## Create Listing
-
-POST
-
-/api/v1/listings
-
-Request
-
-```json
-{
-  "title": "",
-  "category_id": "",
-  "description": "",
-  "city": ""
-}
-```
-
----
-
-## Update Listing
-
-PUT
-
-/api/v1/listings/{id}
-
----
-
-## Delete Listing
-
-DELETE
-
-/api/v1/listings/{id}
-
----
-
-# LISTING GALLERY
-
-## Upload Image
-
-POST
-
-/api/v1/listings/{id}/gallery
-
----
-
-## Delete Image
-
-DELETE
-
-/api/v1/gallery/{id}
-
----
-
-# REQUIREMENTS
-
-## Create Requirement
-
-POST
-
-/api/v1/requirements
-
-Request
-
-```json
-{
-  "title": "",
-  "budget": "",
-  "city": "",
-  "description": ""
-}
-```
-
----
-
-## Get Requirements
-
-GET
-
-/api/v1/requirements
-
----
-
-## Single Requirement
-
-GET
-
-/api/v1/requirements/{id}
-
----
-
-## Update Requirement
-
-PUT
-
-/api/v1/requirements/{id}
-
----
-
-## Delete Requirement
-
-DELETE
-
-/api/v1/requirements/{id}
-
----
-
-# BUILDERS
-
-## All Builders
-
-GET
-
-/api/v1/builders
-
----
-
-## Single Builder
-
-GET
-
-/api/v1/builders/{id}
-
----
-
-## Create Builder
-
-POST
-
-/api/v1/builders
-
----
-
-## Update Builder
-
-PUT
-
-/api/v1/builders/{id}
-
----
-
-## Delete Builder
-
-DELETE
-
-/api/v1/builders/{id}
-
----
-
-# BUILDER PROJECTS
-
-## Get Projects
-
-GET
-
-/api/v1/builder-projects
-
----
-
-## Create Project
-
-POST
-
-/api/v1/builder-projects
-
----
-
-## Update Project
-
-PUT
-
-/api/v1/builder-projects/{id}
-
----
-
-## Delete Project
-
-DELETE
-
-/api/v1/builder-projects/{id}
-
----
-
-# SUPPLIERS
-
-## All Suppliers
-
-GET
-
-/api/v1/suppliers
-
----
-
-## Single Supplier
-
-GET
-
-/api/v1/suppliers/{id}
-
----
-
-## Create Supplier
-
-POST
-
-/api/v1/suppliers
-
----
-
-## Update Supplier
-
-PUT
-
-/api/v1/suppliers/{id}
-
----
-
-## Delete Supplier
-
-DELETE
-
-/api/v1/suppliers/{id}
-
----
-
-# SUPPLIER PRODUCTS
+### `POST /auth/logout`
+- **Requires**: Bearer Token
+- **Returns**: Success message.
 
-## Get Products
+### `GET /auth/me`
+- **Requires**: Bearer Token
+- **Returns**: Current authenticated User object.
 
-GET
-
-/api/v1/products
-
----
-
-## Create Product
-
-POST
-
-/api/v1/products
-
----
-
-## Update Product
-
-PUT
-
-/api/v1/products/{id}
-
----
-
-## Delete Product
-
-DELETE
-
-/api/v1/products/{id}
-
----
-
-# WORKERS
-
-## All Workers
-
-GET
-
-/api/v1/workers
-
----
-
-## Single Worker
-
-GET
-
-/api/v1/workers/{id}
-
----
-
-## Create Worker
-
-POST
-
-/api/v1/workers
-
----
-
-## Update Worker
-
-PUT
-
-/api/v1/workers/{id}
-
----
-
-## Delete Worker
-
-DELETE
-
-/api/v1/workers/{id}
-
----
-
-# REVIEWS
-
-## Create Review
-
-POST
-
-/api/v1/reviews
-
-Request
-
-```json
-{
-  "listing_id": "",
-  "rating": 5,
-  "review": ""
-}
-```
-
----
-
-## Get Listing Reviews
-
-GET
-
-/api/v1/listings/{id}/reviews
-
----
-
-# INQUIRIES
-
-IndiaMART Style Lead System
-
-## Create Inquiry
-
-POST
-
-/api/v1/inquiries
-
-Request
-
-```json
-{
-  "listing_id": "",
-  "name": "",
-  "phone": "",
-  "message": ""
-}
-```
-
----
-
-## Get My Inquiries
-
-GET
-
-/api/v1/inquiries
-
----
-
-# BLOGS
-
-## All Blogs
-
-GET
-
-/api/v1/blogs
-
----
-
-## Single Blog
-
-GET
-
-/api/v1/blogs/{slug}
-
----
-
-## Create Blog
-
-POST
-
-/api/v1/blogs
-
-Admin Only
-
----
-
-## Update Blog
-
-PUT
-
-/api/v1/blogs/{id}
-
-Admin Only
-
----
-
-## Delete Blog
-
-DELETE
-
-/api/v1/blogs/{id}
-
-Admin Only
-
----
-
-# PAYMENTS
-
-## Create Razorpay Order
-
-POST
-
-/api/v1/payments/create-order
-
-Request
-
-```json
-{
-  "amount": 999
-}
-```
-
----
-
-## Verify Payment
-
-POST
-
-/api/v1/payments/verify
-
----
-
-## Payment History
-
-GET
-
-/api/v1/payments/history
-
----
-
-# SUBSCRIPTIONS
-
-## Get Plans
-
-GET
-
-/api/v1/plans
-
----
-
-## Purchase Plan
-
-POST
-
-/api/v1/plans/purchase
-
----
-
-## Active Subscription
-
-GET
-
-/api/v1/subscriptions/current
-
----
-
-# CONTACT UNLOCK
-
-## Unlock Contact
-
-POST
-
-/api/v1/contact-unlock
-
-Request
-
-```json
-{
-  "listing_id": 1
-}
-```
-
----
-
-## My Unlocks
-
-GET
-
-/api/v1/contact-unlock
-
----
-
-# SEARCH API
-
-## Global Search
-
-GET
-
-/api/v1/search
-
-Query Params
-
-?keyword=
-
-?city=
-
-?district=
-
-?category=
-
----
-
-# ADMIN
-
-Admin Middleware Required
-
 ---
-
-## Dashboard Stats
-
-GET
-
-/api/v1/admin/dashboard
-
-Returns
 
-* Users Count
-* Listings Count
-* Leads Count
-* Revenue
+## 3. PUBLIC ENDPOINTS (TrueDial)
 
----
+### `GET /truedial/public/categories`
+- **Returns**: List of all categories (Interior Designers, Architects, etc.)
 
-## Manage Users
+### `GET /truedial/public/search`
+- **Query Params**: `q` (keyword), `verified` (boolean), `premium` (boolean), `min_rating` (float), `page`
+- **Returns**: Paginated list of Business Listings matching the query.
 
-GET
+### `GET /truedial/public/search/autocomplete`
+- **Query Params**: `q` (keyword)
+- **Returns**: Top 5 autocomplete suggestions (Businesses or Categories).
 
-/api/v1/admin/users
+### `GET /truedial/public/businesses/{slug}`
+- **Returns**: Full `BusinessProfileDTO` (basicInfo, gallery, services, products, reviews, offers).
 
-PUT
+### `GET /truedial/public/businesses/{slug}/reviews`
+- **Query Params**: `page`
+- **Returns**: Paginated reviews for a specific business.
 
-/api/v1/admin/users/{id}
+### `GET /truedial/public/offers`
+- **Query Params**: `page`
+- **Returns**: Paginated list of active public offers from all businesses.
 
-DELETE
+### `GET /truedial/public/businesses/{slug}/offers`
+- **Returns**: Active offers for a specific business.
 
-/api/v1/admin/users/{id}
-
 ---
-
-## Manage Listings
-
-GET
-
-/api/v1/admin/listings
-
-PUT
 
-/api/v1/admin/listings/{id}
+## 4. VENDOR ENDPOINTS (TrueDial)
 
-DELETE
+*All endpoints require Bearer Token Authentication.*
 
-/api/v1/admin/listings/{id}
+### `GET /truedial/vendor/my-business`
+- **Returns**: The authenticated vendor's business listing (if exists).
 
----
+### `POST /truedial/vendor/businesses`
+- **Body**: `title`, `description`, `category_id`, `city`, `phone`, etc.
+- **Returns**: Created Business Listing.
 
-## Manage Requirements
+### `PUT /truedial/vendor/businesses/{id}`
+- **Body**: Updatable listing fields.
+- **Returns**: Updated Business Listing.
 
-GET
+### `PUT /truedial/vendor/businesses/me/products`
+- **Body**: Array of product objects.
+- **Returns**: Success message.
 
-/api/v1/admin/requirements
+### `PUT /truedial/vendor/businesses/me/services`
+- **Body**: Array of service objects.
+- **Returns**: Success message.
 
----
+### `POST /truedial/vendor/media`
+- **Body**: `file` (multipart/form-data), `model_type`, `model_id`, `collection`
+- **Returns**: Uploaded Media object with URL.
 
-## Manage Payments
+### `DELETE /truedial/vendor/media/{id}`
+- **Returns**: Success message.
 
-GET
+### `GET /truedial/vendor/reviews`
+- **Query Params**: `page`
+- **Returns**: Paginated reviews received by the vendor's business.
 
-/api/v1/admin/payments
+### `POST /truedial/vendor/reviews/{id}/reply`
+- **Body**: `body`
+- **Returns**: Created Review Reply.
 
----
+### `POST /truedial/vendor/reviews/{id}/report`
+- **Body**: `reason`, `notes`
+- **Returns**: Created Review Report.
 
-## Manage Blogs
+### `GET /truedial/vendor/offers`
+- **Query Params**: `page`
+- **Returns**: Paginated list of the vendor's offers.
 
-GET
+### `POST /truedial/vendor/offers`
+- **Body**: `title`, `description`, `discount_type`, `discount_value`, `valid_until`, etc.
+- **Returns**: Created Offer.
 
-/api/v1/admin/blogs
+### `PUT /truedial/vendor/offers/{id}`
+- **Body**: Updatable offer fields (e.g. `status` to archive/pause).
+- **Returns**: Updated Offer.
 
 ---
-
-# SECURITY
-
-Sanctum Authentication
-
-CSRF Protection
 
-Rate Limiting
+## 5. USER ENDPOINTS (Customers)
 
-Request Validation
+*All endpoints require Bearer Token Authentication.*
 
-Role-Based Access Control
+### `POST /truedial/user/businesses/{slug}/reviews`
+- **Body**: `rating` (1-5), `title`, `body`
+- **Returns**: Created Review.
 
-Input Sanitization
+### `PUT /truedial/user/reviews/{id}/helpful`
+- **Returns**: Toggles helpful vote and returns new vote count.
 
 ---
-
-# FUTURE APIs (PHASE 2)
-
-Do Not Build Now
-
-* Tender APIs
-* Bidding APIs
-* Chat APIs
-* Notification APIs
-* Project Tracking APIs
-* Mobile App APIs
-
----
-
-# MVP ENDPOINT PRIORITY
 
-Build First:
+## 6. ADMIN ENDPOINTS
 
-1. Auth
-2. Categories
-3. Listings
-4. Search
-5. Requirements
-6. Inquiries
-7. Admin Dashboard
-8. Payments
+*All endpoints require Admin Role and Bearer Token.*
 
-Everything else can be added after launch.
+### `GET /admin/dashboard`
+- **Returns**: System-wide metrics (Total Users, Listings, Active Offers, etc.)
 
-END OF FILE
+*(Other standard admin CRUD endpoints remain as per existing standard)*

@@ -4,9 +4,16 @@ use Illuminate\Support\Facades\Route;
 use App\Modules\Truedial\Controllers\Public\BusinessDirectoryController;
 use App\Modules\Truedial\Controllers\Public\SearchController;
 use App\Modules\Truedial\Controllers\OfferController;
+use App\Modules\Truedial\Controllers\Auth\OtpController;
 
 // Truedial specific routes
 Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
+    
+    // Auth Routes
+    Route::prefix('auth')->group(function () {
+        Route::post('/otp/send', [OtpController::class, 'sendOtp']);
+        Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
+    });
     
     Route::prefix('public')->group(function () {
         Route::get('/businesses', [BusinessDirectoryController::class, 'index']);
