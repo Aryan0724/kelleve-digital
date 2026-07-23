@@ -25,6 +25,7 @@ export default function FreeListingPage() {
   const [phone, setPhone] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [otp, setOtp] = useState("");
+  const [otpHint, setOtpHint] = useState<string | null>(null);
   
   // Step 3 & 4 State (Normally would be sent to an API to complete profile, we'll just mock redirecting)
   const [city, setCity] = useState("");
@@ -48,6 +49,11 @@ export default function FreeListingPage() {
     setIsLoading(false);
     
     if (res.success) {
+      // If backend returns OTP (no SMS gateway), auto-fill it for testing
+      if (res.otp) {
+        setOtp(String(res.otp));
+        setOtpHint(String(res.otp));
+      }
       setStep(2);
     } else {
       setError(res.message || "Failed to send OTP. Please try again.");
@@ -190,6 +196,11 @@ export default function FreeListingPage() {
                   <p className="text-muted-foreground mt-2">
                     We've sent a 6-digit code to <strong>+91 {phone}</strong>
                   </p>
+                  {otpHint && (
+                    <p className="mt-2 text-xs text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 rounded-md px-3 py-2">
+                      🔧 <strong>Dev mode:</strong> No SMS gateway configured. Your OTP is <strong className="tracking-widest">{otpHint}</strong>
+                    </p>
+                  )}
                 </div>
 
                 <div className="space-y-2 max-w-sm mx-auto">
