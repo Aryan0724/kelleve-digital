@@ -17,8 +17,15 @@ return new class extends Migration
         });
 
         Schema::table('bids', function (Blueprint $table) {
-            $table->dropUnique(['requirement_id', 'professional_id']);
-            $table->unique(['requirement_id', 'professional_id', 'requirement_type'], 'bids_polymorphic_unique');
+            if (DB::getDriverName() !== 'sqlite') {
+                $table->dropForeign('bids_requirement_id_foreign');
+                $table->dropUnique(['requirement_id', 'professional_id']);
+                $table->unique(['requirement_id', 'professional_id', 'requirement_type'], 'bids_polymorphic_unique');
+                $table->foreign('requirement_id')->references('id')->on('projects')->onDelete('cascade');
+            } else {
+                $table->dropUnique(['requirement_id', 'professional_id']);
+                $table->unique(['requirement_id', 'professional_id', 'requirement_type'], 'bids_polymorphic_unique');
+            }
         });
     }
 

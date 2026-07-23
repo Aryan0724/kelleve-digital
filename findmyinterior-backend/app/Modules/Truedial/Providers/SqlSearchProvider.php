@@ -11,7 +11,7 @@ class SqlSearchProvider implements SearchProviderInterface
     public function search(?string $term, array $filters = [], int $perPage = 15): array
     {
         $query = Listing::query()
-            ->with(['category', 'city', 'gallery'])
+            ->with(['category', 'media'])
             ->where('status', 'active');
 
         // Text Search
@@ -112,7 +112,7 @@ class SqlSearchProvider implements SearchProviderInterface
     public function autocomplete(string $term, int $limit = 8)
     {
         return Listing::query()
-            ->with(['category', 'gallery'])
+            ->with(['category', 'media'])
             ->where('status', 'active')
             ->search($term)
             ->limit($limit)
@@ -126,7 +126,7 @@ class SqlSearchProvider implements SearchProviderInterface
                     'locality' => $listing->address ?? $listing->city,
                     'rating' => $listing->avg_rating ?? 0,
                     'is_verified' => $listing->is_verified,
-                    'cover_image' => $listing->gallery->first()?->url ?? null,
+                    'cover_image' => collect($listing->media)->firstWhere('is_cover', true)?->url ?? collect($listing->media)->first()?->url ?? null,
                 ];
             });
     }

@@ -70,8 +70,8 @@ class BusinessProfileAssembler
         ];
 
         $metrics = [
-            'rating' => $business->rating ?? 0,
-            'reviews_count' => $business->reviews_count ?? 0,
+            'rating' => $business->avg_rating ?? 0,
+            'reviews_count' => $business->review_count ?? 0,
         ];
 
         $catalog = [

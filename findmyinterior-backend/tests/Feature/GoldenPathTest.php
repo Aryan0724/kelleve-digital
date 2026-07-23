@@ -80,7 +80,7 @@ class GoldenPathTest extends TestCase
         $response->assertStatus(200);
 
         // 5. Verify Requirement status updated
-        $this->assertDatabaseHas('requirements', [
+        $this->assertDatabaseHas('projects', [
             'id'     => $requirementId,
             'status' => 'awarded',
         ]);

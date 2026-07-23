@@ -11,10 +11,12 @@ class SearchController extends Controller
     use \App\Traits\ApiResponse;
 
     protected SearchService $searchService;
+    protected \App\Core\Tenancy\TenantContext $tenantContext;
 
-    public function __construct(SearchService $searchService)
+    public function __construct(SearchService $searchService, \App\Core\Tenancy\TenantContext $tenantContext)
     {
         $this->searchService = $searchService;
+        $this->tenantContext = $tenantContext;
     }
 
     public function index(Request $request)
@@ -25,6 +27,34 @@ class SearchController extends Controller
         ]);
 
         $results = $this->searchService->search($params);
+
+        // Track impressions
+        $userId = auth('sanctum')->id();
+        $tenantId = $this->tenantContext->getTenantId();
+        
+        if (isset($results)) {
+            $items = is_array($results) ? ($results['data'] ?? []) : (is_object($results) && method_exists($results, 'items') ? $results->items() : []);
+            foreach ($items as $item) {
+                // $item could be an array (if DTO serialized) or object
+                $entityId = is_array($item) ? ($item['basicInfo']['id'] ?? $item['id'] ?? null) : ($item->id ?? null);
+                if ($entityId) {
+                    \App\Modules\Truedial\Services\AnalyticsEventService::track(
+                        $tenantId,
+                        \App\Modules\Truedial\Services\AnalyticsEventService::EVENT_SEARCH_IMPRESSION,
+                        'listing',
+                        $entityId,
+                        $userId,
+                        null,
+                        [
+                            'search_query' => $params['q'] ?? null,
+                            'city' => $params['city'] ?? null,
+                            'category_id' => $params['category_id'] ?? null,
+                            'referrer' => 'search'
+                        ]
+                    );
+                }
+            }
+        }
 
         return $this->success($results);
     }

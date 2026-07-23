@@ -99,8 +99,9 @@ class MediaController extends Controller
         $tenantId = $this->tenantContext->getTenantId();
         $media = Media::where('tenant_id', $tenantId)->findOrFail($id);
         
-        // Ensure user has rights (simplified, assuming tenant isolation is enough for vendor panel)
-        $media->delete(); // Assuming SoftDeletes is on Media model, or hard delete if not.
+        $this->authorize('delete', $media);
+        
+        $media->delete();
         
         return $this->success(null, 'Media deleted successfully');
     }
@@ -119,7 +120,11 @@ class MediaController extends Controller
         
         DB::transaction(function () use ($request, $tenantId) {
             foreach ($request->input('ordered_ids') as $index => $id) {
-                Media::where('tenant_id', $tenantId)->where('id', $id)->update(['sort_order' => $index]);
+                $media = Media::where('tenant_id', $tenantId)->find($id);
+                if ($media) {
+                    $this->authorize('update', $media);
+                    $media->update(['sort_order' => $index]);
+                }
             }
         });
 
@@ -133,6 +138,8 @@ class MediaController extends Controller
     {
         $tenantId = $this->tenantContext->getTenantId();
         $media = Media::where('tenant_id', $tenantId)->findOrFail($id);
+        
+        $this->authorize('update', $media);
         
         DB::transaction(function () use ($media, $tenantId) {
             // Unset previous covers for this model/collection

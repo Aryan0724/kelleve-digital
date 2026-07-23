@@ -62,7 +62,7 @@ class GoldenFlowTest extends TestCase
         $response = $this->actingAs($customer)->postJson('/api/v1/requirements', $requirementData);
         
         $response->assertStatus(201);
-        $this->assertDatabaseHas('requirements', [
+        $this->assertDatabaseHas('projects', [
             'title' => 'Need 3BHK Design',
         ]);
 
@@ -119,7 +119,7 @@ class GoldenFlowTest extends TestCase
             'id'     => $bid->id,
             'status' => 'accepted', // BidService::awardBid sets status to 'accepted' with is_awarded = true
         ]);
-        $this->assertDatabaseHas('requirements', [
+        $this->assertDatabaseHas('projects', [
             'id'     => $requirement->id,
             'status' => 'awarded',
         ]);
@@ -216,7 +216,7 @@ class GoldenFlowTest extends TestCase
         ]);
         
         // Verify requirement status updated to bidding
-        $this->assertDatabaseHas('requirements', [
+        $this->assertDatabaseHas('projects', [
             'id' => $requirement->id,
             'status' => 'bidding'
         ]);
@@ -415,24 +415,27 @@ class GoldenFlowTest extends TestCase
         ]);
 
         // 5. Setup a pending review
-        $review = \App\Models\Review::create([
+        $reviewId = \Illuminate\Support\Facades\DB::table('reviews')->insertGetId([
             'user_id' => $adminUser->id,
             'rating' => 5,
             'title' => 'Great Listing',
             'body' => 'Amazing work',
-            'is_approved' => false,
+            'status' => 'pending',
+            'listing_id' => $listing->id,
             'reviewable_type' => \App\Models\Listing::class,
-            'reviewable_id' => $listing->id
+            'reviewable_id' => $listing->id,
+            'created_at' => now(),
+            'updated_at' => now(),
         ]);
 
         // 6. Approve Review (Action)
-        $approveResponse = $this->actingAs($adminUser)->patchJson("/api/v1/admin/reviews/{$review->id}/approve");
+        $approveResponse = $this->actingAs($adminUser)->patchJson("/api/v1/admin/reviews/{$reviewId}/approve");
         $approveResponse->assertStatus(200);
 
         // 7. Verification
         $this->assertDatabaseHas('reviews', [
-            'id' => $review->id,
-            'is_approved' => 1
+            'id' => $reviewId,
+            'status' => 'approved'
         ]);
     }
 }

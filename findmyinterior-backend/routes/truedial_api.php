@@ -19,6 +19,9 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         
         // Reviews
         Route::get('/businesses/{slug}/reviews', [\App\Modules\Truedial\Controllers\Public\ReviewController::class, 'index']);
+
+        // Analytics
+        Route::post('/analytics/track', [\App\Modules\Truedial\Controllers\Public\AnalyticsTrackingController::class, 'track']);
     });
     
     // Offers
@@ -52,6 +55,10 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::get('/offers', [\App\Modules\Truedial\Controllers\Vendor\OfferManagementController::class, 'index']);
         Route::post('/offers', [\App\Modules\Truedial\Controllers\Vendor\OfferManagementController::class, 'store']);
         Route::put('/offers/{id}', [\App\Modules\Truedial\Controllers\Vendor\OfferManagementController::class, 'update']);
+        
+        // Analytics
+        Route::get('/analytics/overview', [\App\Modules\Truedial\Controllers\Vendor\AnalyticsController::class, 'overview']);
+        Route::get('/analytics/chart', [\App\Modules\Truedial\Controllers\Vendor\AnalyticsController::class, 'chart']);
     });
     
     // Auth protected user routes

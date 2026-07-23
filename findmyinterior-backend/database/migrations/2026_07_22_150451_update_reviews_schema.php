@@ -13,6 +13,13 @@ return new class extends Migration
             $table->string('status')->default('pending')->after('body'); // pending, approved, rejected, hidden, reported
             
             // Migrate old is_approved data to status enum if possible
+            if (\Illuminate\Support\Facades\DB::connection()->getDriverName() !== 'sqlite') {
+                if (Schema::hasColumn('reviews', 'reviewer_id')) {
+                    $table->dropForeign(['reviewer_id']);
+                    $table->renameColumn('reviewer_id', 'user_id');
+                    $table->foreign('user_id')->references('id')->on('users')->cascadeOnDelete();
+                }
+            }
         });
 
         // Update data

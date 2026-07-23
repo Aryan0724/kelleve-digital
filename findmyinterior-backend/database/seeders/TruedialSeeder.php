@@ -13,7 +13,10 @@ class TruedialSeeder extends Seeder
     public function run(): void
     {
         $tenantId = 2;
-        app(TenantContext::class)->setTenantId($tenantId);
+        $tenant = \App\Models\Tenant::find($tenantId);
+        if ($tenant) {
+            app(TenantContext::class)->setTenant($tenant);
+        }
 
         // Platform Admin
         $admin = User::firstOrCreate(['email' => 'admin@truedial.in'], [
@@ -30,12 +33,31 @@ class TruedialSeeder extends Seeder
             'name' => 'Truedial Business',
             'password' => Hash::make('password123'),
         ]);
-        $vendorRole = Role::where('slug', 'business')->firstOrCreate([
-            'slug' => 'business',
-            'name' => 'Business (Truedial)'
-        ]);
+        $vendorRole = \App\Models\Role::firstOrCreate(['slug' => 'business'], ['name' => 'Business (Truedial)']);
+        $customerRole = \App\Models\Role::firstOrCreate(['slug' => 'customer'], ['name' => 'Customer (Truedial)']);
         if ($vendorRole && !$vendor->roles()->where('role_id', $vendorRole->id)->exists()) {
             $vendor->roles()->attach($vendorRole->id);
+        }
+
+        // Create a basic listing for the vendor
+        if ($vendor) {
+            $category = \App\Models\Category::first();
+            $city = \App\Models\City::first();
+            $listing = \App\Models\Listing::firstOrCreate([
+                'user_id' => $vendor->id,
+                'tenant_id' => $tenantId,
+            ], [
+                'title' => 'Truedial Vendor Business',
+                'slug' => 'truedial-vendor-business',
+                'description' => 'A test business for truedial',
+                'category_id' => $category ? $category->id : 1,
+                'city_id' => $city ? $city->id : 1,
+                'district_id' => null,
+                'city' => 'Delhi',
+                'district' => 'New Delhi',
+                'state' => 'Delhi',
+                'status' => 'active'
+            ]);
         }
 
         // Truedial Customer
@@ -43,10 +65,7 @@ class TruedialSeeder extends Seeder
             'name' => 'Truedial Customer',
             'password' => Hash::make('password123'),
         ]);
-        $customerRole = Role::where('slug', 'customer')->firstOrCreate([
-            'slug' => 'customer',
-            'name' => 'Customer (Truedial)'
-        ]);
+        $customerRole = \App\Models\Role::firstOrCreate(['slug' => 'customer'], ['name' => 'Customer (Truedial)']);
         if ($customerRole && !$customer->roles()->where('role_id', $customerRole->id)->exists()) {
             $customer->roles()->attach($customerRole->id);
         }

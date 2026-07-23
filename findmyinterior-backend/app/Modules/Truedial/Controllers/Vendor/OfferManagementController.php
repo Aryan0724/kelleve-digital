@@ -16,7 +16,7 @@ class OfferManagementController extends Controller
         $user = auth()->user();
         $listingIds = Listing::where('user_id', $user->id)->pluck('id');
 
-        $offers = Offer::with(['media'])
+        $offers = Offer::with(['media', 'listing'])
             ->whereIn('listing_id', $listingIds)
             ->orderBy('created_at', 'desc')
             ->paginate($request->get('per_page', 10));
@@ -49,20 +49,19 @@ class OfferManagementController extends Controller
 
         $user = auth()->user();
         $listing = Listing::findOrFail($request->listing_id);
-
-        if ($listing->user_id !== $user->id) {
-            return $this->error('You do not own this listing.', 403);
-        }
+        $this->authorize('update', $listing);
 
         $offer = Offer::create($request->except('media_ids'));
 
         if ($request->has('media_ids')) {
-            \App\Models\Media::whereIn('id', $request->media_ids)
-                ->where('user_id', $user->id)
-                ->update([
+            $mediaItems = \App\Models\Media::whereIn('id', $request->media_ids)->get();
+            foreach ($mediaItems as $media) {
+                $this->authorize('update', $media);
+                $media->update([
                     'model_type' => Offer::class,
                     'model_id' => $offer->id
                 ]);
+            }
         }
 
         return $this->success($offer->load('media'), 'Offer created successfully.');
@@ -83,11 +82,8 @@ class OfferManagementController extends Controller
         ]);
 
         $offer = Offer::findOrFail($id);
-        $user = auth()->user();
-
-        if (!$offer->listing || $offer->listing->user_id !== $user->id) {
-            return $this->error('You do not own this listing.', 403);
-        }
+        
+        $this->authorize('update', $offer);
 
         $offer->update($request->all());
 

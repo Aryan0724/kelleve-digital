@@ -47,7 +47,7 @@ class BusinessDirectoryController extends Controller
 
         \App\Modules\Truedial\Services\AnalyticsEventService::track(
             $this->tenantContext->getTenantId(),
-            'view',
+            \App\Modules\Truedial\Services\AnalyticsEventService::EVENT_BUSINESS_VIEW,
             'listing',
             $businessDTO->basicInfo['id'],
             auth('sanctum')->id()

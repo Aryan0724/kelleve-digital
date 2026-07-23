@@ -66,9 +66,9 @@ class BusinessController extends Controller
 
     public function update(Request $request, $id)
     {
-        $business = Listing::forCurrentTenant()
-            ->where('user_id', Auth::id())
-            ->findOrFail($id);
+        $business = Listing::forCurrentTenant()->findOrFail($id);
+        
+        $this->authorize('update', $business);
 
         $validated = $request->validate([
             'category_id' => 'sometimes|required|exists:categories,id',
@@ -96,6 +96,8 @@ class BusinessController extends Controller
         $business = Listing::forCurrentTenant()
             ->where('user_id', Auth::id())
             ->firstOrFail();
+            
+        $this->authorize('update', $business);
 
         $validated = $request->validate([
             'products' => 'present|array',
@@ -118,6 +120,8 @@ class BusinessController extends Controller
         $business = Listing::forCurrentTenant()
             ->where('user_id', Auth::id())
             ->firstOrFail();
+            
+        $this->authorize('update', $business);
 
         $validated = $request->validate([
             'services' => 'present|array',

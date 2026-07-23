@@ -54,8 +54,14 @@ class ReviewController extends Controller
             $review->status = 'approved';
             $review->save();
 
-            // Fire event (using standard Laravel event helper)
-            event(new \App\Events\AnalyticsEventEmitted('review_submitted', 'listing', $listing->id, $user->id));
+            // Track event
+            \App\Modules\Truedial\Services\AnalyticsEventService::track(
+                $listing->tenant_id,
+                \App\Modules\Truedial\Services\AnalyticsEventService::EVENT_REVIEW_SUBMITTED,
+                'listing',
+                $listing->id,
+                $user->id
+            );
             
             return $review;
         });
