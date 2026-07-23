@@ -1,8 +1,13 @@
 import Link from "next/link";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
 import AutocompleteSearch from "@/components/shared/AutocompleteSearch";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default function Navbar() {
+export default async function Navbar() {
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+  const isLoggedIn = !!token;
   return (
     <>
       {/* Top Header */}
@@ -11,9 +16,18 @@ export default function Navbar() {
           <span className="flex items-center gap-2">✉ support@truedial.com</span>
           <span className="flex items-center gap-2">📞 95349 00999</span>
         </div>
-        <div className="flex gap-6">
+        <div className="flex gap-6 items-center">
           <span>Download App ▶ 🍎</span>
-          <Link href="/login" className="hover:text-primary transition">Login / Sign Up</Link>
+          {isLoggedIn ? (
+            <div className="flex gap-4">
+              <Link href="/dashboard/user" className="hover:text-primary transition flex items-center gap-1"><LayoutDashboard className="w-4 h-4"/> Dashboard</Link>
+              <form action={async () => { "use server"; (await cookies()).delete("auth_token"); redirect("/"); }}>
+                <button type="submit" className="hover:text-primary transition flex items-center gap-1"><LogOut className="w-4 h-4"/> Logout</button>
+              </form>
+            </div>
+          ) : (
+            <Link href="/login" className="hover:text-primary transition">Login / Sign Up</Link>
+          )}
         </div>
       </div>
 
@@ -43,12 +57,22 @@ export default function Navbar() {
           <Link href="#" className="text-foreground hover:text-primary transition font-medium">Contact</Link>
         </nav>
         <div className="hidden lg:flex items-center gap-4">
-          <Link href="/login" className="text-foreground font-medium hover:text-primary transition">Login</Link>
-          <Link href="/register">
-            <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition">
-              Add Your Business
-            </button>
-          </Link>
+          {!isLoggedIn ? (
+            <>
+              <Link href="/login" className="text-foreground font-medium hover:text-primary transition">Login</Link>
+              <Link href="/register">
+                <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition">
+                  Add Your Business
+                </button>
+              </Link>
+            </>
+          ) : (
+            <Link href="/dashboard/user">
+              <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition flex items-center gap-2">
+                <LayoutDashboard className="w-4 h-4"/> Go to Dashboard
+              </button>
+            </Link>
+          )}
         </div>
       </header>
     </>

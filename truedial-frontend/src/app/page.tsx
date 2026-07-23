@@ -15,89 +15,42 @@ export default async function Home() {
       <Navbar />
 
       {/* Hero Section */}
-      <section className="bg-white py-12 md:py-20 px-6 md:px-12 flex flex-col md:flex-row items-center justify-between gap-12 relative overflow-hidden">
-        {/* Left Content */}
-        <div className="flex-1 z-10 max-w-2xl">
-          <h1 className="text-4xl md:text-6xl font-bold text-navy leading-tight mb-4">
-            India’s Emerging <br />
-            <span className="text-primary">Business Growth</span> <br />
-            Platform
+      <section className="bg-gradient-to-br from-blue-50 to-orange-50 py-16 px-6 md:px-12 flex flex-col items-center justify-center relative overflow-hidden">
+        <div className="z-10 max-w-4xl w-full text-center">
+          <h1 className="text-4xl md:text-5xl font-bold text-navy leading-tight mb-4">
+            Search Across <span className="text-primary">50K+</span> Verified Businesses
           </h1>
-          <h2 className="text-xl md:text-2xl font-semibold text-gray-800 mb-6 uppercase tracking-wide">
-            Beyond Listing. <br />
-            We Help Businesses <span className="text-primary">Grow.</span>
-          </h2>
-          <p className="text-gray-600 mb-10 max-w-md text-lg">
-            List your business, get discovered, attract more customers and grow with our powerful tools, marketing solutions and business services.
+          <p className="text-gray-600 mb-10 text-lg">
+            Find the best Restaurants, Hotels, Doctors, and Services near you.
           </p>
 
-          {/* Search Bar Component */}
-          <form action="/search" className="bg-white p-3 rounded-lg shadow-lg flex flex-col md:flex-row items-center gap-3 border border-gray-100 max-w-3xl">
-            <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
-              <Grid className="text-gray-400 w-5 h-5" />
-              <input type="text" name="category" placeholder="Select Category" className="bg-transparent outline-none w-full text-sm" />
+          {/* Huge Centralized Search Bar Component */}
+          <form action="/search" className="bg-white p-3 rounded-2xl shadow-xl flex flex-col md:flex-row items-center gap-3 border border-gray-100 w-full mx-auto">
+            <div className="flex items-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-r border-gray-100 flex-1 w-full md:w-auto">
+              <MapPin className="text-primary w-6 h-6 shrink-0" />
+              <input type="text" name="city" placeholder="City or Pincode" className="bg-transparent outline-none w-full text-base font-medium" />
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
-              <MapPin className="text-gray-400 w-5 h-5" />
-              <input type="text" name="city" placeholder="Select City" className="bg-transparent outline-none w-full text-sm" />
+            <div className="flex items-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-r border-gray-100 flex-1 w-full md:w-auto">
+              <Grid className="text-primary w-6 h-6 shrink-0" />
+              <input type="text" name="category" placeholder="Category (e.g. Restaurants)" className="bg-transparent outline-none w-full text-base font-medium" />
             </div>
-            <div className="flex items-center gap-2 px-3 py-2 border rounded-md flex-1 bg-gray-50">
-              <SearchIcon className="text-gray-400 w-5 h-5" />
-              <input type="text" name="q" placeholder="What are you looking for?" className="bg-transparent outline-none w-full text-sm" />
+            <div className="flex items-center gap-2 px-4 py-3 flex-[2] w-full md:w-auto">
+              <SearchIcon className="text-primary w-6 h-6 shrink-0" />
+              <input type="text" name="q" placeholder="Search business name..." className="bg-transparent outline-none w-full text-base font-medium" />
             </div>
-            <button type="submit" className="bg-primary text-white px-8 py-3 rounded-md font-medium hover:bg-orange-600 w-full md:w-auto transition">
+            <button type="submit" className="bg-primary text-white px-10 py-4 rounded-xl font-bold hover:bg-orange-600 w-full md:w-auto transition shadow-lg shadow-primary/30 text-lg">
               Search
             </button>
           </form>
           
-          <div className="mt-4 flex flex-wrap items-center gap-3 text-sm text-gray-500">
-            <span className="font-medium text-gray-700">Popular Searches:</span>
-            <Link href="/search?q=Restaurants"><span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200 transition inline-block">Restaurants</span></Link>
-            <Link href="/search?q=Hotels"><span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200 transition inline-block">Hotels</span></Link>
-            <Link href="/search?q=Hospitals"><span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200 transition inline-block">Hospitals</span></Link>
-            <Link href="/search?q=Interior%20Designers"><span className="px-3 py-1 bg-gray-100 rounded-full cursor-pointer hover:bg-gray-200 transition inline-block">Interior Designers</span></Link>
+          <div className="mt-6 flex flex-wrap justify-center items-center gap-3 text-sm text-gray-500">
+            <span className="font-medium text-gray-700">Trending:</span>
+            <Link href="/search?category=Restaurants"><span className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-full cursor-pointer hover:bg-gray-50 hover:text-primary transition inline-block">Restaurants</span></Link>
+            <Link href="/search?category=Hotels"><span className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-full cursor-pointer hover:bg-gray-50 hover:text-primary transition inline-block">Hotels</span></Link>
+            <Link href="/search?category=Hospitals"><span className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-full cursor-pointer hover:bg-gray-50 hover:text-primary transition inline-block">Hospitals</span></Link>
+            <Link href="/search?category=Interior%20Designers"><span className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-full cursor-pointer hover:bg-gray-50 hover:text-primary transition inline-block">Interior Designers</span></Link>
           </div>
         </div>
-
-        {/* Right Images (Mockup) */}
-        <div className="flex-1 relative z-10 flex justify-center items-center">
-          <div className="bg-gray-200 w-72 h-[500px] rounded-[2.5rem] shadow-2xl border-[8px] border-gray-800 relative overflow-hidden flex flex-col">
-            <div className="bg-navy p-4 flex flex-col items-center">
-               <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold text-sm mb-2">T</div>
-               <div className="bg-white/20 rounded w-full py-1 px-2 text-xs text-white flex items-center gap-2">
-                 <SearchIcon className="w-3 h-3" /> Search business...
-               </div>
-            </div>
-            <div className="bg-white flex-1 p-4">
-               {/* Phone mock content */}
-               <div className="h-24 bg-gray-100 rounded-lg mb-4"></div>
-               <div className="grid grid-cols-3 gap-2">
-                 <div className="h-16 bg-gray-100 rounded-md"></div>
-                 <div className="h-16 bg-gray-100 rounded-md"></div>
-                 <div className="h-16 bg-gray-100 rounded-md"></div>
-                 <div className="h-16 bg-gray-100 rounded-md"></div>
-                 <div className="h-16 bg-gray-100 rounded-md"></div>
-                 <div className="h-16 bg-gray-100 rounded-md"></div>
-               </div>
-            </div>
-          </div>
-          
-          {/* Privilege Card Float */}
-          <div className="absolute -right-4 bottom-10 bg-gradient-to-r from-gray-900 to-black p-5 rounded-xl shadow-2xl border border-gray-700 text-yellow-500 w-64 transform rotate-6">
-            <div className="flex justify-between items-center mb-4">
-              <span className="font-bold text-white flex items-center gap-1"><div className="w-4 h-4 bg-primary text-white rounded-full flex justify-center items-center text-[8px]">T</div> truedial</span>
-              <span className="text-[10px] uppercase">Privilege Card</span>
-            </div>
-            <div className="font-mono text-sm tracking-widest text-white mb-2">1234 5678 9123 4567</div>
-            <div className="flex justify-between items-end">
-              <span className="text-xs text-gray-300">RAHUL KUMAR</span>
-              <span className="text-[10px] text-gray-400">Valid: 12/28</span>
-            </div>
-          </div>
-        </div>
-        
-        {/* Background Decorative Blob */}
-        <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-bl from-orange-50 to-transparent -z-10 rounded-bl-[100px]"></div>
       </section>
 
       {/* Stats Section */}
@@ -122,28 +75,45 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Categories Section */}
-      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto w-full">
-        <div className="flex justify-between items-end mb-8">
-          <h3 className="text-2xl font-bold text-navy">Explore Top Categories</h3>
-          <Link href="/categories" className="text-primary font-medium hover:underline text-sm flex items-center gap-1">View All Categories &gt;</Link>
-        </div>
-        <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
-          {[
-            { name: "Restaurants", icon: Utensils },
-            { name: "Hotels", icon: Hotel },
-            { name: "Hospitals", icon: PlusSquare },
-            { name: "Education", icon: GraduationCap },
-            { name: "Interior & Constr.", icon: HardHat },
-            { name: "Automobile", icon: Car },
-            { name: "Electronics", icon: Smartphone },
-            { name: "More", icon: MoreHorizontal },
-          ].map((cat, i) => (
-            <div key={i} className="flex flex-col items-center justify-center p-6 bg-white border border-gray-100 rounded-xl hover:shadow-md transition cursor-pointer hover:border-primary group">
-              <cat.icon className="w-10 h-10 text-navy mb-3 group-hover:text-primary transition" />
-              <span className="text-xs font-semibold text-center text-gray-700">{cat.name}</span>
-            </div>
-          ))}
+      {/* Categories Section - JD Style */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full relative z-20">
+        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-50">
+          <div className="flex justify-between items-center mb-8">
+             <h3 className="text-2xl font-bold text-navy">Popular Categories</h3>
+             <Link href="/categories" className="text-primary font-medium hover:underline text-sm flex items-center gap-1">View All Categories &gt;</Link>
+          </div>
+          <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+            {[
+              { name: "Restaurants", icon: Utensils, color: "bg-orange-100 text-orange-600", q: "Restaurants" },
+              { name: "Hotels", icon: Hotel, color: "bg-blue-100 text-blue-600", q: "Hotels" },
+              { name: "Hospitals", icon: PlusSquare, color: "bg-red-100 text-red-600", q: "Hospitals" },
+              { name: "Education", icon: GraduationCap, color: "bg-green-100 text-green-600", q: "Education" },
+              { name: "Interior Design", icon: HardHat, color: "bg-yellow-100 text-yellow-600", q: "Interior Designers" },
+              { name: "Automobile", icon: Car, color: "bg-purple-100 text-purple-600", q: "Automobile" },
+              { name: "Electronics", icon: Smartphone, color: "bg-cyan-100 text-cyan-600", q: "Electronics" },
+              { name: "More", icon: MoreHorizontal, color: "bg-gray-100 text-gray-600", link: "/categories" },
+            ].map((cat, i) => (
+              cat.link ? (
+                <Link href={cat.link} key={i}>
+                  <div className="flex flex-col items-center justify-center p-4 rounded-2xl hover:bg-gray-50 transition cursor-pointer group text-center gap-3">
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                      <cat.icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-xs font-semibold text-gray-700">{cat.name}</span>
+                  </div>
+                </Link>
+              ) : (
+                <Link href={`/search?category=${encodeURIComponent(cat.q)}`} key={i}>
+                  <div className="flex flex-col items-center justify-center p-4 rounded-2xl hover:bg-gray-50 transition cursor-pointer group text-center gap-3">
+                    <div className={`w-14 h-14 rounded-full flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                      <cat.icon className="w-6 h-6" />
+                    </div>
+                    <span className="text-xs font-semibold text-gray-700">{cat.name}</span>
+                  </div>
+                </Link>
+              )
+            ))}
+          </div>
         </div>
       </section>
 
