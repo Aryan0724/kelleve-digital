@@ -54,6 +54,8 @@ class AppServiceProvider extends ServiceProvider
             'Project'        => 'App\Models\Project', // Even though Requirement and Project share the same table, the class is used.
             'Rfq'            => 'App\Models\Rfq',
             'WorkerJob'      => 'App\Models\WorkerJob',
+            'ListingProduct' => 'App\Models\ListingProduct',
+            'ListingService' => 'App\Models\ListingService',
         ]);
 
         // Register Observers

@@ -41,7 +41,7 @@ class ProcessMediaVariants implements ShouldQueue
             }
 
             $content = Storage::disk($disk)->get($originalPath);
-            $image = Image::read($content);
+            $image = Image::decode($content);
 
             $filenameWithoutExt = pathinfo($this->media->file_name, PATHINFO_FILENAME);
             $ext = pathinfo($this->media->file_name, PATHINFO_EXTENSION);
@@ -55,7 +55,7 @@ class ProcessMediaVariants implements ShouldQueue
 
             foreach ($variants as $variantName => $width) {
                 // Read fresh copy for each variant to prevent quality loss over successive downsizes
-                $img = Image::read($content);
+                $img = Image::decode($content);
                 
                 // Scale down keeping aspect ratio
                 $img->scaleDown(width: $width);

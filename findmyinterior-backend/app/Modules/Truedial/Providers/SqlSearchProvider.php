@@ -22,6 +22,11 @@ class SqlSearchProvider implements SearchProviderInterface
         // Filters
         if (!empty($filters['category_id'])) {
             $query->whereIn('category_id', (array) $filters['category_id']);
+        } elseif (!empty($filters['category_name'])) {
+            $query->whereHas('category', function ($q) use ($filters) {
+                $q->where('name', 'like', '%' . $filters['category_name'] . '%')
+                  ->orWhere('slug', 'like', '%' . $filters['category_name'] . '%');
+            });
         }
 
         if (!empty($filters['city'])) {

@@ -34,9 +34,8 @@ class SearchServiceTest extends TestCase
         ]);
 
         $response = $this->getJson('/api/v1/truedial/public/search?q=Plumber');
-
         $response->assertStatus(200);
-        $data = $response->json('data.data');
+        $data = $response->json('data.data.data');
         
         $this->assertCount(2, $data);
         // Premium should be first due to ranking logic

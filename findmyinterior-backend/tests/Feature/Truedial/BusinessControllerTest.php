@@ -42,7 +42,9 @@ class BusinessControllerTest extends TestCase
 
     public function test_vendor_can_update_products()
     {
-        $response = $this->actingAs($this->user)->postJson('/api/v1/truedial/vendor/business/products', [
+        $response = $this->actingAs($this->user)
+            ->withHeaders(['X-Tenant-ID' => $this->tenant->id])
+            ->putJson('/api/v1/truedial/vendor/businesses/me/products', [
             'products' => [
                 [
                     'name' => 'Test Product 1',

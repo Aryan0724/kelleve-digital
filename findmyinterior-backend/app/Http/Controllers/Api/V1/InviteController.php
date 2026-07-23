@@ -45,16 +45,15 @@ class InviteController extends Controller
             VendorMetric::where('vendor_id', $vendorId)->increment('invites_received');
         }
 
-        // Send notification unconditionally
-        DB::table('notifications')->insert([
-            'user_id'    => $vendorId,
-            'type'       => 'invite_to_bid',
-            'title'      => 'You have been invited to bid!',
-            'message'    => "The customer for project '{$requirement->title}' has specifically invited you to submit a quote.",
-            'data'       => json_encode(['requirement_id' => $requirement->id]),
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        // Send notification using standard Laravel notification
+        $vendor = \App\Models\User::find($vendorId);
+        if ($vendor) {
+            \Illuminate\Support\Facades\Notification::send($vendor, new \App\Notifications\NewLeadNotification([
+                'title' => 'You have been invited to bid!',
+                'city' => $requirement->city,
+                'requirement_id' => $requirement->id,
+            ]));
+        }
 
         return response()->json(['message' => 'Vendor invited successfully.']);
     }

@@ -39,16 +39,24 @@ class TruedialSeeder extends Seeder
             $vendor->roles()->attach($vendorRole->id);
         }
 
+        // Create basic categories if not exist
+        $restaurantCategory = \App\Models\Category::firstOrCreate(
+            ['slug' => 'restaurants', 'tenant_id' => $tenantId],
+            ['name' => 'Restaurants', 'is_active' => true]
+        );
+
         // Create a basic listing for the vendor
         if ($vendor) {
             $category = \App\Models\Category::first();
             $city = \App\Models\City::first();
-            $listing = \App\Models\Listing::firstOrCreate([
+            
+            // 1. General Business
+            \App\Models\Listing::firstOrCreate([
                 'user_id' => $vendor->id,
                 'tenant_id' => $tenantId,
+                'slug' => 'truedial-vendor-business',
             ], [
                 'title' => 'Truedial Vendor Business',
-                'slug' => 'truedial-vendor-business',
                 'description' => 'A test business for truedial',
                 'category_id' => $category ? $category->id : 1,
                 'city_id' => $city ? $city->id : 1,
@@ -58,6 +66,28 @@ class TruedialSeeder extends Seeder
                 'state' => 'Delhi',
                 'status' => 'active',
                 'phone' => '+919876543210',
+            ]);
+
+            // 2. Restaurant Business
+            \App\Models\Listing::firstOrCreate([
+                'user_id' => $vendor->id,
+                'tenant_id' => $tenantId,
+                'slug' => 'the-great-indian-restaurant',
+            ], [
+                'title' => 'The Great Indian Restaurant',
+                'description' => 'Authentic Indian Cuisine',
+                'category_id' => $restaurantCategory->id,
+                'city_id' => $city ? $city->id : 1,
+                'district_id' => null,
+                'city' => 'Mumbai',
+                'district' => 'Andheri',
+                'state' => 'Maharashtra',
+                'status' => 'active',
+                'phone' => '+919988776655',
+                'is_verified' => true,
+                'is_premium' => true,
+                'avg_rating' => 4.8,
+                'review_count' => 150,
             ]);
         }
 

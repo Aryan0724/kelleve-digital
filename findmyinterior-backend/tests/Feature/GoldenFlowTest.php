@@ -96,8 +96,8 @@ class GoldenFlowTest extends TestCase
             'invited_at' => null
         ]);
         $this->assertDatabaseHas('notifications', [
-            'user_id' => $vendorUser->id,
-            'type' => 'invite_to_bid'
+            'notifiable_id' => $vendorUser->id,
+            'type' => \App\Notifications\NewLeadNotification::class
         ]);
 
         // (We would normally test vendor bidding here, but that's flow 2)
@@ -211,8 +211,8 @@ class GoldenFlowTest extends TestCase
 
         // Verify customer received notification
         $this->assertDatabaseHas('notifications', [
-            'user_id' => $customer->id,
-            'type' => 'new_bid'
+            'notifiable_id' => $customer->id,
+            'type' => \App\Notifications\BidReceivedNotification::class
         ]);
         
         // Verify requirement status updated to bidding
@@ -272,8 +272,7 @@ class GoldenFlowTest extends TestCase
         
         $this->assertDatabaseHas('conversations', [
             'id' => $conversationId,
-            'conversationable_type' => Requirement::class,
-            'conversationable_id' => $requirement->id,
+            'project_id' => $requirement->id,
             'customer_id' => $customer->id,
             'vendor_id' => $vendorUser->id
         ]);
@@ -290,10 +289,9 @@ class GoldenFlowTest extends TestCase
             'message' => 'Hello, I can do your kitchen!'
         ]);
 
-        // Verify customer received a notification
         $this->assertDatabaseHas('notifications', [
-            'user_id' => $customer->id,
-            'type' => 'new_message'
+            'notifiable_id' => $customer->id,
+            'type' => \App\Notifications\NewMessageNotification::class
         ]);
 
         // 5. Customer replies
@@ -310,8 +308,8 @@ class GoldenFlowTest extends TestCase
 
         // Verify vendor received a notification
         $this->assertDatabaseHas('notifications', [
-            'user_id' => $vendorUser->id,
-            'type' => 'new_message'
+            'notifiable_id' => $vendorUser->id,
+            'type' => \App\Notifications\NewMessageNotification::class
         ]);
     }
 

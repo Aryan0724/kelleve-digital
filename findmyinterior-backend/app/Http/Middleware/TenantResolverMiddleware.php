@@ -43,7 +43,7 @@ class TenantResolverMiddleware
         if ($tenant) {
             $this->tenantContext->setTenant($tenant);
         } else {
-            return response()->json(['success' => false, 'message' => 'Tenant not found.'], 404);
+            return response()->json(['success' => false, 'message' => 'Tenant not found. Header was: ' . $request->header('X-Tenant-ID')], 404);
         }
 
         return $next($request);

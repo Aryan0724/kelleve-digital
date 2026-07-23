@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class BusinessController extends Controller
 {
-    use \App\Traits\ApiResponse;
+    use \App\Traits\ApiResponse, \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
     protected TenantContext $tenantContext;
 

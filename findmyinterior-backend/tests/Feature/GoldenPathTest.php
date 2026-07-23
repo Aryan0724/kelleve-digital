@@ -40,6 +40,7 @@ class GoldenPathTest extends TestCase
         // 1. Setup Users
         $client       = $this->makeUser('customer');
         $professional = $this->makeUser('business');
+        app(\App\Services\WalletService::class)->addFunds($professional, 1000, 'Test balance');
 
         $category = Category::first();
 
@@ -57,6 +58,9 @@ class GoldenPathTest extends TestCase
             'phone'            => '9876543210',
             'email'            => 'john@example.com',
         ]);
+        if ($response->status() !== 201) {
+            dd($response->status(), $response->json());
+        }
         $response->assertStatus(201);
         $requirementId = $response->json('data.id');
 
@@ -71,7 +75,7 @@ class GoldenPathTest extends TestCase
             'proposal_message' => 'We can do this perfectly.',
         ]);
         $response->assertStatus(201);
-        $bidId = $response->json('bid.id');
+        $bidId = $response->json('data.id');
 
         $this->assertNotNull($bidId, 'Bid ID should not be null after bid submission');
 

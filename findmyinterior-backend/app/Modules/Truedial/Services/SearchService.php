@@ -19,10 +19,11 @@ class SearchService
     {
         $term = $params['q'] ?? null;
         $filters = [
-            'category_id' => $params['category_id'] ?? null,
-            'city'        => $params['city'] ?? null,
-            'verified'    => $params['verified'] ?? false,
-            'premium'     => $params['premium'] ?? false,
+            'category_id'   => $params['category_id'] ?? null,
+            'category_name' => $params['category_name'] ?? null,
+            'city'          => $params['city'] ?? null,
+            'verified'      => $params['verified'] ?? false,
+            'premium'       => $params['premium'] ?? false,
             'offers'      => $params['offers'] ?? false,
             'min_rating'  => $params['min_rating'] ?? null,
             'lat'         => $params['lat'] ?? null,

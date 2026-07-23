@@ -44,11 +44,12 @@ class RecommendationEngineService
 
             $result = $this->calculateScore($requirement, $listing, $vendor);
             $scores[] = [
-                'requirement_id' => $requirement->id,
-                'vendor_id'      => $vendor->id,
-                'match_score'    => $result['score'],
+                'requirement_id'   => $requirement->id,
+                'requirement_type' => get_class($requirement),
+                'vendor_id'        => $vendor->id,
+                'match_score'      => $result['score'],
                 'score_breakdown_json' => json_encode($result['breakdown']),
-                'recommended_at' => now(),
+                'recommended_at'   => now(),
             ];
         }
 
@@ -67,7 +68,7 @@ class RecommendationEngineService
             DB::table('requirement_recommendations')->upsert(
                 $inserts,
                 ['requirement_id', 'vendor_id'],
-                ['match_score', 'score_breakdown_json', 'updated_at', 'recommended_at']
+                ['requirement_type', 'match_score', 'score_breakdown_json', 'updated_at', 'recommended_at']
             );
             VendorMetric::whereIn('vendor_id', $vendorIds)->increment('recommendations_received');
         }

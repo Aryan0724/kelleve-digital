@@ -190,6 +190,10 @@ class RecommendationEngineTest extends TestCase
         $response = $this->actingAs($customer, 'sanctum')
             ->getJson("/api/v1/requirements/{$requirement->id}/recommendations");
 
+        if (empty($response->json('recommendations'))) {
+            dd($response->json());
+        }
+
         $response->assertOk()
             ->assertJsonStructure([
                 'requirement_id',
