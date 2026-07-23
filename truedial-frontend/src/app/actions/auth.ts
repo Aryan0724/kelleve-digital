@@ -3,7 +3,7 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://findmyinterior.com/api/v1";
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
 
 export async function loginAction(formData: FormData) {
   const email = formData.get("email");
@@ -21,7 +21,8 @@ export async function loginAction(formData: FormData) {
     
     if (data.success && data.data?.token) {
       const cookieStore = await cookies();
-      cookieStore.set("auth_token", data.data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      const isSecure = process.env.NEXT_PUBLIC_API_URL?.startsWith("https") || false;
+      cookieStore.set("auth_token", data.data.token, { httpOnly: true, secure: isSecure, maxAge: 86400 * 30 });
       const role = data.data.user?.role;
       redirectPath = role === "business" ? "/dashboard/business" : "/dashboard/user";
     } else {
@@ -56,7 +57,8 @@ export async function registerAction(formData: FormData) {
     
     if (data.success && data.data?.token) {
       const cookieStore = await cookies();
-      cookieStore.set("auth_token", data.data.token, { httpOnly: true, secure: true, maxAge: 86400 * 30 });
+      const isSecure = process.env.NEXT_PUBLIC_API_URL?.startsWith("https") || false;
+      cookieStore.set("auth_token", data.data.token, { httpOnly: true, secure: isSecure, maxAge: 86400 * 30 });
       const createdRole = data.data.user?.role || role;
       redirectPath = createdRole === "business" ? "/dashboard/business" : "/dashboard/user";
     } else {
