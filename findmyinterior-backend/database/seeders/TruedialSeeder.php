@@ -56,7 +56,8 @@ class TruedialSeeder extends Seeder
                 'city' => 'Delhi',
                 'district' => 'New Delhi',
                 'state' => 'Delhi',
-                'status' => 'active'
+                'status' => 'active',
+                'phone' => '+919876543210',
             ]);
         }
 
