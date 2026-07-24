@@ -317,7 +317,7 @@ export default function RegisterPage() {
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Create your account — it's free</p>
         </div>
 
-        <Card className="border-0 shadow-2xl dark:bg-slate-900/80 dark:border dark:border-slate-800">
+        <Card className="border-0 shadow-2xl overflow-visible dark:bg-slate-900/80 dark:border dark:border-slate-800">
           <CardHeader className="pb-2">
             <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">Join the Platform</CardTitle>
             <CardDescription className="dark:text-slate-400">
