@@ -9,6 +9,8 @@ export function VerificationAdminPanel() {
   const [users, setUsers] = useState<any[]>([]);
   const [filter, setFilter] = useState("pending");
   const [loading, setLoading] = useState(true);
+  const [viewingDoc, setViewingDoc] = useState<string | null>(null);
+  const [loadingDocId, setLoadingDocId] = useState<number | null>(null);
 
   const fetchVerifications = async () => {
     setLoading(true);
@@ -69,34 +71,19 @@ export function VerificationAdminPanel() {
   };
 
   const handleViewDoc = async (id: number) => {
-    // Open synchronously to prevent browser popup blockers
-    const newTab = window.open("", "_blank");
-    if (newTab) {
-      newTab.document.write("<html><body style='font-family:sans-serif;padding:2rem;text-align:center;'><h2>Loading document...</h2></body></html>");
-    }
-
+    setLoadingDocId(id);
     try {
       const res = await api.get(`/admin/verifications/documents/${id}`);
       const docData = res.data.data;
-      if (docData && docData.file_path && newTab) {
-        newTab.document.open();
-        newTab.document.write(`
-          <html>
-            <head><title>Document View</title></head>
-            <body style="margin:0;display:flex;justify-content:center;align-items:center;background:#f0f0f0;height:100vh;">
-              <img src="${docData.file_path}" style="max-width:100%;max-height:100%;box-shadow:0 4px 12px rgba(0,0,0,0.1);" />
-            </body>
-          </html>
-        `);
-        newTab.document.close();
-      } else if (newTab) {
-        newTab.document.body.innerHTML = "<h2 style='text-align:center;font-family:sans-serif;margin-top:2rem;'>Document not found.</h2>";
+      if (docData && docData.file_path) {
+        setViewingDoc(docData.file_path);
+      } else {
+        alert("Document not found.");
       }
     } catch (e: any) {
-      if (newTab) {
-        newTab.document.body.innerHTML = `<h2 style='color:red;text-align:center;font-family:sans-serif;margin-top:2rem;'>Error loading document: ${e.message}</h2>`;
-      }
       alert("Error loading document: " + e.message);
+    } finally {
+      setLoadingDocId(null);
     }
   };
 
@@ -153,8 +140,18 @@ export function VerificationAdminPanel() {
                           
                           <div className="flex gap-2 mt-4">
                             <div className="flex-1">
-                              <Button size="sm" variant="outline" className="w-full" onClick={() => handleViewDoc(doc.id)}>
-                                <ExternalLink className="h-3 w-3 mr-1" /> View
+                              <Button 
+                                size="sm" 
+                                variant="outline" 
+                                className="w-full" 
+                                onClick={() => handleViewDoc(doc.id)}
+                                disabled={loadingDocId === doc.id}
+                              >
+                                {loadingDocId === doc.id ? (
+                                  <><RefreshCw className="h-3 w-3 mr-1 animate-spin" /> Loading...</>
+                                ) : (
+                                  <><ExternalLink className="h-3 w-3 mr-1" /> View</>
+                                )}
                               </Button>
                             </div>
                             {doc.status === "pending" && (
@@ -181,6 +178,26 @@ export function VerificationAdminPanel() {
               </CardContent>
             </Card>
           ))}
+        </div>
+      )}
+
+      {/* Document Viewer Modal */}
+      {viewingDoc && (
+        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4" onClick={() => setViewingDoc(null)}>
+          <div className="relative max-w-full max-h-full">
+            <button 
+              className="absolute -top-12 right-0 text-white hover:text-slate-300 bg-slate-800/50 rounded-full p-1 transition-colors" 
+              onClick={() => setViewingDoc(null)}
+            >
+              <XCircle className="w-8 h-8" />
+            </button>
+            <img 
+              src={viewingDoc} 
+              alt="Verification Document" 
+              className="max-w-full max-h-[90vh] object-contain rounded-md shadow-2xl bg-white" 
+              onClick={(e) => e.stopPropagation()} 
+            />
+          </div>
         </div>
       )}
     </div>
