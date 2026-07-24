@@ -69,23 +69,33 @@ export function VerificationAdminPanel() {
   };
 
   const handleViewDoc = async (id: number) => {
+    // Open synchronously to prevent browser popup blockers
+    const newTab = window.open("", "_blank");
+    if (newTab) {
+      newTab.document.write("<html><body style='font-family:sans-serif;padding:2rem;text-align:center;'><h2>Loading document...</h2></body></html>");
+    }
+
     try {
       const res = await api.get(`/admin/verifications/documents/${id}`);
       const docData = res.data.data;
-      if (docData && docData.file_path) {
-        const newTab = window.open();
-        if (newTab) {
-          newTab.document.write(`
-            <html>
-              <head><title>Document View</title></head>
-              <body style="margin:0;display:flex;justify-content:center;align-items:center;background:#f0f0f0;height:100vh;">
-                <img src="${docData.file_path}" style="max-width:100%;max-height:100%;box-shadow:0 4px 12px rgba(0,0,0,0.1);" />
-              </body>
-            </html>
-          `);
-        }
+      if (docData && docData.file_path && newTab) {
+        newTab.document.open();
+        newTab.document.write(`
+          <html>
+            <head><title>Document View</title></head>
+            <body style="margin:0;display:flex;justify-content:center;align-items:center;background:#f0f0f0;height:100vh;">
+              <img src="${docData.file_path}" style="max-width:100%;max-height:100%;box-shadow:0 4px 12px rgba(0,0,0,0.1);" />
+            </body>
+          </html>
+        `);
+        newTab.document.close();
+      } else if (newTab) {
+        newTab.document.body.innerHTML = "<h2 style='text-align:center;font-family:sans-serif;margin-top:2rem;'>Document not found.</h2>";
       }
     } catch (e: any) {
+      if (newTab) {
+        newTab.document.body.innerHTML = `<h2 style='color:red;text-align:center;font-family:sans-serif;margin-top:2rem;'>Error loading document: ${e.message}</h2>`;
+      }
       alert("Error loading document: " + e.message);
     }
   };
