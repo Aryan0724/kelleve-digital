@@ -47,11 +47,10 @@ class VerificationController extends Controller
 
         $users = $query->paginate(20);
 
-        // Transform documents to include full URLs
+        // Transform documents to hide massive base64 file_paths from the list API payload
         $users->getCollection()->transform(function ($user) {
             $user->documents->transform(function ($doc) {
-                // file_path is already a base64 data URI
-                $doc->url = $doc->file_path;
+                $doc->makeHidden('file_path');
                 return $doc;
             });
             return $user;
@@ -60,6 +59,15 @@ class VerificationController extends Controller
         return response()->json([
             'status' => 'success',
             'data' => $users
+        ]);
+    }
+
+    public function showDocument($id)
+    {
+        $document = UserDocument::findOrFail($id);
+        return response()->json([
+            'status' => 'success',
+            'data' => $document
         ]);
     }
 

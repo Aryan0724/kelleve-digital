@@ -15,8 +15,9 @@ export function VerificationAdminPanel() {
     try {
       const res = await api.get(`/admin/verifications?filter=${filter}`);
       setUsers(res.data.data?.data || []);
-    } catch (e) {
+    } catch (e: any) {
       console.error(e);
+      alert("Error fetching verifications: " + e.message);
     } finally {
       setLoading(false);
     }
@@ -64,6 +65,28 @@ export function VerificationAdminPanel() {
       fetchVerifications();
     } catch (e: any) {
       alert(e.response?.data?.message || "Error");
+    }
+  };
+
+  const handleViewDoc = async (id: number) => {
+    try {
+      const res = await api.get(`/admin/verifications/documents/${id}`);
+      const docData = res.data.data;
+      if (docData && docData.file_path) {
+        const newTab = window.open();
+        if (newTab) {
+          newTab.document.write(`
+            <html>
+              <head><title>Document View</title></head>
+              <body style="margin:0;display:flex;justify-content:center;align-items:center;background:#f0f0f0;height:100vh;">
+                <img src="${docData.file_path}" style="max-width:100%;max-height:100%;box-shadow:0 4px 12px rgba(0,0,0,0.1);" />
+              </body>
+            </html>
+          `);
+        }
+      }
+    } catch (e: any) {
+      alert("Error loading document: " + e.message);
     }
   };
 
@@ -119,11 +142,11 @@ export function VerificationAdminPanel() {
                           </div>
                           
                           <div className="flex gap-2 mt-4">
-                            <a href={doc.url} target="_blank" rel="noopener noreferrer" className="flex-1">
-                              <Button size="sm" variant="outline" className="w-full">
+                            <div className="flex-1">
+                              <Button size="sm" variant="outline" className="w-full" onClick={() => handleViewDoc(doc.id)}>
                                 <ExternalLink className="h-3 w-3 mr-1" /> View
                               </Button>
-                            </a>
+                            </div>
                             {doc.status === "pending" && (
                               <>
                                 <Button size="sm" className="bg-green-600 hover:bg-green-700 px-2" onClick={() => handleApproveDoc(doc.id)}>

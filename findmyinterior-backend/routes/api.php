@@ -310,6 +310,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         // Trust & Verifications Admin
         Route::get('verifications', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'index']);
+        Route::get('verifications/documents/{id}', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'showDocument']);
         Route::patch('verifications/documents/{id}/approve', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'approveDocument']);
         Route::patch('verifications/documents/{id}/reject', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'rejectDocument']);
         Route::patch('verifications/users/{id}/approve-business', [\App\Http\Controllers\Api\V1\Admin\VerificationController::class, 'approveBusiness']);
