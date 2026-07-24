@@ -74,6 +74,7 @@ export default function AdminDashboard() {
   const [categories, setCategories] = useState<any[]>([]);
   const [search, setSearch] = useState("");
   const [userFilter, setUserFilter] = useState<"all" | "mock" | "real">("all");
+  const [userPage, setUserPage] = useState(1);
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [usersMeta, setUsersMeta] = useState<any>({});
@@ -88,13 +89,14 @@ export default function AdminDashboard() {
   const fetchUsers = useCallback(async () => {
     const res = await api.get("/admin/users", {
       params: {
+        page: userPage,
         search: search || undefined,
         filter: userFilter !== "all" ? userFilter : undefined,
       },
     });
     setUsers(res.data.data || []);
     setUsersMeta(res.data.meta || {});
-  }, [search, userFilter]);
+  }, [search, userFilter, userPage]);
 
   const fetchListings = useCallback(async () => {
     try {
@@ -323,7 +325,7 @@ export default function AdminDashboard() {
                   <div className="flex items-center gap-2 flex-wrap">
                     <Input
                       value={search}
-                      onChange={(e) => setSearch(e.target.value)}
+                      onChange={(e) => { setSearch(e.target.value); setUserPage(1); }}
                       placeholder="Search name, email, phone"
                       className="md:max-w-48 h-8 text-sm"
                     />
@@ -331,7 +333,7 @@ export default function AdminDashboard() {
                     {(["all", "real", "mock"] as const).map((f) => (
                       <button
                         key={f}
-                        onClick={() => setUserFilter(f)}
+                        onClick={() => { setUserFilter(f); setUserPage(1); }}
                         className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                           userFilter === f
                             ? f === "mock" ? "bg-orange-500 text-white" : "bg-indigo-600 text-white"
@@ -415,6 +417,32 @@ export default function AdminDashboard() {
                   </div>,
                 ])}
               />
+              {/* Pagination Controls */}
+              {usersMeta.last_page > 1 && (
+                <div className="flex items-center justify-between mt-4 border-t pt-4">
+                  <div className="text-sm text-slate-500">
+                    Showing page {usersMeta.current_page || userPage} of {usersMeta.last_page}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setUserPage(p => Math.max(1, p - 1))}
+                      disabled={userPage === 1}
+                    >
+                      Previous
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setUserPage(p => Math.min(usersMeta.last_page, p + 1))}
+                      disabled={userPage >= usersMeta.last_page}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         )}
