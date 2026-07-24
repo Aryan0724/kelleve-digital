@@ -25,10 +25,12 @@ class ListingController extends Controller
             $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
         }
         if ($request->filled('city')) {
-            $query->where('city', $request->city);
+            $cityVal = strtolower(trim($request->city));
+            $query->whereRaw('LOWER(city) LIKE ?', ["%{$cityVal}%"]);
         }
         if ($request->filled('district')) {
-            $query->where('district', $request->district);
+            $distVal = strtolower(trim($request->district));
+            $query->whereRaw('LOWER(district) LIKE ?', ["%{$distVal}%"]);
         }
         if ($request->boolean('verified')) {
             $query->verified();
@@ -36,8 +38,22 @@ class ListingController extends Controller
         if ($request->boolean('featured')) {
             $query->featured();
         }
+        if ($request->filled('professional_type')) {
+            $ptVal = strtolower(trim($request->professional_type));
+            // Match by professional_type on user or in title/description
+            $query->where(function ($q) use ($ptVal) {
+                $q->whereHas('user', fn($uq) => $uq->whereRaw('LOWER(professional_type) LIKE ?', ["%{$ptVal}%"]))
+                  ->orWhereRaw('LOWER(title) LIKE ?', ["%{$ptVal}%"])
+                  ->orWhereRaw('LOWER(description) LIKE ?', ["%{$ptVal}%"]);
+            });
+        }
         if ($request->filled('search')) {
             $query->search($request->search);
+        }
+        // 'name' param - search by company/person name specifically
+        if ($request->filled('name')) {
+            $nameVal = strtolower(trim($request->name));
+            $query->whereRaw('LOWER(title) LIKE ?', ["%{$nameVal}%"]);
         }
         if ($request->filled('min_rating')) {
             $query->where('avg_rating', '>=', $request->min_rating);

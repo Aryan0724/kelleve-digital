@@ -21,6 +21,7 @@ class User extends Authenticatable
         'email',
         'phone',
         'password',
+        'professional_type',
         'avatar',
         'verification_level',
         'is_active',

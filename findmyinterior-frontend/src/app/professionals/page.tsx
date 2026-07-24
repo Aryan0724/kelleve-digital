@@ -91,15 +91,21 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                     ) : (
                       <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">No Image</div>
                     )}
-                    {listing.is_premium && !listing.is_sponsored && (
-                      <Badge className="absolute top-3 right-3 bg-orange-600 hover:bg-orange-700 text-white border-0">Premium</Badge>
-                    )}
-                    {listing.is_sponsored && (
-                      <Badge className="absolute top-3 right-3 bg-amber-400 hover:bg-amber-500 text-slate-900 border-0 shadow-sm font-semibold">Sponsored</Badge>
-                    )}
-                    {listing.is_top_rated && (
-                      <Badge className="absolute top-3 left-3 bg-slate-900 hover:bg-slate-800 text-white border-0 shadow-sm">Top Rated</Badge>
-                    )}
+                    <div className="absolute top-3 left-3 right-3 flex flex-wrap justify-between items-start pointer-events-none">
+                      <div className="flex gap-2">
+                        {listing.is_top_rated && (
+                          <Badge className="bg-slate-900 text-white border-0 shadow-sm pointer-events-auto">Top Rated</Badge>
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-2 items-end">
+                        {listing.is_premium && !listing.is_sponsored && (
+                          <Badge className="bg-orange-600 text-white border-0 pointer-events-auto">Premium</Badge>
+                        )}
+                        {listing.is_sponsored && (
+                          <Badge className="bg-amber-400 text-slate-900 border-0 shadow-sm font-semibold pointer-events-auto">Sponsored</Badge>
+                        )}
+                      </div>
+                    </div>
                   </div>
                   <CardContent className="p-5 flex-1">
                     <div className="flex justify-between items-start mb-2">

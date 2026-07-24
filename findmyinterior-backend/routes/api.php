@@ -187,6 +187,11 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         // Reviews
         Route::post('reviews', [ReviewController::class, 'store']);
         Route::get('reviews', [ReviewController::class, 'myReviews']);
+
+        // Ventures — multi-GST company profiles
+        Route::get('ventures', [\App\Http\Controllers\Api\V1\VentureController::class, 'index']);
+        Route::post('ventures', [\App\Http\Controllers\Api\V1\VentureController::class, 'store']);
+        Route::delete('ventures/{id}', [\App\Http\Controllers\Api\V1\VentureController::class, 'destroy']);
     });
 
     // ─── Marketplace Engine (Protected) ───────────────────────────────────

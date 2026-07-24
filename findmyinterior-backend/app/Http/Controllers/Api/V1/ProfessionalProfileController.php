@@ -15,6 +15,59 @@ use Illuminate\Support\Str;
 class ProfessionalProfileController extends Controller
 {
     /**
+     * Helper to determine the broad profile type for a given role slug.
+     */
+    protected function getProfileType(string $role): string
+    {
+        // All roles that map to the "listing" profile (business/professional types)
+        $listingRoles = [
+            'interior_designer', 'interior_company', 'interior_contractor',
+            'modular_kitchen_designer', 'wardrobe_designer', '2d_3d_designer', 'space_planner',
+            'architect', 'structural_engineer', 'civil_engineer', 'mep_consultant',
+            'landscape_designer', 'vastu_consultant',
+            'contractor', 'civil_contractor', 'turnkey_contractor',
+            'renovation_contractor', 'demolition_contractor',
+            'home_renovation', 'waterproofing', 'pest_control', 'deep_cleaning',
+            'cctv_security', 'home_automation', 'solar_installation', 'ac_installation',
+            'packers_movers', 'interior_material_transport', 'equipment_rental',
+            'interior_project_consultant',
+            'business', // legacy
+        ];
+
+        // Roles that map to the "worker" profile
+        $workerRoles = [
+            'worker', 'skilled_worker',
+            'carpenter', 'electrician', 'plumber', 'painter',
+            'pop_false_ceiling_worker', 'tile_marble_fitter', 'granite_installer',
+            'fabricator', 'aluminium_fabricator', 'glass_installer',
+            'welder', 'polish_worker', 'wallpaper_installer',
+        ];
+
+        // Roles that map to the "supplier" profile
+        $supplierRoles = [
+            'supplier', 'material_supplier',
+            'plywood_dealer', 'laminate_dealer', 'tile_dealer',
+            'marble_granite_dealer', 'paint_dealer', 'hardware_supplier',
+            'lighting_supplier', 'electrical_supplier', 'sanitary_bathroom_supplier',
+            'modular_kitchen_material_supplier', 'glass_supplier',
+            'acp_aluminium_supplier', 'furniture_supplier', 'door_window_supplier',
+        ];
+
+        // Roles that map to the "builder" profile
+        $builderRoles = [
+            'builder', 'real_estate_developer',
+            'apartment_project', 'commercial_project', 'villa_project',
+        ];
+
+        if (in_array($role, $listingRoles)) return 'listing';
+        if (in_array($role, $workerRoles)) return 'worker';
+        if (in_array($role, $supplierRoles)) return 'supplier';
+        if (in_array($role, $builderRoles)) return 'builder';
+
+        return 'none';
+    }
+
+    /**
      * Get the user's professional profile based on their role.
      */
     public function show(Request $request): JsonResponse
@@ -23,20 +76,16 @@ class ProfessionalProfileController extends Controller
         $role = $user->role;
 
         $profile = null;
-        $type = null;
+        $type = $this->getProfileType($role);
 
-        if (in_array($role, ['interior_designer', 'interior_company', 'contractor', 'architect', 'business'])) {
+        if ($type === 'listing') {
             $profile = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
-            $type = 'listing';
-        } elseif (in_array($role, ['worker', 'skilled_worker'])) {
+        } elseif ($type === 'worker') {
             $profile = Worker::where('user_id', $user->id)->with(['reviews'])->first();
-            $type = 'worker';
-        } elseif (in_array($role, ['supplier', 'material_supplier'])) {
+        } elseif ($type === 'supplier') {
             $profile = Supplier::where('user_id', $user->id)->with(['reviews', 'catalog'])->first();
-            $type = 'supplier';
-        } elseif ($role === 'builder') {
+        } elseif ($type === 'builder') {
             $profile = Builder::where('user_id', $user->id)->with(['reviews', 'projects'])->first();
-            $type = 'builder';
         } else {
             $type = 'none'; // Homeowner, Customer, Admin
         }
@@ -56,9 +105,9 @@ class ProfessionalProfileController extends Controller
         $user = $request->user();
         $role = $user->role;
         $profile = null;
-        $type = null;
+        $type = $this->getProfileType($role);
 
-        if (in_array($role, ['interior_designer', 'interior_company', 'contractor', 'architect', 'business'])) {
+        if ($type === 'listing') {
             $data = $request->validate([
                 'title'            => ['required', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
@@ -87,12 +136,16 @@ class ProfessionalProfileController extends Controller
                 $profile->slug = Str::slug($data['title']) . '-' . Str::random(6);
                 $profile->state = 'Bihar';
                 $profile->status = 'active';
-                
+                // Set tenant_id so listing appears in public browse
+                try {
+                    $profile->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
+                } catch (\Throwable $e) {
+                    // If tenant context unavailable, leave null; scopeForCurrentTenant will handle
+                }
                 if (empty($profile->category_id)) {
-                    $categorySlug = match ($role) {
-                        'architect' => 'architects',
-                        'contractor' => 'civil-contractors',
-                        'interior_designer', 'interior_company', 'business' => 'interior-designers',
+                    $categorySlug = match (true) {
+                        in_array($role, ['architect', 'structural_engineer', 'civil_engineer']) => 'architects',
+                        in_array($role, ['contractor', 'civil_contractor', 'interior_contractor', 'turnkey_contractor', 'renovation_contractor', 'demolition_contractor']) => 'civil-contractors',
                         default => 'interior-designers',
                     };
                     $category = \App\Models\Category::where('slug', $categorySlug)->first();
@@ -100,9 +153,8 @@ class ProfessionalProfileController extends Controller
                 }
             }
             $profile->save();
-            $type = 'listing';
 
-        } elseif (in_array($role, ['worker', 'skilled_worker'])) {
+        } elseif ($type === 'worker') {
             $data = $request->validate([
                 'name'             => ['required', 'string', 'max:255'],
                 'skill'            => ['required', 'string', 'max:255'],
@@ -130,7 +182,7 @@ class ProfessionalProfileController extends Controller
             $profile->save();
             $type = 'worker';
 
-        } elseif (in_array($role, ['supplier', 'material_supplier'])) {
+        } elseif ($type === 'supplier') {
             $data = $request->validate([
                 'company_name'     => ['required', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
@@ -158,7 +210,7 @@ class ProfessionalProfileController extends Controller
             $profile->save();
             $type = 'supplier';
 
-        } elseif ($role === 'builder') {
+        } elseif ($type === 'builder') {
             $data = $request->validate([
                 'company_name'     => ['required', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],

@@ -17,6 +17,7 @@ import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
+import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
 
 export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -46,12 +47,14 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-900 font-bold">
-            <Building className="h-5 w-5 text-orange-600" /> {user?.name}'s Builder Portal
+            <Building className="h-5 w-5 text-orange-600 hidden md:block" /> 
+            <span className="hidden md:inline">{user?.name}'s Builder Dashboard</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
+            <VentureSwitcher />
             <span className="text-sm font-medium text-slate-600 hidden md:block">BUILDER</span>
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600">
-              <LogOut className="h-4 w-4 mr-2" /> Logout
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600 px-2 md:px-4">
+              <LogOut className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">Logout</span>
             </Button>
           </div>
         </div>

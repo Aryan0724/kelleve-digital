@@ -12,6 +12,39 @@ import { WorkerDashboard } from "@/components/dashboard/roles/WorkerDashboard";
 import { DesignerDashboard } from "@/components/dashboard/roles/DesignerDashboard";
 import { BuilderDashboard } from "@/components/dashboard/roles/BuilderDashboard";
 
+// ─── Role → Dashboard mapping ─────────────────────────────────────────────────
+// Supports all 80+ professional types by mapping to 5 broad dashboard types.
+// The specific type is stored in user.professional_type for display purposes.
+
+const WORKER_ROLES = new Set([
+  'worker', 'skilled_worker', 'carpenter', 'electrician', 'plumber', 'painter',
+  'pop_false_ceiling_worker', 'tile_marble_fitter', 'granite_installer',
+  'fabricator', 'aluminium_fabricator', 'glass_installer',
+  'welder', 'polish_worker', 'wallpaper_installer',
+]);
+
+const SUPPLIER_ROLES = new Set([
+  'supplier', 'material_supplier', 'plywood_dealer', 'laminate_dealer', 'tile_dealer',
+  'marble_granite_dealer', 'paint_dealer', 'hardware_supplier', 'lighting_supplier',
+  'electrical_supplier', 'sanitary_bathroom_supplier', 'modular_kitchen_material_supplier',
+  'glass_supplier', 'acp_aluminium_supplier', 'furniture_supplier', 'door_window_supplier',
+]);
+
+const BUILDER_ROLES = new Set([
+  'builder', 'real_estate_developer', 'apartment_project', 'commercial_project', 'villa_project',
+]);
+
+const CUSTOMER_ROLES = new Set(['homeowner', 'customer']);
+
+// Everything else maps to DesignerDashboard (listing-based profile)
+function getDashboardType(role: string): 'customer' | 'worker' | 'supplier' | 'builder' | 'designer' {
+  if (CUSTOMER_ROLES.has(role)) return 'customer';
+  if (WORKER_ROLES.has(role)) return 'worker';
+  if (SUPPLIER_ROLES.has(role)) return 'supplier';
+  if (BUILDER_ROLES.has(role)) return 'builder';
+  return 'designer'; // interior_designer, architect, contractor, home improvement, etc.
+}
+
 export default function UserDashboard() {
   const { user, token, _hasHydrated } = useAuthStore();
   const router = useRouter();
@@ -46,33 +79,20 @@ export default function UserDashboard() {
   if (!mounted || !_hasHydrated || loading) return <div className="p-20 text-center">Loading dashboard...</div>;
   if (!user) return null;
 
-  switch (user.role) {
-    case 'homeowner':
+  const dashType = getDashboardType(user.role);
+
+  switch (dashType) {
     case 'customer':
       return <HomeownerDashboard data={data} fetchDashboard={fetchDashboard} />;
-    
-    case 'contractor':
-      return <ContractorDashboard data={data} fetchDashboard={fetchDashboard} />;
-      
-    case 'material_supplier':
-    case 'supplier':
-      return <SupplierDashboard data={data} fetchDashboard={fetchDashboard} />;
-      
-    case 'skilled_worker':
     case 'worker':
       return <WorkerDashboard data={data} fetchDashboard={fetchDashboard} />;
-      
-    case 'interior_designer':
-    case 'interior_company':
-    case 'architect':
-    case 'business':
-      return <DesignerDashboard data={data} fetchDashboard={fetchDashboard} />;
-      
+    case 'supplier':
+      return <SupplierDashboard data={data} fetchDashboard={fetchDashboard} />;
     case 'builder':
       return <BuilderDashboard data={data} fetchDashboard={fetchDashboard} />;
-      
+    case 'designer':
     default:
-      // Fallback
-      return <HomeownerDashboard data={data} fetchDashboard={fetchDashboard} />;
+      return <DesignerDashboard data={data} fetchDashboard={fetchDashboard} />;
   }
 }
+

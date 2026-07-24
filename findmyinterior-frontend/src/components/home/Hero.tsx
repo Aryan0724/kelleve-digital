@@ -45,6 +45,19 @@ export function Hero() {
       }
     }).catch(console.error);
   }, []);
+  const availableServices = [
+    "Interior Designer", "Interior Company", "Architect",
+    "Modular Kitchen Designer", "Wardrobe Designer",
+    "Civil Contractor", "Interior Contractor", "Turnkey Contractor",
+    "Builder", "Real Estate Developer",
+    "Plywood Dealer", "Tile Dealer", "Marble & Granite Dealer", "Material Supplier",
+    "Carpenter", "Painter", "Electrician", "Plumber", "Glass Installer",
+    "POP / False Ceiling Worker", "Tile Fitter", "Fabricator",
+    "Home Renovation", "Waterproofing", "Pest Control", "Deep Cleaning",
+    "CCTV & Security", "Home Automation", "Solar Installation", "AC Service",
+    "Packers & Movers"
+  ];
+
   const availableBudgets = [
     "All Budget",
     "Under ₹50,000",
@@ -53,19 +66,13 @@ export function Hero() {
     "₹10 Lakhs+"
   ];
 
-  const filteredCities = availableCities.filter(c => 
-    c.toLowerCase().includes(city.toLowerCase())
-  );
+  const filteredCities = city.trim()
+    ? availableCities.filter(c => c.toLowerCase().includes(city.toLowerCase()))
+    : availableCities; // show all when focused with empty input
 
-  const availableServices = [
-    "Interior Designer", "Interior Company", "Architect", 
-    "Civil Contractor", "Builder", "Material Supplier", "Skilled Worker",
-    "Modular Kitchen", "Painter", "Electrician", "Plumber", "Carpenter"
-  ];
-
-  const filteredServices = availableServices.filter(s => 
-    s.toLowerCase().includes(service.toLowerCase())
-  );
+  const filteredServices = service.trim()
+    ? availableServices.filter(s => s.toLowerCase().includes(service.toLowerCase()))
+    : availableServices;
 
   const handleSearch = () => {
     const params = new URLSearchParams();
