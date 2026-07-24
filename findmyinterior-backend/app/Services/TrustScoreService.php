@@ -27,7 +27,7 @@ class TrustScoreService
             'profile_completion_score' => $completionScore,
             'verification_level' => $verificationLevel,
             'trust_score' => $trustScore,
-            'is_verified_business' => in_array($verificationLevel, ['verified_business', 'trusted_professional', 'elite_professional'])
+            'is_verified_business' => in_array($verificationLevel, ['business_verified', 'site_verified'])
         ]);
     }
 
@@ -122,7 +122,7 @@ class TrustScoreService
 
         // Check if basic (Level 0)
         if ($user->email_verified_at && $user->phone) {
-            $level = 'basic_member'; // Corresponds to Level 0
+            $level = 'mobile_verified'; // Corresponds to Level 0
         }
 
         $approvedDocs = UserDocument::where('user_id', $user->id)
@@ -137,12 +137,12 @@ class TrustScoreService
 
         // Note: For demo/simplicity, we're assuming if they have address and photo, the basic member stuff is met
         if ($hasVerifiedBusinessDocs && $user->avatar) {
-            $level = 'verified_business'; // Corresponds to Level 1
+            $level = 'business_verified'; // Corresponds to Level 1
         }
 
         $hasTrustedDocs = in_array('portfolio_document', $approvedDocs) || in_array('work_history', $approvedDocs);
 
-        if ($level === 'verified_business' && $hasTrustedDocs) {
+        if ($level === 'business_verified' && $hasTrustedDocs) {
             // Also requires 5+ portfolio projects, we can check galleries here
             $profile = $user->listing ?? $user->worker ?? $user->builder ?? $user->supplier;
             $galleryCount = 0;
@@ -151,11 +151,11 @@ class TrustScoreService
             }
             // Fallback for workers/builders who might have uploaded 'portfolio_document' directly
             if ($galleryCount >= 5 || in_array('portfolio_document', $approvedDocs)) {
-                $level = 'trusted_professional'; // Corresponds to Level 2
+                $level = 'site_verified'; // Corresponds to Level 2 (Trusted/Elite)
             }
         }
 
-        if ($level === 'trusted_professional') {
+        if ($level === 'site_verified') {
             // Elite requires Reviews, Completed Projects, High Rating
             $profile = $user->listing ?? $user->worker ?? $user->builder ?? $user->supplier;
             
@@ -163,7 +163,7 @@ class TrustScoreService
             $avgRating = $profile->avg_rating ?? ($profile ? $profile->approvedReviews()->avg('rating') : 0);
 
             if ($profile && $reviewCount >= 5 && $avgRating >= 4.0) {
-                $level = 'elite_professional'; // Corresponds to Level 3
+                $level = 'site_verified'; // Cap at site_verified since DB doesn't support elite_professional
             }
         }
 
@@ -181,20 +181,13 @@ class TrustScoreService
         // Verification Level (25%)
         $levelScores = [
             'unverified' => 0,
-            'basic_member' => 5,
-            'verified_business' => 15,
-            'trusted_professional' => 20,
-            'elite_professional' => 25,
-        ];
-        // For backwards compatibility mapping
-        $legacyMap = [
             'mobile_verified' => 5,
             'identity_verified' => 10,
             'business_verified' => 15,
-            'site_verified' => 25
+            'site_verified' => 25,
         ];
 
-        $trustScore += $levelScores[$verificationLevel] ?? ($legacyMap[$verificationLevel] ?? 0);
+        $trustScore += $levelScores[$verificationLevel] ?? 0;
 
         // Reviews (25%)
         $profile = $user->listing ?? $user->worker ?? $user->builder ?? $user->supplier;

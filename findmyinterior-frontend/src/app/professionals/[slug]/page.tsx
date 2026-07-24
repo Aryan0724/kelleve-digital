@@ -94,12 +94,20 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                         </span>
                       </div>
                     )}
-                    {listing.profile_completion_score > 0 && (
+                    {listing.user?.is_verified_business ? (
                       <div className="flex items-center">
-                        <span className="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-1 rounded-full border border-slate-200">
-                          Profile: {listing.profile_completion_score}%
+                        <span className="text-xs font-semibold bg-green-100 text-green-700 px-2 py-1 rounded-full border border-green-200 flex items-center">
+                          <CheckCircle2 className="w-3 h-3 mr-1" /> Verified Professional
                         </span>
                       </div>
+                    ) : (
+                      listing.profile_completion_score > 0 && (
+                        <div className="flex items-center">
+                          <span className="text-xs font-semibold bg-slate-100 text-slate-700 px-2 py-1 rounded-full border border-slate-200">
+                            Profile: {listing.profile_completion_score}%
+                          </span>
+                        </div>
+                      )
                     )}
                   </div>
                 </div>

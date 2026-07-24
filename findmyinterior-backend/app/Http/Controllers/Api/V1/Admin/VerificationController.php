@@ -122,7 +122,7 @@ class VerificationController extends Controller
         // This force-approves the business manually by an admin
         // It bypasses the document checks if the admin decides to.
         $user->update([
-            'verification_level' => 'verified_business',
+            'verification_level' => 'business_verified',
             'is_verified_business' => true,
         ]);
 
@@ -139,7 +139,7 @@ class VerificationController extends Controller
         $user = User::findOrFail($id);
         
         $user->update([
-            'verification_level' => 'basic_member',
+            'verification_level' => 'unverified',
             'is_verified_business' => false,
         ]);
 
