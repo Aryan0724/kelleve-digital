@@ -50,46 +50,46 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
               const isBuilder = oppType === "BUILDER_PROJECT";
 
               return (
-                <div key={req.id} className={`p-4 border-l-4 rounded-lg bg-white shadow-sm flex flex-col md:flex-row justify-between md:items-start gap-4 ${isRFQ ? 'border-l-blue-500' : isJob ? 'border-l-green-500' : isBuilder ? 'border-l-purple-500' : 'border-l-orange-500'} border-y border-r border-y-slate-200 border-r-slate-200`}>
+                <div key={req.id} className={`p-4 border-l-4 rounded-lg bg-white dark:bg-slate-900/50 shadow-sm flex flex-col md:flex-row justify-between md:items-start gap-4 ${isRFQ ? 'border-l-blue-500' : isJob ? 'border-l-green-500' : isBuilder ? 'border-l-purple-500' : 'border-l-orange-500'} border-y border-r border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800`}>
                   <div className="flex-1">
                     <div className="flex justify-between items-start">
                       <div>
                         <div className="flex items-center gap-2 mb-1">
-                          <Badge variant="outline" className={`text-[10px] uppercase font-bold tracking-wider ${isRFQ ? 'text-blue-600 border-blue-200 bg-blue-50' : isJob ? 'text-green-600 border-green-200 bg-green-50' : isBuilder ? 'text-purple-600 border-purple-200 bg-purple-50' : 'text-orange-600 border-orange-200 bg-orange-50'}`}>
+                          <Badge variant="outline" className={`text-[10px] uppercase font-bold tracking-wider ${isRFQ ? 'text-blue-600 dark:text-blue-400 border-blue-200 dark:border-blue-900 bg-blue-50 dark:bg-blue-950' : isJob ? 'text-green-600 dark:text-green-400 border-green-200 dark:border-green-900 bg-green-50 dark:bg-green-950' : isBuilder ? 'text-purple-600 dark:text-purple-400 border-purple-200 dark:border-purple-900 bg-purple-50 dark:bg-purple-950' : 'text-orange-600 dark:text-orange-400 border-orange-200 dark:border-orange-900 bg-orange-50 dark:bg-orange-950'}`}>
                             {isRFQ ? 'Material RFQ' : isJob ? 'Worker Job' : isBuilder ? 'Builder Project' : 'Client Project'}
                           </Badge>
-                          <span className="text-xs text-slate-400 font-medium">Posted recently</span>
+                          <span className="text-xs text-slate-400 dark:text-slate-500 font-medium">Posted recently</span>
                         </div>
-                        <h4 className="font-bold text-slate-900 text-lg">{req.title}</h4>
+                        <h4 className="font-bold text-slate-900 dark:text-white text-lg">{req.title}</h4>
                       </div>
                       <div className="text-right">
-                        <div className="text-sm font-bold text-slate-900">
+                        <div className="text-sm font-bold text-slate-900 dark:text-slate-200">
                           {req.budget_min && req.budget_max ? `₹${req.budget_min} - ₹${req.budget_max}` : (req.budget || "Budget negotiable")}
                         </div>
                       </div>
                     </div>
                     
-                    <div className="flex flex-wrap items-center text-sm text-slate-500 mt-2 mb-3 gap-3">
+                    <div className="flex flex-wrap items-center text-sm text-slate-500 dark:text-slate-400 mt-2 mb-3 gap-3">
                       {req.city && (
-                        <span className="flex items-center bg-slate-100 px-2 py-1 rounded-md"><MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" /> {locationName(req.city)}</span>
+                        <span className="flex items-center bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded-md"><MapPin className="w-3.5 h-3.5 mr-1 text-slate-400 dark:text-slate-500" /> {locationName(req.city)}</span>
                       )}
                       {req.category?.name && (
-                        <span className="px-2 py-1 bg-slate-100 rounded-md text-xs font-medium text-slate-600">
+                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300">
                           {req.category.name}
                         </span>
                       )}
                       {req.project_type && (
-                        <span className="px-2 py-1 bg-slate-100 rounded-md text-xs font-medium text-slate-600">{req.project_type}</span>
+                        <span className="px-2 py-1 bg-slate-100 dark:bg-slate-800 rounded-md text-xs font-medium text-slate-600 dark:text-slate-300">{req.project_type}</span>
                       )}
                     </div>
                     
-                    <p className="text-slate-600 text-sm line-clamp-2 leading-relaxed">{req.description}</p>
+                    <p className="text-slate-600 dark:text-slate-400 text-sm line-clamp-2 leading-relaxed">{req.description}</p>
                   </div>
                   
                   {req.user_id !== user?.id && (
-                    <div className="flex flex-col gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 pt-3 md:pt-0 pl-0 md:pl-4 md:items-center justify-center min-w-[150px]">
+                    <div className="flex flex-col gap-2 shrink-0 border-t md:border-t-0 md:border-l border-slate-100 dark:border-slate-800 pt-3 md:pt-0 pl-0 md:pl-4 md:items-center justify-center min-w-[150px]">
                       <Link href={`/requirements/${req.id}${isRFQ ? '?type=rfq' : isJob ? '?type=job' : ''}`} className="w-full">
-                        <Button variant="outline" className="w-full shadow-sm hover:bg-slate-50">
+                        <Button variant="outline" className="w-full shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 dark:border-slate-700 dark:text-slate-200">
                           View Details
                         </Button>
                       </Link>
