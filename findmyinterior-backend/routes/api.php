@@ -143,6 +143,11 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::apiResource('workers', WorkerController::class)->only(['index', 'show']);
     Route::apiResource('blogs', BlogController::class)->only(['index', 'show']);
     
+    // Advertisements
+    Route::get('advertisements', [\App\Http\Controllers\Api\V1\Public\AdvertisementController::class, 'index']);
+    Route::post('advertisements/{id}/impression', [\App\Http\Controllers\Api\V1\Public\AdvertisementController::class, 'trackImpression']);
+    Route::post('advertisements/{id}/click', [\App\Http\Controllers\Api\V1\Public\AdvertisementController::class, 'trackClick']);
+    
     // Public inquiry submission
     Route::post('inquiries', [InquiryController::class, 'store']);
     Route::post('contact', [\App\Http\Controllers\Public\ContactController::class, 'store']);
@@ -319,6 +324,11 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('reviews/pending', [AdminController::class, 'pendingReviews']);
         Route::patch('reviews/{id}/approve', [AdminController::class, 'approveReview']);
         Route::delete('reviews/{id}', [AdminController::class, 'deleteReview']);
+        
+        Route::post('settings', [SettingController::class, 'updateAll']);
+
+        // Advertisements Management
+        Route::apiResource('advertisements', \App\Http\Controllers\Api\V1\Admin\AdvertisementController::class);
         
         Route::post('blogs', [AdminController::class, 'createBlog']);
         Route::put('blogs/{id}', [AdminController::class, 'updateBlog']);
