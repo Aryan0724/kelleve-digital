@@ -12,6 +12,7 @@ import { TrustFooter } from "@/components/home/TrustFooter";
 import { FeaturedProfessionals } from "@/components/home/FeaturedProfessionals";
 import { MobileStickyCTA } from "@/components/home/MobileStickyCTA";
 import { RoleBasedHomepage } from "@/components/home/RoleBasedHomepage";
+import { AdSlot } from "@/components/ads/AdSlot";
 
 export function ClientHome() {
   const { user } = useAuthStore();
@@ -30,15 +31,28 @@ export function ClientHome() {
   }
 
   if (user && Object.keys(user).length > 0) {
-    return <RoleBasedHomepage />;
+    return (
+      <>
+        <div className="container mx-auto px-4 mt-6">
+          <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
+        </div>
+        <RoleBasedHomepage />
+      </>
+    );
   }
 
   return (
     <>
+      <div className="container mx-auto px-4 mt-6">
+        <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
+      </div>
       <Hero />
       <Stats stats={homeData?.stats} />
       <FeaturedProfessionals pros={homeData?.featured_listings} />
       <Categories categories={homeData?.categories} />
+      <div className="container mx-auto px-4 my-8">
+        <AdSlot location="mid_page" className="w-full h-32 md:h-64 rounded-xl" />
+      </div>
       <Hubs homeData={homeData} />
       <ActionBanner />
       <TrustFooter />

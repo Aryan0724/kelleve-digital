@@ -17,6 +17,7 @@ import { SettingsAdminPanel } from "@/components/admin/SettingsAdminPanel";
 import { CMSAdminPanel } from "@/components/admin/CMSAdminPanel";
 import { ContactMessagesPanel } from "@/components/admin/ContactMessagesPanel";
 import { SubscriptionAdminPanel } from "@/components/admin/SubscriptionAdminPanel";
+import { AdvertisementsAdminPanel } from "@/components/admin/AdvertisementsAdminPanel";
 import {
   CheckCircle,
   ClipboardList,
@@ -29,7 +30,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-type AdminTab = "overview" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages";
+type AdminTab = "overview" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages" | "advertisements";
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -44,6 +45,7 @@ const tabs: { id: AdminTab; label: string }[] = [
   { id: "categories", label: "Categories" },
   { id: "locations", label: "Locations" },
   { id: "settings", label: "Settings" },
+  { id: "advertisements", label: "Advertisements" },
   { id: "cms", label: "CMS" },
   { id: "contact-messages", label: "Contact Messages" },
   { id: "inquiries", label: "Support" },
@@ -306,6 +308,7 @@ export default function AdminDashboard() {
 
         {activeTab === "locations" && <LocationsAdminPanel />}
         {activeTab === "settings" && <SettingsAdminPanel />}
+        {activeTab === "advertisements" && <AdvertisementsAdminPanel />}
         {activeTab === "cms" && <CMSAdminPanel />}
         {activeTab === "contact-messages" && <ContactMessagesPanel />}
 
