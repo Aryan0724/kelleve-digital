@@ -13,6 +13,8 @@ import { FeaturedProfessionals } from "@/components/home/FeaturedProfessionals";
 import { MobileStickyCTA } from "@/components/home/MobileStickyCTA";
 import { RoleBasedHomepage } from "@/components/home/RoleBasedHomepage";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { PopupAd } from "@/components/ads/PopupAd";
+import { TopRibbonAd } from "@/components/ads/TopRibbonAd";
 
 export function ClientHome() {
   const { user } = useAuthStore();
@@ -33,6 +35,8 @@ export function ClientHome() {
   if (user && Object.keys(user).length > 0) {
     return (
       <>
+        <TopRibbonAd />
+        <PopupAd />
         <div className="container mx-auto px-4 mt-6">
           <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
         </div>
@@ -43,6 +47,8 @@ export function ClientHome() {
 
   return (
     <>
+      <TopRibbonAd />
+      <PopupAd />
       <div className="container mx-auto px-4 mt-6">
         <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
       </div>

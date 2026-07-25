@@ -16,11 +16,13 @@ export interface Advertisement {
 
 interface AdSlotProps {
   location: string;
+  targetCity?: string;
+  targetCategoryId?: number;
   className?: string;
   fallback?: React.ReactNode;
 }
 
-export function AdSlot({ location, className = '', fallback = null }: AdSlotProps) {
+export function AdSlot({ location, targetCity, targetCategoryId, className = '', fallback = null }: AdSlotProps) {
   const [ad, setAd] = useState<Advertisement | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [hasTrackedImpression, setHasTrackedImpression] = useState(false);
@@ -30,7 +32,11 @@ export function AdSlot({ location, className = '', fallback = null }: AdSlotProp
     let isMounted = true;
     const fetchAd = async () => {
       try {
-        const response = await api.get(`/advertisements?location=${location}`);
+        let url = `/advertisements?location=${location}`;
+        if (targetCity) url += `&target_city=${encodeURIComponent(targetCity)}`;
+        if (targetCategoryId) url += `&target_category_id=${targetCategoryId}`;
+        
+        const response = await api.get(url);
         if (isMounted && response.data?.data?.length > 0) {
           setAd(response.data.data[0]); // Pick the highest priority active ad
         }

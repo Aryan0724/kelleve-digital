@@ -9,6 +9,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ProfessionalsFilters } from "@/components/professionals/ProfessionalsFilters";
 import { ProfessionalsPagination } from "@/components/professionals/ProfessionalsPagination";
 import { ProfessionalTypeSwitcher } from "@/components/professionals/ProfessionalTypeSwitcher";
+import { AdSlot } from "@/components/ads/AdSlot";
+import React from "react";
 
 export const metadata: Metadata = {
   title: "Find Professionals | Find My Interior",
@@ -78,8 +80,9 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
         {/* Results Grid */}
         <div className="w-full lg:w-3/4">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {listings.length > 0 ? listings.map((listing: any) => (
-              <Link key={listing.id} href={`/professionals/${listing.slug}`}>
+            {listings.length > 0 ? listings.map((listing: any, index: number) => (
+              <React.Fragment key={listing.id}>
+              <Link href={`/professionals/${listing.slug}`}>
                 <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-all border-slate-200 group">
                   <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
                     {listing.cover_image ? (
@@ -151,8 +154,14 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                   </CardFooter>
                 </Card>
               </Link>
+              {(index + 1) % 6 === 0 && (
+                <div className="col-span-1 md:col-span-2 lg:col-span-3 my-4">
+                  <AdSlot location="search_feed" targetCity={resolvedSearchParams.city} className="w-full h-32 md:h-48 rounded-xl" />
+                </div>
+              )}
+              </React.Fragment>
             )) : (
-              <div className="col-span-full py-12 text-center text-slate-500">
+              <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-20 text-slate-500">
                 {error ? (
                   <div className="text-red-500 font-bold mb-2">Error fetching data: {error}</div>
                 ) : null}

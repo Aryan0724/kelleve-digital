@@ -17,6 +17,8 @@ export function AdvertisementsAdminPanel() {
     banner_url: "",
     custom_code: "",
     link: "",
+    target_city: "",
+    target_category_id: "",
     is_active: true
   });
 
@@ -48,6 +50,8 @@ export function AdvertisementsAdminPanel() {
         banner_url: "",
         custom_code: "",
         link: "",
+        target_city: "",
+        target_category_id: "",
         is_active: true
       });
       fetchAds();
@@ -107,6 +111,9 @@ export function AdvertisementsAdminPanel() {
                     <option value="hero_banner">Hero Banner</option>
                     <option value="mid_page">Mid Page</option>
                     <option value="right_sidebar">Right Sidebar</option>
+                    <option value="popup">Popup</option>
+                    <option value="top_ribbon">Top Ribbon</option>
+                    <option value="search_feed">Search Feed</option>
                   </select>
                 </div>
                 <div>
@@ -124,6 +131,14 @@ export function AdvertisementsAdminPanel() {
                 <div>
                   <label className="text-sm font-semibold">Target Link URL</label>
                   <Input value={formData.link} onChange={e => setFormData({...formData, link: e.target.value})} />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold">Target City (Optional)</label>
+                  <Input placeholder="e.g. Patna" value={formData.target_city} onChange={e => setFormData({...formData, target_city: e.target.value})} />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold">Target Category ID (Optional)</label>
+                  <Input type="number" placeholder="e.g. 1" value={formData.target_category_id} onChange={e => setFormData({...formData, target_category_id: e.target.value})} />
                 </div>
               </div>
               

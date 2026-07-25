@@ -19,16 +19,32 @@ class AdvertisementController extends Controller
 
         $now = Carbon::now();
 
-        $ads = Advertisement::where('location', $location)
+        $query = Advertisement::where('location', $location)
             ->where('is_active', true)
             ->where(function ($q) use ($now) {
                 $q->whereNull('starts_at')->orWhere('starts_at', '<=', $now);
             })
             ->where(function ($q) use ($now) {
                 $q->whereNull('ends_at')->orWhere('ends_at', '>=', $now);
-            })
-            ->orderBy('priority', 'desc')
-            ->get();
+            });
+
+        if ($request->filled('target_city')) {
+            $query->where(function ($q) use ($request) {
+                $q->whereNull('target_city')->orWhere('target_city', $request->query('target_city'));
+            });
+        } else {
+            $query->whereNull('target_city');
+        }
+
+        if ($request->filled('target_category_id')) {
+            $query->where(function ($q) use ($request) {
+                $q->whereNull('target_category_id')->orWhere('target_category_id', $request->query('target_category_id'));
+            });
+        } else {
+            $query->whereNull('target_category_id');
+        }
+
+        $ads = $query->orderBy('priority', 'desc')->get();
 
         return response()->json([
             'status' => 'success',
