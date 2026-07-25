@@ -5,6 +5,8 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
+import { PopupAd } from "@/components/ads/PopupAd";
+import { TopRibbonAd } from "@/components/ads/TopRibbonAd";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -59,7 +61,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <TopRibbonAd />
           <Navbar />
+          <PopupAd />
           <main className="flex-1">
             {children}
           </main>
