@@ -1,0 +1,35 @@
+{
+  "expo": {
+    "name": "TrueDial",
+    "slug": "truedial-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": false,
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "package": "com.truedial.app",
+      "adaptiveIcon": {
+        "backgroundColor": "#0a1c3a"
+      }
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "scheme": "truedial",
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "8fc7f4cc-a79f-4fee-960c-2aba8f7d270b"
+      }
+    },
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8fc7f4cc-a79f-4fee-960c-2aba8f7d270b"
+    }
+  }
+}
