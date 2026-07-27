@@ -4,6 +4,7 @@ import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PostRequirementButton from "@/components/PostRequirementButton";
+import HomeSearchBar from "@/components/home/HomeSearchBar";
 
 import { TrueDialAPI } from "@/lib/api";
 
@@ -25,30 +26,12 @@ export default async function Home() {
             Find the best Restaurants, Hotels, Doctors, and Services near you.
           </p>
 
-          {/* Huge Centralized Search Bar Component */}
-          <form action="/search" className="bg-white p-3 rounded-2xl shadow-xl flex flex-col md:flex-row items-center gap-3 border border-gray-100 w-full mx-auto">
-            <div className="flex items-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-r border-gray-100 flex-1 w-full md:w-auto">
-              <MapPin className="text-primary w-6 h-6 shrink-0" />
-              <input type="text" name="city" placeholder="City or Pincode" className="bg-transparent outline-none w-full text-base font-medium" />
-            </div>
-            <div className="flex items-center gap-2 px-4 py-3 border-b md:border-b-0 md:border-r border-gray-100 flex-1 w-full md:w-auto">
-              <Grid className="text-primary w-6 h-6 shrink-0" />
-              <input type="text" name="category" placeholder="Category (e.g. Restaurants)" className="bg-transparent outline-none w-full text-base font-medium" />
-            </div>
-            <div className="flex items-center gap-2 px-4 py-3 flex-[2] w-full md:w-auto">
-              <SearchIcon className="text-primary w-6 h-6 shrink-0" />
-              <input type="text" name="q" placeholder="Search business name..." className="bg-transparent outline-none w-full text-base font-medium" />
-            </div>
-            <div className="flex flex-col sm:flex-row w-full md:w-auto gap-3">
-              <button type="submit" className="bg-primary text-white px-10 py-4 rounded-xl font-bold hover:bg-orange-600 w-full md:w-auto transition shadow-lg shadow-primary/30 text-lg">
-                Search
-              </button>
-              
-              <div className="hidden md:block w-px bg-gray-200 mx-1 self-stretch"></div>
-              
-              <PostRequirementButton />
-            </div>
-          </form>
+          {/* Interactive Search Bar Component */}
+          <HomeSearchBar />
+
+          <div className="mt-5 flex justify-center">
+            <PostRequirementButton />
+          </div>
           
           <div className="mt-6 flex flex-wrap justify-center items-center gap-3 text-sm text-gray-500">
             <span className="font-medium text-gray-700">Trending:</span>

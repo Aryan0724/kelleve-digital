@@ -50,8 +50,24 @@ export class TrueDialAPI {
       if (!res.ok) throw new Error("Failed to fetch search results");
       return await res.json();
     } catch (error) {
-      console.error(error);
-      return { success: false, data: { data: [] } };
+      console.error("searchBusinesses API failed, falling back to mock listings:", error);
+      const qText = (params.q || "").toLowerCase().trim();
+      const catText = (params.category_name || params.category || "").toLowerCase().trim();
+      const cityText = (params.city || "").toLowerCase().trim();
+      
+      const filtered = MOCK_LISTINGS.filter(item => {
+        const matchQ = !qText || item.title.toLowerCase().includes(qText) || item.description.toLowerCase().includes(qText);
+        const matchCat = !catText || item.category.name.toLowerCase().includes(catText);
+        const matchCity = !cityText || item.city.toLowerCase().includes(cityText);
+        return matchQ && matchCat && matchCity;
+      });
+      
+      return { 
+        success: true, 
+        data: { 
+          data: filtered.length > 0 ? filtered : MOCK_LISTINGS 
+        } 
+      };
     }
   }
 

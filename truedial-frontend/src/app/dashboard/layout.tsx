@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, CreditCard, Star, FileText, Bell, CheckCircle2, X, Clock, ChevronRight } from "lucide-react";
+import { LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, CreditCard, Star, FileText, Bell, CheckCircle2, X, Clock, ChevronRight, Globe, ArrowLeft, Home } from "lucide-react";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const [showMessages, setShowMessages] = useState(false);
@@ -35,13 +35,18 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   return (
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Sidebar */}
-      <aside className="w-64 bg-navy text-navy-foreground flex flex-col transition-all duration-300">
-        <div className="p-6 border-b border-white/10 flex items-center gap-2">
+      <aside className="w-64 bg-navy text-navy-foreground flex flex-col transition-all duration-300 shrink-0">
+        <Link href="/" className="p-6 border-b border-white/10 flex items-center gap-2 hover:opacity-90 transition">
           <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">T</div>
           <span className="text-xl font-bold">truedial</span>
-        </div>
+          <span className="text-[10px] ml-auto bg-white/10 px-2 py-0.5 rounded text-amber-300 font-semibold uppercase">Home</span>
+        </Link>
         
         <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
+          <Link href="/" className="flex items-center gap-3 px-3 py-2.5 rounded-lg bg-amber-500 text-navy font-bold hover:bg-amber-400 transition shadow-sm mb-3">
+            <ArrowLeft className="w-5 h-5 shrink-0" /> Back to Homepage
+          </Link>
+
           <Link href="/dashboard/business" className="flex items-center gap-3 px-3 py-2.5 rounded-md bg-white/10 text-white font-medium">
             <LayoutDashboard className="w-5 h-5 text-primary" /> Overview
           </Link>
@@ -92,7 +97,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       <main className="flex-1 flex flex-col overflow-hidden relative">
         {/* Topbar */}
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0 z-30 relative">
-          <h2 className="font-semibold text-foreground">Business Dashboard</h2>
+          <div className="flex items-center gap-4">
+            <h2 className="font-semibold text-foreground">Business Dashboard</h2>
+            <Link 
+              href="/" 
+              className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-full border border-primary/20"
+            >
+              <Globe className="w-3.5 h-3.5" /> Go to Website / Homepage
+            </Link>
+          </div>
           <div className="flex items-center gap-5">
             {/* Messages Dropdown Button */}
             <div className="relative">
