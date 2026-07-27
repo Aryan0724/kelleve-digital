@@ -6,13 +6,16 @@ import {
   Presentation, BookOpen, Truck, Scissors, Home as HomeIcon, Wrench, 
   Briefcase, Landmark, Calendar, ShoppingBag, ShieldCheck, PhoneCall, 
   ArrowRight, Star, Award, Download, Globe, ShieldAlert, ChevronRight,
-  HeartHandshake, Gem
+  HeartHandshake, Gem, Flame, Zap
 } from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PostRequirementButton from "@/components/PostRequirementButton";
 import HomeSearchBar from "@/components/home/HomeSearchBar";
+import LiveActivityTicker from "@/components/home/LiveActivityTicker";
+import LiveBusinessesGrid from "@/components/home/LiveBusinessesGrid";
+import PlatformPulseCounter from "@/components/home/PlatformPulseCounter";
 
 import { TrueDialAPI } from "@/lib/api";
 
@@ -23,32 +26,38 @@ export default async function Home() {
   ]);
 
   const topOffers = offersResponse.success ? offersResponse.data.data.slice(0, 4) : [];
-  const topBusinesses = listingsResponse.success ? (Array.isArray(listingsResponse.data) ? listingsResponse.data.slice(0, 4) : (listingsResponse.data?.data || []).slice(0, 4)) : [];
+  const topBusinesses = listingsResponse.success ? (Array.isArray(listingsResponse.data) ? listingsResponse.data.slice(0, 8) : (listingsResponse.data?.data || []).slice(0, 8)) : [];
   
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-[#f9fafb] dark:bg-slate-950 text-navy dark:text-white transition-colors duration-300">
+    <div className="min-h-screen flex flex-col font-sans bg-[#f8fafc] dark:bg-slate-950 text-navy dark:text-white transition-colors duration-300">
       <Navbar />
 
-      {/* 1. HERO SECTION WITH INTERACTIVE SEARCH BAR & TRENDING PILLS */}
-      <section className="bg-gradient-to-br from-blue-50 via-orange-50/40 to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 py-16 px-6 md:px-12 flex flex-col items-center justify-center relative overflow-hidden border-b border-gray-200/60 dark:border-slate-800">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+      {/* 1. HERO SECTION WITH LIVE ACTIVITY TICKER & TRENDING PILLS */}
+      <section className="bg-gradient-to-br from-blue-50/80 via-orange-50/60 to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 py-16 px-6 md:px-12 flex flex-col items-center justify-center relative overflow-hidden border-b border-gray-200/60 dark:border-slate-800">
+        <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-500/15 rounded-full blur-3xl -z-10 pointer-events-none animate-pulse"></div>
+        <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
 
         <div className="z-10 max-w-4xl w-full text-center">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 dark:bg-orange-950/80 border border-orange-200 dark:border-orange-800 text-primary text-xs font-bold uppercase tracking-wider mb-6 animate-pulse">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-orange-500/10 dark:from-orange-500/20 dark:via-amber-500/20 dark:to-orange-500/20 border border-orange-300 dark:border-orange-700 text-primary text-xs font-extrabold uppercase tracking-wider mb-6 shadow-sm">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+            </span>
             <span>India&apos;s #1 Local Business &amp; Interior Discovery Engine</span>
           </div>
 
-          <h1 className="text-4xl md:text-6xl font-extrabold text-navy dark:text-white leading-tight mb-4 tracking-tight">
-            Search Across <span className="text-primary bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">50,000+</span> Verified Businesses &amp; Studios
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-navy dark:text-white leading-tight mb-4 tracking-tight">
+            Search Across <span className="text-primary bg-gradient-to-r from-orange-500 via-amber-500 to-red-500 bg-clip-text text-transparent">50,000+</span> Verified Businesses &amp; Studios
           </h1>
-          <p className="text-gray-600 dark:text-gray-300 mb-8 text-base md:text-lg max-w-2xl mx-auto">
+          <p className="text-gray-600 dark:text-gray-300 mb-8 text-base md:text-lg max-w-2xl mx-auto font-medium">
             Find verified Interior Designers, Architects, Restaurants, Hotels, Doctors, and B2B Wholesalers in your city with guaranteed reviews &amp; VIP Privilege discounts.
           </p>
 
           {/* Interactive Search Bar Component */}
           <HomeSearchBar />
+
+          {/* LIVELY REAL-TIME ACTIVITY PULSE TICKER */}
+          <LiveActivityTicker />
 
           {/* Lead Generation Button */}
           <div className="mt-6 flex justify-center">
@@ -57,19 +66,27 @@ export default async function Home() {
           
           {/* Trending Searches */}
           <div className="mt-8 flex flex-wrap justify-center items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
-            <span className="font-semibold text-gray-700 dark:text-gray-300">Trending Searches:</span>
+            <span className="font-bold text-gray-700 dark:text-gray-300 flex items-center gap-1">
+              <Flame className="w-4 h-4 text-orange-500 fill-orange-500 animate-bounce" />
+              <span>Trending Now:</span>
+            </span>
             {[
-              { label: "Interior Designers", cat: "Interior Designers" },
-              { label: "Restaurants", cat: "Restaurants" },
+              { label: "Interior Designers", cat: "Interior Designers", tag: "🔥 Hot" },
+              { label: "Restaurants", cat: "Restaurants", tag: "⭐ Top" },
               { label: "Hotels & Resorts", cat: "Hotels" },
               { label: "Architects", cat: "Architects" },
               { label: "Hospitals", cat: "Hospitals" },
               { label: "Packers & Movers", cat: "Packers & Movers" },
-              { label: "B2B Wholesalers", cat: "B2B" },
+              { label: "B2B Wholesalers", cat: "B2B", tag: "⚡ Direct" },
             ].map((trend, idx) => (
               <Link key={idx} href={`/search?category=${encodeURIComponent(trend.cat)}`}>
-                <span className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm rounded-full cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/40 hover:text-primary dark:hover:text-primary hover:border-primary/40 font-medium transition inline-block">
-                  {trend.label}
+                <span className="px-3 py-1.5 bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 shadow-sm rounded-full cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/40 hover:text-primary dark:hover:text-primary hover:border-primary/40 font-semibold transition inline-flex items-center gap-1.5">
+                  <span>{trend.label}</span>
+                  {trend.tag && (
+                    <span className="text-[10px] font-extrabold text-primary bg-orange-100 dark:bg-orange-950 px-1.5 py-0.5 rounded-full">
+                      {trend.tag}
+                    </span>
+                  )}
                 </span>
               </Link>
             ))}
@@ -77,102 +94,110 @@ export default async function Home() {
         </div>
       </section>
 
+      {/* PLATFORM PULSE COUNTER STATS BAR */}
+      <PlatformPulseCounter />
+
       {/* 2. PROMOTIONAL FEATURE CARDS / HERO HIGHLIGHTS (SWIPER PARITY) */}
-      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+      <section className="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {/* Card 1: Find My Interior Integration */}
-          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-navy to-slate-900 text-white shadow-xl flex flex-col justify-between border border-slate-700/60 group hover:shadow-2xl transition duration-300">
-            <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-orange-500/20 rounded-full blur-2xl group-hover:bg-orange-500/30 transition"></div>
+          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-navy via-slate-900 to-slate-950 text-white shadow-xl flex flex-col justify-between border border-slate-700/60 group hover:shadow-2xl hover:shadow-orange-500/10 transition duration-500">
+            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-orange-500/25 rounded-full blur-2xl group-hover:bg-orange-500/40 transition duration-500"></div>
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-amber-400 mb-4 border border-white/10">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-amber-400 mb-4 border border-white/10 shadow-inner">
                 <HardHat className="w-3.5 h-3.5" />
                 <span>Find My Interior Showcase</span>
               </div>
-              <h3 className="text-2xl font-bold mb-2 leading-tight">Verified Interior &amp; Architectural Studios</h3>
+              <h3 className="text-2xl font-extrabold mb-2.5 leading-tight">Verified Interior &amp; Architectural Studios</h3>
               <p className="text-gray-300 text-sm leading-relaxed mb-6">
                 Explore 3D models, Vastu-compliant designs, and get 3 Free Consultations from certified interior designers.
               </p>
             </div>
             <Link href="/search?category=Interior+Designers">
-              <button className="inline-flex items-center gap-2 bg-primary hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition text-sm">
+              <button className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg transition duration-300 text-sm">
                 <span>Explore Studios</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
               </button>
             </Link>
           </div>
 
           {/* Card 2: TrueDial VIP Privilege Card */}
-          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-amber-600 via-orange-600 to-primary text-white shadow-xl flex flex-col justify-between border border-orange-400/30 group hover:shadow-2xl transition duration-300">
-            <div className="absolute -right-10 -top-10 w-44 h-44 bg-yellow-400/20 rounded-full blur-2xl group-hover:bg-yellow-400/30 transition"></div>
+          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-amber-600 via-orange-600 to-primary text-white shadow-xl flex flex-col justify-between border border-orange-400/30 group hover:shadow-2xl hover:shadow-amber-500/20 transition duration-500">
+            <div className="absolute -right-10 -top-10 w-48 h-48 bg-yellow-400/25 rounded-full blur-2xl group-hover:bg-yellow-400/40 transition duration-500"></div>
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-bold text-yellow-200 mb-4 border border-white/20">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-bold text-yellow-200 mb-4 border border-white/20 shadow-inner">
                 <Gem className="w-3.5 h-3.5" />
                 <span>TrueDial VIP Club</span>
               </div>
-              <h3 className="text-2xl font-bold mb-2 leading-tight">Multi-City VIP Privilege Card</h3>
+              <h3 className="text-2xl font-extrabold mb-2.5 leading-tight">Multi-City VIP Privilege Card</h3>
               <p className="text-orange-100 text-sm leading-relaxed mb-6">
                 One VIP Card. Unlimited benefits. Enjoy up to 50% discounts across 500+ restaurants, hotels &amp; healthcare clinics.
               </p>
             </div>
             <Link href="/offers">
-              <button className="inline-flex items-center gap-2 bg-white text-navy hover:bg-orange-50 font-bold px-6 py-3 rounded-xl shadow-lg transition text-sm">
+              <button className="inline-flex items-center gap-2 bg-white text-navy hover:bg-orange-50 font-bold px-6 py-3.5 rounded-xl shadow-lg transition duration-300 text-sm">
                 <span>Claim VIP Card</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
               </button>
             </Link>
           </div>
 
           {/* Card 3: TrueDial B2B & Wholesale */}
-          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-emerald-800 to-teal-900 text-white shadow-xl flex flex-col justify-between border border-emerald-700/60 group hover:shadow-2xl transition duration-300">
-            <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-emerald-400/20 rounded-full blur-2xl group-hover:bg-emerald-400/30 transition"></div>
+          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-emerald-800 via-teal-900 to-slate-900 text-white shadow-xl flex flex-col justify-between border border-emerald-700/60 group hover:shadow-2xl hover:shadow-emerald-500/10 transition duration-500">
+            <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-emerald-400/25 rounded-full blur-2xl group-hover:bg-emerald-400/40 transition duration-500"></div>
             <div>
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-emerald-300 mb-4 border border-white/10">
+              <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-emerald-300 mb-4 border border-white/10 shadow-inner">
                 <Briefcase className="w-3.5 h-3.5" />
                 <span>TrueDial B2B Supply</span>
               </div>
-              <h3 className="text-2xl font-bold mb-2 leading-tight">Direct Wholesale &amp; Manufacturing</h3>
+              <h3 className="text-2xl font-extrabold mb-2.5 leading-tight">Direct Wholesale &amp; Manufacturing</h3>
               <p className="text-emerald-100 text-sm leading-relaxed mb-6">
                 Source commercial building materials, machinery, office decor &amp; hotel supplies directly from verified manufacturers.
               </p>
             </div>
             <Link href="/search?category=B2B">
-              <button className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition text-sm">
+              <button className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg transition duration-300 text-sm">
                 <span>Browse B2B Sourcing</span>
-                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
               </button>
             </Link>
           </div>
         </div>
       </section>
 
-      {/* 3. PRIMARY 16-CATEGORY GRID (ALL CATEGORIES PARITY) */}
+      {/* 3. PRIMARY 16-CATEGORY GRID (LIVELY BADGES & HOVER BORDERS) */}
       <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
-        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl p-6 sm:p-8 border border-gray-100 dark:border-slate-800">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-8">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl p-6 sm:p-8 border border-gray-200/80 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-8">
             <div>
-              <h3 className="text-2xl font-bold text-navy dark:text-white">Explore All Services &amp; Categories</h3>
-              <p className="text-sm text-gray-500 dark:text-gray-400">Discover trusted professionals across residential, commercial &amp; lifestyle sectors</p>
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-extrabold text-primary uppercase tracking-wider">Top Categories</span>
+                <span className="text-[10px] bg-green-100 dark:bg-green-950/80 text-green-700 dark:text-green-400 font-bold px-2 py-0.5 rounded-full border border-green-200 dark:border-green-800">
+                  ● 500+ Live Categories
+                </span>
+              </div>
+              <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Explore All Services &amp; Categories</h3>
             </div>
-            <Link href="/categories" className="text-primary font-bold hover:underline text-sm flex items-center gap-1">
+            <Link href="/categories" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 group">
               <span>View All 500+ Categories</span>
-              <ChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-4 sm:gap-6">
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-4 sm:gap-5">
             {[
-              { name: "Restaurants", icon: Utensils, color: "bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400", q: "Restaurants" },
-              { name: "Hotels & Stays", icon: Hotel, color: "bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400", q: "Hotels" },
-              { name: "Hospitals", icon: PlusSquare, color: "bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400", q: "Hospitals" },
+              { name: "Restaurants", icon: Utensils, color: "bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400", q: "Restaurants", badge: "🔥 Hot" },
+              { name: "Hotels & Stays", icon: Hotel, color: "bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400", q: "Hotels", badge: "⭐ Top" },
+              { name: "Hospitals", icon: PlusSquare, color: "bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400", q: "Hospitals", badge: "⚡ 24x7" },
               { name: "Education", icon: GraduationCap, color: "bg-green-100 dark:bg-green-950 text-green-600 dark:text-green-400", q: "Education" },
-              { name: "Interior Design", icon: HardHat, color: "bg-yellow-100 dark:bg-yellow-950 text-yellow-600 dark:text-yellow-400", q: "Interior Designers" },
+              { name: "Interior Design", icon: HardHat, color: "bg-yellow-100 dark:bg-yellow-950 text-yellow-600 dark:text-yellow-400", q: "Interior Designers", badge: "🔥 Hot" },
               { name: "Real Estate", icon: HomeIcon, color: "bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400", q: "Real Estate" },
-              { name: "Packers & Movers", icon: Truck, color: "bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400", q: "Packers & Movers" },
+              { name: "Packers & Movers", icon: Truck, color: "bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400", q: "Packers & Movers", badge: "⚡ Instant" },
               { name: "Salon & Spa", icon: Scissors, color: "bg-pink-100 dark:bg-pink-950 text-pink-600 dark:text-pink-400", q: "Salon & Spa" },
-              { name: "Architects", icon: Building, color: "bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400", q: "Architects" },
+              { name: "Architects", icon: Building, color: "bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400", q: "Architects", badge: "⭐ Verified" },
               { name: "Modular Kitchen", icon: Grid, color: "bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400", q: "Modular Kitchen" },
               { name: "Repair Services", icon: Wrench, color: "bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400", q: "Repair & Services" },
-              { name: "B2B Wholesalers", icon: Briefcase, color: "bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400", q: "B2B" },
+              { name: "B2B Wholesalers", icon: Briefcase, color: "bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400", q: "B2B", badge: "💎 Direct" },
               { name: "Wedding Planning", icon: Calendar, color: "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400", q: "Wedding Planning" },
               { name: "Loans & Finance", icon: Landmark, color: "bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-400", q: "Loans & Finance" },
               { name: "Daily Needs", icon: ShoppingBag, color: "bg-lime-100 dark:bg-lime-950 text-lime-600 dark:text-lime-400", q: "Daily Needs" },
@@ -180,8 +205,8 @@ export default async function Home() {
             ].map((cat, i) => (
               cat.link ? (
                 <Link href={cat.link} key={i}>
-                  <div className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800/80 transition cursor-pointer group text-center gap-3">
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                  <div className="relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl hover:bg-orange-50/60 dark:hover:bg-slate-800 transition-all duration-300 cursor-pointer group text-center gap-2.5 border border-transparent hover:border-orange-200 dark:hover:border-slate-700 hover:-translate-y-1">
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
                       <cat.icon className="w-6 h-6" />
                     </div>
                     <span className="text-xs font-bold text-gray-700 dark:text-gray-300 line-clamp-1">{cat.name}</span>
@@ -189,8 +214,13 @@ export default async function Home() {
                 </Link>
               ) : (
                 <Link href={`/search?category=${encodeURIComponent(cat.q || '')}`} key={i}>
-                  <div className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800/80 transition cursor-pointer group text-center gap-3">
-                    <div className={`w-14 h-14 rounded-full flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
+                  <div className="relative flex flex-col items-center justify-center p-3.5 sm:p-4 rounded-2xl hover:bg-orange-50/60 dark:hover:bg-slate-800 transition-all duration-300 cursor-pointer group text-center gap-2.5 border border-transparent hover:border-orange-200 dark:hover:border-slate-700 hover:-translate-y-1">
+                    {cat.badge && (
+                      <span className="absolute top-1.5 right-1 text-[9px] font-extrabold text-primary bg-orange-100 dark:bg-orange-950/80 px-1.5 py-0.5 rounded-full border border-orange-200 dark:border-orange-800 shadow-sm">
+                        {cat.badge}
+                      </span>
+                    )}
+                    <div className={`w-14 h-14 rounded-2xl flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
                       <cat.icon className="w-6 h-6" />
                     </div>
                     <span className="text-xs font-bold text-gray-700 dark:text-gray-300 line-clamp-1">{cat.name}</span>
@@ -209,9 +239,9 @@ export default async function Home() {
             <span className="text-xs font-bold text-primary uppercase tracking-wider">Direct Sourcing</span>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">TrueDial B2B &amp; Wholesale Marketplace</h3>
           </div>
-          <Link href="/search?category=B2B" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 mt-2 sm:mt-0">
+          <Link href="/search?category=B2B" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 mt-2 sm:mt-0 group">
             <span>Explore All Wholesale Categories</span>
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
 
@@ -251,7 +281,7 @@ export default async function Home() {
             }
           ].map((item, idx) => (
             <Link key={idx} href={item.link}>
-              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 group flex flex-col justify-between h-full">
+              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-6 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 group flex flex-col justify-between h-full hover:-translate-y-1">
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-950/50 text-primary border border-orange-200 dark:border-orange-800">
@@ -274,7 +304,24 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* 5. POPULAR LOCAL SERVICES BY SECTOR (CURATED SECTORS) */}
+      {/* 5. EXPLORE TOP VERIFIED BUSINESSES & STUDIOS (LIVE INTERACTIVE GRID WITH TABS) */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8">
+          <div>
+            <span className="text-xs font-bold text-primary uppercase tracking-wider">Top Rated &amp; Live Near You</span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Explore Top Verified Businesses &amp; Studios</h3>
+          </div>
+          <Link href="/search" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 mt-2 sm:mt-0 group">
+            <span>View All Verified Listings</span>
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+          </Link>
+        </div>
+
+        {/* Interactive Filter Tabs + Lively Cards with Online Now status */}
+        <LiveBusinessesGrid businesses={topBusinesses} />
+      </section>
+
+      {/* 6. POPULAR LOCAL SERVICES BY SECTOR (CURATED SECTORS) */}
       <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
         <div className="text-center max-w-2xl mx-auto mb-10">
           <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mb-2">Most Trusted Local Services by Sector</h3>
@@ -327,72 +374,6 @@ export default async function Home() {
               </ul>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* 6. EXPLORE TOP VERIFIED BUSINESSES & INTERIOR STUDIOS (LIVE BUSINESS CARDS) */}
-      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8">
-          <div>
-            <span className="text-xs font-bold text-primary uppercase tracking-wider">Top Rated in Your City</span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Explore Top Verified Businesses &amp; Studios</h3>
-          </div>
-          <Link href="/search" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 mt-2 sm:mt-0">
-            <span>View All Verified Listings</span>
-            <ChevronRight className="w-4 h-4" />
-          </Link>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {topBusinesses.length > 0 ? (
-            topBusinesses.map((biz: any) => (
-              <div key={biz.id} className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group">
-                <div className="h-44 w-full relative bg-gray-100 dark:bg-slate-800 overflow-hidden">
-                  {biz.gallery && biz.gallery.length > 0 ? (
-                    <img src={biz.gallery[0]} alt={biz.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                  ) : (
-                    <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600 text-sm font-medium">No Image</div>
-                  )}
-                  <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-bold text-navy dark:text-white flex items-center gap-1 shadow-sm">
-                    <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
-                    <span>Verified</span>
-                  </div>
-                  <div className="absolute top-3 right-3 bg-navy/90 dark:bg-slate-900/90 text-amber-400 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm">
-                    <Star className="w-3.5 h-3.5 fill-amber-400" />
-                    <span>{biz.rating || "4.8"}</span>
-                    <span className="text-gray-300 text-[10px]">({biz.reviews_count || "120"})</span>
-                  </div>
-                </div>
-
-                <div className="p-5 flex flex-col flex-1 justify-between">
-                  <div>
-                    <span className="text-xs font-bold text-primary uppercase tracking-wider">{biz.category?.name || "Service"}</span>
-                    <h4 className="text-lg font-bold text-navy dark:text-white mt-1 mb-2 line-clamp-1 group-hover:text-primary transition">{biz.title}</h4>
-                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{biz.description}</p>
-                    <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-4">
-                      <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
-                      <span className="line-clamp-1">{biz.address || biz.city || "Mumbai"}</span>
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-slate-800">
-                    <Link href={`/businesses/${biz.slug || '#'}`} className="flex-1">
-                      <button className="w-full bg-orange-50 dark:bg-orange-950/50 hover:bg-primary dark:hover:bg-primary text-primary hover:text-white dark:text-orange-400 dark:hover:text-white font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1">
-                        <span>View Profile</span>
-                      </button>
-                    </Link>
-                    <a href={`tel:${biz.phone || '+919876543210'}`} className="bg-navy dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white p-2.5 rounded-xl transition" title="Call Now">
-                      <PhoneCall className="w-4 h-4" />
-                    </a>
-                  </div>
-                </div>
-              </div>
-            ))
-          ) : (
-            <div className="col-span-4 text-center py-10 text-gray-500 dark:text-gray-400">
-              No businesses found. Try searching above!
-            </div>
-          )}
         </div>
       </section>
 
@@ -475,9 +456,9 @@ export default async function Home() {
             <span className="text-xs font-bold text-primary uppercase tracking-wider">Verified Discounts</span>
             <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Today&apos;s Best Offers &amp; Discounts</h3>
           </div>
-          <Link href="/offers" className="text-primary font-bold hover:underline text-sm flex items-center gap-1">
+          <Link href="/offers" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 group">
             <span>View All Offers</span>
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </Link>
         </div>
         
@@ -535,7 +516,7 @@ export default async function Home() {
             { title: "TD Academy", icon: BookOpen, desc: "Learn, grow and build your team with certified industry courses.", link: "/academy" },
           ].map((sol, i) => (
             <Link key={i} href={sol.link}>
-              <div className="flex flex-col items-center p-5 border border-gray-100 dark:border-slate-800 rounded-2xl hover:shadow-lg transition group bg-gray-50/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 h-full">
+              <div className="flex flex-col items-center p-5 border border-gray-100 dark:border-slate-800 rounded-2xl hover:shadow-lg transition group bg-gray-50/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 h-full hover:-translate-y-1">
                 <div className="w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm flex items-center justify-center mb-4 text-primary group-hover:bg-primary group-hover:text-white transition duration-300">
                   <sol.icon className="w-6 h-6" />
                 </div>
@@ -562,11 +543,11 @@ export default async function Home() {
               Get instant quotes, call verified businesses offline, and unlock exclusive app-only Privilege Card discounts anywhere you go.
             </p>
             <div className="flex flex-wrap gap-4">
-              <button className="bg-white text-navy font-bold px-6 py-3 rounded-xl hover:bg-gray-100 transition shadow-lg text-sm flex items-center gap-2">
+              <button className="bg-white text-navy font-bold px-6 py-3.5 rounded-xl hover:bg-gray-100 transition shadow-lg text-sm flex items-center gap-2">
                 <Globe className="w-4 h-4 text-primary" />
                 <span>Download on iOS</span>
               </button>
-              <button className="bg-primary hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg text-sm flex items-center gap-2">
+              <button className="bg-primary hover:bg-orange-600 text-white font-bold px-6 py-3.5 rounded-xl transition shadow-lg text-sm flex items-center gap-2">
                 <Download className="w-4 h-4" />
                 <span>Get Android APK</span>
               </button>
