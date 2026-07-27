@@ -1,5 +1,13 @@
 import Image from "next/image";
-import { Search, MapPin, CheckCircle, Users, Building, Grid, Search as SearchIcon, Utensils, Hotel, PlusSquare, GraduationCap, HardHat, Car, Smartphone, Sparkles, MoreHorizontal, Store, Megaphone, MessageCircle, CreditCard, Presentation, BookOpen } from "lucide-react";
+import { 
+  Search, MapPin, CheckCircle, Users, Building, Grid, Search as SearchIcon, 
+  Utensils, Hotel, PlusSquare, GraduationCap, HardHat, Car, Smartphone, 
+  Sparkles, MoreHorizontal, Store, Megaphone, MessageCircle, CreditCard, 
+  Presentation, BookOpen, Truck, Scissors, Home as HomeIcon, Wrench, 
+  Briefcase, Landmark, Calendar, ShoppingBag, ShieldCheck, PhoneCall, 
+  ArrowRight, Star, Award, Download, Globe, ShieldAlert, ChevronRight,
+  HeartHandshake, Gem
+} from "lucide-react";
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -9,96 +17,183 @@ import HomeSearchBar from "@/components/home/HomeSearchBar";
 import { TrueDialAPI } from "@/lib/api";
 
 export default async function Home() {
-  const offersResponse = await TrueDialAPI.getPublicOffers();
+  const [offersResponse, listingsResponse] = await Promise.all([
+    TrueDialAPI.getPublicOffers(),
+    TrueDialAPI.getListings()
+  ]);
+
   const topOffers = offersResponse.success ? offersResponse.data.data.slice(0, 4) : [];
+  const topBusinesses = listingsResponse.success ? (Array.isArray(listingsResponse.data) ? listingsResponse.data.slice(0, 4) : (listingsResponse.data?.data || []).slice(0, 4)) : [];
   
   return (
-    <div className="min-h-screen flex flex-col font-sans bg-[#f9fafb]">
+    <div className="min-h-screen flex flex-col font-sans bg-[#f9fafb] dark:bg-slate-950 text-navy dark:text-white transition-colors duration-300">
       <Navbar />
 
-      {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 to-orange-50 py-16 px-6 md:px-12 flex flex-col items-center justify-center relative overflow-hidden">
+      {/* 1. HERO SECTION WITH INTERACTIVE SEARCH BAR & TRENDING PILLS */}
+      <section className="bg-gradient-to-br from-blue-50 via-orange-50/40 to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 py-16 px-6 md:px-12 flex flex-col items-center justify-center relative overflow-hidden border-b border-gray-200/60 dark:border-slate-800">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-primary/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
+
         <div className="z-10 max-w-4xl w-full text-center">
-          <h1 className="text-4xl md:text-5xl font-bold text-navy leading-tight mb-4">
-            Search Across <span className="text-primary">50K+</span> Verified Businesses
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-orange-100 dark:bg-orange-950/80 border border-orange-200 dark:border-orange-800 text-primary text-xs font-bold uppercase tracking-wider mb-6 animate-pulse">
+            <Sparkles className="w-3.5 h-3.5" />
+            <span>India&apos;s #1 Local Business &amp; Interior Discovery Engine</span>
+          </div>
+
+          <h1 className="text-4xl md:text-6xl font-extrabold text-navy dark:text-white leading-tight mb-4 tracking-tight">
+            Search Across <span className="text-primary bg-gradient-to-r from-orange-500 to-amber-500 bg-clip-text text-transparent">50,000+</span> Verified Businesses &amp; Studios
           </h1>
-          <p className="text-gray-600 mb-10 text-lg">
-            Find the best Restaurants, Hotels, Doctors, and Services near you.
+          <p className="text-gray-600 dark:text-gray-300 mb-8 text-base md:text-lg max-w-2xl mx-auto">
+            Find verified Interior Designers, Architects, Restaurants, Hotels, Doctors, and B2B Wholesalers in your city with guaranteed reviews &amp; VIP Privilege discounts.
           </p>
 
           {/* Interactive Search Bar Component */}
           <HomeSearchBar />
 
-          <div className="mt-5 flex justify-center">
+          {/* Lead Generation Button */}
+          <div className="mt-6 flex justify-center">
             <PostRequirementButton />
           </div>
           
-          <div className="mt-6 flex flex-wrap justify-center items-center gap-3 text-sm text-gray-500">
-            <span className="font-medium text-gray-700">Trending:</span>
-            <Link href="/search?category=Restaurants"><span className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-full cursor-pointer hover:bg-gray-50 hover:text-primary transition inline-block">Restaurants</span></Link>
-            <Link href="/search?category=Hotels"><span className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-full cursor-pointer hover:bg-gray-50 hover:text-primary transition inline-block">Hotels</span></Link>
-            <Link href="/search?category=Hospitals"><span className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-full cursor-pointer hover:bg-gray-50 hover:text-primary transition inline-block">Hospitals</span></Link>
-            <Link href="/search?category=Interior%20Designers"><span className="px-4 py-1.5 bg-white border border-gray-200 shadow-sm rounded-full cursor-pointer hover:bg-gray-50 hover:text-primary transition inline-block">Interior Designers</span></Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section className="bg-white border-y border-gray-200 py-8">
-        <div className="max-w-6xl mx-auto px-6 grid grid-cols-2 md:grid-cols-4 gap-8 divide-x divide-gray-100 text-center">
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2 text-2xl font-bold text-navy"><CheckCircle className="text-primary" /> 50K+</div>
-            <p className="text-gray-500 text-sm mt-1">Verified Businesses</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2 text-2xl font-bold text-navy"><Users className="text-primary" /> 1M+</div>
-            <p className="text-gray-500 text-sm mt-1">Happy Customers</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2 text-2xl font-bold text-navy"><Building className="text-primary" /> 500+</div>
-            <p className="text-gray-500 text-sm mt-1">Cities Covered</p>
-          </div>
-          <div className="flex flex-col items-center">
-            <div className="flex items-center gap-2 text-2xl font-bold text-navy"><Sparkles className="text-primary" /> 20+</div>
-            <p className="text-gray-500 text-sm mt-1">Business Services</p>
-          </div>
-        </div>
-      </section>
-
-      {/* Categories Section - JD Style */}
-      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full relative z-20">
-        <div className="bg-white rounded-3xl shadow-xl p-8 border border-gray-50">
-          <div className="flex justify-between items-center mb-8">
-             <h3 className="text-2xl font-bold text-navy">Popular Categories</h3>
-             <Link href="/categories" className="text-primary font-medium hover:underline text-sm flex items-center gap-1">View All Categories &gt;</Link>
-          </div>
-          <div className="grid grid-cols-4 md:grid-cols-8 gap-4">
+          {/* Trending Searches */}
+          <div className="mt-8 flex flex-wrap justify-center items-center gap-2 text-xs sm:text-sm text-gray-500 dark:text-gray-400">
+            <span className="font-semibold text-gray-700 dark:text-gray-300">Trending Searches:</span>
             {[
-              { name: "Restaurants", icon: Utensils, color: "bg-orange-100 text-orange-600", q: "Restaurants" },
-              { name: "Hotels", icon: Hotel, color: "bg-blue-100 text-blue-600", q: "Hotels" },
-              { name: "Hospitals", icon: PlusSquare, color: "bg-red-100 text-red-600", q: "Hospitals" },
-              { name: "Education", icon: GraduationCap, color: "bg-green-100 text-green-600", q: "Education" },
-              { name: "Interior Design", icon: HardHat, color: "bg-yellow-100 text-yellow-600", q: "Interior Designers" },
-              { name: "Automobile", icon: Car, color: "bg-purple-100 text-purple-600", q: "Automobile" },
-              { name: "Electronics", icon: Smartphone, color: "bg-cyan-100 text-cyan-600", q: "Electronics" },
-              { name: "More", icon: MoreHorizontal, color: "bg-gray-100 text-gray-600", link: "/categories" },
+              { label: "Interior Designers", cat: "Interior Designers" },
+              { label: "Restaurants", cat: "Restaurants" },
+              { label: "Hotels & Resorts", cat: "Hotels" },
+              { label: "Architects", cat: "Architects" },
+              { label: "Hospitals", cat: "Hospitals" },
+              { label: "Packers & Movers", cat: "Packers & Movers" },
+              { label: "B2B Wholesalers", cat: "B2B" },
+            ].map((trend, idx) => (
+              <Link key={idx} href={`/search?category=${encodeURIComponent(trend.cat)}`}>
+                <span className="px-3 py-1.5 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-sm rounded-full cursor-pointer hover:bg-orange-50 dark:hover:bg-orange-950/40 hover:text-primary dark:hover:text-primary hover:border-primary/40 font-medium transition inline-block">
+                  {trend.label}
+                </span>
+              </Link>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* 2. PROMOTIONAL FEATURE CARDS / HERO HIGHLIGHTS (SWIPER PARITY) */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* Card 1: Find My Interior Integration */}
+          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-navy to-slate-900 text-white shadow-xl flex flex-col justify-between border border-slate-700/60 group hover:shadow-2xl transition duration-300">
+            <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-orange-500/20 rounded-full blur-2xl group-hover:bg-orange-500/30 transition"></div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-amber-400 mb-4 border border-white/10">
+                <HardHat className="w-3.5 h-3.5" />
+                <span>Find My Interior Showcase</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-2 leading-tight">Verified Interior &amp; Architectural Studios</h3>
+              <p className="text-gray-300 text-sm leading-relaxed mb-6">
+                Explore 3D models, Vastu-compliant designs, and get 3 Free Consultations from certified interior designers.
+              </p>
+            </div>
+            <Link href="/search?category=Interior+Designers">
+              <button className="inline-flex items-center gap-2 bg-primary hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition text-sm">
+                <span>Explore Studios</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+          </div>
+
+          {/* Card 2: TrueDial VIP Privilege Card */}
+          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-amber-600 via-orange-600 to-primary text-white shadow-xl flex flex-col justify-between border border-orange-400/30 group hover:shadow-2xl transition duration-300">
+            <div className="absolute -right-10 -top-10 w-44 h-44 bg-yellow-400/20 rounded-full blur-2xl group-hover:bg-yellow-400/30 transition"></div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-xs font-bold text-yellow-200 mb-4 border border-white/20">
+                <Gem className="w-3.5 h-3.5" />
+                <span>TrueDial VIP Club</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-2 leading-tight">Multi-City VIP Privilege Card</h3>
+              <p className="text-orange-100 text-sm leading-relaxed mb-6">
+                One VIP Card. Unlimited benefits. Enjoy up to 50% discounts across 500+ restaurants, hotels &amp; healthcare clinics.
+              </p>
+            </div>
+            <Link href="/offers">
+              <button className="inline-flex items-center gap-2 bg-white text-navy hover:bg-orange-50 font-bold px-6 py-3 rounded-xl shadow-lg transition text-sm">
+                <span>Claim VIP Card</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+          </div>
+
+          {/* Card 3: TrueDial B2B & Wholesale */}
+          <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-emerald-800 to-teal-900 text-white shadow-xl flex flex-col justify-between border border-emerald-700/60 group hover:shadow-2xl transition duration-300">
+            <div className="absolute -right-10 -bottom-10 w-44 h-44 bg-emerald-400/20 rounded-full blur-2xl group-hover:bg-emerald-400/30 transition"></div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-emerald-300 mb-4 border border-white/10">
+                <Briefcase className="w-3.5 h-3.5" />
+                <span>TrueDial B2B Supply</span>
+              </div>
+              <h3 className="text-2xl font-bold mb-2 leading-tight">Direct Wholesale &amp; Manufacturing</h3>
+              <p className="text-emerald-100 text-sm leading-relaxed mb-6">
+                Source commercial building materials, machinery, office decor &amp; hotel supplies directly from verified manufacturers.
+              </p>
+            </div>
+            <Link href="/search?category=B2B">
+              <button className="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-6 py-3 rounded-xl shadow-lg transition text-sm">
+                <span>Browse B2B Sourcing</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. PRIMARY 16-CATEGORY GRID (ALL CATEGORIES PARITY) */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl shadow-xl p-6 sm:p-8 border border-gray-100 dark:border-slate-800">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-8">
+            <div>
+              <h3 className="text-2xl font-bold text-navy dark:text-white">Explore All Services &amp; Categories</h3>
+              <p className="text-sm text-gray-500 dark:text-gray-400">Discover trusted professionals across residential, commercial &amp; lifestyle sectors</p>
+            </div>
+            <Link href="/categories" className="text-primary font-bold hover:underline text-sm flex items-center gap-1">
+              <span>View All 500+ Categories</span>
+              <ChevronRight className="w-4 h-4" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-8 gap-4 sm:gap-6">
+            {[
+              { name: "Restaurants", icon: Utensils, color: "bg-orange-100 dark:bg-orange-950 text-orange-600 dark:text-orange-400", q: "Restaurants" },
+              { name: "Hotels & Stays", icon: Hotel, color: "bg-blue-100 dark:bg-blue-950 text-blue-600 dark:text-blue-400", q: "Hotels" },
+              { name: "Hospitals", icon: PlusSquare, color: "bg-red-100 dark:bg-red-950 text-red-600 dark:text-red-400", q: "Hospitals" },
+              { name: "Education", icon: GraduationCap, color: "bg-green-100 dark:bg-green-950 text-green-600 dark:text-green-400", q: "Education" },
+              { name: "Interior Design", icon: HardHat, color: "bg-yellow-100 dark:bg-yellow-950 text-yellow-600 dark:text-yellow-400", q: "Interior Designers" },
+              { name: "Real Estate", icon: HomeIcon, color: "bg-purple-100 dark:bg-purple-950 text-purple-600 dark:text-purple-400", q: "Real Estate" },
+              { name: "Packers & Movers", icon: Truck, color: "bg-cyan-100 dark:bg-cyan-950 text-cyan-600 dark:text-cyan-400", q: "Packers & Movers" },
+              { name: "Salon & Spa", icon: Scissors, color: "bg-pink-100 dark:bg-pink-950 text-pink-600 dark:text-pink-400", q: "Salon & Spa" },
+              { name: "Architects", icon: Building, color: "bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400", q: "Architects" },
+              { name: "Modular Kitchen", icon: Grid, color: "bg-teal-100 dark:bg-teal-950 text-teal-600 dark:text-teal-400", q: "Modular Kitchen" },
+              { name: "Repair Services", icon: Wrench, color: "bg-indigo-100 dark:bg-indigo-950 text-indigo-600 dark:text-indigo-400", q: "Repair & Services" },
+              { name: "B2B Wholesalers", icon: Briefcase, color: "bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400", q: "B2B" },
+              { name: "Wedding Planning", icon: Calendar, color: "bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400", q: "Wedding Planning" },
+              { name: "Loans & Finance", icon: Landmark, color: "bg-sky-100 dark:bg-sky-950 text-sky-600 dark:text-sky-400", q: "Loans & Finance" },
+              { name: "Daily Needs", icon: ShoppingBag, color: "bg-lime-100 dark:bg-lime-950 text-lime-600 dark:text-lime-400", q: "Daily Needs" },
+              { name: "More", icon: MoreHorizontal, color: "bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400", link: "/categories" },
             ].map((cat, i) => (
               cat.link ? (
                 <Link href={cat.link} key={i}>
-                  <div className="flex flex-col items-center justify-center p-4 rounded-2xl hover:bg-gray-50 transition cursor-pointer group text-center gap-3">
+                  <div className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800/80 transition cursor-pointer group text-center gap-3">
                     <div className={`w-14 h-14 rounded-full flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
                       <cat.icon className="w-6 h-6" />
                     </div>
-                    <span className="text-xs font-semibold text-gray-700">{cat.name}</span>
+                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300 line-clamp-1">{cat.name}</span>
                   </div>
                 </Link>
               ) : (
                 <Link href={`/search?category=${encodeURIComponent(cat.q || '')}`} key={i}>
-                  <div className="flex flex-col items-center justify-center p-4 rounded-2xl hover:bg-gray-50 transition cursor-pointer group text-center gap-3">
+                  <div className="flex flex-col items-center justify-center p-3 sm:p-4 rounded-2xl hover:bg-gray-50 dark:hover:bg-slate-800/80 transition cursor-pointer group text-center gap-3">
                     <div className={`w-14 h-14 rounded-full flex items-center justify-center ${cat.color} group-hover:scale-110 transition-transform duration-300 shadow-sm`}>
                       <cat.icon className="w-6 h-6" />
                     </div>
-                    <span className="text-xs font-semibold text-gray-700">{cat.name}</span>
+                    <span className="text-xs font-bold text-gray-700 dark:text-gray-300 line-clamp-1">{cat.name}</span>
                   </div>
                 </Link>
               )
@@ -107,81 +202,436 @@ export default async function Home() {
         </div>
       </section>
 
-      {/* Solutions Section */}
-      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto w-full bg-white rounded-3xl mb-16 shadow-sm border border-gray-50">
-        <h3 className="text-2xl font-bold text-navy text-center mb-12">Powerful Solutions for Your Business Growth</h3>
-        <div className="grid grid-cols-2 md:grid-cols-6 gap-6 text-center">
+      {/* 4. TRUEDIAL B2B & WHOLESALE MARKETPLACE (JD-MART PARITY) */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8">
+          <div>
+            <span className="text-xs font-bold text-primary uppercase tracking-wider">Direct Sourcing</span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">TrueDial B2B &amp; Wholesale Marketplace</h3>
+          </div>
+          <Link href="/search?category=B2B" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 mt-2 sm:mt-0">
+            <span>Explore All Wholesale Categories</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
-            { title: "Business Listing", icon: Store, desc: "Get discovered by thousands of potential customers." },
-            { title: "Digital Marketing", icon: Megaphone, desc: "Grow your business with our digital marketing solutions." },
-            { title: "SMS & WhatsApp", icon: MessageCircle, desc: "Reach your customers directly with powerful campaigns." },
-            { title: "Privilege Card", icon: CreditCard, desc: "Increase customer loyalty with our multi-city privilege card." },
-            { title: "Business Consulting", icon: Presentation, desc: "Expert guidance for startup, registration, trademark & more." },
-            { title: "TD Academy", icon: BookOpen, desc: "Learn, grow and build your career with industry courses." },
-          ].map((sol, i) => (
-            <div key={i} className="flex flex-col items-center p-4 border border-gray-100 rounded-xl hover:shadow-lg transition group bg-gray-50 hover:bg-white">
-              <div className="w-14 h-14 bg-white rounded-full shadow-sm flex items-center justify-center mb-4 text-primary group-hover:bg-primary group-hover:text-white transition">
-                <sol.icon className="w-6 h-6" />
+            {
+              title: "Building & Construction",
+              subtitle: "Cement, Steel, Bricks, Tiles & Sanitaryware",
+              tag: "Bulk Wholesale",
+              icon: Building,
+              color: "bg-amber-500",
+              link: "/search?category=Building+Materials"
+            },
+            {
+              title: "Modular Furniture & Office Decor",
+              subtitle: "Workstations, Acoustics & Ergonomic Chairs",
+              tag: "Factory Direct",
+              icon: Grid,
+              color: "bg-blue-600",
+              link: "/search?category=Office+Furniture"
+            },
+            {
+              title: "Commercial Kitchen Equipment",
+              subtitle: "Industrial Ovens, Refrigeration & Cutlery",
+              tag: "Top Brands",
+              icon: Utensils,
+              color: "bg-emerald-600",
+              link: "/search?category=Kitchen+Equipment"
+            },
+            {
+              title: "Electricals, Lighting & Hardware",
+              subtitle: "Industrial Cables, LED Fixtures & Generators",
+              tag: "Verified Suppliers",
+              icon: Wrench,
+              color: "bg-purple-600",
+              link: "/search?category=Electricals"
+            }
+          ].map((item, idx) => (
+            <Link key={idx} href={item.link}>
+              <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-6 hover:shadow-xl transition-all duration-300 group flex flex-col justify-between h-full">
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <span className="text-[10px] font-bold uppercase tracking-wider px-2.5 py-1 rounded-full bg-orange-50 dark:bg-orange-950/50 text-primary border border-orange-200 dark:border-orange-800">
+                      {item.tag}
+                    </span>
+                    <div className={`w-10 h-10 rounded-xl ${item.color} text-white flex items-center justify-center shadow-md group-hover:scale-110 transition-transform`}>
+                      <item.icon className="w-5 h-5" />
+                    </div>
+                  </div>
+                  <h4 className="text-lg font-bold text-navy dark:text-white mb-2 group-hover:text-primary transition">{item.title}</h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed mb-4">{item.subtitle}</p>
+                </div>
+                <div className="flex items-center gap-1 text-primary text-xs font-bold mt-2">
+                  <span>Get Best Quotes</span>
+                  <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
+                </div>
               </div>
-              <h4 className="font-bold text-sm text-navy mb-2">{sol.title}</h4>
-              <p className="text-xs text-gray-500 leading-relaxed">{sol.desc}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* 5. POPULAR LOCAL SERVICES BY SECTOR (CURATED SECTORS) */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="text-center max-w-2xl mx-auto mb-10">
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mb-2">Most Trusted Local Services by Sector</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Quick links to verified experts across home, health, transport, and professional consulting</p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[
+            {
+              title: "Home Renovation & Interiors",
+              items: ["Interior Designers", "Modular Kitchens", "Vastu Consultants", "Architectural Studios", "Renovation Contractors"],
+              icon: HardHat,
+              color: "text-orange-500 bg-orange-50 dark:bg-orange-950/40"
+            },
+            {
+              title: "Health & Wellness Specialists",
+              items: ["Certified Dentists", "Multi-Specialty Hospitals", "Diagnostic Centers", "Physiotherapy Clinics", "Fitness Centers & Gyms"],
+              icon: PlusSquare,
+              color: "text-red-500 bg-red-50 dark:bg-red-950/40"
+            },
+            {
+              title: "Daily Essentials & Transport",
+              items: ["Packers & Movers", "Reliable Car Servicing", "Legal & Tax Advisors", "Event Organizers", "Chartered Accountants"],
+              icon: Truck,
+              color: "text-blue-500 bg-blue-50 dark:bg-blue-950/40"
+            },
+            {
+              title: "Hospitality & Stays",
+              items: ["Luxury Hotels & Resorts", "Fine Dining Restaurants", "Banquet Halls", "Corporate Guest Houses", "Catering Services"],
+              icon: Hotel,
+              color: "text-emerald-500 bg-emerald-50 dark:bg-emerald-950/40"
+            }
+          ].map((sector, i) => (
+            <div key={i} className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl p-6 shadow-sm hover:shadow-lg transition">
+              <div className="flex items-center gap-3 mb-5">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${sector.color} shrink-0`}>
+                  <sector.icon className="w-6 h-6" />
+                </div>
+                <h4 className="font-bold text-base text-navy dark:text-white leading-tight">{sector.title}</h4>
+              </div>
+              <ul className="space-y-2.5">
+                {sector.items.map((item, j) => (
+                  <li key={j}>
+                    <Link href={`/search?category=${encodeURIComponent(item)}`} className="text-sm text-gray-600 dark:text-gray-400 hover:text-primary dark:hover:text-primary flex items-center justify-between group">
+                      <span>{item}</span>
+                      <ChevronRight className="w-3.5 h-3.5 text-gray-400 group-hover:translate-x-1 transition-transform" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
           ))}
         </div>
       </section>
 
-      {/* Today's Best Offers */}
-      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto w-full">
+      {/* 6. EXPLORE TOP VERIFIED BUSINESSES & INTERIOR STUDIOS (LIVE BUSINESS CARDS) */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8">
+          <div>
+            <span className="text-xs font-bold text-primary uppercase tracking-wider">Top Rated in Your City</span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Explore Top Verified Businesses &amp; Studios</h3>
+          </div>
+          <Link href="/search" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 mt-2 sm:mt-0">
+            <span>View All Verified Listings</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {topBusinesses.length > 0 ? (
+            topBusinesses.map((biz: any) => (
+              <div key={biz.id} className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group">
+                <div className="h-44 w-full relative bg-gray-100 dark:bg-slate-800 overflow-hidden">
+                  {biz.gallery && biz.gallery.length > 0 ? (
+                    <img src={biz.gallery[0]} alt={biz.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-gray-400 dark:text-gray-600 text-sm font-medium">No Image</div>
+                  )}
+                  <div className="absolute top-3 left-3 bg-white/90 dark:bg-slate-900/90 backdrop-blur-md px-2.5 py-1 rounded-full text-xs font-bold text-navy dark:text-white flex items-center gap-1 shadow-sm">
+                    <ShieldCheck className="w-3.5 h-3.5 text-green-600" />
+                    <span>Verified</span>
+                  </div>
+                  <div className="absolute top-3 right-3 bg-navy/90 dark:bg-slate-900/90 text-amber-400 px-2 py-1 rounded-lg text-xs font-bold flex items-center gap-1 shadow-sm">
+                    <Star className="w-3.5 h-3.5 fill-amber-400" />
+                    <span>{biz.rating || "4.8"}</span>
+                    <span className="text-gray-300 text-[10px]">({biz.reviews_count || "120"})</span>
+                  </div>
+                </div>
+
+                <div className="p-5 flex flex-col flex-1 justify-between">
+                  <div>
+                    <span className="text-xs font-bold text-primary uppercase tracking-wider">{biz.category?.name || "Service"}</span>
+                    <h4 className="text-lg font-bold text-navy dark:text-white mt-1 mb-2 line-clamp-1 group-hover:text-primary transition">{biz.title}</h4>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 line-clamp-2 mb-3">{biz.description}</p>
+                    <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-4">
+                      <MapPin className="w-3.5 h-3.5 text-primary shrink-0" />
+                      <span className="line-clamp-1">{biz.address || biz.city || "Mumbai"}</span>
+                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-2 pt-4 border-t border-gray-100 dark:border-slate-800">
+                    <Link href={`/businesses/${biz.slug || '#'}`} className="flex-1">
+                      <button className="w-full bg-orange-50 dark:bg-orange-950/50 hover:bg-primary dark:hover:bg-primary text-primary hover:text-white dark:text-orange-400 dark:hover:text-white font-bold py-2.5 rounded-xl transition text-xs flex items-center justify-center gap-1">
+                        <span>View Profile</span>
+                      </button>
+                    </Link>
+                    <a href={`tel:${biz.phone || '+919876543210'}`} className="bg-navy dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 text-white p-2.5 rounded-xl transition" title="Call Now">
+                      <PhoneCall className="w-4 h-4" />
+                    </a>
+                  </div>
+                </div>
+              </div>
+            ))
+          ) : (
+            <div className="col-span-4 text-center py-10 text-gray-500 dark:text-gray-400">
+              No businesses found. Try searching above!
+            </div>
+          )}
+        </div>
+      </section>
+
+      {/* 7. SIGNATURE FEATURE: MULTI-CITY PRIVILEGE CARD VIP BANNER */}
+      <section className="py-8 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="bg-gradient-to-r from-navy via-slate-900 to-navy dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 rounded-3xl p-8 md:p-12 text-white shadow-2xl relative overflow-hidden border border-slate-800">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl -z-10"></div>
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+            <div className="md:col-span-7">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/20 text-amber-300 text-xs font-bold uppercase tracking-wider mb-4 border border-amber-500/30">
+                <Award className="w-4 h-4" />
+                <span>TrueDial Signature Membership</span>
+              </div>
+              <h2 className="text-3xl md:text-4xl font-extrabold mb-4 leading-tight">
+                Get Your <span className="text-amber-400">Multi-City VIP Privilege Card</span>
+              </h2>
+              <p className="text-gray-300 text-base md:text-lg mb-6 leading-relaxed">
+                Enjoy guaranteed savings across dining, luxury stays, interior consultations, and health clinics in over 50 cities across India. One card for you and your family.
+              </p>
+              <div className="flex flex-wrap gap-4 mb-8">
+                <div className="flex items-center gap-2 text-sm text-gray-200">
+                  <CheckCircle className="w-5 h-5 text-amber-400" />
+                  <span>Up to 50% Off Dining &amp; Spa</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-200">
+                  <CheckCircle className="w-5 h-5 text-amber-400" />
+                  <span>Free Interior 3D Design Consult</span>
+                </div>
+                <div className="flex items-center gap-2 text-sm text-gray-200">
+                  <CheckCircle className="w-5 h-5 text-amber-400" />
+                  <span>Priority Healthcare Diagnostics</span>
+                </div>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link href="/offers">
+                  <button className="bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-8 py-4 rounded-xl shadow-lg transition text-base flex items-center justify-center gap-2">
+                    <span>Claim Your Privilege Card</span>
+                    <ArrowRight className="w-5 h-5" />
+                  </button>
+                </Link>
+                <Link href="/dashboard/user">
+                  <button className="bg-white/10 hover:bg-white/20 text-white border border-white/20 font-bold px-8 py-4 rounded-xl transition text-base">
+                    <span>View Member Guide</span>
+                  </button>
+                </Link>
+              </div>
+            </div>
+
+            {/* VIP Card Graphic */}
+            <div className="md:col-span-5 flex justify-center">
+              <div className="w-80 h-48 rounded-2xl bg-gradient-to-tr from-amber-600 via-orange-500 to-yellow-500 p-6 text-white shadow-2xl flex flex-col justify-between relative overflow-hidden transform md:rotate-3 hover:rotate-0 transition duration-500 border border-white/30">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-xs font-bold uppercase tracking-widest text-amber-100">TrueDial VIP Club</span>
+                    <h4 className="font-extrabold text-xl mt-0.5">PRIVILEGE CARD</h4>
+                  </div>
+                  <Award className="w-8 h-8 text-amber-200 opacity-80" />
+                </div>
+                <div className="my-3">
+                  <div className="text-xs text-amber-100">MEMBER ID</div>
+                  <div className="font-mono text-lg font-bold tracking-widest">TD-VIP-88219-MUM</div>
+                </div>
+                <div className="flex justify-between items-end text-xs">
+                  <div>
+                    <div className="text-amber-100">VALID ACROSS</div>
+                    <div className="font-bold">50+ CITIES IN INDIA</div>
+                  </div>
+                  <span className="font-extrabold text-sm bg-white/20 px-2 py-1 rounded">VIP GOLD</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* 8. TODAY'S BEST OFFERS & DEALS */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
         <div className="flex justify-between items-end mb-8">
-          <h3 className="text-2xl font-bold text-navy">Today's Best Offers</h3>
-          <Link href="/offers" className="text-primary font-medium hover:underline text-sm flex items-center gap-1">View All Offers &gt;</Link>
+          <div>
+            <span className="text-xs font-bold text-primary uppercase tracking-wider">Verified Discounts</span>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Today&apos;s Best Offers &amp; Discounts</h3>
+          </div>
+          <Link href="/offers" className="text-primary font-bold hover:underline text-sm flex items-center gap-1">
+            <span>View All Offers</span>
+            <ChevronRight className="w-4 h-4" />
+          </Link>
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
           {topOffers.length > 0 ? (
             topOffers.map((offer: any) => (
-              <div key={offer.id} className="bg-white border border-gray-200 rounded-xl overflow-hidden hover:shadow-lg transition flex flex-col group">
-                <div className={`h-40 w-full relative bg-gray-100 overflow-hidden flex items-center justify-center`}>
+              <div key={offer.id} className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-2xl overflow-hidden hover:shadow-xl transition-all duration-300 flex flex-col group">
+                <div className={`h-40 w-full relative bg-gray-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center`}>
                   {offer.media && offer.media.length > 0 ? (
-                      <img src={offer.media[0].url} alt={offer.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img src={offer.media[0].url} alt={offer.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
                   ) : (
-                      <span className="text-gray-400">No Image</span>
+                    <span className="text-gray-400 dark:text-gray-600 text-sm font-medium">No Image</span>
                   )}
                   {offer.discount_type && offer.discount_value && (
-                      <div className="absolute bottom-2 left-2 bg-navy text-white text-xs font-bold px-2 py-1 rounded">
-                          {offer.discount_type === 'percentage' ? `${offer.discount_value}% OFF` : `₹${offer.discount_value} OFF`}
-                      </div>
+                    <div className="absolute bottom-2 left-2 bg-primary text-white text-xs font-bold px-2.5 py-1 rounded-lg shadow-sm">
+                      {offer.discount_type === 'percentage' ? `${offer.discount_value}% OFF` : `₹${offer.discount_value} OFF`}
+                    </div>
                   )}
                 </div>
-                <div className="p-4 flex flex-col flex-1">
-                  <h4 className="font-bold text-navy text-lg leading-tight mb-1 line-clamp-1" title={offer.title}>{offer.title}</h4>
-                  <p className="text-xs text-gray-500 mb-2">{offer.listing?.category || 'General'}</p>
-                  <p className="text-xs text-gray-400 mt-auto mb-4">Valid Till: {offer.valid_until ? new Date(offer.valid_until).toLocaleDateString() : 'Ongoing'}</p>
+                <div className="p-5 flex flex-col flex-1">
+                  <h4 className="font-bold text-navy dark:text-white text-base leading-tight mb-1 line-clamp-1 group-hover:text-primary transition" title={offer.title}>{offer.title}</h4>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-2">{offer.listing?.category || 'General'}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500 mt-auto mb-4">Valid Till: {offer.valid_until ? new Date(offer.valid_until).toLocaleDateString() : 'Ongoing'}</p>
                   <Link href={`/businesses/${offer.listing?.slug || '#'}`}>
-                    <button className="w-full bg-orange-100 text-primary font-medium py-2 rounded hover:bg-primary hover:text-white transition">
-                      View Profile
+                    <button className="w-full bg-orange-50 dark:bg-orange-950/50 text-primary font-bold py-2.5 rounded-xl hover:bg-primary hover:text-white transition text-xs">
+                      View Offer &amp; Profile
                     </button>
                   </Link>
                 </div>
               </div>
             ))
           ) : (
-            <div className="col-span-3 text-center py-8 text-gray-500">
-                No active offers found. Check back later!
+            <div className="col-span-4 text-center py-10 text-gray-500 dark:text-gray-400">
+              No active offers found. Check back later!
             </div>
           )}
+        </div>
+      </section>
 
-          {/* Privilege Card Banner */}
-          <div className="bg-navy rounded-xl overflow-hidden text-white flex flex-col justify-center items-start p-6 col-span-1 md:col-span-1 border border-navy shadow-lg relative">
-             <h3 className="text-xl font-bold mb-2">Get Multi City Privilege Card</h3>
-             <p className="text-sm text-gray-300 mb-6">One Card. Multiple Cities. Unlimited Benefits.</p>
-             <Link href="/offers">
-               <button className="bg-primary text-white font-medium py-2 px-6 rounded hover:bg-orange-600 transition z-10">
-                 Know More
-               </button>
-             </Link>
-             {/* small card graphic */}
-             <div className="absolute -bottom-10 -right-10 w-40 h-24 bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl transform -rotate-12 opacity-50"></div>
+      {/* 9. POWERFUL SOLUTIONS FOR BUSINESS GROWTH (VENDOR ECOSYSTEM) */}
+      <section className="py-16 px-6 md:px-12 max-w-7xl mx-auto w-full bg-white dark:bg-slate-900 rounded-3xl mb-12 shadow-sm border border-gray-100 dark:border-slate-800">
+        <div className="text-center max-w-2xl mx-auto mb-12">
+          <span className="text-xs font-bold text-primary uppercase tracking-wider">Grow With Us</span>
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Powerful Solutions for Your Business Growth</h3>
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">Get discovered by thousands of customers, manage leads, and scale your brand with TrueDial</p>
+        </div>
+
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 text-center">
+          {[
+            { title: "Business Listing", icon: Store, desc: "Get discovered by thousands of potential customers in your city.", link: "/free-listing" },
+            { title: "Digital Marketing", icon: Megaphone, desc: "Grow your business with our targeted digital marketing campaigns.", link: "/dashboard/business/marketing" },
+            { title: "SMS & WhatsApp", icon: MessageCircle, desc: "Reach your customers directly with powerful automated alerts.", link: "/dashboard/business/marketing" },
+            { title: "Privilege Card Partner", icon: CreditCard, desc: "Increase customer loyalty by joining our VIP discount program.", link: "/dashboard/vendor/privilege-cards" },
+            { title: "Business Consulting", icon: Presentation, desc: "Expert guidance for company startup, trademark & registration.", link: "/consulting" },
+            { title: "TD Academy", icon: BookOpen, desc: "Learn, grow and build your team with certified industry courses.", link: "/academy" },
+          ].map((sol, i) => (
+            <Link key={i} href={sol.link}>
+              <div className="flex flex-col items-center p-5 border border-gray-100 dark:border-slate-800 rounded-2xl hover:shadow-lg transition group bg-gray-50/60 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 h-full">
+                <div className="w-14 h-14 bg-white dark:bg-slate-800 rounded-2xl shadow-sm flex items-center justify-center mb-4 text-primary group-hover:bg-primary group-hover:text-white transition duration-300">
+                  <sol.icon className="w-6 h-6" />
+                </div>
+                <h4 className="font-bold text-sm text-navy dark:text-white mb-2 group-hover:text-primary transition">{sol.title}</h4>
+                <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">{sol.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      {/* 10. DOWNLOAD THE TRUEDIAL MOBILE APP BANNER (JD-APP PARITY) */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full">
+        <div className="bg-gradient-to-r from-blue-900 via-navy to-slate-900 dark:from-slate-900 dark:to-slate-950 rounded-3xl p-8 md:p-12 text-white shadow-2xl border border-slate-800 flex flex-col md:flex-row items-center justify-between gap-8">
+          <div className="max-w-xl">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-500/20 text-blue-300 text-xs font-bold uppercase tracking-wider mb-4 border border-blue-500/30">
+              <Download className="w-4 h-4" />
+              <span>Available on iOS &amp; Android</span>
+            </div>
+            <h3 className="text-3xl md:text-4xl font-extrabold mb-4 leading-tight">
+              Download the <span className="text-primary">TrueDial App</span> for Smart Local Search &amp; VIP Perks
+            </h3>
+            <p className="text-gray-300 text-sm md:text-base leading-relaxed mb-6">
+              Get instant quotes, call verified businesses offline, and unlock exclusive app-only Privilege Card discounts anywhere you go.
+            </p>
+            <div className="flex flex-wrap gap-4">
+              <button className="bg-white text-navy font-bold px-6 py-3 rounded-xl hover:bg-gray-100 transition shadow-lg text-sm flex items-center gap-2">
+                <Globe className="w-4 h-4 text-primary" />
+                <span>Download on iOS</span>
+              </button>
+              <button className="bg-primary hover:bg-orange-600 text-white font-bold px-6 py-3 rounded-xl transition shadow-lg text-sm flex items-center gap-2">
+                <Download className="w-4 h-4" />
+                <span>Get Android APK</span>
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white/10 dark:bg-slate-800/80 backdrop-blur-md p-6 rounded-2xl border border-white/20 text-center flex flex-col items-center">
+            <div className="w-32 h-32 bg-white rounded-xl p-2 mb-3 flex items-center justify-center shadow-inner">
+              {/* QR Code graphic */}
+              <div className="w-full h-full bg-gradient-to-tr from-navy to-primary rounded-lg flex items-center justify-center text-white font-bold text-xs text-center p-2">
+                SCAN TO DOWNLOAD
+              </div>
+            </div>
+            <span className="text-xs font-bold text-gray-200">Scan QR Code with Phone</span>
+            <span className="text-[11px] text-gray-400 mt-1">Supports iOS &amp; Android devices</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 11. MULTI-CITY DIRECTORY SEO LINKS SECTION (JUSTDIAL FOOTER DIRECTORY PARITY) */}
+      <section className="py-12 px-6 md:px-12 max-w-7xl mx-auto w-full border-t border-gray-200 dark:border-slate-800">
+        <h4 className="text-base font-bold text-navy dark:text-white mb-6">Popular Local Categories Across Major Cities</h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-xs text-gray-600 dark:text-gray-400">
+          <div>
+            <h5 className="font-bold text-navy dark:text-white mb-3">Top Services in Mumbai</h5>
+            <ul className="space-y-2">
+              <li><Link href="/search?city=Mumbai&category=Restaurants" className="hover:text-primary transition">Restaurants in Mumbai</Link></li>
+              <li><Link href="/search?city=Mumbai&category=Interior+Designers" className="hover:text-primary transition">Interior Designers in Mumbai</Link></li>
+              <li><Link href="/search?city=Mumbai&category=Hotels" className="hover:text-primary transition">Hotels in Mumbai</Link></li>
+              <li><Link href="/search?city=Mumbai&category=Architects" className="hover:text-primary transition">Architects in Mumbai</Link></li>
+              <li><Link href="/search?city=Mumbai&category=Hospitals" className="hover:text-primary transition">Hospitals in Mumbai</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-bold text-navy dark:text-white mb-3">Top Services in Delhi NCR</h5>
+            <ul className="space-y-2">
+              <li><Link href="/search?city=Delhi&category=Restaurants" className="hover:text-primary transition">Restaurants in Delhi</Link></li>
+              <li><Link href="/search?city=Delhi&category=Interior+Designers" className="hover:text-primary transition">Interior Designers in Delhi</Link></li>
+              <li><Link href="/search?city=Delhi&category=Hotels" className="hover:text-primary transition">Hotels in Delhi</Link></li>
+              <li><Link href="/search?city=Delhi&category=Packers+%26+Movers" className="hover:text-primary transition">Packers &amp; Movers in Delhi</Link></li>
+              <li><Link href="/search?city=Delhi&category=B2B" className="hover:text-primary transition">B2B Wholesalers in Delhi</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-bold text-navy dark:text-white mb-3">Top Services in Bangalore</h5>
+            <ul className="space-y-2">
+              <li><Link href="/search?city=Bangalore&category=Restaurants" className="hover:text-primary transition">Restaurants in Bangalore</Link></li>
+              <li><Link href="/search?city=Bangalore&category=Interior+Designers" className="hover:text-primary transition">Interior Designers in Bangalore</Link></li>
+              <li><Link href="/search?city=Bangalore&category=Hotels" className="hover:text-primary transition">Hotels in Bangalore</Link></li>
+              <li><Link href="/search?city=Bangalore&category=Architects" className="hover:text-primary transition">Architects in Bangalore</Link></li>
+              <li><Link href="/search?city=Bangalore&category=Hospitals" className="hover:text-primary transition">Hospitals in Bangalore</Link></li>
+            </ul>
+          </div>
+
+          <div>
+            <h5 className="font-bold text-navy dark:text-white mb-3">Top Services in Pune &amp; Hyderabad</h5>
+            <ul className="space-y-2">
+              <li><Link href="/search?city=Pune&category=Interior+Designers" className="hover:text-primary transition">Interior Designers in Pune</Link></li>
+              <li><Link href="/search?city=Hyderabad&category=Interior+Designers" className="hover:text-primary transition">Interior Designers in Hyderabad</Link></li>
+              <li><Link href="/search?city=Pune&category=Restaurants" className="hover:text-primary transition">Restaurants in Pune</Link></li>
+              <li><Link href="/search?city=Hyderabad&category=Hotels" className="hover:text-primary transition">Hotels in Hyderabad</Link></li>
+              <li><Link href="/search?city=Pune&category=B2B" className="hover:text-primary transition">B2B Wholesalers in Pune</Link></li>
+            </ul>
           </div>
         </div>
       </section>
@@ -190,29 +640,3 @@ export default async function Home() {
     </div>
   );
 }
-
-function ChevronDown(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="m6 9 6 6 6-6"/>
-    </svg>
-  )
-}
-function Lock(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-    </svg>
-  )
-}
-function Headphones(props: any) {
-  return (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 14h3a2 2 0 0 1 2 2v3a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7a9 9 0 0 1 18 0v7a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3"/>
-    </svg>
-  )
-}
-function Facebook(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/></svg>; }
-function Instagram(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="20" height="20" x="2" y="2" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" x2="17.51" y1="6.5" y2="6.5"/></svg>; }
-function Twitter(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-18 11.6 2.2.1 4.4-.6 6-2C3 15.5.5 9.6 3 5c2.2 2.6 5.6 4.1 9 4-.9-4.2 4-6.6 7-3.8 1.1 0 3-1.2 3-1.2z"/></svg>; }
-function Linkedin(props: any) { return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></svg>; }
