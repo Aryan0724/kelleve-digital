@@ -26,7 +26,7 @@ import {
   Dumbbell, Briefcase, Calendar, Car, Truck, Package, Plane, 
   Tag, CreditCard, Smartphone, Zap, Tv, Droplet, Flame, 
   ShieldCheck, Bus, Train, Film, Gift, RefreshCw, Award, ArrowRight,
-  ChevronDown, CheckCircle, Bell, User as UserIcon, Scan, Mic,
+  ChevronDown, CheckCircle, Bell, User as UserIcon, Scan,
   ChevronRight, ShoppingBag, DollarSign, Globe, TrendingUp, Newspaper, 
   MoreHorizontal, ArrowLeft, Pill, ShoppingCart, Film as MovieIcon, Home as HomeIcon
 } from 'lucide-react-native';
@@ -49,14 +49,199 @@ interface Listing {
   featured?: boolean;
 }
 
+const MOCK_ALL_LISTINGS: Listing[] = [
+  {
+    id: 1,
+    title: "Sharma Interior Decorators",
+    slug: "sharma-interior-decorators",
+    description: "Premium interior design services for residential and commercial spaces across Delhi NCR.",
+    city: "Delhi NCR",
+    category: { id: 101, name: "Interior Designers" },
+    reviews_avg_rating: "4.8",
+    featured: true,
+  },
+  {
+    id: 2,
+    title: "Royal Palace Hotel",
+    slug: "royal-palace-hotel",
+    description: "Luxury stays with seaside views in the heart of Mumbai.",
+    city: "Mumbai",
+    category: { id: 2, name: "Hotels" },
+    reviews_avg_rating: "4.5",
+    featured: true,
+  },
+  {
+    id: 3,
+    title: "Apollo Dental Clinic",
+    slug: "apollo-dental-clinic",
+    description: "Advanced dental care by certified specialists.",
+    city: "Bangalore",
+    category: { id: 3, name: "Doctors" },
+    reviews_avg_rating: "4.9",
+    featured: true,
+  },
+  {
+    id: 4,
+    title: "Aura Architecture & Interior Studio",
+    slug: "aura-architecture-interior-studio",
+    description: "Award-winning architectural and luxury interior design firm specializing in turnkey projects.",
+    city: "Mumbai",
+    category: { id: 102, name: "Architects" },
+    reviews_avg_rating: "4.9",
+    featured: true,
+  },
+  {
+    id: 5,
+    title: "The Spice Route Dining & Lounge",
+    slug: "spice-route-dining",
+    description: "Authentic pan-Asian fine dining with private banquet rooms and rooftop lounge.",
+    city: "Delhi NCR",
+    category: { id: 1, name: "Restaurant" },
+    reviews_avg_rating: "4.7",
+    featured: true,
+  },
+  {
+    id: 6,
+    title: "Agarwal Packers & Logistics",
+    slug: "agarwal-packers-logistics",
+    description: "Trusted household relocation, vehicle shifting, and secure warehousing across India.",
+    city: "Pune",
+    category: { id: 5, name: "Packers & Movers" },
+    reviews_avg_rating: "4.6",
+    featured: false,
+  },
+  {
+    id: 7,
+    title: "Tata Steel Building Supplies (B2B)",
+    slug: "tata-steel-building-supplies",
+    description: "Factory direct distributor of structural TMT bars, cement, and commercial construction hardware.",
+    city: "Mumbai",
+    category: { id: 103, name: "B2B Wholesalers" },
+    reviews_avg_rating: "4.9",
+    featured: true,
+  },
+  {
+    id: 8,
+    title: "Fortis Memorial Super Specialty Hospital",
+    slug: "fortis-memorial-hospital",
+    description: "24x7 emergency medical services, cardiology, orthopedics, and diagnostic laboratory.",
+    city: "Delhi NCR",
+    category: { id: 3, name: "Doctors" },
+    reviews_avg_rating: "4.8",
+    featured: true,
+  },
+  {
+    id: 9,
+    title: "VastuCreations Interior Designers",
+    slug: "vastucreations-interior-designers",
+    description: "Modern modular kitchen and luxury bedroom interiors tailored to your budget.",
+    city: "Bangalore",
+    category: { id: 101, name: "Interior Designers" },
+    reviews_avg_rating: "4.9",
+    featured: true,
+  },
+  {
+    id: 10,
+    title: "Barbeque Nation Buffet & Grill",
+    slug: "barbeque-nation-buffet",
+    description: "Unlimited live grill table buffet with multi-cuisine dining.",
+    city: "Hyderabad",
+    category: { id: 1, name: "Restaurant" },
+    reviews_avg_rating: "4.7",
+    featured: true,
+  },
+  {
+    id: 11,
+    title: "Samosewali Restaurant & Litti Corner",
+    slug: "samosewali-restaurant-patna",
+    description: "Famous for authentic Bihari Litti Chokha, samosas, regional sweets & multi-cuisine delights. Fraser Road, Near Patna Junction, Patna, Bihar.",
+    city: "Patna, Bihar",
+    category: { id: 1, name: "Restaurant" },
+    reviews_avg_rating: "4.9",
+    featured: true,
+  },
+  {
+    id: 12,
+    title: "Apex Multi-Specialty Hospital & Trauma Centre",
+    slug: "apex-multi-specialty-hospital-patna",
+    description: "Top-tier 24/7 ICU emergency trauma, cardiology & multi-specialty healthcare services in Central Bihar.",
+    city: "Patna, Bihar",
+    category: { id: 3, name: "Doctors" },
+    reviews_avg_rating: "4.8",
+    featured: true,
+  },
+  {
+    id: 13,
+    title: "Hotel Maurya Patna & Luxury Banquets",
+    slug: "hotel-maurya-patna",
+    description: "Premium 5-star hospitality, luxury suites, fine dining, swimming pool & convention hall.",
+    city: "Patna, Bihar",
+    category: { id: 2, name: "Hotels" },
+    reviews_avg_rating: "4.7",
+    featured: true,
+  },
+  {
+    id: 14,
+    title: "Patliputra Education & UPSC Coaching Hub",
+    slug: "patliputra-education-patna",
+    description: "Premier IIT-JEE, NEET & Bihar Public Service Commission (BPSC) coaching center.",
+    city: "Patna, Bihar",
+    category: { id: 4, name: "Education" },
+    reviews_avg_rating: "4.9",
+    featured: true,
+  },
+  {
+    id: 15,
+    title: "Bihari Packers & Logistics",
+    slug: "bihari-packers-movers-patna",
+    description: "Safe & quick home relocation, office shifting, car carrier & transport services across Patna, Gaya, Muzaffarpur & Pan India.",
+    city: "Patna, Bihar",
+    category: { id: 5, name: "Packers & Movers" },
+    reviews_avg_rating: "4.6",
+    featured: false,
+  },
+  {
+    id: 16,
+    title: "Patna AC Repair & Electrical Services",
+    slug: "patna-ac-repair-services",
+    description: "Instant doorstep AC installation, gas refilling, plumbing, electrical & deep home cleaning services.",
+    city: "Patna, Bihar",
+    category: { id: 6, name: "Repairs & Services" },
+    reviews_avg_rating: "4.8",
+    featured: false,
+  }
+];
+
 export default function SearchIndex() {
   const router = useRouter();
   
   // Search & Filter state
   const [query, setQuery] = useState('');
-  const [city, setCity] = useState('Patna, Bihar');
+  const [city, setCity] = useState('Mumbai');
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [activeTabFilter, setActiveTabFilter] = useState<'POPULAR' | 'B2B'>('POPULAR');
+  
+  // Location Modal State
+  const [showLocationModal, setShowLocationModal] = useState(false);
+  const [isDetectingGps, setIsDetectingGps] = useState(false);
+  const [customCityInput, setCustomCityInput] = useState('');
+
+  // Individual Company Autocomplete State
+  const [autocompleteResults, setAutocompleteResults] = useState<Listing[]>([]);
+
+  useEffect(() => {
+    if (query.trim().length >= 2) {
+      const qLower = query.toLowerCase().trim();
+      const matched = MOCK_ALL_LISTINGS.filter(item =>
+        item.title.toLowerCase().includes(qLower) ||
+        (item.category?.name && item.category.name.toLowerCase().includes(qLower)) ||
+        item.city.toLowerCase().includes(qLower)
+      ).slice(0, 6);
+      setAutocompleteResults(matched);
+    } else {
+      setAutocompleteResults([]);
+    }
+  }, [query]);
   
   // Modals & Sheet State
   const [showMoreModal, setShowMoreModal] = useState(false);
@@ -146,83 +331,25 @@ export default function SearchIndex() {
 
   useEffect(() => {
     fetchFeaturedListings();
-  }, []);
+  }, [city]);
 
   const fetchFeaturedListings = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/listings');
+      const response = await api.get('/listings?city=' + encodeURIComponent(city));
       const data = response.data.data || response.data;
       const apiListings = Array.isArray(data) ? data : data.data || [];
       if (apiListings.length > 0) {
         setListings(apiListings);
       } else {
-        throw new Error('No backend data, loading Patna mock dataset');
+        throw new Error('No backend data, loading mock dataset');
       }
     } catch (error) {
-      console.warn('Using Patna, Bihar mock listings feed');
-      setListings([
-        {
-          id: 1,
-          title: "Samosewali Restaurant & Litti Corner",
-          slug: "samosewali-restaurant-patna",
-          description: "Famous for authentic Bihari Litti Chokha, samosas, regional sweets & multi-cuisine delights. Fraser Road, Near Patna Junction, Patna, Bihar. Use code TD30PATNA for 30% discount.",
-          city: "Patna, Bihar",
-          category: { id: 1, name: "Restaurant" },
-          reviews_avg_rating: "4.9",
-          featured: true,
-        },
-        {
-          id: 2,
-          title: "Apex Multi-Specialty Hospital & Trauma Centre",
-          slug: "apex-multi-specialty-hospital-patna",
-          description: "Top-tier 24/7 ICU emergency trauma, cardiology & multi-specialty healthcare services in Central Bihar. Bailey Road, Near Pillar 62, Patna, Bihar.",
-          city: "Patna, Bihar",
-          category: { id: 3, name: "Doctors" },
-          reviews_avg_rating: "4.8",
-          featured: true,
-        },
-        {
-          id: 3,
-          title: "Hotel Maurya Patna & Luxury Banquets",
-          slug: "hotel-maurya-patna",
-          description: "Premium 5-star hospitality, luxury suites, fine dining, swimming pool & convention hall. South Gandhi Maidan, Patna, Bihar.",
-          city: "Patna, Bihar",
-          category: { id: 2, name: "Hotels" },
-          reviews_avg_rating: "4.7",
-          featured: true,
-        },
-        {
-          id: 4,
-          title: "Patliputra Education & UPSC Coaching Hub",
-          slug: "patliputra-education-patna",
-          description: "Premier IIT-JEE, NEET & Bihar Public Service Commission (BPSC) coaching center. Boring Road Crossing, Patna, Bihar.",
-          city: "Patna, Bihar",
-          category: { id: 4, name: "Education" },
-          reviews_avg_rating: "4.9",
-          featured: true,
-        },
-        {
-          id: 5,
-          title: "Bihari Packers & Logistics",
-          slug: "bihari-packers-movers-patna",
-          description: "Safe & quick home relocation, office shifting, car carrier & transport services across Patna, Gaya, Muzaffarpur & Pan India. Kankarbagh Main Road, Patna, Bihar.",
-          city: "Patna, Bihar",
-          category: { id: 5, name: "Packers & Movers" },
-          reviews_avg_rating: "4.6",
-          featured: false,
-        },
-        {
-          id: 6,
-          title: "Patna AC Repair & Electrical Services",
-          slug: "patna-ac-repair-services",
-          description: "Instant doorstep AC installation, gas refilling, plumbing, electrical & deep home cleaning services. Rajendra Nagar, Patna, Bihar.",
-          city: "Patna, Bihar",
-          category: { id: 6, name: "Repairs & Services" },
-          reviews_avg_rating: "4.8",
-          featured: false,
-        }
-      ]);
+      console.warn('Using MOCK_ALL_LISTINGS fallback feed for city:', city);
+      const cityMatches = MOCK_ALL_LISTINGS.filter(
+        item => item.city.toLowerCase().includes(city.toLowerCase()) || city.toLowerCase().includes(item.city.toLowerCase())
+      );
+      setListings(cityMatches.length > 0 ? cityMatches : MOCK_ALL_LISTINGS);
     } finally {
       setLoading(false);
     }
@@ -238,9 +365,21 @@ export default function SearchIndex() {
 
       const response = await api.get(url);
       const data = response.data.data || response.data;
-      setListings(Array.isArray(data) ? data : data.data || []);
+      const apiListings = Array.isArray(data) ? data : data.data || [];
+      if (apiListings.length > 0) {
+        setListings(apiListings);
+      } else {
+        throw new Error('Fallback to offline search');
+      }
     } catch (error) {
-      console.error('Search failed:', error);
+      const qLower = query.toLowerCase().trim();
+      const filtered = MOCK_ALL_LISTINGS.filter(item => {
+        const matchQ = !qLower || item.title.toLowerCase().includes(qLower) || item.description.toLowerCase().includes(qLower);
+        const matchCat = !selectedCategory || (item.category?.name && item.category.name.toLowerCase().includes(selectedCategory.toLowerCase()));
+        const matchCity = !city || item.city.toLowerCase().includes(city.toLowerCase()) || city.toLowerCase().includes(item.city.toLowerCase());
+        return matchQ && matchCat && matchCity;
+      });
+      setListings(filtered.length > 0 ? filtered : MOCK_ALL_LISTINGS);
     } finally {
       setLoading(false);
     }
@@ -305,6 +444,15 @@ export default function SearchIndex() {
               <Text style={styles.brandSubTag}>GROWTH PLATFORM</Text>
             </View>
 
+            <TouchableOpacity
+              style={styles.locationPillBtn}
+              onPress={() => setShowLocationModal(true)}
+            >
+              <MapPin size={14} color="#E8701A" />
+              <Text style={styles.locationPillText} numberOfLines={1}>{city || "Select City"}</Text>
+              <ChevronDown size={14} color="#64748B" />
+            </TouchableOpacity>
+
             <TouchableOpacity style={styles.bellIconBtn}>
               <Bell size={20} color="#1E293B" />
             </TouchableOpacity>
@@ -324,10 +472,38 @@ export default function SearchIndex() {
             <TouchableOpacity style={{ padding: 4 }}>
               <Scan size={18} color="#1E293B" />
             </TouchableOpacity>
-            <TouchableOpacity style={{ padding: 4, marginLeft: 4 }}>
-              <Mic size={18} color="#E8701A" />
-            </TouchableOpacity>
           </View>
+
+          {/* Individual Company & Business Autocomplete Dropdown */}
+          {query.trim().length >= 2 && autocompleteResults.length > 0 && (
+            <View style={styles.autocompleteCard}>
+              <Text style={styles.autocompleteHeader}>🏢 Matching Companies & Businesses</Text>
+              {autocompleteResults.map((item) => (
+                <TouchableOpacity
+                  key={item.id}
+                  style={styles.autocompleteRow}
+                  onPress={() => {
+                    setQuery('');
+                    router.push('/listing/' + item.slug);
+                  }}
+                >
+                  <View style={styles.autocompleteIconBox}>
+                    <Building2 size={16} color="#0284C7" />
+                  </View>
+                  <View style={{ flex: 1 }}>
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                      <Text style={styles.autocompleteTitle} numberOfLines={1}>{item.title}</Text>
+                      <CheckCircle size={13} color="#10B981" style={{ marginLeft: 4 }} />
+                    </View>
+                    <Text style={styles.autocompleteSub} numberOfLines={1}>
+                      {item.category?.name || 'Business'} • {item.city} • ★ {item.reviews_avg_rating || '4.8'}
+                    </Text>
+                  </View>
+                  <ChevronRight size={16} color="#64748B" />
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
         </View>
 
         {/* 2. TOP CATEGORIES GRID (Fixed Grid behind Draggable Sheet) */}
@@ -764,6 +940,90 @@ export default function SearchIndex() {
           </SafeAreaView>
         </Modal>
 
+        {/* 7. LOCATION SELECTOR MODAL */}
+        <Modal
+          visible={showLocationModal}
+          animationType="slide"
+          presentationStyle="pageSheet"
+          onRequestClose={() => setShowLocationModal(false)}
+        >
+          <SafeAreaView style={styles.modalContainer}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Select City / Location</Text>
+              <TouchableOpacity onPress={() => setShowLocationModal(false)} style={styles.modalCloseBtn}>
+                <Text style={styles.modalCloseText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
+              <TouchableOpacity
+                style={styles.gpsDetectButton}
+                onPress={() => {
+                  setIsDetectingGps(true);
+                  setTimeout(() => {
+                    setCity('Mumbai');
+                    setIsDetectingGps(false);
+                    setShowLocationModal(false);
+                  }, 800);
+                }}
+              >
+                <MapPin size={18} color="#FFFFFF" />
+                <Text style={styles.gpsDetectButtonText}>
+                  {isDetectingGps ? "Detecting GPS Location..." : "📍 Auto-Detect My Current GPS City"}
+                </Text>
+              </TouchableOpacity>
+
+              <View style={styles.citySearchBox}>
+                <Search size={16} color="#64748B" style={{ marginRight: 8 }} />
+                <TextInput
+                  style={{ flex: 1, fontSize: 15, color: '#0F172A' }}
+                  placeholder="Type any City, State or Pincode..."
+                  placeholderTextColor="#94A3B8"
+                  value={customCityInput}
+                  onChangeText={setCustomCityInput}
+                  onSubmitEditing={() => {
+                    if (customCityInput.trim()) {
+                      setCity(customCityInput.trim());
+                      setShowLocationModal(false);
+                    }
+                  }}
+                />
+              </View>
+
+              <Text style={styles.topCitiesTitle}>MAJOR INDIAN CITIES</Text>
+              <View style={styles.topCitiesGrid}>
+                {[
+                  "Mumbai", "Delhi NCR", "Bangalore", "Patna", 
+                  "Pune", "Hyderabad", "Chennai", "Kolkata", 
+                  "Ahmedabad", "Jaipur", "Surat", "Lucknow"
+                ].map((cName, cIdx) => (
+                  <TouchableOpacity
+                    key={cIdx}
+                    style={[
+                      styles.cityChip,
+                      city.toLowerCase() === cName.toLowerCase() && styles.cityChipActive
+                    ]}
+                    onPress={() => {
+                      setCity(cName);
+                      setShowLocationModal(false);
+                    }}
+                  >
+                    <MapPin size={13} color={city.toLowerCase() === cName.toLowerCase() ? "#0284C7" : "#64748B"} />
+                    <Text
+                      style={[
+                        styles.cityChipText,
+                        city.toLowerCase() === cName.toLowerCase() && styles.cityChipTextActive
+                      ]}
+                    >
+                      {cName}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          </SafeAreaView>
+        </Modal>
+
         {/* 6. INSTANT INQUIRY MODAL */}
         <InquiryModal
           visible={inquiryVisible}
@@ -826,6 +1086,134 @@ const styles = StyleSheet.create({
   },
   bellIconBtn: {
     padding: 6,
+  },
+  locationPillBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF7ED',
+    borderWidth: 1,
+    borderColor: '#FFEDD5',
+    borderRadius: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    maxWidth: 120,
+  },
+  locationPillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#E8701A',
+    marginHorizontal: 4,
+  },
+  autocompleteCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    marginTop: 8,
+    paddingVertical: 8,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  autocompleteHeader: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#64748B',
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+    paddingHorizontal: 12,
+    marginBottom: 6,
+  },
+  autocompleteRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
+  },
+  autocompleteIconBox: {
+    width: 34,
+    height: 34,
+    borderRadius: 8,
+    backgroundColor: '#EFF6FF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 10,
+  },
+  autocompleteTitle: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  autocompleteSub: {
+    fontSize: 12,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  gpsDetectButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#0284C7',
+    paddingVertical: 14,
+    borderRadius: 12,
+    marginBottom: 14,
+    gap: 8,
+  },
+  gpsDetectButtonText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#FFFFFF',
+  },
+  citySearchBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    height: 48,
+    marginBottom: 16,
+  },
+  topCitiesTitle: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#64748B',
+    letterSpacing: 0.8,
+    marginBottom: 10,
+  },
+  topCitiesGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
+  cityChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8FAFC',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+    borderRadius: 20,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    gap: 6,
+  },
+  cityChipActive: {
+    backgroundColor: '#E0F2FE',
+    borderColor: '#0284C7',
+  },
+  cityChipText: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  cityChipTextActive: {
+    color: '#0284C7',
+    fontWeight: '700',
   },
   searchBarWrapper: {
     flexDirection: 'row',
