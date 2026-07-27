@@ -44,34 +44,42 @@ export default async function Navbar() {
           <AutocompleteSearch />
         </div>
 
-        <nav className="hidden lg:flex gap-6 text-foreground/80 font-medium whitespace-nowrap">
+        <nav className="hidden xl:flex items-center gap-5 text-foreground/80 font-medium whitespace-nowrap">
           <Link href="/" className="text-foreground hover:text-primary transition font-medium">Home</Link>
-          <div className="relative group">
-            <Link href="/categories" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">Categories <ChevronDown className="w-4 h-4"/></Link>
-          </div>
-          <div className="relative group">
-            <Link href="/search" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">Services <ChevronDown className="w-4 h-4"/></Link>
-          </div>
-          <Link href="/offers" className="text-foreground hover:text-primary transition font-medium">Offers</Link>
-          <Link href="#" className="text-foreground hover:text-primary transition font-medium">Podcast</Link>
-          <Link href="#" className="text-foreground hover:text-primary transition font-medium">Contact</Link>
+          <Link href="/categories" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">
+            Categories
+          </Link>
+          <Link href="/offers" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">
+            Offers
+            <span className="px-1.5 py-0.2 bg-red-500 text-white text-[10px] font-bold rounded-full">HOT</span>
+          </Link>
+          <Link href="/dashboard/user" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">
+            Privilege Card
+            <span className="px-1.5 py-0.2 bg-amber-500 text-navy font-bold text-[10px] rounded-full">VIP</span>
+          </Link>
+          <Link href="/consulting" className="text-foreground hover:text-primary transition font-medium">Consulting</Link>
+          <Link href="/academy" className="text-foreground hover:text-primary transition font-medium">Academy</Link>
+          <Link href="/jobs" className="text-foreground hover:text-primary transition font-medium">Jobs</Link>
+          <Link href="/news" className="text-foreground hover:text-primary transition font-medium">News</Link>
         </nav>
         <div className="hidden lg:flex items-center gap-4">
           {!isLoggedIn ? (
             <>
               <Link href="/login" className="text-foreground font-medium hover:text-primary transition">Login</Link>
               <Link href="/register">
-                <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition">
+                <button className="bg-primary text-primary-foreground px-5 py-2 rounded-md font-medium hover:bg-primary/90 transition shadow-sm">
                   Add Your Business
                 </button>
               </Link>
             </>
           ) : (
-            <Link href="/dashboard/user">
-              <button className="bg-primary text-primary-foreground px-6 py-2 rounded-md font-medium hover:bg-primary/90 transition flex items-center gap-2">
-                <LayoutDashboard className="w-4 h-4"/> Go to Dashboard
-              </button>
-            </Link>
+            <div className="flex items-center gap-3">
+              <Link href="/dashboard/user">
+                <button className="bg-primary text-primary-foreground px-5 py-2 rounded-md font-medium hover:bg-primary/90 transition flex items-center gap-2 shadow-sm">
+                  <LayoutDashboard className="w-4 h-4"/> Go to Dashboard
+                </button>
+              </Link>
+            </div>
           )}
         </div>
       </header>

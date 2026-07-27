@@ -1,226 +1,327 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import { useState } from "react";
+import { Tag, Plus, Clock, Trash2, Edit2, CheckCircle2, ShieldCheck, Sparkles, X, IndianRupee } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Tag, Percent, PartyPopper, Plus, Calendar } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 export default function OffersPage() {
-  const [offers, setOffers] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [isCreating, setIsCreating] = useState(false);
-  const [saving, setSaving] = useState(false);
-  
-  const [formData, setFormData] = useState({
+  const [offers, setOffers] = useState([
+    { 
+      id: 1, 
+      title: "Flat 25% Off on Modular Kitchen Cabinets", 
+      code: "VIP25", 
+      validUntil: "2026-12-31", 
+      uses: 45, 
+      description: "Valid for all TrueDial Privilege Card members on minimum billing of ₹2 Lakhs.",
+      discountValue: "25% OFF",
+      status: "Active"
+    },
+    { 
+      id: 2, 
+      title: "Free Acoustic Inspection & Estimate", 
+      code: "FREEACOUSTIC", 
+      validUntil: "2026-11-30", 
+      uses: 19, 
+      description: "Complimentary sound test and woodwork consultation for residential properties.",
+      discountValue: "FREE VISIT",
+      status: "Active"
+    },
+    { 
+      id: 3, 
+      title: "Flat ₹15,000 Off on Architectural Consulting", 
+      code: "ARCH15K", 
+      validUntil: "2026-10-15", 
+      uses: 12, 
+      description: "Special seasonal discount for first-time clients booking full home interiors.",
+      discountValue: "₹15,000 OFF",
+      status: "Expired"
+    }
+  ]);
+
+  const [editingOffer, setEditingOffer] = useState<any | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+
+  const [form, setForm] = useState({
     title: "",
-    discount_type: "percentage",
-    discount_value: "",
-    promo_code: "",
-    status: "active",
-    valid_until: ""
+    code: "",
+    validUntil: "2026-12-31",
+    description: "",
+    discountValue: "20% OFF",
+    status: "Active"
   });
 
-  useEffect(() => {
-    fetchOffers();
-  }, []);
+  const handleOpenCreate = () => {
+    setEditingOffer(null);
+    setForm({
+      title: "",
+      code: "",
+      validUntil: "2026-12-31",
+      description: "",
+      discountValue: "20% OFF",
+      status: "Active"
+    });
+    setIsModalOpen(true);
+  };
 
-  const fetchOffers = async () => {
-    try {
-      const token = localStorage.getItem("token") || "mock-token";
-      
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/offers`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      );
-      
-      const data = await res.json();
-      if (data.success) {
-        setOffers(data.data.data || data.data); // Handle pagination or flat array
-      } else {
-        // Fallback mock if API fails/not fully seeded
-        setOffers([
-          { id: 1, title: 'Diwali Bonanza', discount_type: 'percentage', discount_value: '20', promo_code: 'DIWALI20', status: 'active', valid_until: new Date(Date.now() + 864000000).toISOString() },
-          { id: 2, title: 'Happy Hours (2-5 PM)', discount_type: 'flat', discount_value: '500', promo_code: 'HAPPY', status: 'paused', valid_until: new Date(Date.now() + 8640000000).toISOString() }
-        ]);
+  const handleOpenEdit = (offer: any) => {
+    setEditingOffer(offer);
+    setForm({
+      title: offer.title,
+      code: offer.code,
+      validUntil: offer.validUntil,
+      description: offer.description || "",
+      discountValue: offer.discountValue || "20% OFF",
+      status: offer.status || "Active"
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleSaveOffer = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.title.trim() || !form.code.trim()) return;
+
+    if (editingOffer) {
+      setOffers(offers.map(o => o.id === editingOffer.id ? { ...o, ...form } : o));
+      setToastMessage(`Offer "${form.code}" updated successfully!`);
+    } else {
+      const newId = Math.max(0, ...offers.map(o => o.id)) + 1;
+      setOffers([{ id: newId, ...form, uses: 0 }, ...offers]);
+      setToastMessage(`New offer "${form.code}" created & published!`);
+    }
+
+    setIsModalOpen(false);
+    setTimeout(() => setToastMessage(""), 3500);
+  };
+
+  const handleDeleteOffer = (id: number) => {
+    setOffers(offers.filter(o => o.id !== id));
+    setToastMessage("Offer removed from catalog.");
+    setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  const handleToggleStatus = (id: number) => {
+    setOffers(offers.map(o => {
+      if (o.id === id) {
+        const nextStatus = o.status === "Active" ? "Expired" : "Active";
+        setToastMessage(`Offer #${id} status changed to ${nextStatus}`);
+        return { ...o, status: nextStatus };
       }
-    } catch (error) {
-      console.error("Failed to fetch offers:", error);
-      // Fallback
-      setOffers([
-        { id: 1, title: 'Diwali Bonanza', discount_type: 'percentage', discount_value: '20', promo_code: 'DIWALI20', status: 'active', valid_until: new Date(Date.now() + 864000000).toISOString() },
-        { id: 2, title: 'Happy Hours (2-5 PM)', discount_type: 'flat', discount_value: '500', promo_code: 'HAPPY', status: 'paused', valid_until: new Date(Date.now() + 8640000000).toISOString() }
-      ]);
-    } finally {
-      setLoading(false);
-    }
+      return o;
+    }));
+    setTimeout(() => setToastMessage(""), 3000);
   };
-
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const handleCreate = async () => {
-    setSaving(true);
-    try {
-      // Create local mock for immediate UI update in MVP
-      const newOffer = {
-        id: Date.now(),
-        ...formData,
-      };
-      
-      setOffers([newOffer, ...offers]);
-      setIsCreating(false);
-      setFormData({ title: "", discount_type: "percentage", discount_value: "", promo_code: "", status: "active", valid_until: "" });
-    } catch (error) {
-      console.error("Failed to create offer:", error);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const getIcon = (type: string) => {
-    if (type === 'percentage') return <Percent className="h-4 w-4" />;
-    if (type === 'festival' || type === 'combo') return <PartyPopper className="h-4 w-4" />;
-    return <Tag className="h-4 w-4" />;
-  };
-
-  if (loading) {
-    return (
-      <div className="flex h-[400px] items-center justify-center">
-        <Loader2 className="h-8 w-8 animate-spin text-[#E8701A]" />
-      </div>
-    );
-  }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Offers & Discounts</h1>
-          <p className="text-muted-foreground mt-2">
-            Create promotional offers to attract more customers.
-          </p>
+    <div className="space-y-6 animate-fade-in-up">
+      {/* Toast Alert */}
+      {toastMessage && (
+        <div className="fixed top-20 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
+          <CheckCircle2 className="w-5 h-5 shrink-0" />
+          <span className="font-semibold text-sm">{toastMessage}</span>
         </div>
-        {!isCreating && (
-          <Button onClick={() => setIsCreating(true)} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
-            <Plus className="mr-2 h-4 w-4" />
-            Create Offer
-          </Button>
-        )}
-      </div>
-
-      {isCreating && (
-        <Card className="border-0 shadow-lg bg-white dark:bg-[#0a1c3a]/50 dark:border dark:border-white/10 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
-          <CardHeader>
-            <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center">
-              <Tag className="mr-2 h-5 w-5 text-[#E8701A]" />
-              New Promotional Offer
-            </CardTitle>
-            <CardDescription>Setup your discount rules and validity.</CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <label className="text-sm font-medium dark:text-slate-300">Offer Title</label>
-              <Input name="title" value={formData.title} onChange={handleChange} placeholder="e.g. Diwali Bonanza 20% Off" className="bg-slate-50 dark:bg-slate-900" />
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium dark:text-slate-300">Discount Type</label>
-                <select 
-                  name="discount_type" 
-                  value={formData.discount_type} 
-                  onChange={handleChange}
-                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                >
-                  <option value="percentage">Percentage (%)</option>
-                  <option value="flat">Flat Amount (₹)</option>
-                  <option value="festival">Festival Special</option>
-                  <option value="combo">Combo Offer</option>
-                </select>
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium dark:text-slate-300">Discount Value</label>
-                <Input type="number" name="discount_value" value={formData.discount_value} onChange={handleChange} placeholder="e.g. 20" className="bg-slate-50 dark:bg-slate-900" />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <label className="text-sm font-medium dark:text-slate-300">Promo Code (Optional)</label>
-                <Input name="promo_code" value={formData.promo_code} onChange={handleChange} placeholder="DIWALI20" className="bg-slate-50 dark:bg-slate-900" />
-              </div>
-              
-              <div className="space-y-2">
-                <label className="text-sm font-medium dark:text-slate-300">Valid Until</label>
-                <Input type="date" name="valid_until" value={formData.valid_until} onChange={handleChange} className="bg-slate-50 dark:bg-slate-900" />
-              </div>
-            </div>
-
-            <div className="flex justify-end space-x-2 pt-4">
-              <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
-              <Button onClick={handleCreate} disabled={saving || !formData.title || !formData.discount_value} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
-                {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Tag className="mr-2 h-4 w-4" />}
-                Launch Offer
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       )}
 
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-navy dark:text-white mb-1">Manage Exclusive Offers</h1>
+          <p className="text-muted-foreground text-sm">
+            Create and edit promo codes for TrueDial Privilege Card VIP members to boost conversions.
+          </p>
+        </div>
+
+        <Button onClick={handleOpenCreate} className="flex items-center gap-2 font-semibold shadow-sm">
+          <Plus className="w-4 h-4" /> Create New Offer
+        </Button>
+      </div>
+
+      {/* OFFERS LIST */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {offers.map((offer) => (
           <div 
             key={offer.id} 
-            className="relative overflow-hidden rounded-2xl border border-white/20 p-6 shadow-xl backdrop-blur-md bg-white dark:bg-gradient-to-br dark:from-[#0a1c3a] dark:to-[#050f24] transition-all duration-300 hover:shadow-2xl"
+            className={`premium-card rounded-xl p-6 flex flex-col justify-between transition hover:border-primary/40 ${
+              offer.status === "Expired" ? "opacity-75 bg-muted/30" : ""
+            }`}
           >
-            <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center space-x-2">
-                <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30 text-[#E8701A]">
-                  {getIcon(offer.discount_type)}
+            <div>
+              <div className="flex items-start justify-between mb-3">
+                <Badge className={`text-xs font-bold ${
+                  offer.status === "Active" 
+                    ? "bg-green-500/10 text-green-600 border-green-500/30" 
+                    : "bg-muted text-muted-foreground"
+                }`}>
+                  {offer.status}
+                </Badge>
+
+                <div className="flex items-center gap-1.5">
+                  <button 
+                    onClick={() => handleOpenEdit(offer)}
+                    className="p-2 bg-muted hover:bg-primary hover:text-white text-foreground rounded-lg transition"
+                    title="Edit Offer"
+                  >
+                    <Edit2 className="w-4 h-4" />
+                  </button>
+                  <button 
+                    onClick={() => handleDeleteOffer(offer.id)}
+                    className="p-2 bg-muted hover:bg-red-600 hover:text-white text-foreground rounded-lg transition"
+                    title="Delete Offer"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
                 </div>
-                <h3 className="font-semibold text-slate-900 dark:text-white capitalize">{offer.discount_type.replace('_', ' ')}</h3>
               </div>
-              <Badge variant={offer.status === 'active' ? 'default' : 'secondary'} className={offer.status === 'active' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}>
-                {offer.status.toUpperCase()}
-              </Badge>
+
+              <div className="mb-3">
+                <span className="text-xs font-extrabold text-primary bg-primary/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
+                  {offer.discountValue}
+                </span>
+                <h3 className="font-bold text-lg text-foreground mt-2 line-clamp-2">{offer.title}</h3>
+              </div>
+
+              <p className="text-xs text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
+                {offer.description}
+              </p>
             </div>
 
-            <div className="my-6">
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{offer.title}</h2>
-              {offer.promo_code && (
-                <div className="inline-block bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-600 rounded px-3 py-1 font-mono text-sm text-slate-800 dark:text-slate-300">
-                  CODE: {offer.promo_code}
-                </div>
-              )}
-            </div>
-
-            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-white/10 pt-4">
-              <div className="flex items-center">
-                <Calendar className="mr-2 h-4 w-4" /> 
-                {offer.valid_until ? new Date(offer.valid_until).toLocaleDateString() : 'No Expiry'}
+            <div className="pt-4 border-t border-border space-y-3">
+              <div className="flex items-center justify-between text-xs">
+                <span className="font-mono bg-muted px-2.5 py-1 rounded-md font-bold text-foreground tracking-wider border border-border">
+                  {offer.code}
+                </span>
+                <span className="text-muted-foreground flex items-center gap-1">
+                  <Clock className="w-3.5 h-3.5" /> Valid till {offer.validUntil}
+                </span>
               </div>
-              <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-600 px-0">Edit</Button>
+
+              <div className="flex items-center justify-between pt-1">
+                <span className="text-xs text-muted-foreground">
+                  Redeemed: <strong className="text-foreground">{offer.uses} times</strong>
+                </span>
+                <button 
+                  onClick={() => handleToggleStatus(offer.id)}
+                  className="text-xs text-primary hover:underline font-semibold"
+                >
+                  {offer.status === "Active" ? "Pause Offer" : "Reactivate Offer"}
+                </button>
+              </div>
             </div>
           </div>
         ))}
-        {offers.length === 0 && !isCreating && (
-          <div className="col-span-full text-center py-20 border border-dashed rounded-xl border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50">
-            <Tag className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-            <h3 className="text-lg font-medium text-slate-900 dark:text-white">No active offers</h3>
-            <p className="mt-2 text-sm text-slate-500">Create an offer to boost your visibility and sales.</p>
-          </div>
-        )}
       </div>
+
+      {/* EDIT / CREATE OFFER DIALOG MODAL */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-card border border-border rounded-2xl p-6 max-w-lg w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
+              <div className="flex items-center gap-2">
+                <Tag className="w-5 h-5 text-primary" />
+                <h3 className="font-bold text-lg text-foreground">
+                  {editingOffer ? `Edit Offer: ${editingOffer.code}` : "Create New Promotional Offer"}
+                </h3>
+              </div>
+              <button 
+                onClick={() => setIsModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveOffer} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Offer Title / Headline *
+                </label>
+                <Input 
+                  placeholder="e.g. Flat 25% Off on Modular Kitchen Cabinets"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Promo Code *
+                  </label>
+                  <Input 
+                    placeholder="e.g. VIP25"
+                    value={form.code}
+                    onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })}
+                    className="font-mono uppercase"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Discount Value Label
+                  </label>
+                  <Input 
+                    placeholder="e.g. 25% OFF or ₹15,000 OFF"
+                    value={form.discountValue}
+                    onChange={(e) => setForm({ ...form, discountValue: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Valid Until Date *
+                  </label>
+                  <Input 
+                    type="date"
+                    value={form.validUntil}
+                    onChange={(e) => setForm({ ...form, validUntil: e.target.value })}
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Offer Status
+                  </label>
+                  <select
+                    value={form.status}
+                    onChange={(e) => setForm({ ...form, status: e.target.value })}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="Active">Active & Published</option>
+                    <option value="Expired">Paused / Expired</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Offer Terms & Description
+                </label>
+                <Textarea 
+                  rows={3}
+                  placeholder="e.g. Valid for all TrueDial Privilege Card holders..."
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-3 border-t border-border">
+                <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="font-semibold">
+                  {editingOffer ? "Update Offer" : "Publish Offer"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

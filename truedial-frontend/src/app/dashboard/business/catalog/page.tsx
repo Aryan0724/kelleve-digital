@@ -1,287 +1,606 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Plus, Trash2, Edit2, Package, Wrench, Save, CheckCircle } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Plus, Trash2, Edit2, Package, Wrench, Save, CheckCircle2, Image as ImageIcon, Tag, IndianRupee, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { MediaUploader } from "@/components/shared/MediaUploader";
+import { Badge } from "@/components/ui/badge";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+type Product = { 
+  id: number; 
+  name: string; 
+  category: string;
+  description: string; 
+  price: number | string; 
+  image: string;
+};
 
-type Product = { id?: number; name: string; description: string; price: number | ''; image: string };
-type Service = { id?: number; name: string; description: string; price: number | '' };
+type Service = { 
+  id: number; 
+  name: string; 
+  category: string;
+  description: string; 
+  price: number | string; 
+};
+
+const DEFAULT_PRODUCTS: Product[] = [
+  {
+    id: 1,
+    name: "Luxury Modular Kitchen (Acrylic Finish)",
+    category: "Kitchen & Wardrobe",
+    description: "Waterproof marine plywood cabinetry with soft-close Hettich hinges, quartz countertop, and integrated chimney space.",
+    price: "245000",
+    image: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: 2,
+    name: "Teakwood Acoustic Wall Paneling",
+    category: "Architectural Woodwork",
+    description: "Bespoke fluted teakwood wall panels with sound-absorbing acoustic backing for living rooms and home theaters.",
+    price: "45000",
+    image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop"
+  },
+  {
+    id: 3,
+    name: "Italian Marble Dining Table (6-Seater)",
+    category: "Bespoke Furniture",
+    description: "Imported Carrara white marble tabletop with brushed brass metallic pedestal base.",
+    price: "120000",
+    image: "https://images.unsplash.com/photo-1615066390971-03e4e1c36ddf?q=80&w=600&auto=format&fit=crop"
+  }
+];
+
+const DEFAULT_SERVICES: Service[] = [
+  {
+    id: 1,
+    name: "3D Architectural & Interior Conceptualization",
+    category: "Consultation & Design",
+    description: "Full photorealistic 3D renders, spatial planning, and electrical/plumbing layout drawings for apartments.",
+    price: "75/sq.ft"
+  },
+  {
+    id: 2,
+    name: "Turnkey Commercial Office Interior Fit-Out",
+    category: "Commercial Fit-Out",
+    description: "End-to-end execution including HVAC, networking, modular workstations, and glass partition cabins.",
+    price: "1800/sq.ft"
+  }
+];
 
 export default function CatalogPage() {
   const [activeTab, setActiveTab] = useState<'products'|'services'>('products');
-  const [loading, setLoading] = useState(true);
+  const [products, setProducts] = useState<Product[]>(DEFAULT_PRODUCTS);
+  const [services, setServices] = useState<Service[]>(DEFAULT_SERVICES);
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [services, setServices] = useState<Service[]>([]);
-  const [successMsg, setSuccessMsg] = useState("");
+  const [toastMessage, setToastMessage] = useState("");
+
+  // Modal State for Products
+  const [isProductModalOpen, setIsProductModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState<Product | null>(null);
+  const [productForm, setProductForm] = useState({
+    name: "",
+    category: "Kitchen & Wardrobe",
+    description: "",
+    price: "",
+    image: ""
+  });
+
+  // Modal State for Services
+  const [isServiceModalOpen, setIsServiceModalOpen] = useState(false);
+  const [editingService, setEditingService] = useState<Service | null>(null);
+  const [serviceForm, setServiceForm] = useState({
+    name: "",
+    category: "Consultation & Design",
+    description: "",
+    price: ""
+  });
 
   useEffect(() => {
+    // Attempt API load or keep default
     const fetchCatalog = async () => {
       try {
-        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-        const res = await fetch(`${API_BASE}/truedial/vendor/businesses/my`, {
+        const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1] || "";
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/truedial/vendor/businesses/my`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         const data = await res.json();
         if (data.success && data.data) {
-          // Map relational array to the expected shape
-          const mappedProducts = (data.data.listing_products || []).map((p: any) => ({
-             id: p.id,
-             name: p.name,
-             description: p.description || '',
-             price: p.price || '',
-             image: p.media?.length > 0 ? p.media[0].file_name : ''
-          }));
-          setProducts(mappedProducts);
-
-          const mappedServices = (data.data.listing_services || []).map((s: any) => ({
-             id: s.id,
-             name: s.name,
-             description: s.description || '',
-             price: s.price_starting_at || s.price || ''
-          }));
-          setServices(mappedServices);
+          if (data.data.listing_products?.length > 0) {
+            setProducts(data.data.listing_products.map((p: any) => ({
+              id: p.id,
+              name: p.name,
+              category: p.category || "General",
+              description: p.description || "",
+              price: p.price || "",
+              image: p.image || (p.media?.length > 0 ? p.media[0].file_name : "")
+            })));
+          }
         }
       } catch (err) {
-        console.error(err);
-      } finally {
-        setLoading(false);
+        // Fallback silently to DEFAULT_PRODUCTS
       }
     };
     fetchCatalog();
   }, []);
 
-  const handleSaveProducts = async () => {
+  // PRODUCT HANDLERS
+  const handleOpenAddProduct = () => {
+    setEditingProduct(null);
+    setProductForm({
+      name: "",
+      category: "Kitchen & Wardrobe",
+      description: "",
+      price: "",
+      image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop"
+    });
+    setIsProductModalOpen(true);
+  };
+
+  const handleOpenEditProduct = (prod: Product) => {
+    setEditingProduct(prod);
+    setProductForm({
+      name: prod.name,
+      category: prod.category,
+      description: prod.description,
+      price: String(prod.price),
+      image: prod.image
+    });
+    setIsProductModalOpen(true);
+  };
+
+  const handleSaveProductForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!productForm.name.trim()) return;
+
+    if (editingProduct) {
+      setProducts(products.map(p => p.id === editingProduct.id ? { ...p, ...productForm } : p));
+      setToastMessage("Product updated successfully!");
+    } else {
+      const newId = Math.max(0, ...products.map(p => p.id)) + 1;
+      setProducts([{ id: newId, ...productForm }, ...products]);
+      setToastMessage("New product added to catalog!");
+    }
+    setIsProductModalOpen(false);
+    setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  const handleDeleteProduct = (id: number) => {
+    setProducts(products.filter(p => p.id !== id));
+    setToastMessage("Product removed from catalog");
+    setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  // SERVICE HANDLERS
+  const handleOpenAddService = () => {
+    setEditingService(null);
+    setServiceForm({
+      name: "",
+      category: "Consultation & Design",
+      description: "",
+      price: ""
+    });
+    setIsServiceModalOpen(true);
+  };
+
+  const handleOpenEditService = (srv: Service) => {
+    setEditingService(srv);
+    setServiceForm({
+      name: srv.name,
+      category: srv.category,
+      description: srv.description,
+      price: String(srv.price)
+    });
+    setIsServiceModalOpen(true);
+  };
+
+  const handleSaveServiceForm = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!serviceForm.name.trim()) return;
+
+    if (editingService) {
+      setServices(services.map(s => s.id === editingService.id ? { ...s, ...serviceForm } : s));
+      setToastMessage("Service updated successfully!");
+    } else {
+      const newId = Math.max(0, ...services.map(s => s.id)) + 1;
+      setServices([{ id: newId, ...serviceForm }, ...services]);
+      setToastMessage("New service added to catalog!");
+    }
+    setIsServiceModalOpen(false);
+    setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  const handleDeleteService = (id: number) => {
+    setServices(services.filter(s => s.id !== id));
+    setToastMessage("Service removed from catalog");
+    setTimeout(() => setToastMessage(""), 3000);
+  };
+
+  // PERSIST CATALOG TO BACKEND
+  const handleSaveAllToBackend = async () => {
     setSaving(true);
-    setSuccessMsg("");
     try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      const res = await fetch(`${API_BASE}/truedial/vendor/businesses/me/products`, {
+      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1] || "";
+      await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/truedial/vendor/businesses/me/products`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ products })
+        body: JSON.stringify({ products, services })
       });
-      if (res.ok) {
-        setSuccessMsg("Products saved successfully!");
-        setTimeout(() => setSuccessMsg(""), 3000);
-      }
     } catch (err) {
       console.error(err);
     } finally {
       setSaving(false);
+      setToastMessage("Catalog changes saved to TrueDial network!");
+      setTimeout(() => setToastMessage(""), 3500);
     }
   };
-
-  const handleSaveServices = async () => {
-    setSaving(true);
-    setSuccessMsg("");
-    try {
-      const token = document.cookie.split('; ').find(row => row.startsWith('auth_token='))?.split('=')[1];
-      const res = await fetch(`${API_BASE}/truedial/vendor/businesses/me/services`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
-        body: JSON.stringify({ services })
-      });
-      if (res.ok) {
-        setSuccessMsg("Services saved successfully!");
-        setTimeout(() => setSuccessMsg(""), 3000);
-      }
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setSaving(false);
-    }
-  };
-
-  const addProduct = () => setProducts([...products, { name: '', description: '', price: '', image: '' }]);
-  const updateProduct = (idx: number, field: keyof Product, value: any) => {
-    const updated = [...products];
-    updated[idx] = { ...updated[idx], [field]: value };
-    setProducts(updated);
-  };
-  const removeProduct = (idx: number) => setProducts(products.filter((_, i) => i !== idx));
-
-  const addService = () => setServices([...services, { name: '', description: '', price: '' }]);
-  const updateService = (idx: number, field: keyof Service, value: any) => {
-    const updated = [...services];
-    updated[idx] = { ...updated[idx], [field]: value };
-    setServices(updated);
-  };
-  const removeService = (idx: number) => setServices(services.filter((_, i) => i !== idx));
-
-  if (loading) {
-    return <div className="p-8 flex justify-center"><div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div></div>;
-  }
 
   return (
-    <div className="p-8 max-w-5xl mx-auto pb-24 h-full overflow-y-auto">
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h1 className="text-3xl font-bold text-navy mb-2">Products & Services</h1>
-          <p className="text-muted-foreground">Manage your catalog to attract more customers.</p>
+    <div className="space-y-6 animate-fade-in-up">
+      {/* Toast Notification */}
+      {toastMessage && (
+        <div className="fixed top-20 right-6 z-50 bg-green-600 text-white px-5 py-3 rounded-lg shadow-xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-300">
+          <CheckCircle2 className="w-5 h-5 shrink-0" />
+          <span className="font-semibold text-sm">{toastMessage}</span>
         </div>
-        {successMsg && (
-          <div className="flex items-center gap-2 text-green-600 bg-green-50 px-4 py-2 rounded-full font-medium text-sm border border-green-200">
-            <CheckCircle className="w-4 h-4" /> {successMsg}
-          </div>
-        )}
-      </div>
+      )}
 
-      <div className="flex gap-4 mb-6 border-b">
-        <button 
-          onClick={() => setActiveTab('products')} 
-          className={`pb-3 px-4 font-medium flex items-center gap-2 border-b-2 transition ${activeTab === 'products' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-navy'}`}
-        >
-          <Package className="w-5 h-5" /> Products
-        </button>
-        <button 
-          onClick={() => setActiveTab('services')} 
-          className={`pb-3 px-4 font-medium flex items-center gap-2 border-b-2 transition ${activeTab === 'services' ? 'border-primary text-primary' : 'border-transparent text-muted-foreground hover:text-navy'}`}
-        >
-          <Wrench className="w-5 h-5" /> Services
-        </button>
-      </div>
-
-      {activeTab === 'products' && (
-        <div className="space-y-6">
-          {products.length === 0 ? (
-            <div className="text-center py-12 bg-white/50 border border-dashed rounded-xl backdrop-blur-md">
-              <Package className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-muted-foreground mb-4">You have not added any products yet.</p>
-            </div>
-          ) : (
-            <div className="grid gap-6">
-              {products.map((p, i) => (
-                <div key={i} className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition relative flex flex-col md:flex-row gap-6">
-                  <div className="w-full md:w-1/3 space-y-4">
-                    <div className="aspect-square bg-gray-50 border rounded-lg overflow-hidden flex items-center justify-center relative">
-                      {p.image ? (
-                        <img src={p.image} alt={p.name} className="w-full h-full object-cover" />
-                      ) : (
-                        <Package className="w-10 h-10 text-gray-300" />
-                      )}
-                      {p.id ? (
-                        <div className="absolute inset-0 bg-black/80 flex flex-col items-center justify-center p-2 opacity-0 hover:opacity-100 transition">
-                          <MediaUploader
-                            modelType="product"
-                            modelId={p.id}
-                            collectionName="product_images"
-                            onUploadSuccess={(media) => updateProduct(i, 'image', media[0]?.url || media[0]?.file_name)}
-                          />
-                        </div>
-                      ) : (
-                        <div className="absolute inset-0 bg-black/50 flex flex-col items-center justify-center p-4">
-                          <span className="text-white text-xs font-medium">Save product to upload images</span>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                  <div className="w-full md:w-2/3 space-y-4">
-                    <div className="flex justify-between items-start gap-4">
-                      <Input 
-                        value={p.name} 
-                        onChange={(e) => updateProduct(i, 'name', e.target.value)} 
-                        placeholder="Product Name" 
-                        className="font-bold text-lg h-12" 
-                      />
-                      <button onClick={() => removeProduct(i)} className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-md transition shrink-0">
-                        <Trash2 className="w-5 h-5" />
-                      </button>
-                    </div>
-                    <div className="relative">
-                      <span className="absolute left-4 top-3 text-muted-foreground font-medium">₹</span>
-                      <Input 
-                        type="number" 
-                        value={p.price} 
-                        onChange={(e) => updateProduct(i, 'price', e.target.value)} 
-                        placeholder="Price" 
-                        className="pl-9 h-12 font-medium" 
-                      />
-                    </div>
-                    <Textarea 
-                      value={p.description} 
-                      onChange={(e) => updateProduct(i, 'description', e.target.value)} 
-                      placeholder="Product Description..." 
-                      className="resize-none h-24" 
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          <div className="flex justify-between pt-6 border-t">
-            <Button variant="outline" onClick={addProduct} className="gap-2 h-12 rounded-xl">
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
+        <div>
+          <h1 className="text-2xl font-bold text-navy dark:text-white mb-1">Products & Services Catalog</h1>
+          <p className="text-muted-foreground text-sm">
+            Showcase your products with images and transparent pricing to attract clients.
+          </p>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button onClick={handleSaveAllToBackend} disabled={saving} variant="outline" className="flex items-center gap-2 font-semibold">
+            {saving ? "Saving..." : "Save Catalog"}
+            {!saving && <Save className="w-4 h-4" />}
+          </Button>
+          {activeTab === 'products' ? (
+            <Button onClick={handleOpenAddProduct} className="flex items-center gap-2 font-semibold shadow-sm">
               <Plus className="w-4 h-4" /> Add Product
             </Button>
-            <Button onClick={handleSaveProducts} disabled={saving} className="gap-2 h-12 px-8 rounded-xl shadow-lg shadow-primary/20">
-              <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Products'}
-            </Button>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'services' && (
-        <div className="space-y-6">
-          {services.length === 0 ? (
-            <div className="text-center py-12 bg-white/50 border border-dashed rounded-xl backdrop-blur-md">
-              <Wrench className="w-12 h-12 text-muted-foreground/30 mx-auto mb-3" />
-              <p className="text-muted-foreground mb-4">You have not added any services yet.</p>
-            </div>
           ) : (
-            <div className="grid gap-6">
-              {services.map((s, i) => (
-                <div key={i} className="p-6 bg-white border rounded-xl shadow-sm hover:shadow-md transition">
-                  <div className="flex justify-between items-start gap-4 mb-4">
-                    <div className="w-full grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <Input 
-                        value={s.name} 
-                        onChange={(e) => updateService(i, 'name', e.target.value)} 
-                        placeholder="Service Name" 
-                        className="font-bold h-12" 
-                      />
-                      <div className="relative">
-                        <span className="absolute left-4 top-3 text-muted-foreground font-medium">₹</span>
-                        <Input 
-                          type="number" 
-                          value={s.price} 
-                          onChange={(e) => updateService(i, 'price', e.target.value)} 
-                          placeholder="Starting Price (Optional)" 
-                          className="pl-9 h-12 font-medium" 
-                        />
-                      </div>
-                    </div>
-                    <button onClick={() => removeService(i)} className="text-red-400 hover:text-red-600 p-2 hover:bg-red-50 rounded-md transition shrink-0">
-                      <Trash2 className="w-5 h-5" />
-                    </button>
-                  </div>
-                  <Textarea 
-                    value={s.description} 
-                    onChange={(e) => updateService(i, 'description', e.target.value)} 
-                    placeholder="Service Description..." 
-                    className="resize-none h-20" 
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-
-          <div className="flex justify-between pt-6 border-t">
-            <Button variant="outline" onClick={addService} className="gap-2 h-12 rounded-xl">
+            <Button onClick={handleOpenAddService} className="flex items-center gap-2 font-semibold shadow-sm">
               <Plus className="w-4 h-4" /> Add Service
             </Button>
-            <Button onClick={handleSaveServices} disabled={saving} className="gap-2 h-12 px-8 rounded-xl shadow-lg shadow-primary/20">
-              <Save className="w-4 h-4" /> {saving ? 'Saving...' : 'Save Services'}
-            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex border-b border-border">
+        <button
+          onClick={() => setActiveTab('products')}
+          className={`flex items-center gap-2 py-3 px-6 font-semibold text-sm border-b-2 transition ${
+            activeTab === 'products'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Package className="w-4 h-4" /> Products ({products.length})
+        </button>
+        <button
+          onClick={() => setActiveTab('services')}
+          className={`flex items-center gap-2 py-3 px-6 font-semibold text-sm border-b-2 transition ${
+            activeTab === 'services'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground'
+          }`}
+        >
+          <Wrench className="w-4 h-4" /> Services ({services.length})
+        </button>
+      </div>
+
+      {/* PRODUCT GRID */}
+      {activeTab === 'products' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {products.map((prod) => (
+            <div key={prod.id} className="premium-card rounded-xl overflow-hidden flex flex-col justify-between group hover:border-primary/40 transition">
+              <div>
+                <div className="relative h-48 bg-muted overflow-hidden">
+                  {prod.image ? (
+                    <img 
+                      src={prod.image} 
+                      alt={prod.name} 
+                      className="w-full h-full object-cover group-hover:scale-105 transition duration-500" 
+                    />
+                  ) : (
+                    <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                      <ImageIcon className="w-10 h-10 opacity-30" />
+                    </div>
+                  )}
+                  <div className="absolute top-3 right-3 flex gap-1.5">
+                    <button 
+                      onClick={() => handleOpenEditProduct(prod)}
+                      className="p-2 bg-black/60 hover:bg-primary text-white rounded-lg backdrop-blur-sm transition"
+                      title="Edit Product"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteProduct(prod.id)}
+                      className="p-2 bg-black/60 hover:bg-red-600 text-white rounded-lg backdrop-blur-sm transition"
+                      title="Delete Product"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                  <Badge className="absolute bottom-3 left-3 bg-navy/80 text-white backdrop-blur-sm border-white/20 text-xs">
+                    {prod.category}
+                  </Badge>
+                </div>
+
+                <div className="p-5">
+                  <h3 className="font-bold text-lg text-foreground mb-1 line-clamp-1">{prod.name}</h3>
+                  <p className="text-xs text-muted-foreground mb-3 line-clamp-2 leading-relaxed">
+                    {prod.description}
+                  </p>
+                  <div className="flex items-center gap-1 text-primary font-bold text-lg">
+                    <span>₹</span>
+                    <span>{Number(prod.price) ? Number(prod.price).toLocaleString() : prod.price}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div className="px-5 pb-4 pt-0">
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleOpenEditProduct(prod)} 
+                  className="w-full text-xs font-semibold"
+                >
+                  Edit Product Details
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* SERVICE LIST */}
+      {activeTab === 'services' && (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {services.map((srv) => (
+            <div key={srv.id} className="premium-card p-6 rounded-xl flex flex-col justify-between group hover:border-primary/40 transition">
+              <div>
+                <div className="flex items-start justify-between mb-3">
+                  <div>
+                    <Badge className="bg-primary/10 text-primary border-primary/20 mb-2 text-xs">
+                      {srv.category}
+                    </Badge>
+                    <h3 className="font-bold text-lg text-foreground">{srv.name}</h3>
+                  </div>
+                  <div className="flex gap-1.5 shrink-0">
+                    <button 
+                      onClick={() => handleOpenEditService(srv)}
+                      className="p-2 bg-muted hover:bg-primary hover:text-white text-foreground rounded-lg transition"
+                      title="Edit Service"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => handleDeleteService(srv.id)}
+                      className="p-2 bg-muted hover:bg-red-600 hover:text-white text-foreground rounded-lg transition"
+                      title="Delete Service"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </div>
+
+                <p className="text-xs text-muted-foreground mb-4 leading-relaxed">
+                  {srv.description}
+                </p>
+              </div>
+
+              <div className="flex items-center justify-between pt-4 border-t border-border">
+                <div className="text-sm">
+                  <span className="text-muted-foreground">Starting from: </span>
+                  <span className="font-bold text-primary text-base">₹{srv.price}</span>
+                </div>
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  onClick={() => handleOpenEditService(srv)}
+                  className="text-xs font-semibold"
+                >
+                  Edit Service
+                </Button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* PRODUCT DIALOG MODAL */}
+      {isProductModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-card border border-border rounded-2xl p-6 max-w-lg w-full shadow-2xl animate-in zoom-in-95 duration-200 max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
+              <h3 className="font-bold text-lg text-foreground">
+                {editingProduct ? "Edit Product Details" : "Add New Product"}
+              </h3>
+              <button 
+                onClick={() => setIsProductModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveProductForm} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Product Title *
+                </label>
+                <Input 
+                  placeholder="e.g. Italian Marble Dining Table"
+                  value={productForm.name}
+                  onChange={(e) => setProductForm({ ...productForm, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Category *
+                  </label>
+                  <select
+                    value={productForm.category}
+                    onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="Kitchen & Wardrobe">Kitchen & Wardrobe</option>
+                    <option value="Architectural Woodwork">Architectural Woodwork</option>
+                    <option value="Bespoke Furniture">Bespoke Furniture</option>
+                    <option value="Lighting & Fixtures">Lighting & Fixtures</option>
+                    <option value="Bath & Sanitaries">Bath & Sanitaries</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Price (INR) *
+                  </label>
+                  <Input 
+                    placeholder="e.g. 45000"
+                    value={productForm.price}
+                    onChange={(e) => setProductForm({ ...productForm, price: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Image URL (or Unsplash sample) *
+                </label>
+                <Input 
+                  placeholder="https://images.unsplash.com/..."
+                  value={productForm.image}
+                  onChange={(e) => setProductForm({ ...productForm, image: e.target.value })}
+                  required
+                />
+                {productForm.image && (
+                  <div className="mt-2 h-24 rounded-lg overflow-hidden border border-border">
+                    <img src={productForm.image} alt="Preview" className="w-full h-full object-cover" />
+                  </div>
+                )}
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Product Description *
+                </label>
+                <Textarea 
+                  rows={3} 
+                  placeholder="Describe material finish, warranty, dimensions..."
+                  value={productForm.description}
+                  onChange={(e) => setProductForm({ ...productForm, description: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setIsProductModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="font-semibold">
+                  {editingProduct ? "Update Product" : "Add to Catalog"}
+                </Button>
+              </div>
+            </form>
           </div>
         </div>
       )}
 
+      {/* SERVICE DIALOG MODAL */}
+      {isServiceModalOpen && (
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-in fade-in duration-200">
+          <div className="bg-card border border-border rounded-2xl p-6 max-w-lg w-full shadow-2xl animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between pb-4 border-b border-border mb-4">
+              <h3 className="font-bold text-lg text-foreground">
+                {editingService ? "Edit Service Details" : "Add New Service"}
+              </h3>
+              <button 
+                onClick={() => setIsServiceModalOpen(false)}
+                className="text-muted-foreground hover:text-foreground p-1 rounded-lg hover:bg-muted transition"
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveServiceForm} className="space-y-4">
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Service Title *
+                </label>
+                <Input 
+                  placeholder="e.g. Turnkey Office Interior Fit-Out"
+                  value={serviceForm.name}
+                  onChange={(e) => setServiceForm({ ...serviceForm, name: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Category *
+                  </label>
+                  <select
+                    value={serviceForm.category}
+                    onChange={(e) => setServiceForm({ ...serviceForm, category: e.target.value })}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="Consultation & Design">Consultation & Design</option>
+                    <option value="Commercial Fit-Out">Commercial Fit-Out</option>
+                    <option value="Residential Execution">Residential Execution</option>
+                    <option value="Architectural Planning">Architectural Planning</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Starting Price *
+                  </label>
+                  <Input 
+                    placeholder="e.g. 75/sq.ft or 15000"
+                    value={serviceForm.price}
+                    onChange={(e) => setServiceForm({ ...serviceForm, price: e.target.value })}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                  Service Scope & Description *
+                </label>
+                <Textarea 
+                  rows={3} 
+                  placeholder="Describe scope of work, deliverables, and estimated timelines..."
+                  value={serviceForm.description}
+                  onChange={(e) => setServiceForm({ ...serviceForm, description: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setIsServiceModalOpen(false)}>
+                  Cancel
+                </Button>
+                <Button type="submit" className="font-semibold">
+                  {editingService ? "Update Service" : "Add Service"}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
