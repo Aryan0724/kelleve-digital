@@ -6,16 +6,24 @@ import { TrueDialAPI } from "@/lib/api";
 import BusinessCard, { BusinessCardProps } from "@/components/shared/BusinessCard";
 import { SlidersHorizontal, MapPin, Star, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useUserLocation } from "@/context/LocationContext";
 
 function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
+  const { city: globalCity } = useUserLocation();
   
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
-  const [city, setCity] = useState(searchParams.get("city") || "");
+  const [city, setCity] = useState(searchParams.get("city") || globalCity || "Mumbai");
   const [results, setResults] = useState<BusinessCardProps[]>([]);
   const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    if (!searchParams.get("city") && globalCity) {
+      setCity(globalCity);
+    }
+  }, [globalCity]);
   
   // Filters
   const [verifiedOnly, setVerifiedOnly] = useState(searchParams.get("verified") === "true");

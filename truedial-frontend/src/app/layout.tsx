@@ -26,6 +26,9 @@ export const metadata: Metadata = {
   description: "India's premier B2B directory and ecosystem for interior designers, architects, contractors, and suppliers.",
 };
 
+import { LocationProvider } from "@/context/LocationContext";
+import LocationSelectorModal from "@/components/shared/LocationSelectorModal";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -37,7 +40,10 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
-        {children}
+        <LocationProvider>
+          {children}
+          <LocationSelectorModal />
+        </LocationProvider>
       </body>
     </html>
   );

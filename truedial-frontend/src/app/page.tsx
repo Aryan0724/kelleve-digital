@@ -13,7 +13,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import PostRequirementButton from "@/components/PostRequirementButton";
 import HomeSearchBar from "@/components/home/HomeSearchBar";
-import LiveActivityTicker from "@/components/home/LiveActivityTicker";
+import HomeLocationBanner from "@/components/home/HomeLocationBanner";
 import LiveBusinessesGrid from "@/components/home/LiveBusinessesGrid";
 import PlatformPulseCounter from "@/components/home/PlatformPulseCounter";
 
@@ -32,7 +32,7 @@ export default async function Home() {
     <div className="min-h-screen flex flex-col font-sans bg-[#f8fafc] dark:bg-slate-950 text-navy dark:text-white transition-colors duration-300">
       <Navbar />
 
-      {/* 1. HERO SECTION WITH LIVE ACTIVITY TICKER & TRENDING PILLS */}
+      {/* 1. HERO SECTION WITH LOCATION BANNER & TRENDING PILLS */}
       <section className="bg-gradient-to-br from-blue-50/80 via-orange-50/60 to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 py-16 px-6 md:px-12 flex flex-col items-center justify-center relative overflow-hidden border-b border-gray-200/60 dark:border-slate-800">
         <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-orange-500/15 rounded-full blur-3xl -z-10 pointer-events-none animate-pulse"></div>
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
@@ -56,8 +56,8 @@ export default async function Home() {
           {/* Interactive Search Bar Component */}
           <HomeSearchBar />
 
-          {/* LIVELY REAL-TIME ACTIVITY PULSE TICKER */}
-          <LiveActivityTicker />
+          {/* LOCATION & CITY DISPLAY BANNER */}
+          <HomeLocationBanner />
 
           {/* Lead Generation Button */}
           <div className="mt-6 flex justify-center">

@@ -1,18 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { X, CheckCircle, ArrowRight, MessageSquare, Phone, MapPin } from "lucide-react";
+import { X, CheckCircle, ArrowRight, MessageSquare, Phone, MapPin, Navigation } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { sendOtpAction, verifyOtpAction } from "@/app/actions/auth";
+import { useUserLocation } from "@/context/LocationContext";
 
 export default function B2BQuoteModal({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) {
+  const { city: globalCity, detectLocation, isDetecting } = useUserLocation();
   const [step, setStep] = useState(1);
   const [requirement, setRequirement] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState(globalCity || "Mumbai");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
+
+  useEffect(() => {
+    if (globalCity) setCity(globalCity);
+  }, [globalCity]);
   
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -121,7 +127,18 @@ export default function B2BQuoteModal({ isOpen, onClose }: { isOpen: boolean, on
             {step === 2 && (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">Where do you need this?</label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-sm font-semibold text-gray-700">Where do you need this?</label>
+                    <button
+                      type="button"
+                      onClick={detectLocation}
+                      disabled={isDetecting}
+                      className="text-xs font-extrabold text-primary hover:underline flex items-center gap-1"
+                    >
+                      <Navigation className="w-3.5 h-3.5" />
+                      <span>{isDetecting ? "Detecting..." : "📍 Detect My GPS City"}</span>
+                    </button>
+                  </div>
                   <div className="relative">
                     <MapPin className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
                     <Input 

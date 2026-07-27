@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
 import AutocompleteSearch from "@/components/shared/AutocompleteSearch";
+import NavbarLocationPill from "@/components/shared/NavbarLocationPill";
 import { cookies } from "next/headers";
 import { logout } from "@/app/actions/auth";
 
@@ -35,10 +36,13 @@ export default async function Navbar() {
 
       {/* Main Navbar */}
       <header className="bg-background py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm border-b border-border gap-6">
-        <Link href="/" className="flex items-center gap-2 flex-shrink-0">
-          <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl">T</div>
-          <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
-        </Link>
+        <div className="flex items-center gap-4 flex-shrink-0">
+          <Link href="/" className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl">T</div>
+            <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
+          </Link>
+          <NavbarLocationPill />
+        </div>
         
         <div className="flex-1 max-w-xl mx-auto hidden md:block">
           <AutocompleteSearch />

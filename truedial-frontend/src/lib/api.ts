@@ -77,8 +77,20 @@ export class TrueDialAPI {
       if (!res.ok) throw new Error("Failed to fetch autocomplete results");
       return await res.json();
     } catch (error) {
-      console.error(error);
-      return { success: false, data: [] };
+      console.error("autocompleteSearch failed, falling back to mock listings:", error);
+      const queryText = (q || "").toLowerCase().trim();
+      const matched = MOCK_LISTINGS.filter(item => 
+        !queryText || 
+        item.title.toLowerCase().includes(queryText) || 
+        item.category.name.toLowerCase().includes(queryText) ||
+        item.city.toLowerCase().includes(queryText)
+      ).slice(0, 8);
+      return { 
+        success: true, 
+        data: { 
+          data: matched 
+        } 
+      };
     }
   }
 
@@ -411,7 +423,7 @@ const MOCK_LISTINGS = [
     title: "Sharma Interior Decorators",
     slug: "sharma-interior-decorators",
     category: { name: "Interior Designers" },
-    city: "Delhi",
+    city: "Delhi NCR",
     rating: 4.8,
     reviews_count: 124,
     description: "Premium interior design services for residential and commercial spaces across Delhi NCR.",
@@ -457,5 +469,124 @@ const MOCK_LISTINGS = [
       "https://images.unsplash.com/photo-1606811841689-23dfddce3e95?q=80&w=800"
     ],
     features: ["X-Ray", "Root Canal", "Implants"]
+  },
+  {
+    id: 4,
+    title: "Aura Architecture & Interior Studio",
+    slug: "aura-architecture-interior-studio",
+    category: { name: "Architects" },
+    city: "Mumbai",
+    rating: 4.9,
+    reviews_count: 156,
+    description: "Award-winning architectural and luxury interior design firm specializing in turnkey projects.",
+    address: "Bandra West, Mumbai",
+    phone: "+91 98200 11223",
+    email: "info@aurastudio.com",
+    gallery: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=800"
+    ],
+    features: ["Turnkey Execution", "3D Modeling", "Vastu Certified"]
+  },
+  {
+    id: 5,
+    title: "The Spice Route Dining & Lounge",
+    slug: "spice-route-dining",
+    category: { name: "Restaurants" },
+    city: "Delhi NCR",
+    rating: 4.7,
+    reviews_count: 340,
+    description: "Authentic pan-Asian fine dining with private banquet rooms and rooftop lounge.",
+    address: "Hauz Khas Village, New Delhi",
+    phone: "+91 98111 22334",
+    email: "reservations@spiceroute.com",
+    gallery: [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800"
+    ],
+    features: ["50% VIP Card Off", "Valet Parking", "Rooftop"]
+  },
+  {
+    id: 6,
+    title: "Agarwal Packers & Logistics",
+    slug: "agarwal-packers-logistics",
+    category: { name: "Packers & Movers" },
+    city: "Pune",
+    rating: 4.6,
+    reviews_count: 412,
+    description: "Trusted household relocation, vehicle shifting, and secure warehousing across India.",
+    address: "Wakad, Pune",
+    phone: "+91 93222 33445",
+    email: "support@agarwalmovers.com",
+    gallery: [
+      "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?q=80&w=800"
+    ],
+    features: ["Damage Insurance", "GPS Tracking", "Instant Quotes"]
+  },
+  {
+    id: 7,
+    title: "Tata Steel Building Supplies (B2B)",
+    slug: "tata-steel-building-supplies",
+    category: { name: "B2B Wholesalers" },
+    city: "Mumbai",
+    rating: 4.9,
+    reviews_count: 520,
+    description: "Factory direct distributor of structural TMT bars, cement, and commercial construction hardware.",
+    address: "Andheri East, Mumbai",
+    phone: "+91 98210 99887",
+    email: "b2b@tatabuildings.com",
+    gallery: [
+      "https://images.unsplash.com/photo-1504307651254-35680f356dfd?q=80&w=800"
+    ],
+    features: ["Wholesale Rates", "Factory Direct", "Bulk Credit"]
+  },
+  {
+    id: 8,
+    title: "Fortis Memorial Super Specialty Hospital",
+    slug: "fortis-memorial-hospital",
+    category: { name: "Hospitals" },
+    city: "Delhi NCR",
+    rating: 4.8,
+    reviews_count: 670,
+    description: "24x7 emergency medical services, cardiology, orthopedics, and diagnostic laboratory.",
+    address: "Sector 44, Gurgaon",
+    phone: "+91 99990 00111",
+    email: "helpdesk@fortishospital.com",
+    gallery: [
+      "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=800"
+    ],
+    features: ["24x7 Emergency", "ICU Facility", "VIP Discount"]
+  },
+  {
+    id: 9,
+    title: "VastuCreations Interior Designers",
+    slug: "vastucreations-interior-designers",
+    category: { name: "Interior Designers" },
+    city: "Bangalore",
+    rating: 4.9,
+    reviews_count: 198,
+    description: "Modern modular kitchen and luxury bedroom interiors tailored to your budget.",
+    address: "Koramangala, Bangalore",
+    phone: "+91 98450 11223",
+    email: "design@vastucreations.com",
+    gallery: [
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=800"
+    ],
+    features: ["10 Year Warranty", "Free Consult", "3D Design"]
+  },
+  {
+    id: 10,
+    title: "Barbeque Nation Buffet & Grill",
+    slug: "barbeque-nation-buffet",
+    category: { name: "Restaurants" },
+    city: "Hyderabad",
+    rating: 4.7,
+    reviews_count: 850,
+    description: "Unlimited live grill table buffet with multi-cuisine dining.",
+    address: "Banjara Hills, Hyderabad",
+    phone: "+91 98850 44556",
+    email: "hyd@barbequenation.com",
+    gallery: [
+      "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800"
+    ],
+    features: ["Live Grill", "Buffet", "Family Friendly"]
   }
 ];
