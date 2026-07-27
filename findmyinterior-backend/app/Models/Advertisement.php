@@ -24,13 +24,21 @@ class Advertisement extends Model
         'starts_at',
         'ends_at',
         'is_active',
-        'created_by'
+        'created_by',
+        'user_id',
+        'budget',
+        'max_impressions',
+        'max_clicks',
+        'target_role'
     ];
 
     protected $casts = [
         'starts_at' => 'datetime',
         'ends_at' => 'datetime',
         'is_active' => 'boolean',
+        'budget' => 'decimal:2',
+        'max_impressions' => 'integer',
+        'max_clicks' => 'integer',
     ];
 
     public function stats(): HasMany
@@ -46,5 +54,10 @@ class Advertisement extends Model
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

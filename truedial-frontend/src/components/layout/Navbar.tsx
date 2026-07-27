@@ -53,9 +53,7 @@ export default async function Navbar() {
             <Link href="/search" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">Services <ChevronDown className="w-4 h-4"/></Link>
           </div>
           <Link href="/offers" className="text-foreground hover:text-primary transition font-medium">Offers</Link>
-          <Link href="/academy" className="text-foreground hover:text-primary transition font-medium">Academy</Link>
           <Link href="#" className="text-foreground hover:text-primary transition font-medium">Podcast</Link>
-          <Link href="#" className="text-foreground hover:text-primary transition font-medium">TD News</Link>
           <Link href="#" className="text-foreground hover:text-primary transition font-medium">Contact</Link>
         </nav>
         <div className="hidden lg:flex items-center gap-4">

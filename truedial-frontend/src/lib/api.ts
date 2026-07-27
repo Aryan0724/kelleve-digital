@@ -1,7 +1,23 @@
 // TrueDial API Connector
 // Connects to the central findmyinterior-backend Laravel instance
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000/api/v1";
+const isServer = typeof window === "undefined";
+
+function getApiBaseUrl(): string {
+  if (isServer) {
+    if (process.env.INTERNAL_API_URL && process.env.INTERNAL_API_URL.startsWith("http")) {
+      return process.env.INTERNAL_API_URL;
+    }
+    if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
+      return process.env.NEXT_PUBLIC_API_URL;
+    }
+    const vps = process.env.VPS_BACKEND_URL || "http://187.127.164.142:8000";
+    return `${vps}/api/v1`;
+  }
+  return process.env.NEXT_PUBLIC_API_URL || "/api-proxy";
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 export class TrueDialAPI {
   static async getCategories() {
@@ -80,7 +96,9 @@ export class TrueDialAPI {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          "Accept": "application/json",
+          "X-Platform": "truedial",
+          "X-Tenant-ID": "2"
         },
         body: JSON.stringify(credentials)
       });
@@ -97,7 +115,9 @@ export class TrueDialAPI {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Accept": "application/json"
+          "Accept": "application/json",
+          "X-Platform": "truedial",
+          "X-Tenant-ID": "2"
         },
         body: JSON.stringify(data)
       });

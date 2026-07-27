@@ -49,7 +49,7 @@ class OfferManagementController extends Controller
 
         $user = auth()->user();
         $listing = Listing::findOrFail($request->listing_id);
-        $this->authorize('update', $listing);
+        abort_if($listing->user_id !== $user->id, 403, 'Unauthorized.');
 
         $offer = Offer::create($request->except('media_ids'));
 
@@ -58,7 +58,7 @@ class OfferManagementController extends Controller
             foreach ($mediaItems as $media) {
                 $this->authorize('update', $media);
                 $media->update([
-                    'model_type' => Offer::class,
+                    'model_type' => $offer->getMorphClass(),
                     'model_id' => $offer->id
                 ]);
             }

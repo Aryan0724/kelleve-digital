@@ -142,6 +142,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::apiResource('suppliers', SupplierController::class)->only(['index', 'show']);
     Route::apiResource('workers', WorkerController::class)->only(['index', 'show']);
     Route::apiResource('blogs', BlogController::class)->only(['index', 'show']);
+    Route::get('seo-pages/{slug}', [\App\Http\Controllers\Api\V1\Public\SeoPageController::class, 'show']);
     
     // Advertisements
     Route::get('advertisements', [\App\Http\Controllers\Api\V1\Public\AdvertisementController::class, 'index']);
@@ -255,6 +256,10 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         // Vendor Metrics
         Route::get('/vendors/me/metrics', [VendorMetricController::class, 'show']);
 
+        // User Advertisements
+        Route::get('user/advertisements', [\App\Http\Controllers\Api\V1\UserAdvertisementController::class, 'index']);
+        Route::post('user/advertisements', [\App\Http\Controllers\Api\V1\UserAdvertisementController::class, 'store']);
+
         // Notifications
         Route::get('/notifications', function (Request $request) {
             return $request->user()->notifications;
@@ -325,7 +330,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('reviews/{id}/approve', [AdminController::class, 'approveReview']);
         Route::delete('reviews/{id}', [AdminController::class, 'deleteReview']);
         
-        Route::post('settings', [SettingController::class, 'updateAll']);
+        Route::post('settings', [\App\Http\Controllers\SettingController::class, 'updateAll']);
 
         // Advertisements Management
         Route::apiResource('advertisements', \App\Http\Controllers\Api\V1\Admin\AdvertisementController::class);

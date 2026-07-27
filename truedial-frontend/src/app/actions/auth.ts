@@ -6,8 +6,17 @@ import { redirect } from "next/navigation";
 // TrueDial API Connector
 // Connects to the central findmyinterior-backend Laravel instance
 
-// Server-side: uses INTERNAL_API_URL (available within Docker network) or fallback to NEXT_PUBLIC
-const API_BASE = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "http://127.0.0.1:8000/api/v1";
+function getServerApiBase(): string {
+  if (process.env.INTERNAL_API_URL && process.env.INTERNAL_API_URL.startsWith("http")) {
+    return process.env.INTERNAL_API_URL;
+  }
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  const vps = process.env.VPS_BACKEND_URL || "http://187.127.164.142:8000";
+  return `${vps}/api/v1`;
+}
+const API_BASE = getServerApiBase();
 
 export async function loginAction(formData: FormData) {
   const email = formData.get("email");

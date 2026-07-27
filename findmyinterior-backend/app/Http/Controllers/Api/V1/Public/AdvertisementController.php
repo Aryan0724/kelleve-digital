@@ -32,16 +32,18 @@ class AdvertisementController extends Controller
             $query->where(function ($q) use ($request) {
                 $q->whereNull('target_city')->orWhere('target_city', $request->query('target_city'));
             });
-        } else {
-            $query->whereNull('target_city');
         }
 
         if ($request->filled('target_category_id')) {
             $query->where(function ($q) use ($request) {
                 $q->whereNull('target_category_id')->orWhere('target_category_id', $request->query('target_category_id'));
             });
-        } else {
-            $query->whereNull('target_category_id');
+        }
+
+        if ($request->filled('target_role')) {
+            $query->where(function ($q) use ($request) {
+                $q->whereNull('target_role')->orWhere('target_role', $request->query('target_role'));
+            });
         }
 
         $ads = $query->orderBy('priority', 'desc')->get();
@@ -60,6 +62,8 @@ class AdvertisementController extends Controller
             ['advertisement_id' => $id, 'date' => $date]
         )->increment('impressions');
 
+        $this->checkAndPauseAd($id);
+
         return response()->json(['status' => 'success']);
     }
 
@@ -71,6 +75,34 @@ class AdvertisementController extends Controller
             ['advertisement_id' => $id, 'date' => $date]
         )->increment('clicks');
 
+        $this->checkAndPauseAd($id);
+
         return response()->json(['status' => 'success']);
+    }
+
+    private function checkAndPauseAd($id)
+    {
+        $ad = Advertisement::find($id);
+        if (!$ad || !$ad->is_active) return;
+
+        $pause = false;
+        
+        if ($ad->max_impressions > 0) {
+            $totalImpressions = AdvertisementStat::where('advertisement_id', $id)->sum('impressions');
+            if ($totalImpressions >= $ad->max_impressions) {
+                $pause = true;
+            }
+        }
+
+        if ($ad->max_clicks > 0) {
+            $totalClicks = AdvertisementStat::where('advertisement_id', $id)->sum('clicks');
+            if ($totalClicks >= $ad->max_clicks) {
+                $pause = true;
+            }
+        }
+
+        if ($pause) {
+            $ad->update(['is_active' => false]);
+        }
     }
 }

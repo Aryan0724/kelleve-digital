@@ -28,10 +28,10 @@ class TenantResolverMiddleware
         $host = $request->getHost();
         $tenant = Tenant::where('domain', $host)->where('status', 'active')->first();
 
-        // 2. Resolve by Header (Dev priority / Fallback)
-        if (!$tenant && $request->hasHeader('X-Tenant-ID')) {
-            $tenantId = $request->header('X-Tenant-ID');
-            $tenant = Tenant::where('id', $tenantId)->orWhere('slug', $tenantId)->where('status', 'active')->first();
+        // 2. Resolve by Header (Dev priority / Fallback / Mobile Platform)
+        $headerVal = $request->header('X-Tenant-ID') ?: $request->header('X-Platform');
+        if (!$tenant && $headerVal) {
+            $tenant = Tenant::where('id', $headerVal)->orWhere('slug', $headerVal)->where('status', 'active')->first();
         }
 
         // If no tenant is found, we might want to default to Find My Interior or abort.

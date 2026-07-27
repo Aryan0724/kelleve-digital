@@ -56,6 +56,7 @@ class AppServiceProvider extends ServiceProvider
             'WorkerJob'      => 'App\Models\WorkerJob',
             'ListingProduct' => 'App\Models\ListingProduct',
             'ListingService' => 'App\Models\ListingService',
+            'Offer'          => 'App\Models\Offer',
         ]);
 
         // Register Observers

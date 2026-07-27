@@ -23,9 +23,10 @@ interface AdSlotProps {
 }
 
 export function AdSlot({ location, targetCity, targetCategoryId, className = '', fallback = null }: AdSlotProps) {
-  const [ad, setAd] = useState<Advertisement | null>(null);
+  const [ads, setAds] = useState<Advertisement[]>([]);
+  const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [hasTrackedImpression, setHasTrackedImpression] = useState(false);
+  const [trackedImpressions, setTrackedImpressions] = useState<Set<number>>(new Set());
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -35,10 +36,12 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
         let url = `/advertisements?location=${location}`;
         if (targetCity) url += `&target_city=${encodeURIComponent(targetCity)}`;
         if (targetCategoryId) url += `&target_category_id=${targetCategoryId}`;
+        // Note: target_role could be added here if we had user context in this component
         
         const response = await api.get(url);
         if (isMounted && response.data?.data?.length > 0) {
-          setAd(response.data.data[0]); // Pick the highest priority active ad
+          // Store all valid ads instead of just the first one
+          setAds(response.data.data);
         }
       } catch (error) {
         console.error(`Failed to fetch ad for ${location}`, error);
@@ -48,16 +51,27 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
     };
     fetchAd();
     return () => { isMounted = false; };
-  }, [location]);
+  }, [location, targetCity, targetCategoryId]);
+
+  // Rotation effect
+  useEffect(() => {
+    if (ads.length <= 1) return;
+    const timer = setInterval(() => {
+      setCurrentIndex((prev) => (prev + 1) % ads.length);
+    }, 7000); // Rotate every 7 seconds
+    return () => clearInterval(timer);
+  }, [ads.length]);
+
+  const currentAd = ads[currentIndex];
 
   // Intersection Observer for Impression Tracking
   useEffect(() => {
-    if (!ad || hasTrackedImpression) return;
+    if (!currentAd || trackedImpressions.has(currentAd.id)) return;
 
     const observer = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting) {
-        api.post(`/advertisements/${ad.id}/impression`).catch(console.error);
-        setHasTrackedImpression(true);
+        api.post(`/advertisements/${currentAd.id}/impression`).catch(console.error);
+        setTrackedImpressions(prev => new Set(prev).add(currentAd.id));
         observer.disconnect();
       }
     }, { threshold: 0.5 }); // Trigger when 50% visible
@@ -67,13 +81,13 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
     }
 
     return () => observer.disconnect();
-  }, [ad, hasTrackedImpression]);
+  }, [currentAd, trackedImpressions]);
 
   const handleClick = () => {
-    if (ad) {
-      api.post(`/advertisements/${ad.id}/click`).catch(console.error);
-      if (ad.link) {
-        window.open(ad.link, '_blank');
+    if (currentAd) {
+      api.post(`/advertisements/${currentAd.id}/click`).catch(console.error);
+      if (currentAd.link) {
+        window.open(currentAd.link, '_blank');
       }
     }
   };
@@ -82,7 +96,7 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
     return <div className={`animate-pulse bg-slate-100 rounded-lg ${className}`}></div>;
   }
 
-  if (!ad) {
+  if (!currentAd) {
     return <>{fallback}</>;
   }
 
@@ -96,18 +110,18 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
         Ad
       </div>
       
-      {ad.media_type === 'image' && ad.banner_url && (
+      {currentAd.media_type === 'image' && currentAd.banner_url && (
         <img 
-          src={ad.banner_url} 
-          alt={ad.title || "Advertisement"} 
+          src={currentAd.banner_url} 
+          alt={currentAd.title || "Advertisement"} 
           className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" 
           loading="lazy"
         />
       )}
 
-      {ad.media_type === 'video' && ad.banner_url && (
+      {currentAd.media_type === 'video' && currentAd.banner_url && (
         <video 
-          src={ad.banner_url} 
+          src={currentAd.banner_url} 
           className="w-full h-full object-cover" 
           autoPlay 
           muted 
@@ -116,10 +130,10 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
         />
       )}
 
-      {ad.media_type === 'html' && ad.custom_code && (
+      {currentAd.media_type === 'html' && currentAd.custom_code && (
         <div 
           className="w-full h-full" 
-          dangerouslySetInnerHTML={{ __html: ad.custom_code }} 
+          dangerouslySetInnerHTML={{ __html: currentAd.custom_code }} 
         />
       )}
     </div>

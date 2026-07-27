@@ -2,7 +2,17 @@ import { CreditCard, ShieldCheck, MapPin, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cookies } from "next/headers";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://findmyinterior.com/api/v1";
+function getServerApiBase(): string {
+  if (process.env.INTERNAL_API_URL && process.env.INTERNAL_API_URL.startsWith("http")) {
+    return process.env.INTERNAL_API_URL;
+  }
+  if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  const vps = process.env.VPS_BACKEND_URL || "http://187.127.164.142:8000";
+  return `${vps}/api/v1`;
+}
+const API_BASE = getServerApiBase();
 
 async function getPrivilegeCard() {
   const cookieStore = await cookies();

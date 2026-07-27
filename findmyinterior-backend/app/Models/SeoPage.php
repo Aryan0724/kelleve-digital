@@ -7,11 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class SeoPage extends Model
 {
     protected $fillable = [
-        'title', 'slug', 'meta_title', 'meta_description', 'schema_json',
+        'title', 'slug', 'meta_title', 'meta_description', 'content', 'blocks_json', 'schema_json', 'is_active'
     ];
 
     protected $casts = [
         'schema_json' => 'array',
+        'blocks_json' => 'array',
+        'is_active' => 'boolean',
     ];
 
     // ─── Scopes ───────────────────────────────────────────────────────────────

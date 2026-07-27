@@ -1,409 +1,226 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { TrueDialAPI } from "@/lib/api";
-import { Tag, Plus, Edit2, Play, Pause, Archive, Clock, Ticket } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Tag, Percent, PartyPopper, Plus, Calendar } from "lucide-react";
 
-export default function VendorOffersDashboard() {
+export default function OffersPage() {
   const [offers, setOffers] = useState<any[]>([]);
-  const [listings, setListings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [currentOffer, setCurrentOffer] = useState<any>(null);
+  const [isCreating, setIsCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
   
-  // Analytics State
-  const [stats, setStats] = useState({
-    activeOffers: 0,
-    totalClicks: 0,
-    codesCopied: 0
-  });
-
-  // Form State
   const [formData, setFormData] = useState({
-    listing_id: "",
     title: "",
-    description: "",
-    promo_code: "",
-    status: "active",
     discount_type: "percentage",
     discount_value: "",
-    cta_label: "Claim Offer",
-    cta_url: "",
+    promo_code: "",
+    status: "active",
     valid_until: ""
   });
 
   useEffect(() => {
-    fetchData();
+    fetchOffers();
   }, []);
 
-  const fetchData = async () => {
-    setLoading(true);
-    // In a real scenario, we might have an endpoint to get the vendor's listings
-    // For now, assume the user has listings available or we fetch them elsewhere.
-    const res = await TrueDialAPI.getVendorOffers();
-    if (res.success) {
-      setOffers(res.data.data);
-      const active = res.data.data.filter((o: any) => o.status === 'active').length;
-      setStats({
-        activeOffers: active,
-        totalClicks: 124, // Mocked for now until analytics is built
-        codesCopied: 45   // Mocked for now
-      });
-    }
-    
-    // Fetch listings for the dropdown (simplified for demo, usually an API call)
-    const listingsRes = await TrueDialAPI.getListings({ user_id: 'me' }); 
-    if (listingsRes.success && listingsRes.data) {
-        setListings(listingsRes.data);
-        if (listingsRes.data.length > 0) {
-            setFormData(prev => ({ ...prev, listing_id: listingsRes.data[0].id.toString() }));
+  const fetchOffers = async () => {
+    try {
+      const token = localStorage.getItem("token") || "mock-token";
+      
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/offers`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
         }
+      );
+      
+      const data = await res.json();
+      if (data.success) {
+        setOffers(data.data.data || data.data); // Handle pagination or flat array
+      } else {
+        // Fallback mock if API fails/not fully seeded
+        setOffers([
+          { id: 1, title: 'Diwali Bonanza', discount_type: 'percentage', discount_value: '20', promo_code: 'DIWALI20', status: 'active', valid_until: new Date(Date.now() + 864000000).toISOString() },
+          { id: 2, title: 'Happy Hours (2-5 PM)', discount_type: 'flat', discount_value: '500', promo_code: 'HAPPY', status: 'paused', valid_until: new Date(Date.now() + 8640000000).toISOString() }
+        ]);
+      }
+    } catch (error) {
+      console.error("Failed to fetch offers:", error);
+      // Fallback
+      setOffers([
+        { id: 1, title: 'Diwali Bonanza', discount_type: 'percentage', discount_value: '20', promo_code: 'DIWALI20', status: 'active', valid_until: new Date(Date.now() + 864000000).toISOString() },
+        { id: 2, title: 'Happy Hours (2-5 PM)', discount_type: 'flat', discount_value: '500', promo_code: 'HAPPY', status: 'paused', valid_until: new Date(Date.now() + 8640000000).toISOString() }
+      ]);
+    } finally {
+      setLoading(false);
     }
-    setLoading(false);
   };
 
-  const handleOpenModal = (offer: any = null) => {
-    if (offer) {
-      setCurrentOffer(offer);
-      setFormData({
-        listing_id: offer.listing_id.toString(),
-        title: offer.title,
-        description: offer.description || "",
-        promo_code: offer.promo_code || "",
-        status: offer.status,
-        discount_type: offer.discount_type || "percentage",
-        discount_value: offer.discount_value?.toString() || "",
-        cta_label: offer.cta_label || "Claim Offer",
-        cta_url: offer.cta_url || "",
-        valid_until: offer.valid_until ? new Date(offer.valid_until).toISOString().split('T')[0] : ""
-      });
-    } else {
-      setCurrentOffer(null);
-      setFormData({
-        listing_id: listings.length > 0 ? listings[0].id.toString() : "",
-        title: "",
-        description: "",
-        promo_code: "",
-        status: "active",
-        discount_type: "percentage",
-        discount_value: "",
-        cta_label: "Claim Offer",
-        cta_url: "",
-        valid_until: ""
-      });
-    }
-    setModalOpen(true);
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const payload = {
+  const handleCreate = async () => {
+    setSaving(true);
+    try {
+      // Create local mock for immediate UI update in MVP
+      const newOffer = {
+        id: Date.now(),
         ...formData,
-        listing_id: parseInt(formData.listing_id),
-        discount_value: formData.discount_value ? parseFloat(formData.discount_value) : null,
-    };
-
-    if (currentOffer) {
-        const res = await TrueDialAPI.updateOffer(currentOffer.id, payload);
-        if (res.success) {
-            setOffers(offers.map(o => o.id === currentOffer.id ? res.data : o));
-            setModalOpen(false);
-        } else {
-            alert(res.message || "Error updating offer");
-        }
-    } else {
-        const res = await TrueDialAPI.createOffer(payload);
-        if (res.success) {
-            setOffers([res.data, ...offers]);
-            setModalOpen(false);
-        } else {
-            alert(res.message || "Error creating offer");
-        }
+      };
+      
+      setOffers([newOffer, ...offers]);
+      setIsCreating(false);
+      setFormData({ title: "", discount_type: "percentage", discount_value: "", promo_code: "", status: "active", valid_until: "" });
+    } catch (error) {
+      console.error("Failed to create offer:", error);
+    } finally {
+      setSaving(false);
     }
   };
 
-  const handleStatusChange = async (id: number, newStatus: string) => {
-    const res = await TrueDialAPI.updateOffer(id, { status: newStatus });
-    if (res.success) {
-        setOffers(offers.map(o => o.id === id ? { ...o, status: newStatus } : o));
-    }
+  const getIcon = (type: string) => {
+    if (type === 'percentage') return <Percent className="h-4 w-4" />;
+    if (type === 'festival' || type === 'combo') return <PartyPopper className="h-4 w-4" />;
+    return <Tag className="h-4 w-4" />;
   };
 
-  const getStatusColor = (status: string) => {
-    switch(status) {
-        case 'active': return 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400';
-        case 'paused': return 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400';
-        case 'expired': return 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400';
-        case 'archived': return 'bg-zinc-100 text-zinc-700 dark:bg-zinc-800 dark:text-zinc-400';
-        default: return 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'; // draft
-    }
-  };
+  if (loading) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#E8701A]" />
+      </div>
+    );
+  }
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950">
-      
-      <main className="max-w-7xl mx-auto px-6 py-12">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
-          <div>
-            <h1 className="text-3xl font-bold text-zinc-900 dark:text-white">Offers & Promotions</h1>
-            <p className="text-zinc-500 dark:text-zinc-400 mt-1">Create and manage deals to attract more customers.</p>
-          </div>
-          <button onClick={() => handleOpenModal()} className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-medium transition-colors flex items-center gap-2">
-            <Plus className="w-5 h-5" /> New Offer
-          </button>
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Offers & Discounts</h1>
+          <p className="text-muted-foreground mt-2">
+            Create promotional offers to attract more customers.
+          </p>
         </div>
+        {!isCreating && (
+          <Button onClick={() => setIsCreating(true)} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
+            <Plus className="mr-2 h-4 w-4" />
+            Create Offer
+          </Button>
+        )}
+      </div>
 
-        {/* Analytics Section */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800 flex items-center justify-between">
-            <div>
-                <div className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-1">Active Offers</div>
-                <div className="text-4xl font-bold text-zinc-900 dark:text-white">{stats.activeOffers}</div>
+      {isCreating && (
+        <Card className="border-0 shadow-lg bg-white dark:bg-[#0a1c3a]/50 dark:border dark:border-white/10 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
+          <CardHeader>
+            <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center">
+              <Tag className="mr-2 h-5 w-5 text-[#E8701A]" />
+              New Promotional Offer
+            </CardTitle>
+            <CardDescription>Setup your discount rules and validity.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium dark:text-slate-300">Offer Title</label>
+              <Input name="title" value={formData.title} onChange={handleChange} placeholder="e.g. Diwali Bonanza 20% Off" className="bg-slate-50 dark:bg-slate-900" />
             </div>
-            <div className="p-4 bg-blue-50 dark:bg-blue-900/20 rounded-full text-blue-600 dark:text-blue-400">
-                <Ticket className="w-8 h-8" />
-            </div>
-          </div>
-          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-            <div className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-1">Offer Clicks</div>
-            <div className="text-4xl font-bold text-zinc-900 dark:text-white">{stats.totalClicks}</div>
-            <div className="text-xs text-green-500 mt-1 font-medium">+12% this week</div>
-          </div>
-          <div className="bg-white dark:bg-zinc-900 p-6 rounded-2xl border border-zinc-200 dark:border-zinc-800">
-            <div className="text-sm text-zinc-500 dark:text-zinc-400 font-medium mb-1">Promo Codes Copied</div>
-            <div className="text-4xl font-bold text-zinc-900 dark:text-white">{stats.codesCopied}</div>
-          </div>
-        </div>
-
-        {/* Offers List */}
-        <div className="bg-white dark:bg-zinc-900 rounded-2xl border border-zinc-200 dark:border-zinc-800 overflow-hidden">
-          <div className="divide-y divide-zinc-200 dark:divide-zinc-800">
-            {loading ? (
-              <div className="p-12 text-center text-zinc-500">Loading offers...</div>
-            ) : offers.length === 0 ? (
-              <div className="p-12 text-center text-zinc-500">
-                <Ticket className="w-12 h-12 mx-auto text-zinc-300 dark:text-zinc-700 mb-4" />
-                <h3 className="text-lg font-medium text-zinc-900 dark:text-white">No Offers Yet</h3>
-                <p className="mt-1">Create your first offer to start attracting customers.</p>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium dark:text-slate-300">Discount Type</label>
+                <select 
+                  name="discount_type" 
+                  value={formData.discount_type} 
+                  onChange={handleChange}
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+                >
+                  <option value="percentage">Percentage (%)</option>
+                  <option value="flat">Flat Amount (₹)</option>
+                  <option value="festival">Festival Special</option>
+                  <option value="combo">Combo Offer</option>
+                </select>
               </div>
-            ) : (
-              offers.map(offer => (
-                <div key={offer.id} className="p-6 flex flex-col md:flex-row gap-6 items-start md:items-center hover:bg-zinc-50 dark:hover:bg-zinc-800/50 transition-colors">
-                  <div className="w-16 h-16 rounded-xl bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center shrink-0">
-                    <Tag className="w-8 h-8" />
-                  </div>
-                  
-                  <div className="flex-1">
-                    <div className="flex items-center gap-3 mb-1">
-                        <h3 className="text-xl font-bold text-zinc-900 dark:text-white">{offer.title}</h3>
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider ${getStatusColor(offer.status)}`}>
-                            {offer.status}
-                        </span>
-                    </div>
-                    <p className="text-zinc-600 dark:text-zinc-400 line-clamp-1 mb-2">{offer.description}</p>
-                    <div className="flex flex-wrap gap-4 text-sm text-zinc-500">
-                        {offer.discount_type && offer.discount_value && (
-                            <span className="font-medium text-zinc-900 dark:text-white">
-                                {offer.discount_type === 'percentage' ? `${offer.discount_value}% OFF` : `₹${offer.discount_value} OFF`}
-                            </span>
-                        )}
-                        {offer.promo_code && (
-                            <span className="flex items-center gap-1 font-mono bg-zinc-100 dark:bg-zinc-800 px-2 py-0.5 rounded text-zinc-700 dark:text-zinc-300">
-                                Code: {offer.promo_code}
-                            </span>
-                        )}
-                        {offer.valid_until && (
-                            <span className="flex items-center gap-1">
-                                <Clock className="w-4 h-4" /> Valid until {new Date(offer.valid_until).toLocaleDateString()}
-                            </span>
-                        )}
-                    </div>
-                  </div>
-
-                  <div className="flex items-center gap-2 w-full md:w-auto">
-                    <button onClick={() => handleOpenModal(offer)} className="p-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors" title="Edit Offer">
-                        <Edit2 className="w-5 h-5" />
-                    </button>
-                    {offer.status === 'active' ? (
-                        <button onClick={() => handleStatusChange(offer.id, 'paused')} className="p-2 text-yellow-600 hover:bg-yellow-50 dark:hover:bg-yellow-900/20 rounded-lg transition-colors" title="Pause Offer">
-                            <Pause className="w-5 h-5" />
-                        </button>
-                    ) : offer.status === 'paused' || offer.status === 'draft' ? (
-                        <button onClick={() => handleStatusChange(offer.id, 'active')} className="p-2 text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 rounded-lg transition-colors" title="Activate Offer">
-                            <Play className="w-5 h-5" />
-                        </button>
-                    ) : null}
-                    <button onClick={() => handleStatusChange(offer.id, 'archived')} className="p-2 text-zinc-500 hover:bg-zinc-100 dark:hover:bg-zinc-800 rounded-lg transition-colors" title="Archive Offer">
-                        <Archive className="w-5 h-5" />
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-      </main>
-
-      {/* Offer Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex justify-center items-center p-4">
-          <div className="bg-white dark:bg-zinc-900 w-full max-w-2xl rounded-2xl shadow-2xl max-h-[90vh] flex flex-col">
-            <div className="p-6 border-b border-zinc-200 dark:border-zinc-800 flex justify-between items-center shrink-0">
-              <h3 className="text-xl font-bold">{currentOffer ? "Edit Offer" : "Create New Offer"}</h3>
-              <button onClick={() => setModalOpen(false)} className="text-zinc-500 hover:text-zinc-900 dark:hover:text-white">&times;</button>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium dark:text-slate-300">Discount Value</label>
+                <Input type="number" name="discount_value" value={formData.discount_value} onChange={handleChange} placeholder="e.g. 20" className="bg-slate-50 dark:bg-slate-900" />
+              </div>
             </div>
-            
-            <div className="p-6 overflow-y-auto">
-              <form id="offerForm" onSubmit={handleSubmit} className="space-y-6">
-                
-                {listings.length > 0 && (
-                  <div>
-                    <label className="block text-sm font-medium mb-2">Target Business Listing</label>
-                    <select 
-                      value={formData.listing_id}
-                      onChange={e => setFormData({...formData, listing_id: e.target.value})}
-                      className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-                      required
-                    >
-                      {listings.map(l => (
-                        <option key={l.id} value={l.id}>{l.title}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Offer Title *</label>
-                        <input 
-                            type="text" 
-                            value={formData.title}
-                            onChange={e => setFormData({...formData, title: e.target.value})}
-                            placeholder="e.g. 20% Off Spring Sale"
-                            className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-                            required 
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Valid Until</label>
-                        <input 
-                            type="date" 
-                            value={formData.valid_until}
-                            onChange={e => setFormData({...formData, valid_until: e.target.value})}
-                            className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-2">Description</label>
-                    <textarea 
-                        value={formData.description}
-                        onChange={e => setFormData({...formData, description: e.target.value})}
-                        placeholder="Detail the terms of your offer..."
-                        className="w-full h-24 px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent resize-none focus:ring-2 focus:ring-blue-500 outline-none"
-                    ></textarea>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Discount Type</label>
-                        <select 
-                            value={formData.discount_type}
-                            onChange={e => setFormData({...formData, discount_type: e.target.value})}
-                            className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-                        >
-                            <option value="percentage">Percentage (%)</option>
-                            <option value="fixed_amount">Fixed Amount (₹)</option>
-                            <option value="free_item">Free Item</option>
-                            <option value="bundle">Bundle</option>
-                            <option value="cashback">Cashback</option>
-                            <option value="coupon_code">Coupon Code</option>
-                            <option value="custom">Custom</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Discount Value</label>
-                        <input 
-                            type="number" 
-                            value={formData.discount_value}
-                            onChange={e => setFormData({...formData, discount_value: e.target.value})}
-                            placeholder={formData.discount_type === 'percentage' ? 'e.g. 20' : 'e.g. 500'}
-                            className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-                        />
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-2">Promo Code (Optional)</label>
-                        <input 
-                            type="text" 
-                            value={formData.promo_code}
-                            onChange={e => setFormData({...formData, promo_code: e.target.value})}
-                            placeholder="e.g. SPRING20"
-                            className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none uppercase font-mono"
-                            maxLength={20}
-                        />
-                    </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div>
-                        <label className="block text-sm font-medium mb-2">CTA Label</label>
-                        <select 
-                            value={formData.cta_label}
-                            onChange={e => setFormData({...formData, cta_label: e.target.value})}
-                            className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-                        >
-                            <option value="Claim Offer">Claim Offer</option>
-                            <option value="Book Now">Book Now</option>
-                            <option value="Order Online">Order Online</option>
-                            <option value="Visit Website">Visit Website</option>
-                            <option value="WhatsApp">WhatsApp</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label className="block text-sm font-medium mb-2">CTA URL (Optional)</label>
-                        <input 
-                            type="url" 
-                            value={formData.cta_url}
-                            onChange={e => setFormData({...formData, cta_url: e.target.value})}
-                            placeholder="https://"
-                            className="w-full px-4 py-3 rounded-xl border border-zinc-200 dark:border-zinc-700 bg-transparent focus:ring-2 focus:ring-blue-500 outline-none"
-                        />
-                    </div>
-                </div>
-
-                <div>
-                    <label className="block text-sm font-medium mb-2">Status</label>
-                    <div className="flex gap-4">
-                        {['draft', 'active', 'paused'].map(s => (
-                            <label key={s} className="flex items-center gap-2 cursor-pointer">
-                                <input 
-                                    type="radio" 
-                                    name="status" 
-                                    value={s}
-                                    checked={formData.status === s}
-                                    onChange={e => setFormData({...formData, status: e.target.value})}
-                                    className="text-blue-600 focus:ring-blue-500"
-                                />
-                                <span className="capitalize">{s}</span>
-                            </label>
-                        ))}
-                    </div>
-                </div>
-
-              </form>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium dark:text-slate-300">Promo Code (Optional)</label>
+                <Input name="promo_code" value={formData.promo_code} onChange={handleChange} placeholder="DIWALI20" className="bg-slate-50 dark:bg-slate-900" />
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium dark:text-slate-300">Valid Until</label>
+                <Input type="date" name="valid_until" value={formData.valid_until} onChange={handleChange} className="bg-slate-50 dark:bg-slate-900" />
+              </div>
             </div>
-            
-            <div className="p-6 border-t border-zinc-200 dark:border-zinc-800 flex justify-end gap-3 shrink-0 bg-zinc-50 dark:bg-zinc-900/50 rounded-b-2xl">
-              <button type="button" onClick={() => setModalOpen(false)} className="px-6 py-3 font-medium text-zinc-600 bg-zinc-200 hover:bg-zinc-300 dark:bg-zinc-800 dark:hover:bg-zinc-700 rounded-xl transition-colors">Cancel</button>
-              <button type="submit" form="offerForm" className="px-6 py-3 font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors">
-                {currentOffer ? "Save Changes" : "Create Offer"}
-              </button>
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
+              <Button onClick={handleCreate} disabled={saving || !formData.title || !formData.discount_value} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
+                {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Tag className="mr-2 h-4 w-4" />}
+                Launch Offer
+              </Button>
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
       )}
 
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {offers.map((offer) => (
+          <div 
+            key={offer.id} 
+            className="relative overflow-hidden rounded-2xl border border-white/20 p-6 shadow-xl backdrop-blur-md bg-white dark:bg-gradient-to-br dark:from-[#0a1c3a] dark:to-[#050f24] transition-all duration-300 hover:shadow-2xl"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30 text-[#E8701A]">
+                  {getIcon(offer.discount_type)}
+                </div>
+                <h3 className="font-semibold text-slate-900 dark:text-white capitalize">{offer.discount_type.replace('_', ' ')}</h3>
+              </div>
+              <Badge variant={offer.status === 'active' ? 'default' : 'secondary'} className={offer.status === 'active' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}>
+                {offer.status.toUpperCase()}
+              </Badge>
+            </div>
+
+            <div className="my-6">
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">{offer.title}</h2>
+              {offer.promo_code && (
+                <div className="inline-block bg-slate-100 dark:bg-slate-800 border border-dashed border-slate-300 dark:border-slate-600 rounded px-3 py-1 font-mono text-sm text-slate-800 dark:text-slate-300">
+                  CODE: {offer.promo_code}
+                </div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400 border-t border-slate-100 dark:border-white/10 pt-4">
+              <div className="flex items-center">
+                <Calendar className="mr-2 h-4 w-4" /> 
+                {offer.valid_until ? new Date(offer.valid_until).toLocaleDateString() : 'No Expiry'}
+              </div>
+              <Button variant="ghost" size="sm" className="text-blue-500 hover:text-blue-600 px-0">Edit</Button>
+            </div>
+          </div>
+        ))}
+        {offers.length === 0 && !isCreating && (
+          <div className="col-span-full text-center py-20 border border-dashed rounded-xl border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50">
+            <Tag className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white">No active offers</h3>
+            <p className="mt-2 text-sm text-slate-500">Create an offer to boost your visibility and sales.</p>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

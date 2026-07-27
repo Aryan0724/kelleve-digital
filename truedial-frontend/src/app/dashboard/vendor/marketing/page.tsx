@@ -1,0 +1,238 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Loader2, Megaphone, MessageSquare, Mail, MessageCircle, Plus, Calendar, Users } from "lucide-react";
+
+export default function MarketingCampaignsPage() {
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [isCreating, setIsCreating] = useState(false);
+  const [saving, setSaving] = useState(false);
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    type: "sms",
+    content: "",
+    audience: "all_customers",
+    schedule_at: ""
+  });
+
+  useEffect(() => {
+    fetchCampaigns();
+  }, []);
+
+  const fetchCampaigns = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/marketing/campaigns`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            Accept: "application/json",
+          },
+        }
+      );
+      
+      const data = await res.json();
+      if (data.success) {
+        setCampaigns(data.data);
+      }
+    } catch (error) {
+      console.error("Failed to fetch campaigns:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleCreate = async () => {
+    setSaving(true);
+    try {
+      const token = localStorage.getItem("token");
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/marketing/campaigns`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
+      
+      const data = await res.json();
+      if (data.success) {
+        setCampaigns([data.data, ...campaigns]);
+        setIsCreating(false);
+        setFormData({ name: "", type: "sms", content: "", audience: "all_customers", schedule_at: "" });
+      }
+    } catch (error) {
+      console.error("Failed to create campaign:", error);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const getTypeIcon = (type: string) => {
+    switch(type) {
+      case 'sms': return <MessageSquare className="h-4 w-4" />;
+      case 'whatsapp': return <MessageCircle className="h-4 w-4 text-green-500" />;
+      case 'email': return <Mail className="h-4 w-4" />;
+      default: return <Megaphone className="h-4 w-4" />;
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-[#E8701A]" />
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-center">
+        <div>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Marketing Campaigns</h1>
+          <p className="text-muted-foreground mt-2">
+            Reach your customers through SMS, WhatsApp, and Email blasts.
+          </p>
+        </div>
+        {!isCreating && (
+          <Button onClick={() => setIsCreating(true)} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
+            <Plus className="mr-2 h-4 w-4" />
+            Create Campaign
+          </Button>
+        )}
+      </div>
+
+      {isCreating && (
+        <Card className="border-0 shadow-lg bg-white dark:bg-[#0a1c3a]/50 dark:border dark:border-white/10 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
+          <CardHeader>
+            <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center">
+              <Megaphone className="mr-2 h-5 w-5 text-[#E8701A]" />
+              New Campaign
+            </CardTitle>
+            <CardDescription>Design your message and select your audience.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <label className="text-sm font-medium dark:text-slate-300">Campaign Name</label>
+              <Input name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Festival 50% Off" className="bg-slate-50 dark:bg-slate-900" />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-medium dark:text-slate-300">Channel</label>
+                <select 
+                  name="type" 
+                  value={formData.type} 
+                  onChange={handleChange}
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="sms">SMS</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="email">Email</option>
+                </select>
+              </div>
+              
+              <div className="space-y-2">
+                <label className="text-sm font-medium dark:text-slate-300">Audience</label>
+                <select 
+                  name="audience" 
+                  value={formData.audience} 
+                  onChange={handleChange}
+                  className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                >
+                  <option value="all_customers">All Past Customers</option>
+                  <option value="recent_leads">Recent Leads (Last 30 Days)</option>
+                  <option value="custom">Custom List</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium dark:text-slate-300">Message Content</label>
+              <Textarea 
+                name="content" 
+                value={formData.content} 
+                onChange={handleChange} 
+                className="min-h-[100px] bg-slate-50 dark:bg-slate-900" 
+                placeholder="Write your promotional message here..."
+              />
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-medium dark:text-slate-300">Schedule (Optional)</label>
+              <Input type="datetime-local" name="schedule_at" value={formData.schedule_at} onChange={handleChange} className="bg-slate-50 dark:bg-slate-900" />
+            </div>
+
+            <div className="flex justify-end space-x-2 pt-4">
+              <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
+              <Button onClick={handleCreate} disabled={saving} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
+                {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Megaphone className="mr-2 h-4 w-4" />}
+                Launch Campaign
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {campaigns.map((campaign) => (
+          <div 
+            key={campaign.id} 
+            className="relative overflow-hidden rounded-2xl border border-white/20 p-6 shadow-xl backdrop-blur-md bg-white dark:bg-gradient-to-br dark:from-[#0a1c3a] dark:to-[#050f24] transition-all duration-300 hover:shadow-2xl"
+          >
+            <div className="flex justify-between items-start mb-4">
+              <div className="flex items-center space-x-2">
+                <div className={`p-2 rounded-lg ${campaign.type === 'whatsapp' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-blue-100 dark:bg-blue-900/30'}`}>
+                  {getTypeIcon(campaign.type)}
+                </div>
+                <h3 className="font-semibold text-slate-900 dark:text-white">{campaign.name}</h3>
+              </div>
+              <Badge variant={campaign.status === 'completed' ? 'default' : 'secondary'} className={campaign.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}>
+                {campaign.status}
+              </Badge>
+            </div>
+
+            <div className="space-y-3 mt-4">
+              <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center"><Users className="mr-2 h-4 w-4" /> Audience</div>
+                <span className="font-medium text-slate-900 dark:text-white">{campaign.audience_size} contacts</span>
+              </div>
+              <div className="flex items-center justify-between text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center"><Calendar className="mr-2 h-4 w-4" /> Sent Date</div>
+                <span className="font-medium text-slate-900 dark:text-white">
+                  {campaign.sent_at ? new Date(campaign.sent_at).toLocaleDateString() : 'Pending'}
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+        {campaigns.length === 0 && !isCreating && (
+          <div className="col-span-full text-center py-20 border border-dashed rounded-xl border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50">
+            <Megaphone className="mx-auto h-12 w-12 text-slate-400 mb-4" />
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white">No campaigns yet</h3>
+            <p className="mt-2 text-sm text-slate-500">Create your first marketing blast to reach more customers.</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}

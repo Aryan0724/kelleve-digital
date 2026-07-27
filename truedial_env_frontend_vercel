@@ -1,0 +1,17 @@
+# ==============================================================================
+# TRUEDIAL FRONTEND - VERCEL ENVIRONMENT VARIABLES
+# ==============================================================================
+# Copy and paste these variables into:
+# Vercel Dashboard -> Your Project (truedial-frontend) -> Settings -> Environment Variables
+#
+# Select all environments: Production, Preview, and Development.
+# ==============================================================================
+
+# 1. CLIENT-SIDE API URL (Bypasses Browser Mixed-Content HTTPS->HTTP errors via Vercel Rewrites)
+NEXT_PUBLIC_API_URL=/api-proxy
+
+# 2. SERVER-SIDE API URL (Direct connection from Vercel Serverless Node functions to VPS)
+INTERNAL_API_URL=http://187.127.164.142:8000/api/v1
+
+# 3. VPS BACKEND TARGET FOR NEXT.JS REWRITES (Used by next.config.ts for /api-proxy & /storage)
+VPS_BACKEND_URL=http://187.127.164.142:8000

@@ -63,9 +63,7 @@ export default function Footer() {
                 <li className="hover:text-primary cursor-pointer transition"><Link href="/about">About Us</Link></li>
                 <li className="hover:text-primary cursor-pointer transition"><Link href="/services">Services</Link></li>
                 <li className="hover:text-primary cursor-pointer transition"><Link href="/offers">Offers</Link></li>
-                <li className="hover:text-primary cursor-pointer transition"><Link href="/academy">TD Academy</Link></li>
                 <li className="hover:text-primary cursor-pointer transition"><Link href="/podcast">Podcast</Link></li>
-                <li className="hover:text-primary cursor-pointer transition"><Link href="/td-news">TD News</Link></li>
               </ul>
             </div>
 

@@ -29,6 +29,13 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
 
         // Analytics
         Route::post('/analytics/track', [\App\Modules\Truedial\Controllers\Public\AnalyticsTrackingController::class, 'track']);
+        
+        // Ecosystem Modules (TIER 3 - DEFERRED FROM BETA)
+        // Route::get('/academy/courses', [\App\Modules\Truedial\Controllers\Public\AcademyController::class, 'courses']);
+        // Route::get('/jobs', [\App\Modules\Truedial\Controllers\Public\JobBoardController::class, 'index']);
+        // Route::get('/news', [\App\Modules\Truedial\Controllers\Public\NewsController::class, 'index']);
+        
+        Route::post('/consulting/lead', [\App\Modules\Truedial\Controllers\Public\ConsultingController::class, 'submitLead']);
     });
     
     // Offers
@@ -66,11 +73,30 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         // Analytics
         Route::get('/analytics/overview', [\App\Modules\Truedial\Controllers\Vendor\AnalyticsController::class, 'overview']);
         Route::get('/analytics/chart', [\App\Modules\Truedial\Controllers\Vendor\AnalyticsController::class, 'chart']);
+        
+        // Invoices & Payments
+        Route::get('/invoices', [\App\Modules\Truedial\Controllers\Vendor\InvoiceController::class, 'index']);
+        Route::post('/invoices', [\App\Modules\Truedial\Controllers\Vendor\InvoiceController::class, 'store']);
+        
+        // CRM
+        Route::get('/crm/leads', [\App\Modules\Truedial\Controllers\Vendor\CrmController::class, 'leads']);
+        Route::patch('/crm/leads/{id}/status', [\App\Modules\Truedial\Controllers\Vendor\CrmController::class, 'updateLeadStatus']);
+        
+        // Marketing Campaigns
+        Route::get('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingCampaignController::class, 'index']);
+        Route::post('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingCampaignController::class, 'store']);
     });
     
     // Auth protected user routes
     Route::prefix('user')->middleware(['auth:sanctum'])->group(function () {
         Route::post('/businesses/{slug}/reviews', [\App\Modules\Truedial\Controllers\User\ReviewController::class, 'store']);
         Route::put('/reviews/{id}/helpful', [\App\Modules\Truedial\Controllers\User\ReviewController::class, 'voteHelpful']);
+    });
+    
+    // Admin routes
+    Route::prefix('admin')->middleware(['auth:sanctum'])->group(function () {
+        Route::get('/stats', [\App\Modules\Truedial\Controllers\Admin\AdminController::class, 'stats']);
+        Route::get('/vendors', [\App\Modules\Truedial\Controllers\Admin\AdminController::class, 'vendors']);
+        Route::patch('/vendors/{id}/approve', [\App\Modules\Truedial\Controllers\Admin\AdminController::class, 'approveVendor']);
     });
 });

@@ -23,17 +23,27 @@ class AdvertisementController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'location' => 'required|string|max:100',
-            'banner_url' => 'required_if:media_type,image,video|string|max:255',
+            'banner_url' => 'nullable|required_if:media_type,image,video|string|max:255',
             'media_type' => 'required|string|in:image,video,html',
-            'custom_code' => 'required_if:media_type,html|string|nullable',
+            'custom_code' => 'nullable|required_if:media_type,html|string',
             'link' => 'nullable|string|max:255',
             'target_city' => 'nullable|string',
             'target_category_id' => 'nullable|exists:categories,id',
-            'priority' => 'integer|default:0',
+            'priority' => 'nullable|integer',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'user_id' => 'nullable|exists:users,id',
+            'budget' => 'nullable|numeric|min:0',
+            'max_impressions' => 'nullable|integer|min:0',
+            'max_clicks' => 'nullable|integer|min:0',
+            'target_role' => 'nullable|string|max:50'
         ]);
+
+        // Set defaults
+        if (!isset($validated['priority'])) {
+            $validated['priority'] = 0;
+        }
 
         $validated['created_by'] = $request->user()->id;
 
@@ -71,7 +81,12 @@ class AdvertisementController extends Controller
             'priority' => 'integer',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date',
-            'is_active' => 'boolean'
+            'is_active' => 'boolean',
+            'user_id' => 'nullable|exists:users,id',
+            'budget' => 'nullable|numeric|min:0',
+            'max_impressions' => 'nullable|integer|min:0',
+            'max_clicks' => 'nullable|integer|min:0',
+            'target_role' => 'nullable|string|max:50'
         ]);
 
         $ad->update($validated);
