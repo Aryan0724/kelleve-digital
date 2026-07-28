@@ -3,8 +3,14 @@
 import { useState } from "react";
 import Link from "next/link";
 import { LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, CreditCard, Star, FileText, Bell, CheckCircle2, X, Clock, ChevronRight, Globe, ArrowLeft, Home } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import ProtectedRoute from "@/components/shared/ProtectedRoute";
+import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  const { user, isLoggedIn, role, clearUser } = useAuth();
+  const router = useRouter();
+
   const [showMessages, setShowMessages] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   
@@ -33,6 +39,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
   return (
+    <ProtectedRoute>
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Sidebar */}
       <aside className="w-64 bg-navy text-navy-foreground flex flex-col transition-all duration-300 shrink-0">
@@ -87,9 +94,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </nav>
         
         <div className="p-4 border-t border-white/10">
-          <Link href="/login" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-red-400 hover:text-red-300 hover:bg-white/5 transition w-full">
+          <button
+            onClick={async () => {
+              clearUser();
+              // Call server action to delete httpOnly cookie
+              await fetch("/api/auth/logout", { method: "POST" });
+              router.push("/login");
+            }}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-md text-red-400 hover:text-red-300 hover:bg-white/5 transition w-full"
+          >
             <LogOut className="w-5 h-5" /> Logout
-          </Link>
+          </button>
         </div>
       </aside>
 
@@ -251,8 +266,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             </div>
 
             {/* Profile Avatar */}
-            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shadow-sm">
-              JP
+            <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold text-sm shadow-sm" title={user?.name || 'User'}>
+              {user?.avatar ? (
+                <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
+              ) : (
+                user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
+              )}
             </div>
           </div>
         </header>
@@ -271,5 +290,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         </div>
       </main>
     </div>
+    </ProtectedRoute>
   );
 }

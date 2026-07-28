@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { TrueDialAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -19,18 +20,31 @@ export default function CatalogPage() {
     description: "",
     price: "",
     type: "product",
-    image_url: ""
+    image: "" // Updated field name to match backend expectation
   });
 
   useEffect(() => {
-    // In a real app, this would fetch the user's specific business and extract the products array.
-    // For MVP, we mock the initial load.
-    setItems([
-      { id: 1, name: "Premium Leather Sofa Set", description: "3+1+1 genuine leather sofa in dark brown.", price: 45000, type: "product", image_url: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?q=80&w=300&auto=format&fit=crop" },
-      { id: 2, name: "Modular Kitchen Consultation", description: "Initial site visit, measurement and 3D design.", price: 2500, type: "service", image_url: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=300&auto=format&fit=crop" }
-    ]);
-    setLoading(false);
+    fetchCatalog();
   }, []);
+
+  const fetchCatalog = async () => {
+    setLoading(true);
+    const res = await TrueDialAPI.getMyBusiness();
+    if (res.success && res.data) {
+      const products = res.data.listing_products?.map((p: any) => ({ 
+        ...p, 
+        type: 'product',
+        image: p.media?.[0]?.url || p.image || ""
+      })) || [];
+      const services = res.data.listing_services?.map((s: any) => ({ 
+        ...s, 
+        type: 'service',
+        image: s.media?.[0]?.url || s.image || ""
+      })) || [];
+      setItems([...products, ...services]);
+    }
+    setLoading(false);
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -38,35 +52,36 @@ export default function CatalogPage() {
   };
 
   const handleCreate = async () => {
+    if (!formData.name.trim()) return;
     setSaving(true);
     try {
-      const token = localStorage.getItem("token");
-      
       const newItem = {
-        id: Date.now(),
-        ...formData,
-        price: parseFloat(formData.price) || 0
+        name: formData.name,
+        description: formData.description,
+        price: parseFloat(formData.price) || null,
+        image: formData.image || null,
+        type: formData.type
       };
 
       const newItems = [...items, newItem];
       
-      // Update via API
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/businesses/me/products`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({ products: newItems }),
-        }
-      );
-      
-      setItems(newItems);
-      setIsCreating(false);
-      setFormData({ name: "", description: "", price: "", type: "product", image_url: "" });
+      let res;
+      if (formData.type === 'product') {
+        const productsOnly = newItems.filter(i => i.type === 'product');
+        res = await TrueDialAPI.updateProducts(productsOnly);
+      } else {
+        const servicesOnly = newItems.filter(i => i.type === 'service');
+        res = await TrueDialAPI.updateServices(servicesOnly);
+      }
+
+      if (res?.success) {
+        // Re-fetch to get IDs
+        await fetchCatalog();
+        setIsCreating(false);
+        setFormData({ name: "", description: "", price: "", type: "product", image: "" });
+      } else {
+        alert(res?.message || "Failed to save item");
+      }
     } catch (error) {
       console.error("Failed to update catalog:", error);
     } finally {
@@ -74,23 +89,17 @@ export default function CatalogPage() {
     }
   };
 
-  const handleDelete = async (id: number) => {
+  const handleDelete = async (id: number, type: string) => {
     try {
-      const token = localStorage.getItem("token");
-      const newItems = items.filter(i => i.id !== id);
+      const newItems = items.filter(i => !(i.id === id && i.type === type));
       
-      await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/businesses/me/products`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify({ products: newItems }),
-        }
-      );
+      if (type === 'product') {
+        const productsOnly = newItems.filter(i => i.type === 'product');
+        await TrueDialAPI.updateProducts(productsOnly);
+      } else {
+        const servicesOnly = newItems.filter(i => i.type === 'service');
+        await TrueDialAPI.updateServices(servicesOnly);
+      }
       
       setItems(newItems);
     } catch (error) {
@@ -159,7 +168,7 @@ export default function CatalogPage() {
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium dark:text-slate-300">Image URL</label>
-                <Input name="image_url" value={formData.image_url} onChange={handleChange} placeholder="https://..." className="bg-slate-50 dark:bg-slate-900" />
+                <Input name="image" value={formData.image} onChange={handleChange} placeholder="https://..." className="bg-slate-50 dark:bg-slate-900" />
               </div>
             </div>
 
@@ -188,13 +197,13 @@ export default function CatalogPage() {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {items.map((item) => (
           <div 
-            key={item.id} 
+            key={`${item.type}-${item.id}`} 
             className="group relative overflow-hidden rounded-2xl border border-white/20 p-4 shadow-xl backdrop-blur-md bg-white dark:bg-[#0a1c3a]/70 transition-all duration-300 hover:shadow-2xl flex flex-col"
           >
             <div className="h-40 w-full rounded-xl overflow-hidden mb-4 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
-              {item.image_url ? (
+              {item.image ? (
                 /* eslint-disable-next-line @next/next/no-img-element */
-                <img src={item.image_url} alt={item.name} className="w-full h-full object-cover" />
+                <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
               ) : (
                 <ImageIcon className="h-10 w-10 text-slate-300 dark:text-slate-600" />
               )}
@@ -209,9 +218,9 @@ export default function CatalogPage() {
             <div className="flex items-center justify-between mt-4 pt-4 border-t border-slate-100 dark:border-slate-800">
               <div className="flex items-center text-lg font-bold text-slate-900 dark:text-white">
                 <IndianRupee className="h-4 w-4 mr-1 text-[#E8701A]" />
-                {item.price.toLocaleString('en-IN')}
+                {item.price?.toLocaleString('en-IN') || '0'}
               </div>
-              <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
+              <Button variant="ghost" size="icon" onClick={() => handleDelete(item.id, item.type)} className="text-slate-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20">
                 <Trash2 className="h-4 w-4" />
               </Button>
             </div>

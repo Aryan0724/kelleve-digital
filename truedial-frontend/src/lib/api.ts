@@ -38,8 +38,8 @@ export class TrueDialAPI {
       if (!res.ok) throw new Error("Failed to fetch listings");
       return await res.json();
     } catch (error) {
-      console.error("API Fetch failed, using mock data.", error);
-      return { success: true, data: MOCK_LISTINGS };
+      console.error("API Fetch failed for getListings.", error);
+      return { success: false, data: [] };
     }
   }
 
@@ -50,24 +50,8 @@ export class TrueDialAPI {
       if (!res.ok) throw new Error("Failed to fetch search results");
       return await res.json();
     } catch (error) {
-      console.error("searchBusinesses API failed, falling back to mock listings:", error);
-      const qText = (params.q || "").toLowerCase().trim();
-      const catText = (params.category_name || params.category || "").toLowerCase().trim();
-      const cityText = (params.city || "").toLowerCase().trim();
-      
-      const filtered = MOCK_LISTINGS.filter(item => {
-        const matchQ = !qText || item.title.toLowerCase().includes(qText) || item.description.toLowerCase().includes(qText);
-        const matchCat = !catText || item.category.name.toLowerCase().includes(catText);
-        const matchCity = !cityText || item.city.toLowerCase().includes(cityText);
-        return matchQ && matchCat && matchCity;
-      });
-      
-      return { 
-        success: true, 
-        data: { 
-          data: filtered.length > 0 ? filtered : MOCK_LISTINGS 
-        } 
-      };
+      console.error("searchBusinesses API failed:", error);
+      return { success: false, data: { data: [] } };
     }
   }
 
@@ -77,20 +61,8 @@ export class TrueDialAPI {
       if (!res.ok) throw new Error("Failed to fetch autocomplete results");
       return await res.json();
     } catch (error) {
-      console.error("autocompleteSearch failed, falling back to mock listings:", error);
-      const queryText = (q || "").toLowerCase().trim();
-      const matched = MOCK_LISTINGS.filter(item => 
-        !queryText || 
-        item.title.toLowerCase().includes(queryText) || 
-        item.category.name.toLowerCase().includes(queryText) ||
-        item.city.toLowerCase().includes(queryText)
-      ).slice(0, 8);
-      return { 
-        success: true, 
-        data: { 
-          data: matched 
-        } 
-      };
+      console.error("autocompleteSearch failed:", error);
+      return { success: false, data: { data: [] } };
     }
   }
 
@@ -100,8 +72,8 @@ export class TrueDialAPI {
       if (!res.ok) throw new Error("Failed to fetch reviews");
       return await res.json();
     } catch (error) {
-      console.error(error);
-      return { success: false, data: [] };
+      console.error("getListingReviews failed:", error);
+      return { success: false, data: { data: [] } };
     }
   }
 
@@ -111,9 +83,8 @@ export class TrueDialAPI {
       if (!res.ok) throw new Error("Failed to fetch listing");
       return await res.json();
     } catch (error) {
-      console.error("API Fetch failed, using mock data.", error);
-      const listing = MOCK_LISTINGS.find(l => l.slug === slug) || MOCK_LISTINGS[0];
-      return { success: true, data: listing };
+      console.error("API Fetch failed for getListingBySlug.", error);
+      return { success: false, data: null };
     }
   }
 
@@ -174,63 +145,127 @@ export class TrueDialAPI {
     }
   }
 
+
+
   // Vendor Reputation Management
   static async getVendorReviews(page = 1) {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/reviews?page=${page}`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+      const res = await fetch(`/api-proxy/truedial/vendor/reviews?page=${page}`, {
+        headers: { 'Accept': 'application/json' }
       });
       if (!res.ok) throw new Error("Failed to fetch vendor reviews");
       return await res.json();
     } catch (error) {
       console.error(error);
-      return { success: false, data: [] };
+      return { success: false, data: { data: [] } };
     }
   }
 
-  static async replyToReview(reviewId: number, body: string) {
+  static async replyToReview(reviewId: number, reply: string) {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/reviews/${reviewId}/reply`, {
+      const res = await fetch(`/api-proxy/truedial/vendor/reviews/${reviewId}/reply`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Accept': 'application/json'
         },
-        body: JSON.stringify({ body })
+        body: JSON.stringify({ body: reply })
       });
       return await res.json();
     } catch (error) {
       console.error(error);
-      return { success: false };
+      return { success: false, message: "Network error" };
     }
   }
 
   static async reportReview(reviewId: number, reason: string, notes: string = "") {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/reviews/${reviewId}/report`, {
+      const res = await fetch(`/api-proxy/truedial/vendor/reviews/${reviewId}/report`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Accept': 'application/json'
         },
         body: JSON.stringify({ reason, notes })
       });
       return await res.json();
     } catch (error) {
       console.error(error);
-      return { success: false };
+      return { success: false, message: "Network error" };
+    }
+  }
+
+  // Vendor Business Management
+  static async getMyBusiness() {
+    try {
+      const res = await fetch(`/api-proxy/truedial/vendor/my-business`, {
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!res.ok) throw new Error("Failed to fetch my business");
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, data: null };
+    }
+  }
+
+  static async updateBusiness(id: number, data: Record<string, any>) {
+    try {
+      const res = await fetch(`/api-proxy/truedial/vendor/businesses/${id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error" };
+    }
+  }
+
+  static async updateProducts(products: any[]) {
+    try {
+      const res = await fetch(`/api-proxy/truedial/vendor/businesses/me/products`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ products })
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error" };
+    }
+  }
+
+  static async updateServices(services: any[]) {
+    try {
+      const res = await fetch(`/api-proxy/truedial/vendor/businesses/me/services`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ services })
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error" };
     }
   }
 
   // Offers & Promotions
+
   static async getVendorOffers() {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/offers`, {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+      const res = await fetch(`/api-proxy/truedial/vendor/offers`, {
+        headers: { 'Accept': 'application/json' }
       });
       if (!res.ok) throw new Error("Failed to fetch vendor offers");
       return await res.json();
@@ -242,11 +277,11 @@ export class TrueDialAPI {
 
   static async createOffer(data: Record<string, any>) {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/offers`, {
+      const res = await fetch(`/api-proxy/truedial/vendor/offers`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Accept': 'application/json'
         },
         body: JSON.stringify(data)
       });
@@ -259,13 +294,28 @@ export class TrueDialAPI {
 
   static async updateOffer(id: number, data: Record<string, any>) {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/offers/${id}`, {
+      const res = await fetch(`/api-proxy/truedial/vendor/offers/${id}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Accept': 'application/json'
         },
         body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error" };
+    }
+  }
+
+  static async deleteOffer(id: number) {
+    try {
+      const res = await fetch(`/api-proxy/truedial/vendor/offers/${id}`, {
+        method: 'DELETE',
+        headers: {
+          'Accept': 'application/json'
+        }
       });
       return await res.json();
     } catch (error) {
@@ -377,13 +427,13 @@ export class TrueDialAPI {
 
   static async getAnalyticsOverview(listingId?: number, period: string = '30d') {
     try {
-      const url = new URL(`${API_BASE_URL}/truedial/vendor/analytics/overview`);
+      const url = new URL(`/api-proxy/truedial/vendor/analytics/overview`, window.location.origin);
       url.searchParams.append('period', period);
       if (listingId) url.searchParams.append('listing_id', listingId.toString());
 
       const res = await fetch(url.toString(), {
         headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
+          'Accept': 'application/json'
         }
       });
       if (!res.ok) throw new Error("Failed to fetch analytics overview");
@@ -391,6 +441,44 @@ export class TrueDialAPI {
     } catch (error) {
       console.error(error);
       return { success: false, data: { current: {}, previous: {}, trends: {} } };
+    }
+  }
+
+  static async createPaymentOrder(planId: number, billingCycle: string = 'monthly') {
+    try {
+      const res = await fetch(`/api-proxy/truedial/vendor/payments/order`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({ plan_id: planId, billing_cycle: billingCycle })
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error creating payment order." };
+    }
+  }
+
+  static async verifyPayment(orderId: string, paymentId: string, signature: string) {
+    try {
+      const res = await fetch(`/api-proxy/truedial/vendor/payments/verify`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+          razorpay_order_id: orderId,
+          razorpay_payment_id: paymentId,
+          razorpay_signature: signature
+        })
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error verifying payment." };
     }
   }
 

@@ -208,8 +208,9 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             </section>
           )}
 
-          {/* Reviews */}
-          <ReviewSection listing={businessDTO.basicInfo} />
+          <div id="reviews" className="scroll-mt-32">
+            <ReviewSection listing={businessDTO.basicInfo} />
+          </div>
         </div>
 
         {/* Sidebar - Sticky Contact Form */}

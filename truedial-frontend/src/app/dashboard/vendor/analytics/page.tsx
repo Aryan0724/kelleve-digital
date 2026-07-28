@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { TrueDialAPI } from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Loader2, TrendingUp, Users, Eye, BarChart3 } from "lucide-react";
 
@@ -14,22 +15,11 @@ export default function AnalyticsPage() {
 
   const fetchAnalytics = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/analytics/overview`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      );
-      
-      const data = await res.json();
-      if (data.success) {
-        setOverview(data.data);
+      const res = await TrueDialAPI.getAnalyticsOverview();
+      if (res.success && res.data) {
+        // The API returns { current: { metrics }, previous: { metrics }, trends: { metrics } }
+        // We'll just map the current metrics to the overview state.
+        setOverview(res.data.current || res.data); 
       }
     } catch (error) {
       console.error("Failed to fetch analytics:", error);

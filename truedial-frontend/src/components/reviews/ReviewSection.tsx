@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { TrueDialAPI } from "@/lib/api";
 import { Star, ThumbsUp, MessageSquare } from "lucide-react";
 import WriteReviewModal from "./WriteReviewModal";
+import { useAuth } from "@/context/AuthContext";
 
-export default function ReviewSection({ listing, authUser }: { listing: any, authUser?: any }) {
+export default function ReviewSection({ listing }: { listing: any }) {
+  const { user: authUser, isLoggedIn } = useAuth();
   const [reviews, setReviews] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);

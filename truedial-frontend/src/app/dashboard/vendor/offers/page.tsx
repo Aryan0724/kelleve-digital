@@ -1,45 +1,40 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Tag, Plus, Clock, Trash2, Edit2, CheckCircle2, ShieldCheck, Sparkles, X, IndianRupee } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 
+import { TrueDialAPI } from "@/lib/api";
+
 export default function OffersPage() {
-  const [offers, setOffers] = useState([
-    { 
-      id: 1, 
-      title: "Flat 25% Off on Modular Kitchen Cabinets", 
-      code: "VIP25", 
-      validUntil: "2026-12-31", 
-      uses: 45, 
-      description: "Valid for all TrueDial Privilege Card members on minimum billing of ₹2 Lakhs.",
-      discountValue: "25% OFF",
-      status: "Active"
-    },
-    { 
-      id: 2, 
-      title: "Free Acoustic Inspection & Estimate", 
-      code: "FREEACOUSTIC", 
-      validUntil: "2026-11-30", 
-      uses: 19, 
-      description: "Complimentary sound test and woodwork consultation for residential properties.",
-      discountValue: "FREE VISIT",
-      status: "Active"
-    },
-    { 
-      id: 3, 
-      title: "Flat ₹15,000 Off on Architectural Consulting", 
-      code: "ARCH15K", 
-      validUntil: "2026-10-15", 
-      uses: 12, 
-      description: "Special seasonal discount for first-time clients booking full home interiors.",
-      discountValue: "₹15,000 OFF",
-      status: "Expired"
+  const [offers, setOffers] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  const [businessId, setBusinessId] = useState<number | null>(null);
+
+  useEffect(() => {
+    fetchBusinessId();
+    fetchOffers();
+  }, []);
+
+  const fetchBusinessId = async () => {
+    const res = await TrueDialAPI.getMyBusiness();
+    if (res.success && res.data) {
+      setBusinessId(res.data.id);
     }
-  ]);
+  };
+
+  const fetchOffers = async () => {
+    setLoading(true);
+    const res = await TrueDialAPI.getVendorOffers();
+    if (res.success) {
+      setOffers(res.data?.data || res.data || []);
+    }
+    setLoading(false);
+  };
 
   const [editingOffer, setEditingOffer] = useState<any | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -50,8 +45,8 @@ export default function OffersPage() {
     code: "",
     validUntil: "2026-12-31",
     description: "",
-    discountValue: "20% OFF",
-    status: "Active"
+    discountValue: "20",
+    status: "active"
   });
 
   const handleOpenCreate = () => {
@@ -61,8 +56,8 @@ export default function OffersPage() {
       code: "",
       validUntil: "2026-12-31",
       description: "",
-      discountValue: "20% OFF",
-      status: "Active"
+      discountValue: "20",
+      status: "active"
     });
     setIsModalOpen(true);
   };
@@ -70,50 +65,85 @@ export default function OffersPage() {
   const handleOpenEdit = (offer: any) => {
     setEditingOffer(offer);
     setForm({
-      title: offer.title,
-      code: offer.code,
-      validUntil: offer.validUntil,
+      title: offer.title || offer.name || "",
+      code: offer.promo_code || offer.code || "",
+      validUntil: offer.valid_until ? new Date(offer.valid_until).toISOString().split('T')[0] : offer.validUntil || "2026-12-31",
       description: offer.description || "",
-      discountValue: offer.discountValue || "20% OFF",
-      status: offer.status || "Active"
+      discountValue: offer.discount_value || offer.discountValue || "20",
+      status: offer.status || (offer.is_active ? "active" : "expired")
     });
     setIsModalOpen(true);
   };
 
-  const handleSaveOffer = (e: React.FormEvent) => {
+  const handleSaveOffer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!form.title.trim() || !form.code.trim()) return;
-
-    if (editingOffer) {
-      setOffers(offers.map(o => o.id === editingOffer.id ? { ...o, ...form } : o));
-      setToastMessage(`Offer "${form.code}" updated successfully!`);
-    } else {
-      const newId = Math.max(0, ...offers.map(o => o.id)) + 1;
-      setOffers([{ id: newId, ...form, uses: 0 }, ...offers]);
-      setToastMessage(`New offer "${form.code}" created & published!`);
+    if (!businessId && !editingOffer) {
+      alert("Business profile not found. Please complete your profile first.");
+      return;
     }
 
-    setIsModalOpen(false);
-    setTimeout(() => setToastMessage(""), 3500);
+    const payload: any = {
+      title: form.title,
+      promo_code: form.code,
+      description: form.description,
+      discount_value: form.discountValue,
+      valid_until: form.validUntil,
+      status: form.status === "Active" ? "active" : "paused"
+    };
+
+    let res;
+    if (editingOffer) {
+      res = await TrueDialAPI.updateOffer(editingOffer.id, payload);
+    } else {
+      payload.listing_id = businessId;
+      res = await TrueDialAPI.createOffer(payload);
+    }
+
+    if (res?.success) {
+      setToastMessage(editingOffer ? `Offer "${form.code}" updated!` : `New offer "${form.code}" published!`);
+      fetchOffers();
+      setIsModalOpen(false);
+      setTimeout(() => setToastMessage(""), 3500);
+    } else {
+      alert(res?.message || "Failed to save offer");
+    }
   };
 
-  const handleDeleteOffer = (id: number) => {
-    setOffers(offers.filter(o => o.id !== id));
-    setToastMessage("Offer removed from catalog.");
-    setTimeout(() => setToastMessage(""), 3000);
-  };
-
-  const handleToggleStatus = (id: number) => {
-    setOffers(offers.map(o => {
-      if (o.id === id) {
-        const nextStatus = o.status === "Active" ? "Expired" : "Active";
-        setToastMessage(`Offer #${id} status changed to ${nextStatus}`);
-        return { ...o, status: nextStatus };
+  const handleDeleteOffer = async (id: number) => {
+    if (window.confirm("Are you sure you want to delete this offer?")) {
+      const res = await TrueDialAPI.deleteOffer(id);
+      if (res.success) {
+        setOffers(offers.filter(o => o.id !== id));
+        setToastMessage("Offer removed from catalog.");
+        setTimeout(() => setToastMessage(""), 3000);
+      } else {
+        alert(res.message || "Failed to delete offer");
       }
-      return o;
-    }));
-    setTimeout(() => setToastMessage(""), 3000);
+    }
   };
+
+  const handleToggleStatus = async (id: number) => {
+    const offer = offers.find(o => o.id === id);
+    if (!offer) return;
+    
+    const nextStatus = (offer.status || (offer.is_active ? "Active" : "Expired")) === "Active" ? "Expired" : "Active";
+    
+    const res = await TrueDialAPI.updateOffer(id, { is_active: nextStatus === "Active" });
+    if (res.success) {
+      setOffers(offers.map(o => o.id === id ? { ...o, status: nextStatus, is_active: nextStatus === "Active" } : o));
+      setToastMessage(`Offer #${id} status changed to ${nextStatus}`);
+      setTimeout(() => setToastMessage(""), 3000);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex h-[400px] items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -141,21 +171,27 @@ export default function OffersPage() {
 
       {/* OFFERS LIST */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {offers.map((offer) => (
+        {offers.map((offer) => {
+          const status = offer.status || (offer.is_active ? "Active" : "Expired");
+          const title = offer.title || offer.name || "";
+          const discountValue = offer.discountValue || offer.discount_value || "";
+          const validUntil = offer.validUntil || offer.valid_until || "";
+          
+          return (
           <div 
             key={offer.id} 
             className={`premium-card rounded-xl p-6 flex flex-col justify-between transition hover:border-primary/40 ${
-              offer.status === "Expired" ? "opacity-75 bg-muted/30" : ""
+              status === "Expired" ? "opacity-75 bg-muted/30" : ""
             }`}
           >
             <div>
               <div className="flex items-start justify-between mb-3">
                 <Badge className={`text-xs font-bold ${
-                  offer.status === "Active" 
+                  status === "Active" 
                     ? "bg-green-500/10 text-green-600 border-green-500/30" 
                     : "bg-muted text-muted-foreground"
                 }`}>
-                  {offer.status}
+                  {status}
                 </Badge>
 
                 <div className="flex items-center gap-1.5">
@@ -178,9 +214,9 @@ export default function OffersPage() {
 
               <div className="mb-3">
                 <span className="text-xs font-extrabold text-primary bg-primary/10 px-2.5 py-1 rounded-full uppercase tracking-wider">
-                  {offer.discountValue}
+                  {discountValue}
                 </span>
-                <h3 className="font-bold text-lg text-foreground mt-2 line-clamp-2">{offer.title}</h3>
+                <h3 className="font-bold text-lg text-foreground mt-2 line-clamp-2">{title}</h3>
               </div>
 
               <p className="text-xs text-muted-foreground mb-4 line-clamp-2 leading-relaxed">
@@ -194,24 +230,24 @@ export default function OffersPage() {
                   {offer.code}
                 </span>
                 <span className="text-muted-foreground flex items-center gap-1">
-                  <Clock className="w-3.5 h-3.5" /> Valid till {offer.validUntil}
+                  <Clock className="w-3.5 h-3.5" /> Valid till {validUntil}
                 </span>
               </div>
 
               <div className="flex items-center justify-between pt-1">
                 <span className="text-xs text-muted-foreground">
-                  Redeemed: <strong className="text-foreground">{offer.uses} times</strong>
+                  Redeemed: <strong className="text-foreground">{offer.uses || 0} times</strong>
                 </span>
                 <button 
                   onClick={() => handleToggleStatus(offer.id)}
                   className="text-xs text-primary hover:underline font-semibold"
                 >
-                  {offer.status === "Active" ? "Pause Offer" : "Reactivate Offer"}
+                  {status === "Active" ? "Pause Offer" : "Reactivate Offer"}
                 </button>
               </div>
             </div>
           </div>
-        ))}
+        )})}
       </div>
 
       {/* EDIT / CREATE OFFER DIALOG MODAL */}

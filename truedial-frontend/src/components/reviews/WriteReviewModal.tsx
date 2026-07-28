@@ -23,11 +23,11 @@ export default function WriteReviewModal({ listingId, listingSlug, onClose, onSu
     setError("");
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/truedial/user/businesses/${listingSlug}/reviews`, {
+      const res = await fetch(`/api-proxy/truedial/user/businesses/${listingSlug}/reviews`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}` // simple check for auth
+          'Accept': 'application/json'
         },
         body: JSON.stringify({ rating, title, body })
       });

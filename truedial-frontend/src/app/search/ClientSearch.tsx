@@ -46,14 +46,22 @@ function SearchContent() {
       
       const response = await TrueDialAPI.searchBusinesses({ q, category_name: category, city, verified, premium, min_rating });
       
-      const listings = Array.isArray(response.data.data) ? response.data.data : response.data.data.data;
+      let listings = [];
+      if (Array.isArray(response.data)) {
+        listings = response.data;
+      } else if (response.data && Array.isArray(response.data.data)) {
+        listings = response.data.data;
+      } else if (response.data && response.data.data && Array.isArray(response.data.data.data)) {
+        listings = response.data.data.data;
+      }
+
       const mapped = listings.map((listing: any) => ({
         id: listing.id,
         slug: listing.slug,
         title: listing.title,
-        category: listing.category?.name,
+        category: listing.category?.name || "Business",
         locality: listing.address || listing.city,
-        rating: listing.avg_rating,
+        rating: listing.avg_rating || listing.reviews_avg_rating || 0,
         is_verified: listing.is_verified,
         is_premium: listing.is_premium,
         cover_image: listing.gallery?.[0]?.url || listing.cover_image,

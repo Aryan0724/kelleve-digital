@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { TrueDialAPI } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,28 +26,15 @@ export default function VendorProfilePage() {
 
   const fetchBusiness = async () => {
     try {
-      const token = localStorage.getItem("token");
-      if (!token) return;
-      
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/my-business`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-          },
-        }
-      );
-      
-      const data = await res.json();
-      if (data.success && data.data) {
-        setBusiness(data.data);
+      const res = await TrueDialAPI.getMyBusiness();
+      if (res.success && res.data) {
+        setBusiness(res.data);
         setFormData({
-          title: data.data.title || "",
-          description: data.data.description || "",
-          phone: data.data.phone || "",
-          address: data.data.address || "",
-          website: data.data.website || "",
+          title: res.data.title || "",
+          description: res.data.description || "",
+          phone: res.data.phone || "",
+          address: res.data.address || "",
+          website: res.data.website || "",
         });
       }
     } catch (error) {
@@ -65,24 +53,12 @@ export default function VendorProfilePage() {
     if (!business) return;
     setSaving(true);
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000"}/api/v1/truedial/vendor/businesses/${business.id}`,
-        {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-            Accept: "application/json",
-          },
-          body: JSON.stringify(formData),
-        }
-      );
-      
-      const data = await res.json();
-      if (data.success) {
-        setBusiness(data.data);
-        // Show success toast (implement toast system later)
+      const res = await TrueDialAPI.updateBusiness(business.id, formData);
+      if (res.success) {
+        setBusiness(res.data);
+        alert("Business profile updated successfully!");
+      } else {
+        alert(res.message || "Failed to update business");
       }
     } catch (error) {
       console.error("Failed to update business:", error);

@@ -27,6 +27,7 @@ export const metadata: Metadata = {
 };
 
 import { LocationProvider } from "@/context/LocationContext";
+import { AuthProvider } from "@/context/AuthContext";
 import LocationSelectorModal from "@/components/shared/LocationSelectorModal";
 
 export default function RootLayout({
@@ -40,10 +41,12 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
-        <LocationProvider>
-          {children}
-          <LocationSelectorModal />
-        </LocationProvider>
+        <AuthProvider>
+          <LocationProvider>
+            {children}
+            <LocationSelectorModal />
+          </LocationProvider>
+        </AuthProvider>
       </body>
     </html>
   );
