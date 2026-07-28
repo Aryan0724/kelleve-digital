@@ -78,6 +78,9 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::get('/invoices', [\App\Modules\Truedial\Controllers\Vendor\InvoiceController::class, 'index']);
         Route::post('/invoices', [\App\Modules\Truedial\Controllers\Vendor\InvoiceController::class, 'store']);
         
+        Route::post('/payments/order', [\App\Modules\Truedial\Controllers\Vendor\PaymentController::class, 'createOrder']);
+        Route::post('/payments/verify', [\App\Modules\Truedial\Controllers\Vendor\PaymentController::class, 'verifyPayment']);
+        
         // CRM
         Route::get('/crm/leads', [\App\Modules\Truedial\Controllers\Vendor\CrmController::class, 'leads']);
         Route::patch('/crm/leads/{id}/status', [\App\Modules\Truedial\Controllers\Vendor\CrmController::class, 'updateLeadStatus']);

@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { 
-  StyleSheet, 
   Text, 
   View, 
   TextInput, 
   TouchableOpacity, 
   KeyboardAvoidingView, 
   Platform, 
-  ScrollView,
-  Alert
+  ScrollView
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/auth';
@@ -47,41 +45,41 @@ export default function Login() {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      className="flex-1 bg-slate-50 dark:bg-slate-950"
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }} keyboardShouldPersistTaps="handled">
         {/* Glow Effects */}
-        <View style={[styles.glowBall, styles.glowOrange]} />
-        <View style={[styles.glowBall, styles.glowBlue]} />
+        <View className="absolute w-[250px] h-[250px] rounded-full opacity-10 bg-[#F05A24] -top-12 -right-12" />
+        <View className="absolute w-[250px] h-[250px] rounded-full opacity-10 bg-[#2563EB] -bottom-12 -left-12" />
 
         {/* Logo Section */}
-        <View style={styles.headerSection}>
-          <View style={styles.logoBadge}>
+        <View className="items-center mb-8">
+          <View className="w-14 h-14 rounded-full bg-orange-50 dark:bg-orange-950 justify-center items-center border border-orange-100 dark:border-orange-900 mb-4">
             <Sparkles size={24} color="#E8701A" />
           </View>
-          <Text style={styles.brandName}>TrueDial</Text>
-          <Text style={styles.brandSubTitle}>India's Emerging Business Growth Platform</Text>
+          <Text className="text-[32px] font-extrabold text-slate-900 dark:text-white tracking-tight">TrueDial</Text>
+          <Text className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1.5 text-center">India's Emerging Business Growth Platform</Text>
         </View>
 
         {/* Login Card */}
-        <GlassCard style={styles.loginCard}>
-          <Text style={styles.cardHeader}>Welcome Back</Text>
-          <Text style={styles.cardSubHeader}>Sign in to manage listings, cards, and active offers</Text>
+        <GlassCard className="p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+          <Text className="text-[22px] font-bold text-slate-900 dark:text-white mb-1.5">Welcome Back</Text>
+          <Text className="text-[13px] font-semibold text-slate-500 dark:text-slate-400 mb-6 leading-relaxed">Sign in to manage listings, cards, and active offers</Text>
 
           {errorMsg && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{errorMsg}</Text>
+            <View className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-lg p-3 mb-4">
+              <Text className="text-red-600 dark:text-red-400 text-[13px] font-bold text-center">{errorMsg}</Text>
             </View>
           )}
 
           {/* Email Input */}
-          <Text style={styles.inputLabel}>Email Address</Text>
-          <View style={[styles.inputWrapper, focusEmail && styles.inputWrapperFocused]}>
-            <Mail size={20} color={focusEmail ? '#E8701A' : '#708090'} style={styles.inputIcon} />
+          <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Email Address</Text>
+          <View className={`flex-row items-center h-12 bg-slate-50 dark:bg-slate-800 border rounded-xl px-3 mb-4 ${focusEmail ? 'border-[#E8701A] bg-orange-50 dark:bg-slate-800' : 'border-slate-300 dark:border-slate-700'}`}>
+            <Mail size={18} color={focusEmail ? '#E8701A' : '#708090'} className="mr-2" />
             <TextInput
-              style={styles.textInput}
+              className="flex-1 text-[14px] text-slate-900 dark:text-white"
               placeholder="e.g. john@example.com"
-              placeholderTextColor="rgba(255, 255, 255, 0.35)"
+              placeholderTextColor="#94A3B8"
               value={email}
               onChangeText={setEmail}
               keyboardType="email-address"
@@ -92,13 +90,13 @@ export default function Login() {
           </View>
 
           {/* Password Input */}
-          <Text style={styles.inputLabel}>Password</Text>
-          <View style={[styles.inputWrapper, focusPassword && styles.inputWrapperFocused]}>
-            <Lock size={20} color={focusPassword ? '#E8701A' : '#708090'} style={styles.inputIcon} />
+          <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Password</Text>
+          <View className={`flex-row items-center h-12 bg-slate-50 dark:bg-slate-800 border rounded-xl px-3 mb-4 ${focusPassword ? 'border-[#E8701A] bg-orange-50 dark:bg-slate-800' : 'border-slate-300 dark:border-slate-700'}`}>
+            <Lock size={18} color={focusPassword ? '#E8701A' : '#708090'} className="mr-2" />
             <TextInput
-              style={styles.textInput}
+              className="flex-1 text-[14px] text-slate-900 dark:text-white"
               placeholder="Enter your password"
-              placeholderTextColor="rgba(255, 255, 255, 0.35)"
+              placeholderTextColor="#94A3B8"
               value={password}
               onChangeText={setPassword}
               secureTextEntry
@@ -107,155 +105,26 @@ export default function Login() {
               onBlur={() => setFocusPassword(false)}
             />
           </View>
+          <TouchableOpacity onPress={() => router.push('/(auth)/forgot-password')} className="items-end mb-4">
+            <Text className="text-[13px] font-bold text-blue-600 dark:text-blue-400">Forgot Password?</Text>
+          </TouchableOpacity>
 
           <CustomButton 
             title="Sign In" 
             onPress={handleLogin} 
             loading={loading}
-            style={styles.submitBtn}
+            className="mt-2"
           />
         </GlassCard>
 
         {/* Bottom Nav */}
-        <View style={styles.footerSection}>
-          <Text style={styles.footerText}>Don't have an account?</Text>
+        <View className="flex-row justify-center mt-6">
+          <Text className="text-sm font-semibold text-slate-500 dark:text-slate-400">Don't have an account?</Text>
           <TouchableOpacity onPress={() => router.push('/(auth)/register')}>
-            <Text style={styles.signUpLink}> Sign Up</Text>
+            <Text className="text-[#E8701A] font-extrabold text-sm"> Sign Up</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8FAFC',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  glowBall: {
-    position: 'absolute',
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    opacity: 0.1,
-  },
-  glowOrange: {
-    backgroundColor: '#F05A24',
-    top: -50,
-    right: -50,
-  },
-  glowBlue: {
-    backgroundColor: '#2563EB',
-    bottom: -50,
-    left: -50,
-  },
-  headerSection: {
-    alignItems: 'center',
-    marginBottom: 32,
-  },
-  logoBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FFF7ED',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FFEDD5',
-    marginBottom: 16,
-  },
-  brandName: {
-    fontSize: 32,
-    fontWeight: '800',
-    color: '#1E293B',
-    letterSpacing: -0.5,
-  },
-  brandSubTitle: {
-    fontSize: 14,
-    color: '#64748B',
-    marginTop: 6,
-    textAlign: 'center',
-  },
-  loginCard: {
-    padding: 24,
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E2E8F0',
-  },
-  cardHeader: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginBottom: 6,
-  },
-  cardSubHeader: {
-    fontSize: 13,
-    color: '#64748B',
-    marginBottom: 24,
-    lineHeight: 18,
-  },
-  errorContainer: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: '#DC2626',
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  inputLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
-    marginBottom: 6,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 50,
-    backgroundColor: '#F8FAFC',
-    borderColor: '#CBD5E1',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    marginBottom: 18,
-  },
-  inputWrapperFocused: {
-    borderColor: '#F05A24',
-    backgroundColor: '#FFF7ED',
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  textInput: {
-    flex: 1,
-    color: '#0F172A',
-    fontSize: 14,
-  },
-  submitBtn: {
-    marginTop: 8,
-  },
-  footerSection: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 24,
-  },
-  footerText: {
-    color: '#64748B',
-    fontSize: 14,
-  },
-  signUpLink: {
-    color: '#F05A24',
-    fontWeight: '700',
-    fontSize: 14,
-  },
-});

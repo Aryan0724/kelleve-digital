@@ -1,57 +1,30 @@
 import React from 'react';
-import { StyleSheet, View, ViewStyle, StyleProp, useColorScheme } from 'react-native';
+import { View, ViewStyle, StyleProp } from 'react-native';
 
 interface GlassCardProps {
   children: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   variant?: 'navy' | 'orange' | 'gold' | 'default';
+  className?: string;
 }
 
-export default function GlassCard({ children, style, variant = 'default' }: GlassCardProps) {
-  // Generate card styling depending on variant
-  const cardStyle = [
-    styles.cardBase,
-    styles.cardLight,
-    variant === 'navy' && styles.cardNavy,
-    variant === 'orange' && styles.cardOrange,
-    variant === 'gold' && styles.cardGold,
-    style
-  ];
+export default function GlassCard({ children, style, variant = 'default', className = '' }: GlassCardProps) {
+  let variantClasses = 'bg-white border-slate-200 dark:bg-slate-900 dark:border-slate-800';
+  
+  if (variant === 'navy') {
+    variantClasses = 'bg-[#0F172A] border-[#1E293B] shadow-black';
+  } else if (variant === 'orange') {
+    variantClasses = 'bg-[#FFF7ED] border-[#FFEDD5] dark:bg-orange-950/20 dark:border-orange-900 shadow-orange-500/20';
+  } else if (variant === 'gold') {
+    variantClasses = 'bg-[#111111] border-[#D4AF37] shadow-[#D4AF37]/20';
+  }
 
-  return <View style={cardStyle}>{children}</View>;
+  return (
+    <View 
+      className={`rounded-2xl border p-4 my-1.5 shadow-sm ${variantClasses} ${className}`}
+      style={style}
+    >
+      {children}
+    </View>
+  );
 }
-
-const styles = StyleSheet.create({
-  cardBase: {
-    borderRadius: 16,
-    borderWidth: 1,
-    padding: 16,
-    marginVertical: 6,
-    // iOS Shadow
-    shadowColor: '#64748B',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.08,
-    shadowRadius: 8,
-    // Android Elevation
-    elevation: 2,
-  },
-  cardLight: {
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E2E8F0',
-  },
-  cardNavy: {
-    backgroundColor: '#0F172A',
-    borderColor: '#1E293B',
-    shadowColor: '#000000',
-  },
-  cardOrange: {
-    backgroundColor: '#FFF7ED',
-    borderColor: '#FFEDD5',
-    shadowColor: '#F05A24',
-  },
-  cardGold: {
-    backgroundColor: '#111111',
-    borderColor: '#D4AF37',
-    shadowColor: '#D4AF37',
-  },
-});

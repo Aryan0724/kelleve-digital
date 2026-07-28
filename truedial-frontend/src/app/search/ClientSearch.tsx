@@ -7,21 +7,24 @@ import BusinessCard, { BusinessCardProps } from "@/components/shared/BusinessCar
 import { SlidersHorizontal, MapPin, Star, ShieldCheck, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useUserLocation } from "@/context/LocationContext";
+import { useLocation } from "@/hooks/useLocation";
 
 function SearchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { city: globalCity } = useUserLocation();
   
+  // Use the new useLocation hook
+  const { location, locationsList, setLocation, loading: locLoading, error: locError, detectLocation } = useLocation(searchParams.get("city") || globalCity || "Mumbai");
+
   const [query, setQuery] = useState(searchParams.get("q") || "");
   const [category, setCategory] = useState(searchParams.get("category") || "");
-  const [city, setCity] = useState(searchParams.get("city") || globalCity || "Mumbai");
   const [results, setResults] = useState<BusinessCardProps[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (!searchParams.get("city") && globalCity) {
-      setCity(globalCity);
+    if (!searchParams.get("city") && globalCity && location !== globalCity) {
+      setLocation(globalCity);
     }
   }, [globalCity]);
   
@@ -39,12 +42,12 @@ function SearchContent() {
     try {
       const q = searchParams.get("q") || "";
       const category = searchParams.get("category") || "";
-      const city = searchParams.get("city") || "";
+      const currentCity = searchParams.get("city") || location || "";
       const verified = searchParams.get("verified") || "";
       const premium = searchParams.get("premium") || "";
       const min_rating = searchParams.get("min_rating") || "";
       
-      const response = await TrueDialAPI.searchBusinesses({ q, category_name: category, city, verified, premium, min_rating });
+      const response = await TrueDialAPI.searchBusinesses({ q, category_name: category, city: currentCity, verified, premium, min_rating });
       
       let listings = [];
       if (Array.isArray(response.data)) {
@@ -86,7 +89,7 @@ function SearchContent() {
     if (category) params.set("category", category);
     else params.delete("category");
 
-    if (city) params.set("city", city);
+    if (location) params.set("city", location);
     else params.delete("city");
     
     if (verifiedOnly) params.set("verified", "true");
@@ -134,15 +137,45 @@ function SearchContent() {
               />
             </div>
 
-            <div>
+            <div className="relative">
               <label className="text-sm font-semibold mb-2 block">City</label>
-              <input 
-                type="text" 
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Mumbai"
-                className="w-full p-2 border rounded-md dark:bg-slate-900 dark:border-slate-700"
-              />
+              
+              <div className="flex flex-col gap-2">
+                <div className="relative">
+                  <select 
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full p-2 border rounded-md dark:bg-slate-900 dark:border-slate-700 appearance-none pr-8 bg-white"
+                  >
+                    <option value="">Any City</option>
+                    {locationsList.map((loc, idx) => (
+                      <option key={idx} value={loc}>{loc}</option>
+                    ))}
+                    {!locationsList.includes(location) && location && (
+                      <option value={location}>{location}</option>
+                    )}
+                  </select>
+                  <div className="absolute right-2 top-2 pointer-events-none">
+                    <MapPin className="w-5 h-5 text-muted-foreground" />
+                  </div>
+                </div>
+                
+                <Button 
+                  type="button" 
+                  variant="outline" 
+                  size="sm"
+                  onClick={detectLocation}
+                  disabled={locLoading}
+                  className="w-full text-xs flex items-center justify-center gap-2 border-primary/20 text-primary hover:bg-primary/5"
+                >
+                  {locLoading ? (
+                    <><Loader2 className="w-3 h-3 animate-spin" /> Detecting GPS...</>
+                  ) : (
+                    <><MapPin className="w-3 h-3" /> Detect My Location</>
+                  )}
+                </Button>
+                {locError && <p className="text-[10px] text-red-500 mt-1">{locError}</p>}
+              </div>
             </div>
 
             <div>

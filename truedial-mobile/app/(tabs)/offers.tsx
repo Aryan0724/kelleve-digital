@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  StyleSheet, 
   Text, 
   View, 
   FlatList, 
@@ -51,7 +50,6 @@ export default function OffersScreen() {
       setOffers(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
       console.warn('Failed to load offers from server, using fallback');
-      // Mock active offers for presentation
       setOffers([
         {
           id: 1,
@@ -112,46 +110,49 @@ export default function OffersScreen() {
 
   const renderOfferCard = ({ item }: { item: Offer }) => {
     return (
-      <GlassCard variant="default" style={styles.offerCard}>
-        <View style={styles.offerCardTop}>
-          <View style={styles.badgeContainer}>
-            <Text style={styles.badgeText}>{item.discount_percentage}% OFF</Text>
+      <GlassCard className="mb-3 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-4">
+        <View className="flex-row justify-between items-center mb-3">
+          <View className="bg-orange-50 dark:bg-orange-900/30 border border-orange-100 dark:border-orange-500/30 rounded-md px-2.5 py-1">
+            <Text className="text-[#E8701A] font-extrabold text-[13px]">{item.discount_percentage}% OFF</Text>
           </View>
           <Tag size={20} color="#E8701A" />
         </View>
 
-        <Text style={styles.offerTitle}>{item.title}</Text>
-        <Text style={styles.businessName}>
+        <Text className="text-[18px] font-bold text-slate-900 dark:text-white">{item.title}</Text>
+        <Text className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">
           {item.business_name || 'Participating TrueDial Partner'}
         </Text>
 
-        <View style={styles.offerFooter}>
-          <View style={styles.dateCol}>
-            <Calendar size={14} color="rgba(255,255,255,0.4)" />
-            <Text style={styles.validUntilText}>Valid until: {item.valid_until}</Text>
+        <View className="flex-row justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-3 mt-3">
+          <View className="flex-row items-center">
+            <Calendar size={14} color="#94A3B8" className="dark:text-slate-500" />
+            <Text className="text-[12px] text-slate-500 dark:text-slate-400 ml-1.5">Valid until: {item.valid_until}</Text>
           </View>
-          <Text style={styles.cardStatusText}>Active Offer</Text>
+          <Text className="text-[11px] font-semibold text-emerald-500">Active Offer</Text>
         </View>
       </GlassCard>
     );
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.headerRow}>
-        <View style={{ flex: 1, marginRight: 10 }}>
-          <Text style={styles.title}>Exclusive Offers</Text>
-          <Text style={styles.subtitle}>Unlock corporate savings with your Privilege Card</Text>
+    <View className="flex-1 bg-slate-50 dark:bg-slate-950 pb-16">
+      <View className="flex-row items-center justify-between px-5 pt-4 pb-3 mt-10">
+        <View className="flex-1 mr-2">
+          <Text className="text-[24px] font-extrabold text-slate-900 dark:text-white tracking-tight">Exclusive Offers</Text>
+          <Text className="text-[13px] text-slate-500 dark:text-slate-400 mt-1">Unlock corporate savings with your Privilege Card</Text>
         </View>
-        <TouchableOpacity style={styles.addBtn} onPress={() => setModalVisible(true)}>
+        <TouchableOpacity 
+          className="bg-[#E8701A] w-11 h-11 rounded-full justify-center items-center shadow-md shadow-orange-500/30" 
+          onPress={() => setModalVisible(true)}
+        >
           <Plus size={20} color="#ffffff" />
         </TouchableOpacity>
       </View>
 
       {loading ? (
-        <View style={styles.centerContainer}>
+        <View className="flex-1 items-center justify-center py-20">
           <ActivityIndicator size="large" color="#E8701A" />
-          <Text style={styles.loadingText}>Fetching available discounts...</Text>
+          <Text className="text-[14px] text-slate-500 dark:text-slate-400 mt-3 font-semibold">Fetching available discounts...</Text>
         </View>
       ) : (
         <FlatList
@@ -159,12 +160,14 @@ export default function OffersScreen() {
           renderItem={renderOfferCard}
           keyExtractor={(item) => item.id.toString()}
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.listContainer}
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 20 }}
           ListEmptyComponent={
-            <View style={styles.emptyContainer}>
-              <Tag size={48} color="rgba(255,255,255,0.2)" />
-              <Text style={styles.emptyTitle}>No Offers Found</Text>
-              <Text style={styles.emptyDesc}>There are currently no active B2B campaigns. Check back soon!</Text>
+            <View className="items-center justify-center py-20 px-5">
+              <Tag size={48} color="#CBD5E1" className="dark:text-slate-700" />
+              <Text className="text-[18px] font-bold text-slate-900 dark:text-white mt-4">No Offers Found</Text>
+              <Text className="text-[13px] text-slate-500 dark:text-slate-400 text-center mt-1.5 leading-relaxed">
+                There are currently no active B2B campaigns. Check back soon!
+              </Text>
             </View>
           }
         />
@@ -179,52 +182,52 @@ export default function OffersScreen() {
       >
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-          style={styles.modalOverlay}
+          className="flex-1 justify-center bg-black/60 p-5"
         >
-          <View style={styles.modalContent}>
-            <GlassCard variant="navy" style={styles.modalCard}>
-              <View style={styles.modalHeader}>
-                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                  <Sparkles size={20} color="#E8701A" style={{ marginRight: 8 }} />
-                  <Text style={styles.modalTitle}>Post New Offer</Text>
+          <View className="w-full">
+            <View className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-xl shadow-black/10">
+              <View className="flex-row justify-between items-center mb-5 border-b border-slate-100 dark:border-slate-800 pb-3">
+                <View className="flex-row items-center">
+                  <Sparkles size={20} color="#E8701A" className="mr-2" />
+                  <Text className="text-[18px] font-bold text-slate-900 dark:text-white">Post New Offer</Text>
                 </View>
-                <TouchableOpacity onPress={() => setModalVisible(false)}>
-                  <X size={20} color="#ffffff" />
+                <TouchableOpacity onPress={() => setModalVisible(false)} className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center">
+                  <X size={18} color="#64748B" className="dark:text-slate-400" />
                 </TouchableOpacity>
               </View>
 
               <ScrollView keyboardShouldPersistTaps="handled">
-                <Text style={styles.inputLabel}>Offer Description / Title</Text>
-                <View style={styles.inputWrapper}>
+                <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Offer Description / Title</Text>
+                <View className="flex-row items-center h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 mb-4">
                   <TextInput
-                    style={styles.textInput}
+                    className="flex-1 text-[14px] text-slate-900 dark:text-white"
                     placeholder="e.g. 30% Off on Executive Suite Booking"
-                    placeholderTextColor="rgba(255, 255, 255, 0.35)"
+                    placeholderTextColor="#94A3B8"
                     value={offerTitle}
                     onChangeText={setOfferTitle}
                   />
                 </View>
 
-                <Text style={styles.inputLabel}>Discount Percentage (%)</Text>
-                <View style={styles.inputWrapper}>
-                  <Percent size={18} color="rgba(255,255,255,0.4)" style={{ marginRight: 8 }} />
+                <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Discount Percentage (%)</Text>
+                <View className="flex-row items-center h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 mb-4">
+                  <Percent size={18} color="#94A3B8" className="mr-2 dark:text-slate-500" />
                   <TextInput
-                    style={styles.textInput}
+                    className="flex-1 text-[14px] text-slate-900 dark:text-white"
                     placeholder="e.g. 30"
-                    placeholderTextColor="rgba(255, 255, 255, 0.35)"
+                    placeholderTextColor="#94A3B8"
                     value={discountPercent}
                     onChangeText={setDiscountPercent}
                     keyboardType="numeric"
                   />
                 </View>
 
-                <Text style={styles.inputLabel}>Expiry Date (YYYY-MM-DD)</Text>
-                <View style={styles.inputWrapper}>
-                  <Calendar size={18} color="rgba(255,255,255,0.4)" style={{ marginRight: 8 }} />
+                <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5 ml-1">Expiry Date (YYYY-MM-DD)</Text>
+                <View className="flex-row items-center h-12 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl px-3 mb-4">
+                  <Calendar size={18} color="#94A3B8" className="mr-2 dark:text-slate-500" />
                   <TextInput
-                    style={styles.textInput}
+                    className="flex-1 text-[14px] text-slate-900 dark:text-white"
                     placeholder="e.g. 2026-12-31"
-                    placeholderTextColor="rgba(255, 255, 255, 0.35)"
+                    placeholderTextColor="#94A3B8"
                     value={validUntil}
                     onChangeText={setValidUntil}
                   />
@@ -234,199 +237,13 @@ export default function OffersScreen() {
                   title="Publish Business Offer"
                   onPress={handlePostOffer}
                   loading={submitting}
-                  style={styles.submitBtn}
+                  className="mt-2 h-[50px]"
                 />
               </ScrollView>
-            </GlassCard>
+            </View>
           </View>
         </KeyboardAvoidingView>
       </Modal>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8FAFC',
-    paddingBottom: Platform.OS === 'ios' ? 88 : 64,
-  },
-  headerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 20,
-    paddingTop: 16,
-    paddingBottom: 12,
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: '#1E293B',
-    letterSpacing: -0.5,
-  },
-  subtitle: {
-    fontSize: 13,
-    color: '#64748B',
-    marginTop: 4,
-  },
-  addBtn: {
-    backgroundColor: '#F05A24',
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#F05A24',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  centerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 80,
-  },
-  loadingText: {
-    color: '#64748B',
-    fontSize: 14,
-    marginTop: 12,
-  },
-  listContainer: {
-    paddingHorizontal: 20,
-    paddingBottom: 20,
-  },
-  offerCard: {
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#FFFFFF',
-  },
-  offerCardTop: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  badgeContainer: {
-    backgroundColor: '#FFF7ED',
-    borderWidth: 1,
-    borderColor: '#FFEDD5',
-    borderRadius: 6,
-    paddingHorizontal: 10,
-    paddingVertical: 5,
-  },
-  badgeText: {
-    color: '#F05A24',
-    fontWeight: '800',
-    fontSize: 13,
-  },
-  offerTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1E293B',
-  },
-  businessName: {
-    fontSize: 13,
-    color: '#64748B',
-    marginTop: 4,
-  },
-  offerFooter: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    borderTopWidth: 1,
-    borderTopColor: '#F1F5F9',
-    paddingTop: 10,
-    marginTop: 12,
-  },
-  dateCol: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  validUntilText: {
-    fontSize: 12,
-    color: '#64748B',
-    marginLeft: 6,
-  },
-  cardStatusText: {
-    fontSize: 11,
-    color: '#10B981',
-    fontWeight: '600',
-  },
-  emptyContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 80,
-    paddingHorizontal: 20,
-  },
-  emptyTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginTop: 16,
-  },
-  emptyDesc: {
-    fontSize: 13,
-    color: '#64748B',
-    textAlign: 'center',
-    marginTop: 6,
-    lineHeight: 18,
-  },
-  modalOverlay: {
-    flex: 1,
-    justifyContent: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    padding: 20,
-  },
-  modalContent: {
-    width: '100%',
-  },
-  modalCard: {
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    backgroundColor: '#FFFFFF',
-    padding: 20,
-  },
-  modalHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 20,
-    borderBottomWidth: 1,
-    borderBottomColor: '#E2E8F0',
-    paddingBottom: 10,
-  },
-  modalTitle: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#1E293B',
-  },
-  inputLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
-    marginBottom: 6,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 48,
-    backgroundColor: '#F8FAFC',
-    borderColor: '#CBD5E1',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    marginBottom: 16,
-  },
-  textInput: {
-    flex: 1,
-    color: '#0F172A',
-    fontSize: 14,
-  },
-  submitBtn: {
-    marginTop: 10,
-  },
-});

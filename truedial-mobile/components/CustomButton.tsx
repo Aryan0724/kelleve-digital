@@ -1,6 +1,5 @@
 import React, { useRef } from 'react';
 import { 
-  StyleSheet, 
   Text, 
   TouchableOpacity, 
   Animated, 
@@ -20,6 +19,8 @@ interface CustomButtonProps {
   icon?: React.ReactNode;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  className?: string;
+  textClassName?: string;
 }
 
 export default function CustomButton({
@@ -31,6 +32,8 @@ export default function CustomButton({
   icon,
   style,
   textStyle,
+  className = '',
+  textClassName = '',
 }: CustomButtonProps) {
   const scaleValue = useRef(new Animated.Value(1)).current;
 
@@ -52,53 +55,42 @@ export default function CustomButton({
     }).start();
   };
 
-  // Select styles based on variant
-  const getButtonStyles = () => {
-    switch (variant) {
-      case 'secondary':
-        return styles.btnSecondary;
-      case 'danger':
-        return styles.btnDanger;
-      case 'glass':
-        return styles.btnGlass;
-      case 'primary':
-      default:
-        return styles.btnPrimary;
-    }
-  };
+  let btnClass = 'bg-[#E8701A] shadow-md shadow-[#E8701A]/30'; // primary
+  let txtClass = 'text-white';
+  let loaderColor = '#ffffff';
 
-  const getTextStyles = () => {
-    switch (variant) {
-      case 'glass':
-        return styles.textGlass;
-      case 'secondary':
-        return styles.textSecondary;
-      default:
-        return styles.textPrimary;
-    }
-  };
+  if (variant === 'secondary') {
+    btnClass = 'bg-transparent border-[1.5px] border-[#E8701A]';
+    txtClass = 'text-[#E8701A]';
+    loaderColor = '#E8701A';
+  } else if (variant === 'danger') {
+    btnClass = 'bg-red-600 shadow-md shadow-red-600/30';
+    txtClass = 'text-white';
+  } else if (variant === 'glass') {
+    btnClass = 'bg-slate-50 border border-slate-300 dark:bg-slate-800 dark:border-slate-700';
+    txtClass = 'text-slate-900 dark:text-white';
+    loaderColor = '#E8701A';
+  }
+
+  const disabledClass = (disabled || loading) ? 'opacity-50' : '';
 
   return (
-    <Animated.View style={[{ transform: [{ scale: scaleValue }] }]}>
+    <Animated.View style={[{ transform: [{ scale: scaleValue }] }]} className="w-full">
       <TouchableOpacity
         activeOpacity={0.8}
         onPressIn={handlePressIn}
         onPressOut={handlePressOut}
         onPress={onPress}
         disabled={disabled || loading}
-        style={[
-          styles.buttonBase,
-          getButtonStyles(),
-          (disabled || loading) && styles.disabled,
-          style,
-        ]}
+        className={`h-14 rounded-xl flex-row justify-center items-center px-5 my-1.5 w-full ${btnClass} ${disabledClass} ${className}`}
+        style={style}
       >
         {loading ? (
-          <ActivityIndicator color={variant === 'secondary' || variant === 'glass' ? '#E8701A' : '#ffffff'} />
+          <ActivityIndicator color={loaderColor} />
         ) : (
-          <View style={styles.contentContainer}>
-            {icon && <View style={styles.iconContainer}>{icon}</View>}
-            <Text style={[styles.textBase, getTextStyles(), textStyle]}>
+          <View className="flex-row items-center justify-center">
+            {icon && <View className="mr-2">{icon}</View>}
+            <Text className={`text-base font-semibold tracking-wide ${txtClass} ${textClassName}`} style={textStyle}>
               {title}
             </Text>
           </View>
@@ -107,68 +99,3 @@ export default function CustomButton({
     </Animated.View>
   );
 }
-
-const styles = StyleSheet.create({
-  buttonBase: {
-    height: 52,
-    borderRadius: 12,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 20,
-    marginVertical: 6,
-    width: '100%',
-  },
-  contentContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  iconContainer: {
-    marginRight: 8,
-  },
-  textBase: {
-    fontSize: 16,
-    fontWeight: '600',
-    letterSpacing: 0.3,
-  },
-  btnPrimary: {
-    backgroundColor: '#F05A24', // Client Brand Orange
-    shadowColor: '#F05A24',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  textPrimary: {
-    color: '#ffffff',
-  },
-  btnSecondary: {
-    backgroundColor: 'transparent',
-    borderWidth: 1.5,
-    borderColor: '#F05A24',
-  },
-  textSecondary: {
-    color: '#F05A24',
-  },
-  btnDanger: {
-    backgroundColor: '#DC2626',
-    shadowColor: '#DC2626',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 3,
-  },
-  btnGlass: {
-    backgroundColor: '#F8FAFC',
-    borderWidth: 1,
-    borderColor: '#CBD5E1',
-  },
-  textGlass: {
-    color: '#1E293B',
-  },
-  disabled: {
-    opacity: 0.5,
-    shadowOpacity: 0,
-    elevation: 0,
-  },
-});

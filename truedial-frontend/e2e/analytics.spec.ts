@@ -5,7 +5,7 @@ test.describe('Analytics Tracking Flows', () => {
   test('Verify PHONE_CLICK tracking from business card', async ({ page }) => {
     // Intercept tracking requests
     let trackingRequestCount = 0;
-    let trackedEventData = null;
+    let trackedEventData: any = null;
 
     await page.route('**/api/v1/truedial/public/analytics/track', async (route) => {
       trackingRequestCount++;
@@ -28,9 +28,9 @@ test.describe('Analytics Tracking Flows', () => {
 
     expect(trackingRequestCount).toBeGreaterThan(0);
     expect(trackedEventData).not.toBeNull();
-    expect(trackedEventData.event_type).toBe('PHONE_CLICK');
-    expect(trackedEventData.entity_type).toBe('listing');
-    expect(trackedEventData.metadata.source).toBe('business_card');
+    expect(trackedEventData?.event_type).toBe('PHONE_CLICK');
+    expect(trackedEventData?.entity_type).toBe('listing');
+    expect(trackedEventData?.metadata?.source).toBe('business_card');
   });
 
   test('Verify tracking from business profile page', async ({ page }) => {

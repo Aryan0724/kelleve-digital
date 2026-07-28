@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { 
-  StyleSheet, 
   Text, 
   View, 
   TextInput, 
   TouchableOpacity, 
   KeyboardAvoidingView, 
   Platform, 
-  ScrollView,
-  Alert
+  ScrollView
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/auth';
@@ -55,7 +53,7 @@ export default function Register() {
       return;
     }
     if (!isEmailValid) {
-      setErrorMsg('Please enter a valid email address (e.g. rahul@patna.com)');
+      setErrorMsg('Please enter a valid email address');
       return;
     }
     if (!isPhoneValid) {
@@ -85,45 +83,45 @@ export default function Register() {
   return (
     <KeyboardAvoidingView 
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
+      className="flex-1 bg-slate-50 dark:bg-slate-950"
     >
-      <ScrollView contentContainerStyle={styles.scrollContainer} keyboardShouldPersistTaps="handled">
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: 'center', padding: 24 }} keyboardShouldPersistTaps="handled">
         {/* Glow Effects */}
-        <View style={[styles.glowBall, styles.glowOrange]} />
-        <View style={[styles.glowBall, styles.glowBlue]} />
+        <View className="absolute w-[250px] h-[250px] rounded-full opacity-10 bg-[#F05A24] -top-12 -right-12" />
+        <View className="absolute w-[250px] h-[250px] rounded-full opacity-10 bg-[#2563EB] -bottom-12 -left-12" />
 
         {/* Logo Section */}
-        <View style={styles.headerSection}>
-          <View style={styles.logoBadge}>
+        <View className="items-center mb-6">
+          <View className="w-14 h-14 rounded-full bg-orange-50 dark:bg-orange-950 justify-center items-center border border-orange-100 dark:border-orange-900 mb-3">
             <Sparkles size={24} color="#E8701A" />
           </View>
-          <Text style={styles.brandName}>TrueDial</Text>
-          <Text style={styles.brandSubTitle}>Create your business directory account</Text>
+          <Text className="text-[30px] font-extrabold text-slate-900 dark:text-white tracking-tight">TrueDial</Text>
+          <Text className="text-sm font-semibold text-slate-500 dark:text-slate-400 mt-1 text-center">Create your business directory account</Text>
         </View>
 
         {/* Sign Up Card */}
-        <GlassCard style={styles.registerCard}>
-          <Text style={styles.cardHeader}>Sign Up</Text>
-          <Text style={styles.cardSubHeader}>Create your account to get started with TrueDial</Text>
+        <GlassCard className="p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
+          <Text className="text-[22px] font-bold text-slate-900 dark:text-white mb-1.5">Sign Up</Text>
+          <Text className="text-[13px] font-semibold text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">Create your account to get started with TrueDial</Text>
 
           {errorMsg && (
-            <View style={styles.errorContainer}>
-              <Text style={styles.errorText}>{errorMsg}</Text>
+            <View className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-lg p-3 mb-4">
+              <Text className="text-red-600 dark:text-red-400 text-[13px] font-bold text-center">{errorMsg}</Text>
             </View>
           )}
 
-          {/* Account Role Selector (I am a...) */}
-          <Text style={styles.inputLabel}>I am a...</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.roleScrollRow}>
+          {/* Account Role Selector */}
+          <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">I am a...</Text>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4 flex-row">
             {roleOptions.map((opt) => {
               const isSelected = role === opt.key;
               return (
                 <TouchableOpacity
                   key={opt.key}
-                  style={[styles.roleChip, isSelected && styles.roleChipSelected]}
+                  className={`px-4 py-2 rounded-full border mr-2 ${isSelected ? 'bg-orange-50 dark:bg-slate-800 border-[#E8701A]' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
                   onPress={() => setRole(opt.key)}
                 >
-                  <Text style={[styles.roleChipText, isSelected && styles.roleChipTextSelected]}>
+                  <Text className={`text-xs ${isSelected ? 'text-[#E8701A] font-bold' : 'text-slate-500 font-semibold'}`}>
                     {opt.label}
                   </Text>
                 </TouchableOpacity>
@@ -132,11 +130,11 @@ export default function Register() {
           </ScrollView>
 
           {/* Full Name */}
-          <Text style={styles.inputLabel}>Full Name</Text>
-          <View style={[styles.inputWrapper, focusName && styles.inputWrapperFocused]}>
-            <User size={20} color={focusName ? '#E8701A' : '#708090'} style={styles.inputIcon} />
+          <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Full Name</Text>
+          <View className={`flex-row items-center h-12 bg-slate-50 dark:bg-slate-800 border rounded-xl px-3 mb-4 ${focusName ? 'border-[#E8701A] bg-orange-50 dark:bg-slate-800' : 'border-slate-300 dark:border-slate-700'}`}>
+            <User size={18} color={focusName ? '#E8701A' : '#708090'} className="mr-2" />
             <TextInput
-              style={styles.textInput}
+              className="flex-1 text-[14px] text-slate-900 dark:text-white"
               placeholder="e.g. Rahul Kumar"
               placeholderTextColor="#94A3B8"
               value={name}
@@ -147,18 +145,16 @@ export default function Register() {
           </View>
 
           {/* Email Address */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={styles.inputLabel}>Email Address</Text>
+          <View className="flex-row justify-between items-center mb-1.5">
+            <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Email Address</Text>
             {isEmailValid && (
-              <Text style={{ fontSize: 11, color: '#059669', fontWeight: '700', marginBottom: 6 }}>
-                ✓ Verified Format
-              </Text>
+              <Text className="text-[11px] text-emerald-600 font-bold">✓ Verified Format</Text>
             )}
           </View>
-          <View style={[styles.inputWrapper, focusEmail && styles.inputWrapperFocused, isEmailValid && { borderColor: '#10B981' }]}>
-            <Mail size={20} color={isEmailValid ? '#10B981' : (focusEmail ? '#E8701A' : '#708090')} style={styles.inputIcon} />
+          <View className={`flex-row items-center h-12 bg-slate-50 dark:bg-slate-800 border rounded-xl px-3 mb-4 ${isEmailValid ? 'border-emerald-500' : (focusEmail ? 'border-[#E8701A] bg-orange-50 dark:bg-slate-800' : 'border-slate-300 dark:border-slate-700')}`}>
+            <Mail size={18} color={isEmailValid ? '#10B981' : (focusEmail ? '#E8701A' : '#708090')} className="mr-2" />
             <TextInput
-              style={styles.textInput}
+              className="flex-1 text-[14px] text-slate-900 dark:text-white"
               placeholder="e.g. rahul@patna.com"
               placeholderTextColor="#94A3B8"
               value={email}
@@ -171,18 +167,16 @@ export default function Register() {
           </View>
 
           {/* Phone Number */}
-          <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}>
-            <Text style={styles.inputLabel}>Phone Number</Text>
+          <View className="flex-row justify-between items-center mb-1.5">
+            <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300">Phone Number</Text>
             {isPhoneValid && (
-              <Text style={{ fontSize: 11, color: '#059669', fontWeight: '700', marginBottom: 6 }}>
-                ✓ Valid Phone
-              </Text>
+              <Text className="text-[11px] text-emerald-600 font-bold">✓ Valid Phone</Text>
             )}
           </View>
-          <View style={[styles.inputWrapper, focusPhone && styles.inputWrapperFocused, isPhoneValid && { borderColor: '#10B981' }]}>
-            <Phone size={20} color={isPhoneValid ? '#10B981' : (focusPhone ? '#E8701A' : '#708090')} style={styles.inputIcon} />
+          <View className={`flex-row items-center h-12 bg-slate-50 dark:bg-slate-800 border rounded-xl px-3 mb-4 ${isPhoneValid ? 'border-emerald-500' : (focusPhone ? 'border-[#E8701A] bg-orange-50 dark:bg-slate-800' : 'border-slate-300 dark:border-slate-700')}`}>
+            <Phone size={18} color={isPhoneValid ? '#10B981' : (focusPhone ? '#E8701A' : '#708090')} className="mr-2" />
             <TextInput
-              style={styles.textInput}
+              className="flex-1 text-[14px] text-slate-900 dark:text-white"
               placeholder="e.g. 9876543210"
               placeholderTextColor="#94A3B8"
               value={phone}
@@ -194,11 +188,11 @@ export default function Register() {
           </View>
 
           {/* Password */}
-          <Text style={styles.inputLabel}>Password</Text>
-          <View style={[styles.inputWrapper, focusPassword && styles.inputWrapperFocused]}>
-            <Lock size={20} color={focusPassword ? '#E8701A' : '#708090'} style={styles.inputIcon} />
+          <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Password</Text>
+          <View className={`flex-row items-center h-12 bg-slate-50 dark:bg-slate-800 border rounded-xl px-3 mb-4 ${focusPassword ? 'border-[#E8701A] bg-orange-50 dark:bg-slate-800' : 'border-slate-300 dark:border-slate-700'}`}>
+            <Lock size={18} color={focusPassword ? '#E8701A' : '#708090'} className="mr-2" />
             <TextInput
-              style={styles.textInput}
+              className="flex-1 text-[14px] text-slate-900 dark:text-white"
               placeholder="Min. 6 characters"
               placeholderTextColor="#94A3B8"
               value={password}
@@ -211,11 +205,11 @@ export default function Register() {
           </View>
 
           {/* Confirm Password */}
-          <Text style={styles.inputLabel}>Confirm Password</Text>
-          <View style={[styles.inputWrapper, focusConfirmPassword && styles.inputWrapperFocused]}>
-            <Lock size={20} color={focusConfirmPassword ? '#E8701A' : '#708090'} style={styles.inputIcon} />
+          <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Confirm Password</Text>
+          <View className={`flex-row items-center h-12 bg-slate-50 dark:bg-slate-800 border rounded-xl px-3 mb-4 ${focusConfirmPassword ? 'border-[#E8701A] bg-orange-50 dark:bg-slate-800' : 'border-slate-300 dark:border-slate-700'}`}>
+            <Lock size={18} color={focusConfirmPassword ? '#E8701A' : '#708090'} className="mr-2" />
             <TextInput
-              style={styles.textInput}
+              className="flex-1 text-[14px] text-slate-900 dark:text-white"
               placeholder="Re-enter password"
               placeholderTextColor="#94A3B8"
               value={confirmPassword}
@@ -229,15 +223,15 @@ export default function Register() {
 
           {/* Terms & Conditions Checkbox */}
           <TouchableOpacity 
-            style={styles.termsRow} 
+            className="flex-row items-center mb-4 px-1" 
             activeOpacity={0.8}
             onPress={() => setAgreedTerms(!agreedTerms)}
           >
-            <View style={[styles.checkboxBox, agreedTerms && styles.checkboxBoxChecked]}>
-              {agreedTerms && <Text style={styles.checkmarkText}>✓</Text>}
+            <View className={`w-5 h-5 rounded border-2 justify-center items-center mr-2.5 ${agreedTerms ? 'bg-[#E8701A] border-[#E8701A]' : 'bg-white border-slate-300'}`}>
+              {agreedTerms && <Text className="text-white text-[10px] font-extrabold">✓</Text>}
             </View>
-            <Text style={styles.termsText}>
-              I agree to the <Text style={{ color: '#E8701A', fontWeight: '700' }}>Terms of Service</Text>, <Text style={{ color: '#E8701A', fontWeight: '700' }}>Privacy Policy</Text> & Guidelines.
+            <Text className="flex-1 text-[12px] text-slate-500 leading-relaxed">
+              I agree to the <Text className="text-[#E8701A] font-bold">Terms of Service</Text>, <Text className="text-[#E8701A] font-bold">Privacy Policy</Text> & Guidelines.
             </Text>
           </TouchableOpacity>
 
@@ -245,208 +239,18 @@ export default function Register() {
             title="Sign Up" 
             onPress={handleRegister} 
             loading={loading}
-            style={styles.submitBtn}
+            className="mt-2"
           />
         </GlassCard>
 
         {/* Bottom Nav */}
-        <View style={styles.footerSection}>
-          <Text style={styles.footerText}>Already have an account?</Text>
+        <View className="flex-row justify-center mt-6">
+          <Text className="text-sm font-semibold text-slate-500 dark:text-slate-400">Already have an account?</Text>
           <TouchableOpacity onPress={() => router.push('/(auth)/login')}>
-            <Text style={styles.loginLink}> Log In</Text>
+            <Text className="text-[#E8701A] font-extrabold text-sm"> Log In</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#F8FAFC',
-  },
-  scrollContainer: {
-    flexGrow: 1,
-    justifyContent: 'center',
-    padding: 24,
-  },
-  glowBall: {
-    position: 'absolute',
-    width: 250,
-    height: 250,
-    borderRadius: 125,
-    opacity: 0.1,
-  },
-  glowOrange: {
-    backgroundColor: '#F05A24',
-    top: -50,
-    right: -50,
-  },
-  glowBlue: {
-    backgroundColor: '#2563EB',
-    bottom: -50,
-    left: -50,
-  },
-  headerSection: {
-    alignItems: 'center',
-    marginBottom: 24,
-  },
-  logoBadge: {
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: '#FFF7ED',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#FFEDD5',
-    marginBottom: 12,
-  },
-  brandName: {
-    fontSize: 30,
-    fontWeight: '800',
-    color: '#1E293B',
-    letterSpacing: -0.5,
-  },
-  brandSubTitle: {
-    fontSize: 14,
-    color: '#64748B',
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  registerCard: {
-    padding: 24,
-    backgroundColor: '#FFFFFF',
-    borderColor: '#E2E8F0',
-  },
-  cardHeader: {
-    fontSize: 22,
-    fontWeight: '700',
-    color: '#1E293B',
-    marginBottom: 6,
-  },
-  cardSubHeader: {
-    fontSize: 13,
-    color: '#64748B',
-    marginBottom: 20,
-    lineHeight: 18,
-  },
-  errorContainer: {
-    backgroundColor: '#FEF2F2',
-    borderColor: '#FECACA',
-    borderWidth: 1,
-    borderRadius: 8,
-    padding: 12,
-    marginBottom: 16,
-  },
-  errorText: {
-    color: '#DC2626',
-    fontSize: 13,
-    textAlign: 'center',
-  },
-  inputLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: '#334155',
-    marginBottom: 6,
-  },
-  roleScrollRow: {
-    marginBottom: 16,
-    flexDirection: 'row',
-  },
-  roleChip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    backgroundColor: '#F8FAFC',
-    borderColor: '#E2E8F0',
-    borderWidth: 1,
-    marginRight: 8,
-  },
-  roleChipSelected: {
-    backgroundColor: '#FFF7ED',
-    borderColor: '#E8701A',
-  },
-  roleChipText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#64748B',
-  },
-  roleChipTextSelected: {
-    color: '#E8701A',
-    fontWeight: '700',
-  },
-  termsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-    paddingHorizontal: 2,
-  },
-  checkboxBox: {
-    width: 20,
-    height: 20,
-    borderRadius: 4,
-    borderColor: '#CBD5E1',
-    borderWidth: 1.5,
-    backgroundColor: '#FFFFFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginRight: 10,
-  },
-  checkboxBoxChecked: {
-    backgroundColor: '#E8701A',
-    borderColor: '#E8701A',
-  },
-  checkmarkText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '800',
-  },
-  termsText: {
-    flex: 1,
-    fontSize: 12,
-    color: '#64748B',
-    lineHeight: 16,
-  },
-  inputWrapper: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    height: 50,
-    backgroundColor: '#F8FAFC',
-    borderColor: '#CBD5E1',
-    borderWidth: 1,
-    borderRadius: 10,
-    paddingHorizontal: 12,
-    marginBottom: 16,
-  },
-  inputWrapperFocused: {
-    borderColor: '#F05A24',
-    backgroundColor: '#FFF7ED',
-  },
-  inputIcon: {
-    marginRight: 10,
-  },
-  textInput: {
-    flex: 1,
-    color: '#0F172A',
-    fontSize: 14,
-  },
-  submitBtn: {
-    marginTop: 8,
-  },
-  footerSection: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 24,
-  },
-  footerText: {
-    color: '#64748B',
-    fontSize: 14,
-  },
-  loginLink: {
-    color: '#F05A24',
-    fontWeight: '700',
-    fontSize: 14,
-  },
-});

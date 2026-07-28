@@ -92,10 +92,12 @@ export default function CatalogPage() {
   const [editingService, setEditingService] = useState<Service | null>(null);
   const [serviceForm, setServiceForm] = useState({
     name: "",
-    category: "Consultation & Design",
+    category: "",
     description: "",
     price: ""
   });
+
+  const [masterCategories, setMasterCategories] = useState<{id: number, name: string}[]>([]);
 
   useEffect(() => {
     // Attempt API load or keep default
@@ -122,7 +124,24 @@ export default function CatalogPage() {
         // Fallback silently to DEFAULT_PRODUCTS
       }
     };
+    
+    const fetchCategories = async () => {
+      try {
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/truedial/public/categories`);
+        if (res.ok) {
+          const data = await res.json();
+          const cats = data.data || data;
+          if (Array.isArray(cats)) {
+             setMasterCategories(cats);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch categories", err);
+      }
+    };
+
     fetchCatalog();
+    fetchCategories();
   }, []);
 
   // PRODUCT HANDLERS
@@ -130,7 +149,7 @@ export default function CatalogPage() {
     setEditingProduct(null);
     setProductForm({
       name: "",
-      category: "Kitchen & Wardrobe",
+      category: masterCategories.length > 0 ? masterCategories[0].name : "",
       description: "",
       price: "",
       image: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop"
@@ -177,7 +196,7 @@ export default function CatalogPage() {
     setEditingService(null);
     setServiceForm({
       name: "",
-      category: "Consultation & Design",
+      category: masterCategories.length > 0 ? masterCategories[0].name : "",
       description: "",
       price: ""
     });
@@ -455,11 +474,13 @@ export default function CatalogPage() {
                     onChange={(e) => setProductForm({ ...productForm, category: e.target.value })}
                     className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
-                    <option value="Kitchen & Wardrobe">Kitchen & Wardrobe</option>
-                    <option value="Architectural Woodwork">Architectural Woodwork</option>
-                    <option value="Bespoke Furniture">Bespoke Furniture</option>
-                    <option value="Lighting & Fixtures">Lighting & Fixtures</option>
-                    <option value="Bath & Sanitaries">Bath & Sanitaries</option>
+                    <option value="">Select Category</option>
+                    {masterCategories.map(cat => (
+                      <option key={cat.id} value={cat.name}>{cat.name}</option>
+                    ))}
+                    {masterCategories.length === 0 && (
+                      <option value="General">General</option>
+                    )}
                   </select>
                 </div>
                 <div>
@@ -557,10 +578,13 @@ export default function CatalogPage() {
                     onChange={(e) => setServiceForm({ ...serviceForm, category: e.target.value })}
                     className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
                   >
-                    <option value="Consultation & Design">Consultation & Design</option>
-                    <option value="Commercial Fit-Out">Commercial Fit-Out</option>
-                    <option value="Residential Execution">Residential Execution</option>
-                    <option value="Architectural Planning">Architectural Planning</option>
+                    <option value="">Select Category</option>
+                    {masterCategories.map(cat => (
+                      <option key={cat.id} value={cat.name}>{cat.name}</option>
+                    ))}
+                    {masterCategories.length === 0 && (
+                      <option value="General">General</option>
+                    )}
                   </select>
                 </div>
                 <div>

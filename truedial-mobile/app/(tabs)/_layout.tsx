@@ -1,7 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import { StyleSheet, View, Platform } from 'react-native';
-import { Home, CreditCard, Tag, User } from 'lucide-react-native';
+import { Home, Search, Tag, User, CreditCard, LayoutDashboard, MessageSquare } from 'lucide-react-native';
 
 export default function TabsLayout() {
   return (
@@ -33,12 +33,12 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="privilege"
+        name="search"
         options={{
-          title: 'Privilege Card',
-          tabBarLabel: 'Privilege',
-          headerTitle: 'Privilege Club',
-          tabBarIcon: ({ color, size }) => <CreditCard size={size} color={color} />,
+          title: 'Search',
+          tabBarLabel: 'Search',
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => <Search size={size} color={color} />,
         }}
       />
       <Tabs.Screen
@@ -51,12 +51,22 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
+        name="messages"
         options={{
-          title: 'Account Settings',
-          tabBarLabel: 'Profile',
-          headerTitle: 'My Profile',
-          tabBarIcon: ({ color, size }) => <User size={size} color={color} />,
+          title: 'Chats',
+          tabBarLabel: 'Chats',
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => <MessageSquare size={size} color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="dashboard"
+        options={{
+          title: 'Dashboard',
+          tabBarLabel: 'Dashboard',
+          headerTitle: 'Dashboard',
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => <LayoutDashboard size={size} color={color} />,
         }}
       />
     </Tabs>

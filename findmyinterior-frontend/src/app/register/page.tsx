@@ -159,12 +159,18 @@ function ProfessionalTypePicker({
       <button
         type="button"
         onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between border border-slate-200 rounded-lg px-3 py-2.5 text-sm hover:border-orange-400 focus:outline-none focus:border-orange-500 transition bg-white dark:bg-slate-900 dark:border-slate-700"
+        className="w-full flex items-center gap-4 border-2 border-slate-200 dark:border-slate-700 hover:border-orange-400 dark:hover:border-orange-500 rounded-xl p-4 text-left transition-all group bg-white dark:bg-transparent"
       >
-        <span className={selectedLabel ? "text-slate-900 dark:text-white font-medium" : "text-slate-400"}>
-          {selectedLabel || "Select your professional type..."}
-        </span>
-        <ChevronDown className={`w-4 h-4 text-slate-400 transition-transform ${open ? "rotate-180" : ""}`} />
+        <span className="text-3xl">💼</span>
+        <div className="flex-1">
+          <p className="font-semibold text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400">
+            {selectedLabel || "Professional / Business"}
+          </p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
+            {selectedLabel ? "Change professional type" : "Select your professional type..."}
+          </p>
+        </div>
+        <ChevronDown className={`ml-auto w-5 h-5 text-slate-300 group-hover:text-orange-500 transition-transform ${open ? "rotate-180" : ""}`} />
       </button>
 
       {open && (
@@ -359,8 +365,7 @@ export default function RegisterPage() {
                   </button>
 
                   {/* Professional option */}
-                  <div className="space-y-2">
-                    <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">I am a professional / business</p>
+                  <div className="space-y-2 mt-4">
                     <ProfessionalTypePicker
                       value={formData.role === "customer" ? "" : formData.role}
                       onChange={(v) => {

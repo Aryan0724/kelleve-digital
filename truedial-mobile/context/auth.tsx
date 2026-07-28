@@ -10,6 +10,7 @@ interface User {
   phone: string;
   city?: string;
   role?: string;
+  has_listing?: boolean;
 }
 
 interface AuthContextType {
@@ -91,42 +92,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const login = async (email: string, password: string) => {
     setLoading(true);
     try {
-      let newToken = 'patna_token_' + Date.now();
-      let userData: User = {
-        id: 101,
-        name: email ? email.split('@')[0].toUpperCase() : 'Patna User',
-        email: email || 'user@truedial.patna',
-        phone: '9876543210',
-        city: 'Patna, Bihar',
-        role: 'user'
-      };
-
-      try {
-        const response = await api.post('/auth/login', { email, password });
-        const data = response.data.data || response.data;
-        if (data.token || data.access_token) {
-          newToken = data.token || data.access_token;
-        }
-
-        try {
-          const meResponse = await api.get('/auth/me');
-          const fetchedUser = meResponse.data.data || meResponse.data;
-          if (fetchedUser && fetchedUser.name) {
-            userData = { ...fetchedUser, city: fetchedUser.city || 'Patna, Bihar' };
-          }
-        } catch {
-          // Use default Patna user
-        }
-      } catch (apiError) {
-        console.warn('API login offline fallback mode active:', apiError);
+      const response = await api.post('/auth/login', { email, password });
+      const data = response.data.data || response.data;
+      
+      if (!data.token && !data.access_token) {
+        throw new Error('No access token received from server');
       }
 
-      await setStorageItem('user_token', newToken);
+      const newToken = data.token || data.access_token;
+      
+      // Fetch user profile securely
       api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+      const meResponse = await api.get('/auth/me');
+      const fetchedUser = meResponse.data.data || meResponse.data;
+
+      const userData: User = { 
+        ...fetchedUser, 
+        city: fetchedUser.city || 'Patna, Bihar' 
+      };
+
+      await setStorageItem('user_token', newToken);
       setToken(newToken);
       setUser(userData);
-    } catch (error) {
+    } catch (error: any) {
       console.error('Login error:', error);
+      api.defaults.headers.common['Authorization'] = ''; // Clear token on fail
       throw error;
     } finally {
       setLoading(false);
@@ -145,63 +135,39 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         role: role || 'customer'
       };
 
-      let newToken = 'patna_reg_token_' + Date.now();
-      let userData: User = {
-        id: Math.floor(Math.random() * 9000) + 1000,
-        name: name || 'Patna Member',
-        email: email,
-        phone: phone,
-        city: 'Patna, Bihar',
-        role: role || 'customer'
-      };
-
-      try {
-        const response = await api.post('/auth/register', payload);
-        const data = response.data.data || response.data;
-        if (data.token || data.access_token) {
-          newToken = data.token || data.access_token;
-        }
-        if (data.user) {
-          userData = { 
-            ...data.user, 
-            name: name || data.user.name,
-            email: email || data.user.email,
-            phone: phone || data.user.phone,
-            city: data.user.city || 'Patna, Bihar',
-            role: role || data.user.role || 'customer'
-          };
-        } else {
-          try {
-            const meResponse = await api.get('/auth/me');
-            const fetchedUser = meResponse.data.data || meResponse.data;
-            if (fetchedUser && fetchedUser.name) {
-              userData = { 
-                ...fetchedUser, 
-                name: name || fetchedUser.name,
-                email: email || fetchedUser.email,
-                phone: phone || fetchedUser.phone,
-                city: fetchedUser.city || 'Patna, Bihar' 
-              };
-            }
-          } catch {
-            // Keep Patna user data
-          }
-        }
-      } catch (apiError: any) {
-        console.warn('API registration fallback mode active:', apiError);
+      const response = await api.post('/auth/register', payload);
+      const data = response.data.data || response.data;
+      
+      const newToken = data.token || data.access_token;
+      if (!newToken) {
+        throw new Error('No access token received from server');
       }
 
-      // Explicitly enforce that user details match the registration inputs
-      userData.phone = phone;
-      userData.email = email;
-      userData.name = name;
+      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
+
+      let userData: User;
+      if (data.user) {
+        userData = {
+          ...data.user,
+          city: data.user.city || 'Mumbai',
+          role: data.user.role || role || 'customer'
+        };
+      } else {
+        const meResponse = await api.get('/auth/me');
+        const fetchedUser = meResponse.data.data || meResponse.data;
+        userData = {
+          ...fetchedUser,
+          city: fetchedUser.city || 'Mumbai',
+          role: fetchedUser.role || role || 'customer'
+        };
+      }
 
       await setStorageItem('user_token', newToken);
-      api.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
       setToken(newToken);
       setUser(userData);
     } catch (error: any) {
       console.error('Registration error:', error);
+      api.defaults.headers.common['Authorization'] = '';
       throw error;
     } finally {
       setLoading(false);

@@ -500,6 +500,40 @@ export class TrueDialAPI {
       return { success: false, data: [] };
     }
   }
+  static async get(endpoint: string) {
+    try {
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+        headers: {
+          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
+          'Accept': 'application/json'
+        }
+      });
+      if (!res.ok) throw new Error("API Get failed");
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      return { data: [] };
+    }
+  }
+
+  static async post(endpoint: string, data: any) {
+    try {
+      const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
+        },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error("API Post failed");
+      return await res.json();
+    } catch (err) {
+      console.error(err);
+      return { success: false };
+    }
+  }
 }
 
 // ==========================================

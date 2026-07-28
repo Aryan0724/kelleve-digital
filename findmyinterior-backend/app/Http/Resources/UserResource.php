@@ -23,6 +23,7 @@ class UserResource extends JsonResource
             'trust_score'        => $this->trust_score ?? 0,
             'profile_completion_score' => $this->profile_completion_score ?? 0,
             'verification_level' => $this->verification_level ?? 'unverified',
+            'has_listing'        => $this->listings()->exists(),
             'subscription'       => $this->whenLoaded('activeSubscription', fn() =>
                 $this->activeSubscription
                     ? new UserSubscriptionResource($this->activeSubscription)

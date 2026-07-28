@@ -42,7 +42,10 @@ class HomepageController extends Controller
             ->get();
 
         $featuredListings = Listing::forCurrentTenant()->active()
-            ->featured()
+            ->where(function ($q) {
+                $q->where('listings.is_featured', true)
+                  ->orWhere('listings.is_verified', true);
+            })
             ->join('users', 'users.id', '=', 'listings.user_id')
             ->select('listings.*')
             ->with(['category'])

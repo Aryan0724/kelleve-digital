@@ -60,10 +60,11 @@ export function Hero() {
 
   const availableBudgets = [
     "All Budget",
-    "Under ₹50,000",
-    "₹50,000 - ₹2 Lakhs",
-    "₹2 Lakhs - ₹10 Lakhs",
-    "₹10 Lakhs+"
+    "₹2 Lakhs - ₹5 Lakhs",
+    "₹5 Lakhs - ₹10 Lakhs",
+    "₹10 Lakhs - ₹15 Lakhs",
+    "₹15 Lakhs - ₹20 Lakhs",
+    "₹20 Lakhs+"
   ];
 
   const filteredCities = city.trim()
@@ -247,7 +248,7 @@ export function Hero() {
                     onFocus={() => setShowServiceDropdown(true)}
                     onBlur={() => setTimeout(() => setShowServiceDropdown(false), 200)}
                     className="bg-transparent font-semibold text-[#0a1c3a] dark:text-white outline-none w-full"
-                    placeholder="e.g. Contractor"
+                    placeholder="e.g. Contractor or Company Name"
                   />
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>

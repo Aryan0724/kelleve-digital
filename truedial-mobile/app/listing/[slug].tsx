@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { 
-  StyleSheet, 
   Text, 
   View, 
   ScrollView, 
@@ -8,121 +7,79 @@ import {
   TouchableOpacity, 
   TextInput, 
   Alert,
-  FlatList,
-  Platform
+  ImageBackground,
+  Linking,
+  Platform,
+  SafeAreaView
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
 import api from '../../services/api';
-import GlassCard from '../../components/GlassCard';
-import CustomButton from '../../components/CustomButton';
-import { Star, MapPin, Phone, MessageSquare, ShieldAlert, Check } from 'lucide-react-native';
+import { Star, MapPin, Phone, MessageSquare, ShieldAlert, 
+  ChevronLeft, Share2, Navigation, MessageCircle, 
+  Ticket, Tag, Clock, Globe, ShieldCheck 
+} from 'lucide-react-native';
+import { useAuth } from '../../context/auth';
 
-interface Review {
-  id: number;
-  rating: number;
-  review: string;
-  user?: {
-    name: string;
-  };
-  created_at: string;
-}
-
-interface ListingDetail {
-  id: number;
-  title: string;
-  slug: string;
-  description: string;
-  city: string;
-  phone?: string;
-  category?: {
-    id: number;
-    name: string;
-  };
-  reviews?: Review[];
-  reviews_avg_rating?: string;
-}
-
-export default function ListingDetailScreen() {
+export default function BusinessProfileScreen() {
   const { slug } = useLocalSearchParams();
   const router = useRouter();
+  const { user } = useAuth();
   
-  const [listing, setListing] = useState<ListingDetail | null>(null);
+  const [business, setBusiness] = useState<any>(null);
+  const [offers, setOffers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [contactUnlocked, setContactUnlocked] = useState(false);
-  const [unlocking, setUnlocking] = useState(false);
-
-  // Post Review Form state
+  
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
 
   useEffect(() => {
-    if (slug) {
-      fetchListingDetails();
-    }
+    if (slug) fetchProfileData();
   }, [slug]);
 
-  const fetchListingDetails = async () => {
+  const fetchProfileData = async () => {
     setLoading(true);
     try {
-      const response = await api.get(`/listings/${slug}`);
-      const data = response.data.data || response.data;
-      setListing(data);
-    } catch (error) {
-      console.warn('Failed to load listing details, using mock fallback');
+      const [listingRes, offersRes, reviewsRes] = await Promise.all([
+        api.get(`/truedial/public/businesses/${slug}`),
+        api.get(`/truedial/public/businesses/${slug}/offers`),
+        api.get(`/truedial/public/businesses/${slug}/reviews`)
+      ]);
       
-      // Fallback Mock Data depending on slug
-      const mockListing = {
-        id: 1,
-        title: "Apex Multi-Specialty Hospital",
-        slug: "apex-multi-specialty-hospital",
-        description: "Apex Multi-Specialty Hospital is dedicated to providing premium and affordable healthcare services. Equipment is state-of-the-art and our teams contain top surgeons, cardiac experts, and general physicians in Patna. Access 24/7 ICU and trauma response units.",
-        city: "Patna",
-        phone: "+91 99988 87766",
-        category: { id: 3, name: "Hospitals" },
-        reviews_avg_rating: "4.8",
-        reviews: [
-          {
-            id: 1,
-            rating: 5,
-            review: "Outstanding doctors and clean, sterile facilities. Recommending for emergency cases.",
-            user: { name: "Anil Kumar" },
-            created_at: "2026-07-15"
-          },
-          {
-            id: 2,
-            rating: 4,
-            review: "Very professional staff. Long waiting times at the OPD pharmacy, but doctors were highly patient.",
-            user: { name: "Sneha Sharma" },
-            created_at: "2026-07-20"
-          }
-        ]
-      };
-      setListing(mockListing);
+      const bData = listingRes.data?.data || listingRes.data;
+      const oData = offersRes.data?.data || offersRes.data || [];
+      
+      // The reviews endpoint might be paginated, so extract the array
+      const rData = reviewsRes.data?.data?.data || reviewsRes.data?.data || [];
+      
+      if (bData && bData.basicInfo) {
+        bData.reviews = Array.isArray(rData) ? rData : [];
+        setBusiness(bData);
+      } else {
+        setBusiness({ 
+          basicInfo: bData, 
+          actions: [], 
+          catalog: { products: [], services: [] },
+          reviews: Array.isArray(rData) ? rData : []
+        });
+      }
+      setOffers(Array.isArray(oData) ? oData : []);
+    } catch (error) {
+      console.warn("Failed to fetch profile data:", error);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleUnlockContact = async () => {
-    if (!listing) return;
-    setUnlocking(true);
-    try {
-      // Call contact unlock API
-      await api.post('/contact-unlock', { listing_id: listing.id });
-      setContactUnlocked(true);
-      Alert.alert('Unlocked', 'Business contact number has been revealed successfully!');
-    } catch (error: any) {
-      console.warn('Unlock API error, bypassing for presentation', error);
-      // Bypassing for high-fidelity interactive flow if offline
-      setContactUnlocked(true);
-    } finally {
-      setUnlocking(false);
+  const handleAction = (url: string) => {
+    if (url) {
+      Linking.openURL(url).catch(() => Alert.alert('Error', 'Unable to open link'));
     }
   };
 
   const handlePostReview = async () => {
-    if (!listing) return;
+    if (!business?.basicInfo?.slug) return;
     if (!reviewText) {
       Alert.alert('Empty Review', 'Please write a review comment.');
       return;
@@ -130,35 +87,18 @@ export default function ListingDetailScreen() {
 
     setSubmittingReview(true);
     try {
-      await api.post('/reviews', {
-        listing_id: listing.id,
-        rating: rating,
-        review: reviewText
+      await api.post(`/truedial/user/businesses/${business.basicInfo.slug}/reviews`, { 
+        rating, 
+        body: reviewText,
+        title: "App Review" // Providing a default title since mobile UI doesn't have a title field yet
       });
-      
       Alert.alert('Success', 'Thank you! Your review has been submitted.');
       setReviewText('');
       setRating(5);
-      fetchListingDetails(); // reload to show the new review
+      fetchProfileData(); 
     } catch (error: any) {
-      // Offline fallback: simulate review addition
-      console.warn('Submit review failed, simulating add', error);
-      const newReview: Review = {
-        id: Date.now(),
-        rating: rating,
-        review: reviewText,
-        user: { name: "You" },
-        created_at: new Date().toISOString().split('T')[0]
-      };
-      if (listing) {
-        setListing({
-          ...listing,
-          reviews: [newReview, ...(listing.reviews || [])]
-        });
-      }
-      setReviewText('');
-      setRating(5);
-      Alert.alert('Success', 'Review added (simulated offline).');
+      console.warn('Submit review failed', error);
+      Alert.alert('Error', 'Failed to submit review. Make sure you are logged in.');
     } finally {
       setSubmittingReview(false);
     }
@@ -166,369 +106,272 @@ export default function ListingDetailScreen() {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View className="flex-1 justify-center items-center bg-slate-50 dark:bg-slate-950">
         <ActivityIndicator size="large" color="#E8701A" />
-        <Text style={styles.loadingText}>Loading listing details...</Text>
       </View>
     );
   }
 
-  if (!listing) {
+  if (!business || !business.basicInfo) {
     return (
-      <View style={styles.errorContainer}>
+      <View className="flex-1 justify-center items-center p-10 bg-slate-50 dark:bg-slate-950">
         <ShieldAlert size={48} color="#DC2626" />
-        <Text style={styles.errorTitle}>Listing Not Found</Text>
-        <CustomButton title="Go Back" onPress={() => router.back()} style={styles.backBtn} />
+        <Text className="text-lg font-bold text-slate-900 dark:text-white mt-4 mb-5">Business Not Found</Text>
+        <TouchableOpacity 
+          className="bg-[#E8701A] py-3 px-6 rounded-xl"
+          onPress={() => router.back()}
+        >
+          <Text className="text-white font-bold">Return to Search</Text>
+        </TouchableOpacity>
       </View>
     );
   }
+
+  const { basicInfo, catalog, media } = business;
+  const heroImage = media?.[0]?.url || 'https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070';
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-      {/* Title & Category Header */}
-      <View style={styles.header}>
-        <Text style={styles.title}>{listing.title}</Text>
-        <View style={styles.metaRow}>
-          <Text style={styles.categoryBadge}>{listing.category?.name || 'Business'}</Text>
-          <View style={styles.ratingBadge}>
-            <Star size={12} color="#E8701A" fill="#E8701A" />
-            <Text style={styles.ratingText}>
-              {listing.reviews_avg_rating ? parseFloat(listing.reviews_avg_rating).toFixed(1) : '4.5'}
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Contact Unlock Card */}
-      <GlassCard variant="navy" style={styles.unlockCard}>
-        <View style={styles.unlockContent}>
-          <View style={{ flex: 1, marginRight: 12 }}>
-            <Text style={styles.unlockTitle}>Contact Details</Text>
-            {contactUnlocked ? (
-              <View style={styles.revealedRow}>
-                <Phone size={16} color="#10B981" style={{ marginRight: 6 }} />
-                <Text style={styles.unlockedPhone}>{listing.phone || '+91 99988 87766'}</Text>
-              </View>
-            ) : (
-              <Text style={styles.lockedText}>Phone number is locked. Click unlock to generate business lead.</Text>
-            )}
-          </View>
-          {!contactUnlocked && (
+    <View className="flex-1 bg-slate-50 dark:bg-slate-950">
+      <StatusBar style="light" />
+      <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
+        
+        {/* 1. HERO GALLERY */}
+        <ImageBackground source={{ uri: heroImage }} className="w-full h-80 justify-end" imageStyle={{ backgroundColor: '#0f172a' }}>
+          <View className="absolute inset-0 bg-black/60" />
+          
+          <SafeAreaView className="absolute top-0 left-0 right-0 flex-row justify-between p-4 z-10">
             <TouchableOpacity 
-              style={styles.unlockBtn} 
-              onPress={handleUnlockContact}
-              disabled={unlocking}
+              className="w-10 h-10 rounded-full bg-black/50 items-center justify-center backdrop-blur-md border border-white/20"
+              onPress={() => router.back()}
             >
-              {unlocking ? (
-                <ActivityIndicator color="#ffffff" size="small" />
-              ) : (
-                <Text style={styles.unlockBtnText}>Unlock</Text>
+              <ChevronLeft size={24} color="#FFF" />
+            </TouchableOpacity>
+            <TouchableOpacity className="w-10 h-10 rounded-full bg-black/50 items-center justify-center backdrop-blur-md border border-white/20">
+              <Share2 size={20} color="#FFF" />
+            </TouchableOpacity>
+          </SafeAreaView>
+
+          <View className="p-5 w-full z-10 pb-6">
+            <View className="flex-row items-center flex-wrap gap-2 mb-3">
+              <View className="bg-orange-500/20 px-3 py-1 rounded border border-orange-500/50 backdrop-blur-md">
+                <Text className="text-orange-400 text-[11px] font-bold uppercase">{basicInfo.category || "Business"}</Text>
+              </View>
+              {basicInfo.verified && (
+                <View className="bg-green-500/20 px-3 py-1 rounded border border-green-500/50 backdrop-blur-md flex-row items-center">
+                  <ShieldCheck size={12} color="#4ADE80" className="mr-1" />
+                  <Text className="text-green-400 text-[11px] font-bold uppercase">Verified Premium</Text>
+                </View>
               )}
+            </View>
+            
+            <Text className="text-3xl font-extrabold text-white mb-2 leading-tight">{basicInfo.title}</Text>
+            
+            <View className="flex-row items-center">
+              <MapPin size={14} color="#CBD5E1" className="mr-1" />
+              <Text className="text-slate-300 text-sm font-medium">{basicInfo.address || basicInfo.city}</Text>
+            </View>
+          </View>
+        </ImageBackground>
+
+        {/* 2. QUICK ACTIONS */}
+        <View className="px-5 py-4 flex-row justify-between bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm z-20 -mt-2 rounded-t-2xl">
+          <TouchableOpacity className="items-center w-1/4" onPress={() => handleAction(`tel:${basicInfo.phone}`)}>
+            <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mb-1">
+              <Phone size={20} color="#2563EB" />
+            </View>
+            <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Call</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity className="items-center w-1/4" onPress={() => handleAction(`whatsapp://send?phone=${basicInfo.phone}`)}>
+            <View className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mb-1">
+              <MessageCircle size={20} color="#16A34A" />
+            </View>
+            <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">WhatsApp</Text>
+          </TouchableOpacity>
+          
+          <TouchableOpacity className="items-center w-1/4" onPress={() => handleAction(`https://maps.google.com/?q=${encodeURIComponent(basicInfo.address || basicInfo.city)}`)}>
+            <View className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 items-center justify-center mb-1">
+              <Navigation size={20} color="#D97706" />
+            </View>
+            <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Direction</Text>
+          </TouchableOpacity>
+
+          {basicInfo.website && (
+            <TouchableOpacity className="items-center w-1/4" onPress={() => handleAction(basicInfo.website)}>
+              <View className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 items-center justify-center mb-1">
+                <Globe size={20} color="#9333EA" />
+              </View>
+              <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Website</Text>
             </TouchableOpacity>
           )}
         </View>
-      </GlassCard>
 
-      {/* Description */}
-      <Text style={styles.sectionTitle}>Overview</Text>
-      <GlassCard style={styles.card}>
-        <Text style={styles.descriptionText}>{listing.description}</Text>
-        <View style={styles.locationDetailRow}>
-          <MapPin size={16} color="#E8701A" style={{ marginRight: 6 }} />
-          <Text style={styles.locationDetailText}>Operates in: {listing.city}, India</Text>
-        </View>
-      </GlassCard>
+        <View className="p-5">
+          {/* 3. ABOUT SECTION */}
+          <Text className="text-[18px] font-extrabold text-slate-900 dark:text-white mb-3">About {basicInfo.title}</Text>
+          <Text className="text-[14px] text-slate-600 dark:text-slate-400 leading-relaxed mb-8">
+            {basicInfo.description || "This business has not provided a description yet."}
+          </Text>
 
-      {/* Submit Review Card */}
-      <Text style={styles.sectionTitle}>Write a Review</Text>
-      <GlassCard style={styles.card}>
-        <Text style={styles.inputLabel}>Rating</Text>
-        <View style={styles.starsRow}>
-          {[1, 2, 3, 4, 5].map((star) => (
-            <TouchableOpacity key={star} onPress={() => setRating(star)}>
-              <Star 
-                size={28} 
-                color="#E8701A" 
-                fill={star <= rating ? '#E8701A' : 'transparent'} 
-                style={{ marginRight: 8 }}
-              />
-            </TouchableOpacity>
-          ))}
-        </View>
-
-        <Text style={[styles.inputLabel, { marginTop: 14 }]}>Your Review</Text>
-        <View style={styles.reviewInputWrapper}>
-          <TextInput
-            style={styles.reviewInput}
-            multiline
-            numberOfLines={4}
-            placeholder="Tell others about your experience with this business..."
-            placeholderTextColor="rgba(255, 255, 255, 0.35)"
-            value={reviewText}
-            onChangeText={setReviewText}
-          />
-        </View>
-
-        <CustomButton
-          title="Submit Review"
-          onPress={handlePostReview}
-          loading={submittingReview}
-          style={styles.submitReviewBtn}
-        />
-      </GlassCard>
-
-      {/* Reviews List */}
-      <Text style={styles.sectionTitle}>Customer Reviews ({listing.reviews?.length || 0})</Text>
-      {listing.reviews && listing.reviews.length > 0 ? (
-        listing.reviews.map((item) => (
-          <GlassCard key={item.id} style={styles.reviewCard}>
-            <View style={styles.reviewCardHeader}>
-              <Text style={styles.reviewAuthor}>{item.user?.name || 'Anonymous'}</Text>
-              <View style={styles.miniRatingRow}>
-                {[1, 2, 3, 4, 5].map((star) => (
-                  <Star 
-                    key={star} 
-                    size={10} 
-                    color="#E8701A" 
-                    fill={star <= item.rating ? '#E8701A' : 'transparent'} 
-                    style={{ marginRight: 2 }}
-                  />
-                ))}
+          {/* 4. ACTIVE OFFERS */}
+          {offers && offers.length > 0 && (
+            <View className="bg-blue-50 dark:bg-blue-900/20 p-5 rounded-2xl border border-blue-100 dark:border-blue-900/50 mb-8">
+              <View className="flex-row items-center mb-4">
+                <Ticket size={20} color="#2563EB" className="mr-2" />
+                <Text className="text-[18px] font-extrabold text-blue-900 dark:text-blue-100">Special Offers</Text>
               </View>
+              
+              {offers.map((offer: any) => (
+                <View key={offer.id} className="bg-white dark:bg-slate-900 rounded-xl p-4 shadow-sm border border-slate-200 dark:border-slate-800 mb-3">
+                  <View className="flex-row justify-between items-start mb-2">
+                    <Text className="text-[16px] font-bold text-slate-900 dark:text-white flex-1 mr-2">{offer.title}</Text>
+                    {offer.discount_value && (
+                      <View className="bg-red-100 px-2 py-1 rounded">
+                        <Text className="text-[10px] font-bold text-red-700">
+                          {offer.discount_type === 'percentage' ? `${offer.discount_value}% OFF` : `₹${offer.discount_value} OFF`}
+                        </Text>
+                      </View>
+                    )}
+                  </View>
+                  <Text className="text-[13px] text-slate-600 dark:text-slate-400 mb-3">{offer.description}</Text>
+                  
+                  <View className="flex-row items-center justify-between mt-2 pt-3 border-t border-slate-100 dark:border-slate-800">
+                    <View className="flex-row items-center">
+                      <Clock size={12} color="#94A3B8" className="mr-1" />
+                      <Text className="text-[11px] font-medium text-slate-500">Valid till {new Date(offer.valid_until || Date.now()).toLocaleDateString()}</Text>
+                    </View>
+                    {offer.promo_code && (
+                      <Text className="text-[11px] font-mono font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-1 rounded">
+                        Code: {offer.promo_code}
+                      </Text>
+                    )}
+                  </View>
+                </View>
+              ))}
             </View>
-            <Text style={styles.reviewText}>{item.review}</Text>
-            <Text style={styles.reviewDate}>{item.created_at}</Text>
-          </GlassCard>
-        ))
-      ) : (
-        <View style={styles.emptyReviewsContainer}>
-          <MessageSquare size={36} color="rgba(255, 255, 255, 0.2)" />
-          <Text style={styles.emptyReviewsText}>No reviews yet. Be the first to review!</Text>
+          )}
+
+          {/* 5. CATALOG - PRODUCTS */}
+          {catalog?.products && catalog.products.length > 0 && (
+            <View className="mb-8">
+              <Text className="text-[18px] font-extrabold text-slate-900 dark:text-white mb-4">Products</Text>
+              <ScrollView horizontal showsHorizontalScrollIndicator={false} className="-mx-5 px-5">
+                {catalog.products.map((product: any) => (
+                  <View key={product.id} className="w-64 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 mr-4 overflow-hidden">
+                    {product.media && product.media.length > 0 ? (
+                      <ImageBackground source={{ uri: product.media[0].url }} className="w-full h-32 bg-slate-200" />
+                    ) : (
+                      <View className="w-full h-32 bg-slate-100 dark:bg-slate-800 items-center justify-center">
+                        <Tag size={24} color="#94A3B8" />
+                      </View>
+                    )}
+                    <View className="p-4">
+                      <Text className="font-bold text-slate-900 dark:text-white text-[15px] mb-1">{product.name}</Text>
+                      <Text className="text-slate-500 dark:text-slate-400 text-[12px] mb-2" numberOfLines={2}>{product.description}</Text>
+                      {product.price && <Text className="font-bold text-[#E8701A]">₹{product.price}</Text>}
+                    </View>
+                  </View>
+                ))}
+              </ScrollView>
+            </View>
+          )}
+
+          {/* 6. CATALOG - SERVICES */}
+          {catalog?.services && catalog.services.length > 0 && (
+            <View className="mb-8">
+              <Text className="text-[18px] font-extrabold text-slate-900 dark:text-white mb-4">Services</Text>
+              {catalog.services.map((service: any) => (
+                <View key={service.id} className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 mb-3">
+                  <View className="flex-row justify-between items-start mb-1">
+                    <Text className="font-bold text-slate-900 dark:text-white text-[15px] flex-1">{service.name}</Text>
+                    {service.price_starting_at && <Text className="font-bold text-[#E8701A] text-[13px]">From ₹{service.price_starting_at}</Text>}
+                  </View>
+                  <Text className="text-slate-500 dark:text-slate-400 text-[13px]">{service.description}</Text>
+                </View>
+              ))}
+            </View>
+          )}
+
+          {/* 7. WRITE A REVIEW */}
+          {user ? (
+            <>
+              <Text className="text-[18px] font-extrabold text-slate-900 dark:text-white mb-4">Write a Review</Text>
+              <View className="bg-white dark:bg-slate-900 p-5 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-800 mb-8">
+            <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-3">Rating</Text>
+            <View className="flex-row items-center mb-5">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <TouchableOpacity key={star} onPress={() => setRating(star)}>
+                  <Star size={32} color="#F59E0B" fill={star <= rating ? '#F59E0B' : 'transparent'} className="mr-2" />
+                </TouchableOpacity>
+              ))}
+            </View>
+
+            <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-2">Your Review</Text>
+            <View className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl p-3 h-28 mb-4">
+              <TextInput
+                className="flex-1 text-[14px] text-slate-900 dark:text-white"
+                multiline
+                numberOfLines={4}
+                placeholder="Tell others about your experience..."
+                placeholderTextColor="#94A3B8"
+                value={reviewText}
+                onChangeText={setReviewText}
+                style={{ textAlignVertical: 'top' }}
+              />
+            </View>
+
+            <TouchableOpacity 
+              className="w-full bg-[#E8701A] py-3.5 rounded-xl items-center flex-row justify-center"
+              onPress={handlePostReview}
+              disabled={submittingReview}
+            >
+              {submittingReview ? (
+                <ActivityIndicator color="#FFF" />
+              ) : (
+                <Text className="text-white font-bold text-[15px]">Submit Review</Text>
+              )}
+              </TouchableOpacity>
+            </View>
+            </>
+          ) : (
+            <View className="bg-slate-100 dark:bg-slate-900 p-6 rounded-2xl mb-8 items-center border border-slate-200 dark:border-slate-800">
+              <Text className="text-slate-600 dark:text-slate-400 font-medium mb-3 text-center">Login to share your experience with others.</Text>
+              <TouchableOpacity className="bg-slate-800 dark:bg-slate-700 px-6 py-2.5 rounded-xl" onPress={() => router.push('/login')}>
+                <Text className="text-white font-bold text-sm">Login / Register</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+
+          {/* 8. CUSTOMER REVIEWS */}
+          <View className="mb-8">
+            <Text className="text-[18px] font-extrabold text-slate-900 dark:text-white mb-4">Customer Reviews</Text>
+            {business.reviews && business.reviews.length > 0 ? (
+              business.reviews.map((item: any) => (
+                <View key={item.id} className="bg-white dark:bg-slate-900 p-4 rounded-xl border border-slate-200 dark:border-slate-800 mb-3">
+                  <View className="flex-row justify-between items-center mb-2">
+                    <Text className="text-[15px] font-bold text-slate-900 dark:text-white">{item.user?.name || 'Anonymous'}</Text>
+                    <View className="flex-row">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star key={star} size={12} color="#F59E0B" fill={star <= item.rating ? '#F59E0B' : 'transparent'} className="mr-0.5" />
+                      ))}
+                    </View>
+                  </View>
+                  <Text className="text-[14px] text-slate-600 dark:text-slate-400 leading-relaxed">{item.review}</Text>
+                  <Text className="text-[11px] font-medium text-slate-400 text-right mt-3">
+                    {new Date(item.created_at).toLocaleDateString()}
+                  </Text>
+                </View>
+              ))
+            ) : (
+              <View className="items-center py-8 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800">
+                <MessageSquare size={36} color="#CBD5E1" className="mb-3" />
+                <Text className="text-slate-500 font-medium">No reviews yet. Be the first to review!</Text>
+              </View>
+            )}
+          </View>
+
         </View>
-      )}
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#050c18',
-  },
-  scrollContent: {
-    padding: 20,
-    paddingBottom: 40,
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#050c18',
-  },
-  loadingText: {
-    color: 'rgba(255, 255, 255, 0.45)',
-    fontSize: 14,
-    marginTop: 10,
-  },
-  errorContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 40,
-    backgroundColor: '#050c18',
-  },
-  errorTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginTop: 16,
-    marginBottom: 20,
-  },
-  backBtn: {
-    width: 'auto',
-    paddingHorizontal: 24,
-  },
-  header: {
-    marginBottom: 18,
-  },
-  title: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    color: '#ffffff',
-  },
-  metaRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-  categoryBadge: {
-    backgroundColor: 'rgba(232, 112, 26, 0.12)',
-    color: '#E8701A',
-    fontSize: 12,
-    fontWeight: '600',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 6,
-    borderWidth: 0.5,
-    borderColor: 'rgba(232, 112, 26, 0.25)',
-  },
-  ratingBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    borderWidth: 0.5,
-    borderRadius: 6,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    marginLeft: 10,
-  },
-  ratingText: {
-    color: '#ffffff',
-    fontSize: 12,
-    fontWeight: '600',
-    marginLeft: 4,
-  },
-  unlockCard: {
-    borderWidth: 1.5,
-    borderColor: 'rgba(232, 112, 26, 0.25)',
-    marginBottom: 20,
-  },
-  unlockContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  unlockTitle: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    color: '#ffffff',
-    marginBottom: 4,
-  },
-  lockedText: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.45)',
-    lineHeight: 16,
-  },
-  revealedRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 4,
-  },
-  unlockedPhone: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#10B981',
-  },
-  unlockBtn: {
-    backgroundColor: '#E8701A',
-    height: 38,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  unlockBtnText: {
-    color: '#ffffff',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  sectionTitle: {
-    fontSize: 15,
-    fontWeight: 'bold',
-    color: 'rgba(255,255,255,0.4)',
-    textTransform: 'uppercase',
-    letterSpacing: 1,
-    marginLeft: 4,
-    marginBottom: 8,
-    marginTop: 12,
-  },
-  card: {
-    padding: 16,
-    marginBottom: 16,
-  },
-  descriptionText: {
-    fontSize: 14,
-    color: 'rgba(255, 255, 255, 0.75)',
-    lineHeight: 22,
-  },
-  locationDetailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginTop: 14,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255,255,255,0.05)',
-    paddingTop: 12,
-  },
-  locationDetailText: {
-    color: 'rgba(255, 255, 255, 0.55)',
-    fontSize: 13,
-  },
-  inputLabel: {
-    fontSize: 13,
-    fontWeight: '600',
-    color: 'rgba(255, 255, 255, 0.8)',
-    marginBottom: 6,
-  },
-  starsRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginVertical: 4,
-  },
-  reviewInputWrapper: {
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    borderWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    height: 100,
-    marginBottom: 14,
-  },
-  reviewInput: {
-    flex: 1,
-    color: '#ffffff',
-    fontSize: 14,
-    textAlignVertical: 'top',
-  },
-  submitReviewBtn: {
-    height: 44,
-  },
-  reviewCard: {
-    marginBottom: 10,
-    padding: 14,
-  },
-  reviewCardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-  },
-  reviewAuthor: {
-    color: '#ffffff',
-    fontSize: 14,
-    fontWeight: '600',
-  },
-  miniRatingRow: {
-    flexDirection: 'row',
-  },
-  reviewText: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 13,
-    lineHeight: 18,
-  },
-  reviewDate: {
-    color: 'rgba(255, 255, 255, 0.3)',
-    fontSize: 11,
-    marginTop: 8,
-    textAlign: 'right',
-  },
-  emptyReviewsContainer: {
-    alignItems: 'center',
-    paddingVertical: 24,
-  },
-  emptyReviewsText: {
-    color: 'rgba(255, 255, 255, 0.35)',
-    fontSize: 13,
-    marginTop: 8,
-  },
-});

@@ -69,6 +69,11 @@ class Listing extends Model
         return $this->hasMany(ListingProduct::class);
     }
 
+    public function offers(): HasMany
+    {
+        return $this->hasMany(Offer::class);
+    }
+
     public function listingServices(): HasMany
     {
         return $this->hasMany(ListingService::class);

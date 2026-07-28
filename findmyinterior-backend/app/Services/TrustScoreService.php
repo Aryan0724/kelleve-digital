@@ -97,8 +97,8 @@ class TrustScoreService
             $score += 10;
         }
 
-        // PAN (10%)
-        if (in_array('pan_card', $approvedDocs)) {
+        // Identity Document (PAN or Aadhaar) (10%)
+        if (in_array('pan_card', $approvedDocs) || in_array('aadhaar', $approvedDocs)) {
             $score += 10;
         }
 
@@ -121,7 +121,7 @@ class TrustScoreService
         $level = 'unverified';
 
         // Check if basic (Level 0)
-        if ($user->email_verified_at && $user->phone) {
+        if ($user->phone) {
             $level = 'mobile_verified'; // Corresponds to Level 0
         }
 
@@ -130,14 +130,22 @@ class TrustScoreService
             ->pluck('document_type')
             ->toArray();
 
-        $hasVerifiedBusinessDocs = in_array('gst_certificate', $approvedDocs) 
-            && in_array('pan_card', $approvedDocs)
-            && in_array('business_logo', $approvedDocs)
-            && (in_array('business_image', $approvedDocs) || in_array('office_image', $approvedDocs));
+        // Level 1: Basic Registration (Registered Professional)
+        $hasIdentityDocs = in_array('aadhaar', $approvedDocs) || in_array('pan_card', $approvedDocs);
+        
+        if ($level === 'mobile_verified' && $hasIdentityDocs && $user->avatar) {
+            $level = 'basic_member';
+        }
 
-        // Note: For demo/simplicity, we're assuming if they have address and photo, the basic member stuff is met
-        if ($hasVerifiedBusinessDocs && $user->avatar) {
-            $level = 'business_verified'; // Corresponds to Level 1
+        // Level 2: Verified Professional
+        $hasVerifiedBusinessDocs = in_array('gst_certificate', $approvedDocs) 
+            || in_array('business_logo', $approvedDocs)
+            || in_array('business_image', $approvedDocs) 
+            || in_array('office_image', $approvedDocs)
+            || in_array('trade_license', $approvedDocs);
+
+        if ($level === 'basic_member' && $hasVerifiedBusinessDocs) {
+            $level = 'business_verified'; // Corresponds to Level 2
         }
 
         $hasTrustedDocs = in_array('portfolio_document', $approvedDocs) || in_array('work_history', $approvedDocs);
