@@ -17,7 +17,15 @@ export const authService = {
   },
 
   verifyOtp: async (data: VerifyOtpPayload) => {
-    const response = await api.post('/truedial/auth/otp/verify', data);
-    return response.data;
+    const response = await fetch('/api/auth/otp/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw { response: { data: errorData } };
+    }
+    return response.json();
   },
 };

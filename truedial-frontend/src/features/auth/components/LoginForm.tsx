@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/stores/authStore";
+import { useAuth } from "@/context/AuthContext";
 import { authService } from "../services/auth.service";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,6 +13,7 @@ import { Loader2 } from "lucide-react";
 export function LoginForm() {
   const router = useRouter();
   const { login } = useAuthStore();
+  const { refreshUser } = useAuth();
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState<"PHONE" | "OTP">("PHONE");
@@ -57,6 +59,7 @@ export function LoginForm() {
       const res = await authService.verifyOtp({ phone, otp });
       if (res.token && res.user) {
         login(res.user, res.token);
+        await refreshUser(); // Sync AuthContext with the newly set HTTP-only cookie
         router.push("/dashboard");
       }
     } catch (err: any) {
