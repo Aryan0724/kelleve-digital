@@ -8,8 +8,9 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { 
   Store, MapPin, Tags, FileCheck, ArrowRight, ArrowLeft, 
-  CheckCircle, Loader2, UploadCloud, Search, AlertCircle 
+  CheckCircle, Loader2, UploadCloud, Search, AlertCircle, Navigation
 } from "lucide-react";
+import { TrueDialAPI } from "@/lib/api";
 
 const STEPS = [
   { id: 1, title: "Business Profile", icon: Store },
@@ -58,28 +59,56 @@ export default function FreeListingPage() {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const res = await fetch("/api/v1/truedial/public/categories");
-        if (res.ok) {
-          const data = await res.json();
-          // Assuming data is an array of categories or wrapped in a data object
-          setAvailableCategories(data.data || data || []);
-        } else {
-          // Fallback categories for display if API fails
-          setAvailableCategories([
-            { id: 1, name: "Restaurants", slug: "restaurants" },
-            { id: 2, name: "Hotels", slug: "hotels" },
-            { id: 3, name: "Hospitals", slug: "hospitals" },
-            { id: 4, name: "Education", slug: "education" },
-            { id: 5, name: "Real Estate", slug: "real-estate" },
-            { id: 6, name: "Home Services", slug: "home-services" },
-          ]);
+        const res = await TrueDialAPI.getCategories();
+        if (res.data) {
+          setAvailableCategories(res.data);
         }
       } catch (e) {
         console.error("Failed to fetch categories", e);
+        // Fallback for UI testing if backend is unreachable
+        setAvailableCategories([
+          { id: 1, name: "Restaurants", slug: "restaurants" },
+          { id: 2, name: "Hotels", slug: "hotels" },
+          { id: 3, name: "Hospitals", slug: "hospitals" },
+          { id: 4, name: "Education", slug: "education" },
+          { id: 5, name: "Real Estate", slug: "real-estate" },
+          { id: 6, name: "Home Services", slug: "home-services" },
+        ]);
       }
     }
     fetchCategories();
   }, []);
+
+  const handleGetLocation = () => {
+    if ("geolocation" in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          try {
+            // Reverse geocoding via standard nominatim (OSM) for prototype, 
+            // in prod this should use Google Maps API or similar via backend
+            const { latitude, longitude } = position.coords;
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+            const data = await res.json();
+            
+            if (data && data.address) {
+              const detectedCity = data.address.city || data.address.town || data.address.state_district || "";
+              if (detectedCity) {
+                setCity(detectedCity);
+              }
+            }
+          } catch (e) {
+            console.error("Geocoding failed", e);
+          }
+        },
+        (error) => {
+          console.error("Geolocation error", error);
+          alert("Could not get your location. Please enter your city manually.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  };
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
@@ -120,17 +149,17 @@ export default function FreeListingPage() {
       });
 
       if (res.ok) {
-        router.push("/dashboard/business?success=listing_created");
+        router.push("/dashboard/vendor?success=listing_created");
       } else {
         // If it fails (maybe due to auth), simulate success for UX walkthrough purposes
         setTimeout(() => {
-          router.push("/dashboard/business");
+          router.push("/dashboard/vendor");
         }, 1000);
       }
     } catch (err) {
       // Simulate success on network error for prototype
       setTimeout(() => {
-        router.push("/dashboard/business");
+        router.push("/dashboard/vendor");
       }, 1000);
     }
   };
@@ -294,7 +323,16 @@ export default function FreeListingPage() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <label className="text-sm font-semibold text-foreground">City</label>
+                    <div className="flex items-center justify-between">
+                      <label className="text-sm font-semibold text-foreground">City</label>
+                      <button 
+                        type="button" 
+                        onClick={handleGetLocation}
+                        className="text-xs text-primary font-medium flex items-center hover:underline"
+                      >
+                        <Navigation className="w-3 h-3 mr-1" /> Use Current Location
+                      </button>
+                    </div>
                     <Input 
                       type="text" 
                       value={city}

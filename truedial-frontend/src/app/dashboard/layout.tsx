@@ -58,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       { label: "Business Profile", href: "/dashboard/vendor/profile", icon: Settings },
       { label: "Products & Services", href: "/dashboard/vendor/catalog", icon: FileText },
       { label: "Analytics", href: "/dashboard/vendor/analytics", icon: LayoutDashboard },
-      { label: "Leads & Inquiries", href: "/dashboard/vendor/leads", icon: Users },
+      { label: "Leads & Inquiries", href: "/dashboard/vendor/crm", icon: Users },
       { label: "Marketing (SMS)", href: "/dashboard/vendor/marketing", icon: Megaphone },
       { label: "Manage Offers", href: "/dashboard/vendor/offers", icon: Star },
       { label: "Reviews & Ratings", href: "/dashboard/vendor/reputation", icon: Star },
@@ -188,7 +188,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {messages.map((msg) => (
                       <Link 
                         key={msg.id} 
-                        href="/dashboard/vendor/leads"
+                        href="/dashboard/vendor/crm"
                         onClick={() => setShowMessages(false)}
                         className={`block p-3.5 hover:bg-muted/50 transition ${msg.unread ? 'bg-primary/5' : ''}`}
                       >
@@ -204,7 +204,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                   <div className="p-3 border-t border-border text-center bg-muted/30">
                     <Link 
-                      href="/dashboard/vendor/leads" 
+                      href="/dashboard/vendor/crm" 
                       onClick={() => setShowMessages(false)}
                       className="text-xs font-semibold text-primary hover:underline flex items-center justify-center gap-1"
                     >
