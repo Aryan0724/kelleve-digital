@@ -15,6 +15,7 @@ class CategoryFactory extends Factory
             'slug'      => Str::slug($name) . '-' . fake()->unique()->randomNumber(4),
             'icon'      => null,
             'image'     => null,
+            'tenant_id' => 1,
             'is_active' => true,
             'sort_order'=> 0,
         ];

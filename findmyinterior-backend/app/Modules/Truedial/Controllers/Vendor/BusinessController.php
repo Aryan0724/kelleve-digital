@@ -3,99 +3,64 @@
 namespace App\Modules\Truedial\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
-use App\Models\Listing;
+
 use Illuminate\Http\Request;
-use App\Core\Tenancy\TenantContext;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\ListingResource;
+use App\Modules\Truedial\Services\BusinessService;
+use App\Http\Requests\Truedial\BusinessStoreRequest;
+use App\Http\Requests\Truedial\BusinessUpdateRequest;
 
 class BusinessController extends Controller
 {
     use \App\Traits\ApiResponse, \Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-    protected TenantContext $tenantContext;
+    protected BusinessService $businessService;
 
-    public function __construct(TenantContext $tenantContext)
+    public function __construct(BusinessService $businessService)
     {
-        $this->tenantContext = $tenantContext;
+        $this->businessService = $businessService;
     }
 
     public function myBusiness()
     {
-        $business = Listing::forCurrentTenant()
-            ->where('user_id', Auth::id())
-            ->with(['category', 'city', 'gallery', 'listingProducts.media', 'listingServices.media'])
-            ->first();
+        $business = $this->businessService->getMyBusiness();
 
         if (!$business) {
             return $this->error('No business found', 404);
         }
 
-        return $this->success($business);
+        return $this->success(new ListingResource($business));
     }
 
-    public function store(Request $request)
+    public function store(BusinessStoreRequest $request)
     {
-        $tenantId = $this->tenantContext->getTenantId();
-        
-        $existing = Listing::forCurrentTenant()->where('user_id', Auth::id())->first();
+        // Business logic and validation happens in FormRequest and Service
+        $existing = $this->businessService->getMyBusiness();
         if ($existing) {
             return $this->error('You already have a business listing', 400);
         }
 
-        $validated = $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'city_id' => 'required|exists:cities,id',
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'phone' => 'required|string',
-            'address' => 'required|string',
-            'district' => 'required|string|max:100',
-            'state' => 'required|string|max:100',
-            'website' => 'nullable|url',
-        ]);
+        $business = $this->businessService->createBusiness($request->validated());
 
-        $validated['tenant_id'] = $tenantId;
-        $validated['user_id'] = Auth::id();
-        $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . time();
-        $validated['status'] = 'pending'; // Requires admin approval
-
-        $business = Listing::create($validated);
-
-        return $this->success($business, 'Business created successfully and is pending approval', 201);
+        return $this->success(new ListingResource($business), 'Business created successfully and is pending approval', 201);
     }
 
-    public function update(Request $request, $id)
+    public function update(BusinessUpdateRequest $request, $id)
     {
-        $business = Listing::forCurrentTenant()->findOrFail($id);
+        $business = $this->businessService->getBusinessById($id);
         
         $this->authorize('update', $business);
 
-        $validated = $request->validate([
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'city_id' => 'sometimes|required|exists:cities,id',
-            'title' => 'sometimes|required|string|max:255',
-            'description' => 'sometimes|required|string',
-            'phone' => 'sometimes|required|string',
-            'address' => 'sometimes|required|string',
-            'district' => 'sometimes|required|string|max:100',
-            'state' => 'sometimes|required|string|max:100',
-            'website' => 'nullable|url',
-        ]);
+        $business = $this->businessService->updateBusiness($business, $request->validated());
 
-        if (isset($validated['title']) && $validated['title'] !== $business->title) {
-            $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . time();
-        }
-
-        $business->update($validated);
-
-        return $this->success($business, 'Business updated successfully');
+        return $this->success(new ListingResource($business), 'Business updated successfully');
     }
 
     public function updateProducts(Request $request, \App\Services\ProductService $productService)
     {
-        $business = Listing::forCurrentTenant()
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $business = $this->businessService->getMyBusiness();
+        if (!$business) return $this->error('No business found', 404);
             
         $this->authorize('update', $business);
 
@@ -112,14 +77,13 @@ class BusinessController extends Controller
         
         $business->load('listingProducts.media');
 
-        return $this->success($business, 'Products updated successfully');
+        return $this->success(new ListingResource($business), 'Products updated successfully');
     }
 
     public function updateServices(Request $request, \App\Services\ServiceService $serviceService)
     {
-        $business = Listing::forCurrentTenant()
-            ->where('user_id', Auth::id())
-            ->firstOrFail();
+        $business = $this->businessService->getMyBusiness();
+        if (!$business) return $this->error('No business found', 404);
             
         $this->authorize('update', $business);
 
@@ -136,6 +100,6 @@ class BusinessController extends Controller
 
         $business->load('listingServices.media');
 
-        return $this->success($business, 'Services updated successfully');
+        return $this->success(new ListingResource($business), 'Services updated successfully');
     }
 }

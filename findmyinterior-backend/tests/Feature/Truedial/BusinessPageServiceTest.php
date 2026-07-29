@@ -20,7 +20,8 @@ class BusinessPageServiceTest extends TestCase
             'is_verified' => true
         ]);
 
-        $response = $this->getJson("/api/v1/truedial/public/businesses/{$listing->slug}");
+        $response = $this->withHeaders(['X-Tenant-ID' => $tenant->id])
+            ->getJson("/api/v1/truedial/public/businesses/{$listing->slug}");
 
         $response->assertStatus(200);
         $response->assertJsonStructure([

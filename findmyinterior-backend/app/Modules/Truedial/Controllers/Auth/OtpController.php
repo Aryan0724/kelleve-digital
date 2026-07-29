@@ -6,19 +6,16 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
+use App\Jobs\SendOtpJob;
+use App\Events\UserRegistered;
 
 class OtpController extends Controller
 {
     /**
      * Send OTP to a mobile number.
      */
-    public function sendOtp(Request $request)
+    public function sendOtp(\App\Http\Requests\Auth\SendOtpRequest $request)
     {
-        $request->validate([
-            'phone' => 'required|string|min:10|max:15',
-        ]);
-
         $phone = $request->input('phone');
         
         // Generate a 6-digit OTP
@@ -28,21 +25,15 @@ class OtpController extends Controller
         $cacheKey = 'otp_' . $phone;
         Cache::put($cacheKey, (string) $otp, now()->addMinutes(5));
         
-        // Check if an SMS gateway is configured
-        $hasSmsGateway = !empty(config('services.msg91.auth_key')) || !empty(config('services.twilio.sid'));
-        
-        if ($hasSmsGateway) {
-            // TODO: Send via SMS gateway
-            Log::info("OTP for {$phone} is {$otp}");
-        } else {
-            // No SMS gateway — log and return OTP in response for testing
-            Log::info("OTP for {$phone} is {$otp} (no SMS gateway configured)");
-        }
+        // Dispatch the background job to send the SMS
+        SendOtpJob::dispatch($phone, (string) $otp);
 
         $response = [
             'success' => true,
             'message' => 'OTP sent successfully to ' . $phone,
         ];
+
+        $hasSmsGateway = !empty(config('services.msg91.auth_key')) || !empty(config('services.twilio.sid'));
 
         // If no SMS gateway, expose OTP in response so testing is possible
         if (!$hasSmsGateway) {
@@ -55,13 +46,8 @@ class OtpController extends Controller
     /**
      * Verify OTP and Login / Register.
      */
-    public function verifyOtp(Request $request)
+    public function verifyOtp(\App\Http\Requests\Auth\VerifyOtpRequest $request)
     {
-        $request->validate([
-            'phone' => 'required|string|min:10|max:15',
-            'otp' => 'required|string|min:4|max:6',
-        ]);
-
         $phone = $request->input('phone');
         $inputOtp = $request->input('otp');
         $cacheKey = 'otp_' . $phone;
@@ -78,6 +64,8 @@ class OtpController extends Controller
         // OTP is valid. Clear the cache.
         Cache::forget($cacheKey);
 
+        $isNewUser = User::where('phone', $phone)->doesntExist();
+
         // Find or create the user based on the phone number
         $user = User::firstOrCreate(
             ['phone' => $phone],
@@ -90,6 +78,10 @@ class OtpController extends Controller
             ]
         );
 
+        if ($isNewUser) {
+            event(new UserRegistered($user));
+        }
+
         // Assign a default role if they don't have one (e.g., business)
         // For TrueDial, businesses listing themselves usually get a 'business' or 'vendor' role
         if ($user->roles()->count() === 0) {
@@ -100,6 +92,14 @@ class OtpController extends Controller
         }
 
         $token = $user->createToken('truedial-auth-token')->plainTextToken;
+
+        \App\Models\AuditLog::create([
+            'user_id' => $user->id,
+            'action' => $isNewUser ? 'register' : 'login',
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'payload' => ['phone' => $phone],
+        ]);
 
         return response()->json([
             'success' => true,

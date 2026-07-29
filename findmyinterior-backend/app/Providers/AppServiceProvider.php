@@ -33,6 +33,18 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->bind(SearchProviderInterface::class, SqlSearchProvider::class);
+        $this->app->bind(
+            \App\Repositories\Contracts\ListingRepositoryInterface::class,
+            \App\Repositories\Eloquent\ListingRepository::class
+        );
+        $this->app->bind(
+            \App\Modules\Truedial\Contracts\Repositories\BusinessRepositoryInterface::class,
+            \App\Modules\Truedial\Repositories\BusinessRepository::class
+        );
+        $this->app->bind(
+            \App\Modules\Truedial\Contracts\Repositories\ReviewRepositoryInterface::class,
+            \App\Modules\Truedial\Repositories\ReviewRepository::class
+        );
     }
 
     /**
@@ -71,6 +83,12 @@ class AppServiceProvider extends ServiceProvider
         ListingProduct::observe(BusinessCacheObserver::class);
         ListingService::observe(BusinessCacheObserver::class);
         Media::observe(BusinessCacheObserver::class);
+
+        // Events
+        \Illuminate\Support\Facades\Event::listen(
+            \App\Events\UserRegistered::class,
+            \App\Listeners\SendWelcomeEmail::class,
+        );
 
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(600)->by($request->user()?->id ?: $request->ip());

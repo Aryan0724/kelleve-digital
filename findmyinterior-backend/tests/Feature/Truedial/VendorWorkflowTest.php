@@ -14,14 +14,17 @@ class VendorWorkflowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        
+        $this->tenant = \App\Models\Tenant::firstOrCreate(
+            ['slug' => 'truedial'],
+            ['name' => 'TrueDial', 'domain' => 'truedial.in', 'status' => 'active']
+        );
         $this->vendor = User::factory()->create();
         
         $category = \App\Models\Category::create([
             'name' => 'Interior Designer',
             'slug' => 'interior-designer',
             'type' => 'professional',
-            'platform' => 'both',
+            'platform' => 'both', 'tenant_id' => $this->tenant->id,
             'icon' => 'test.png',
             'is_active' => true,
         ]);
@@ -36,7 +39,7 @@ class VendorWorkflowTest extends TestCase
             'district' => 'Mumbai',
             'city' => 'Mumbai',
             'status' => 'published',
-            'is_claimed' => true,
+            'is_claimed' => true, 'tenant_id' => $this->tenant->id,
         ]);
     }
 
@@ -55,7 +58,7 @@ class VendorWorkflowTest extends TestCase
             'promo_code' => 'DIWALI20'
         ];
 
-        $response = $this->actingAs($this->vendor)->postJson('/api/v1/truedial/vendor/offers', $payload);
+        $response = $this->actingAs($this->vendor)->withHeaders(['X-Tenant-ID' => $this->tenant->id])->postJson('/api/v1/truedial/vendor/offers', $payload);
 
         $response->assertStatus(200)
                  ->assertJson([
@@ -76,13 +79,13 @@ class VendorWorkflowTest extends TestCase
     public function test_vendor_can_fetch_offers()
     {
         // First create one
-        $this->actingAs($this->vendor)->postJson('/api/v1/truedial/vendor/offers', [
+        $this->actingAs($this->vendor)->withHeaders(['X-Tenant-ID' => $this->tenant->id])->postJson('/api/v1/truedial/vendor/offers', [
             'listing_id' => $this->listing->id,
             'title' => 'Flash Sale',
             'status' => 'active'
         ]);
 
-        $response = $this->actingAs($this->vendor)->getJson('/api/v1/truedial/vendor/offers');
+        $response = $this->actingAs($this->vendor)->withHeaders(['X-Tenant-ID' => $this->tenant->id])->getJson('/api/v1/truedial/vendor/offers');
 
         $response->assertStatus(200);
     }
@@ -98,7 +101,7 @@ class VendorWorkflowTest extends TestCase
             'description' => 'Website Redesign'
         ];
 
-        $response = $this->actingAs($this->vendor)->postJson('/api/v1/truedial/vendor/invoices', $payload);
+        $response = $this->actingAs($this->vendor)->withHeaders(['X-Tenant-ID' => $this->tenant->id])->postJson('/api/v1/truedial/vendor/invoices', $payload);
 
         $response->assertStatus(201)
                  ->assertJson([
@@ -125,7 +128,7 @@ class VendorWorkflowTest extends TestCase
             'audience' => 'all_customers'
         ];
 
-        $response = $this->actingAs($this->vendor)->postJson('/api/v1/truedial/vendor/marketing/campaigns', $payload);
+        $response = $this->actingAs($this->vendor)->withHeaders(['X-Tenant-ID' => $this->tenant->id])->postJson('/api/v1/truedial/vendor/marketing/campaigns', $payload);
 
         $response->assertStatus(201)
                  ->assertJson([

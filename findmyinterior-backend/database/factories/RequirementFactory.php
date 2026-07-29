@@ -26,6 +26,7 @@ class RequirementFactory extends Factory
             'name'         => fake()->name(),
             'phone'        => fake()->phoneNumber(),
             'email'        => fake()->safeEmail(),
+            'tenant_id'    => 1,
             'status'       => 'open',
         ];
     }
