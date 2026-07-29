@@ -2,14 +2,18 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, CreditCard, Star, FileText, Bell, CheckCircle2, X, Clock, ChevronRight, Globe, ArrowLeft, Home } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { 
+  LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, 
+  CreditCard, Star, FileText, Bell, ChevronRight, Globe, ArrowLeft, Heart, ShieldAlert
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
-import { useRouter } from "next/navigation";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoggedIn, role, clearUser } = useAuth();
+  const { user, clearUser } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [showMessages, setShowMessages] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -30,12 +34,61 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const unreadMessagesCount = messages.filter(m => m.unread).length;
   const unreadNotificationsCount = notifications.filter(n => n.unread).length;
 
-  const markAllNotificationsRead = () => {
-    setNotifications(notifications.map(n => ({ ...n, unread: false })));
-  };
+  const markAllNotificationsRead = () => setNotifications(notifications.map(n => ({ ...n, unread: false })));
+  const markAllMessagesRead = () => setMessages(messages.map(m => ({ ...m, unread: false })));
 
-  const markAllMessagesRead = () => {
-    setMessages(messages.map(m => ({ ...m, unread: false })));
+  const hasVendorRole = user?.roles?.some((r: any) => 
+    ['business', 'builder', 'supplier', 'worker', 'contractor', 'architect', 'interior_designer', 'skilled_worker', 'material_supplier'].includes(r.slug)
+  );
+  const hasAdminRole = user?.roles?.some((r: any) => ['admin', 'super_admin'].includes(r.slug));
+
+  let links: any[] = [];
+
+  if (hasAdminRole) {
+    links = [
+      { label: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
+      { label: "Users", href: "/dashboard/admin/users", icon: Users },
+      { label: "Vendors", href: "/dashboard/admin/vendors", icon: ShieldAlert },
+      { label: "Approvals", href: "/dashboard/admin/approvals", icon: FileText },
+      { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
+    ];
+  } else if (hasVendorRole) {
+    links = [
+      { label: "Overview", href: "/dashboard/vendor", icon: LayoutDashboard },
+      { label: "Business Profile", href: "/dashboard/vendor/profile", icon: Settings },
+      { label: "Products & Services", href: "/dashboard/vendor/catalog", icon: FileText },
+      { label: "Analytics", href: "/dashboard/vendor/analytics", icon: LayoutDashboard },
+      { label: "Leads & Inquiries", href: "/dashboard/vendor/leads", icon: Users },
+      { label: "Marketing (SMS)", href: "/dashboard/vendor/marketing", icon: Megaphone },
+      { label: "Manage Offers", href: "/dashboard/vendor/offers", icon: Star },
+      { label: "Reviews & Ratings", href: "/dashboard/vendor/reputation", icon: Star },
+      { label: "Subscription", href: "/dashboard/vendor/subscription", icon: CreditCard },
+    ];
+  } else {
+    links = [
+      { label: "Overview", href: "/dashboard/user", icon: LayoutDashboard },
+      { label: "Saved & Favorites", href: "/dashboard/user/favorites", icon: Heart },
+      { label: "My Reviews", href: "/dashboard/user/reviews", icon: Star },
+      { label: "Privilege Card", href: "/dashboard/user/privilege", icon: CreditCard },
+      { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    ];
+  }
+
+  const NavLink = ({ item }: { item: any }) => {
+    const isActive = pathname === item.href;
+    const Icon = item.icon;
+    return (
+      <Link 
+        href={item.href} 
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition ${
+          isActive 
+            ? 'bg-white/10 text-white font-medium shadow-inner' 
+            : 'text-navy-foreground/70 hover:text-white hover:bg-white/5'
+        }`}
+      >
+        <Icon className={`w-5 h-5 ${isActive ? 'text-primary' : ''}`} /> {item.label}
+      </Link>
+    );
   };
 
   return (
@@ -54,50 +107,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <ArrowLeft className="w-5 h-5 shrink-0" /> Back to Homepage
           </Link>
 
-          <Link href="/dashboard/business" className="flex items-center gap-3 px-3 py-2.5 rounded-md bg-white/10 text-white font-medium">
-            <LayoutDashboard className="w-5 h-5 text-primary" /> Overview
-          </Link>
-          <Link href="/dashboard/business/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Settings className="w-5 h-5" /> Business Profile
-          </Link>
-          <Link href="/dashboard/business/catalog" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <FileText className="w-5 h-5" /> Products & Services
-          </Link>
-          <Link href="/dashboard/business/analytics" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <LayoutDashboard className="w-5 h-5" /> Analytics
-          </Link>
-          <Link href="/dashboard/business/leads" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Users className="w-5 h-5" /> Leads & Inquiries
-          </Link>
-          <Link href="/dashboard/business/marketing" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Megaphone className="w-5 h-5" /> Marketing (SMS)
-          </Link>
-          <Link href="/dashboard/business/offers" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Star className="w-5 h-5" /> Manage Offers
-          </Link>
-          <Link href="/dashboard/business/reviews" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Star className="w-5 h-5" /> Reviews & Ratings
-          </Link>
-          <Link href="/dashboard/business/subscription" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <CreditCard className="w-5 h-5" /> Subscription
-          </Link>
+          {links.map((link) => (
+            <NavLink key={link.href} item={link} />
+          ))}
           
-          <div className="pt-6 pb-2">
-            <p className="px-3 text-xs font-semibold text-navy-foreground/50 uppercase tracking-wider">Account</p>
-          </div>
-          <Link href="/dashboard/user" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <FileText className="w-5 h-5" /> Privilege Card
-          </Link>
-          <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Settings className="w-5 h-5" /> Settings
-          </Link>
         </nav>
         
         <div className="p-4 border-t border-white/10">
           <button
             onClick={async () => {
               clearUser();
-              // Call server action to delete httpOnly cookie
               await fetch("/api/auth/logout", { method: "POST" });
               router.push("/login");
             }}
@@ -113,7 +132,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Topbar */}
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0 z-30 relative">
           <div className="flex items-center gap-4">
-            <h2 className="font-semibold text-foreground">Business Dashboard</h2>
+            <h2 className="font-semibold text-foreground">
+              {hasAdminRole ? "Admin Dashboard" : hasVendorRole ? "Business Dashboard" : "My Dashboard"}
+            </h2>
             <Link 
               href="/" 
               className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-full border border-primary/20"
@@ -167,7 +188,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     {messages.map((msg) => (
                       <Link 
                         key={msg.id} 
-                        href="/dashboard/business/leads"
+                        href="/dashboard/vendor/leads"
                         onClick={() => setShowMessages(false)}
                         className={`block p-3.5 hover:bg-muted/50 transition ${msg.unread ? 'bg-primary/5' : ''}`}
                       >
@@ -183,7 +204,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
                   <div className="p-3 border-t border-border text-center bg-muted/30">
                     <Link 
-                      href="/dashboard/business/leads" 
+                      href="/dashboard/vendor/leads" 
                       onClick={() => setShowMessages(false)}
                       className="text-xs font-semibold text-primary hover:underline flex items-center justify-center gap-1"
                     >
@@ -270,7 +291,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               {user?.avatar ? (
                 <img src={user.avatar} alt={user.name} className="w-full h-full rounded-full object-cover" />
               ) : (
-                user?.name?.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
+                user?.name?.split(' ').map((n: string) => n[0]).join('').toUpperCase().slice(0, 2) || 'U'
               )}
             </div>
           </div>
