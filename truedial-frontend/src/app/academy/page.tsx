@@ -82,7 +82,7 @@ export default function AcademyPage() {
                 <Badge className="absolute top-4 right-4 z-20 bg-black/50 backdrop-blur-md text-white border-0">
                   {course.level}
                 </Badge>
-                {/* eslint-disable-next-line @next/next/no-img-element */}
+                { }
                 <img 
                   src={course.thumbnail} 
                   alt={course.title} 

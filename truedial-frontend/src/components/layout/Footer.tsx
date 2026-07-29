@@ -35,7 +35,7 @@ export default function Footer() {
                 <span className="text-xl font-bold text-navy dark:text-white">truedial</span>
               </div>
               <p className="text-xs text-muted-foreground leading-relaxed mb-6">
-                TRUEDIAL is India's emerging business growth platform helping businesses grow beyond listing with advanced marketing, technology and consulting solutions.
+                TRUEDIAL is India&apos;s emerging business growth platform helping businesses grow beyond listing with advanced marketing, technology and consulting solutions.
               </p>
               <div className="flex gap-4">
                 <a href="https://facebook.com" target="_blank" className="text-muted-foreground hover:text-primary transition cursor-pointer">Facebook</a>

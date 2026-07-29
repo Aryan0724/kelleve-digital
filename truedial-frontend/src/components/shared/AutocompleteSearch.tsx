@@ -29,14 +29,6 @@ export default function AutocompleteSearch() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  useEffect(() => {
-    if (debouncedQuery.trim().length < 2) {
-      setResults([]);
-      return;
-    }
-    fetchAutocomplete();
-  }, [debouncedQuery]);
-
   const fetchAutocomplete = async () => {
     setLoading(true);
     try {
@@ -51,6 +43,15 @@ export default function AutocompleteSearch() {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    if (debouncedQuery.trim().length < 2) {
+      setResults([]);
+      return;
+    }
+    fetchAutocomplete();
+  }, [debouncedQuery]);
+
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

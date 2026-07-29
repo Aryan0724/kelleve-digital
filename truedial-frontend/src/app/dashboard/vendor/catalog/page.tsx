@@ -202,7 +202,7 @@ export default function CatalogPage() {
           >
             <div className="h-40 w-full rounded-xl overflow-hidden mb-4 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
               {item.image ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
+                 
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
               ) : (
                 <ImageIcon className="h-10 w-10 text-slate-300 dark:text-slate-600" />

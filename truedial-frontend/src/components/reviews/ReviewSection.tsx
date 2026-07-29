@@ -14,10 +14,6 @@ export default function ReviewSection({ listing }: { listing: any }) {
   const [hasMore, setHasMore] = useState(false);
   const [writeReviewOpen, setWriteReviewOpen] = useState(false);
 
-  useEffect(() => {
-    fetchReviews();
-  }, [listing.slug, page]);
-
   const fetchReviews = async () => {
     setLoading(true);
     const res = await TrueDialAPI.getListingReviews(listing.slug, page);
@@ -31,6 +27,11 @@ export default function ReviewSection({ listing }: { listing: any }) {
     }
     setLoading(false);
   };
+
+  useEffect(() => {
+    fetchReviews();
+  }, [listing.slug, page]);
+
 
   const handleHelpful = async (reviewId: number) => {
     if (!authUser) {
