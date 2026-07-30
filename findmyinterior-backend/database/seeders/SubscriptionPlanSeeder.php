@@ -52,8 +52,8 @@ class SubscriptionPlanSeeder extends Seeder
             [
                 'name'                   => 'Premium',
                 'slug'                   => 'premium',
-                'price_monthly'          => 2499.00,
-                'price_yearly'           => 24990.00,
+                'price_monthly'          => 4999.00,
+                'price_yearly'           => 49990.00,
                 'features'               => [
                     '10 Active Listings',
                     'Unlimited Gallery Images',
@@ -72,10 +72,33 @@ class SubscriptionPlanSeeder extends Seeder
                 'is_featured_listing'    => true,
                 'is_active'              => true,
             ],
+            [
+                'name'                   => 'Elite',
+                'slug'                   => 'elite',
+                'price_monthly'          => 14999.00,
+                'price_yearly'           => 149990.00,
+                'features'               => [
+                    'Unlimited Active Listings',
+                    'Unlimited Gallery Images',
+                    'Top 10 Ranking Guarantee',
+                    'Dedicated Account Manager',
+                    '50% Discount on Lead Unlocks',
+                    'Featured in Weekly Newsletter',
+                    'Custom SEO Profile Link',
+                    'WhatsApp + Email Alerts',
+                    'VIP Support',
+                ],
+                'max_listings'           => 99,
+                'max_gallery_images'     => 999,
+                'lead_unlocks_per_month' => 0,
+                'can_see_all_leads'      => true,
+                'is_featured_listing'    => true,
+                'is_active'              => true,
+            ],
         ];
 
         foreach ($plans as $plan) {
-            SubscriptionPlan::firstOrCreate(
+            SubscriptionPlan::updateOrCreate(
                 ['slug' => $plan['slug']],
                 $plan
             );
