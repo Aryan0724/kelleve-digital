@@ -24,6 +24,12 @@ export function NotificationDropdown() {
   const [loading, setLoading] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -53,44 +59,51 @@ export function NotificationDropdown() {
 
   const fetchNotifications = async () => {
     if (!token) return;
+    setLoading(true);
     try {
       const res = await api.get("/notifications");
-      setNotifications(res.data || []);
+      setNotifications(res.data.data || []);
     } catch (err) {
-      console.error("Failed to fetch notifications", err);
+      console.error("Failed to fetch notifications:", err);
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (token && user) {
+    if (isOpen) {
       fetchNotifications();
-      // Poll every 30 seconds
-      const interval = setInterval(fetchNotifications, 30000);
-      return () => clearInterval(interval);
     }
-  }, [token, user]);
+  }, [isOpen]);
 
   const markAsRead = async (id: string) => {
     try {
-      await api.patch(`/notifications/${id}/read`);
-      setNotifications(notifications.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
+      await api.post(`/notifications/${id}/read`);
+      setNotifications(notifications.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)));
     } catch (err) {
-      console.error("Failed to mark as read", err);
+      console.error("Failed to mark notification as read", err);
     }
   };
 
-  const unreadCount = notifications.filter(n => !n.read_at).length;
+  const markAllAsRead = async () => {
+    try {
+      await api.post("/notifications/read-all");
+      setNotifications(notifications.map((n) => ({ ...n, read_at: new Date().toISOString() })));
+    } catch (err) {
+      console.error("Failed to mark all notifications as read", err);
+    }
+  };
+
+  const unreadCount = notifications.filter((n) => !n.read_at).length;
 
   if (!user) return null;
 
   return (
     <div className="relative" ref={dropdownRef}>
-      <button 
-        onClick={() => {
-          setIsOpen(!isOpen);
-          if (!isOpen && notifications.length === 0) fetchNotifications();
-        }}
-        className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50 focus:outline-none"
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50"
+        aria-label="Notifications"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -103,7 +116,7 @@ export function NotificationDropdown() {
       {isOpen && (
         <>
           {/* React Portal full-screen transparent backdrop at z-[9998] on document.body so clicking anywhere outside on the screen area always closes popup above all page z-indexes */}
-          {typeof window !== "undefined" && createPortal(
+          {mounted && createPortal(
             <div 
               className="fixed inset-0 w-screen h-screen z-[9998] bg-transparent cursor-default" 
               onClick={(e) => {
