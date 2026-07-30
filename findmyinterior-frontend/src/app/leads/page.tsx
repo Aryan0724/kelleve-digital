@@ -92,7 +92,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                   <Link href={`/requirements/${req.id}`} className="w-full">
                     <Button variant="outline" className="w-full">View Details</Button>
                   </Link>
-                  <Link href={`/dashboard`} className="w-full">
+                  <Link href={`/requirements/${req.id}`} className="w-full">
                     <Button className="w-full bg-orange-600 hover:bg-orange-700">Unlock Lead</Button>
                   </Link>
                 </div>

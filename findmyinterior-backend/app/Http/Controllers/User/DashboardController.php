@@ -295,6 +295,22 @@ class DashboardController extends Controller
                     }
                 }
             }
+            if (isset($data['recommended_leads']) && is_iterable($data['recommended_leads'])) {
+                foreach ($data['recommended_leads'] as $lead) {
+                    $isUnlocked = \App\Models\ContactUnlock::where('user_id', $user->id)
+                        ->where('requirement_id', $lead->id)
+                        ->where('requirement_type', $lead->getMorphClass())
+                        ->exists();
+                    $lead->is_unlocked = $isUnlocked;
+                    if ($isUnlocked) {
+                        $lead->unlocked_contact = [
+                            'name' => $lead->name ?? $lead->user->name ?? 'Customer',
+                            'phone' => $lead->phone ?? $lead->user->phone ?? null,
+                            'email' => $lead->email ?? $lead->user->email ?? null,
+                        ];
+                    }
+                }
+            }
 
             return $this->success($data);
         } catch (\Exception $e) {

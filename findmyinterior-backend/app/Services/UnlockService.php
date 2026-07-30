@@ -21,13 +21,24 @@ class UnlockService
     /**
      * Unlock a customer's contact for a specific requirement using the wallet.
      */
+    public static function getUnlockFee($requirement = null): float
+    {
+        if ($requirement && $requirement->unlock_price !== null && is_numeric($requirement->unlock_price)) {
+            return (float) $requirement->unlock_price;
+        }
+        $settingVal = \App\Models\Setting::where('key', 'contact_unlock_fee')->value('value');
+        if ($settingVal !== null && is_numeric($settingVal)) {
+            return (float) $settingVal;
+        }
+        return (float) config('marketplace.unlock_fee', 49.00);
+    }
+
     public function unlockContact(User $vendor, $requirement): array
     {
         $requirementType = $requirement->getMorphClass();
-
+        
         // 1. Check if already unlocked
-        $existing = DB::table('contact_unlocks')
-            ->where('user_id', $vendor->id)
+        $existing = ContactUnlock::where('user_id', $vendor->id)
             ->where('requirement_id', $requirement->id)
             ->where('requirement_type', $requirementType)
             ->first();
@@ -44,8 +55,8 @@ class UnlockService
             ];
         }
 
-        // 2. Fetch the fee from requirement or configuration
-        $fee = $requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00);
+        // 2. Fetch the fee consistently from requirement, setting, or config
+        $fee = self::getUnlockFee($requirement);
 
         // Workers and Skilled Workers can unlock any requirement for free
         if ($vendor->hasRole('worker') || $vendor->hasRole('skilled_worker')) {

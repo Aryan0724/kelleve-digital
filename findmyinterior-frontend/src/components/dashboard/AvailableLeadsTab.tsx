@@ -20,13 +20,19 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
 
   const requirements = leads || [];
 
-  const handleUnlock = async (id: number, reqType: string = '') => {
+  const handleUnlock = async (e: React.MouseEvent, id: number, reqType: string = '') => {
+    e.preventDefault();
+    e.stopPropagation();
     setUnlockingId(id);
     try {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
       const response = await api.post(`/requirements/${id}/unlock${typeStr}`);
       if (response.data?.contact) {
         setUnlockedContacts(prev => ({ ...prev, [id]: response.data.contact }));
+      } else if (response.data?.data?.contact) {
+        setUnlockedContacts(prev => ({ ...prev, [id]: response.data.data.contact }));
+      } else {
+        setUnlockedContacts(prev => ({ ...prev, [id]: { name: "Customer", phone: "Unlocked", email: "" } }));
       }
     } catch (err: any) {
       console.error(err);
@@ -49,7 +55,7 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
               const isRFQ = oppType === "RFQ";
               const isJob = oppType === "JOB";
               const isBuilder = oppType === "BUILDER_PROJECT";
-              const isUnlocked = unlockedContacts[req.id];
+              const isUnlocked = unlockedContacts[req.id] || (req.is_unlocked ? (req.unlocked_contact || { phone: req.phone, email: req.email, name: req.name }) : null);
 
               return (
                 <div key={req.id} className={`p-4 border-l-4 rounded-lg bg-white dark:bg-slate-900/50 shadow-sm flex flex-col md:flex-row justify-between md:items-start gap-4 ${isRFQ ? 'border-l-blue-500' : isJob ? 'border-l-green-500' : isBuilder ? 'border-l-purple-500' : 'border-l-orange-500'} border-y border-r border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800`}>
@@ -96,19 +102,35 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
                         </Button>
                       </Link>
                       {isUnlocked ? (
-                        <div className="flex flex-col gap-1 w-full mt-1 bg-green-50 dark:bg-green-900/20 px-3 py-2 rounded-lg border border-green-100 dark:border-green-900/50">
-                          <span className="text-xs font-bold text-green-700 dark:text-green-400">Unlocked Successfully</span>
-                          <span className="text-sm font-medium text-slate-800 dark:text-slate-200 break-all">{isUnlocked.phone || isUnlocked.email || 'Contact details not available'}</span>
+                        <div className="flex flex-col gap-1.5 w-full mt-1 bg-green-50 dark:bg-green-950/40 p-3 rounded-lg border border-green-200 dark:border-green-800 shadow-sm animate-in fade-in-50 duration-200">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-extrabold text-green-700 dark:text-green-400 uppercase tracking-wider">Unlocked Contact</span>
+                            <Badge className="bg-green-600 text-white text-[10px] px-1.5 py-0">Active</Badge>
+                          </div>
+                          {isUnlocked.name && (
+                            <div className="text-xs font-bold text-slate-900 dark:text-white">
+                              👤 {isUnlocked.name}
+                            </div>
+                          )}
+                          <div className="text-sm font-extrabold text-slate-900 dark:text-white break-all flex items-center gap-1.5">
+                            📞 <a href={`tel:${isUnlocked.phone}`} className="hover:underline text-green-700 dark:text-green-400 font-mono">{isUnlocked.phone || 'Phone available'}</a>
+                          </div>
+                          {isUnlocked.email && (
+                            <div className="text-xs text-slate-600 dark:text-slate-300 break-all">
+                              ✉️ {isUnlocked.email}
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <Button 
-                          onClick={() => handleUnlock(req.id, isRFQ ? 'rfq' : isJob ? 'job' : '')} 
+                          type="button"
+                          onClick={(e) => handleUnlock(e, req.id, isRFQ ? 'rfq' : isJob ? 'job' : '')} 
                           disabled={unlockingId === req.id}
                           className={`w-full mt-1 shadow-sm text-white ${isRFQ ? 'bg-blue-600 hover:bg-blue-700' : isJob ? 'bg-green-600 hover:bg-green-700' : isBuilder ? 'bg-purple-600 hover:bg-purple-700' : 'bg-orange-600 hover:bg-orange-700'}`}
                         >
                           {unlockingId === req.id 
                             ? "Unlocking..." 
-                            : `Unlock (${(user?.role === 'worker' || user?.role === 'skilled_worker' || user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker')) ? 'Free' : '₹' + (req.unlock_price || 49)})`}
+                            : `Unlock (${(user?.role === 'worker' || user?.role === 'skilled_worker' || user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker')) ? 'Free' : (req.unlock_price_display || ('₹' + (req.unlock_price || 49)))})`}
                         </Button>
                       )}
                     </div>
