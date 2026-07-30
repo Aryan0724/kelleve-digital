@@ -12,15 +12,23 @@ import { Input } from "@/components/ui/input";
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [filterType, setFilterType] = useState("");
+  const [filterCity, setFilterCity] = useState("");
 
   useEffect(() => {
     fetchProjects();
   }, []);
 
-  const fetchProjects = async () => {
+  const fetchProjects = async (overrideType?: string) => {
     try {
       setLoading(true);
-      const res = await api.get("/projects");
+      const params = new URLSearchParams();
+      const currentType = overrideType !== undefined ? overrideType : filterType;
+      
+      if (currentType) params.append("type", currentType);
+      if (filterCity) params.append("city", filterCity);
+      
+      const res = await api.get(`/projects?${params.toString()}`);
       setProjects(res.data.data || []);
     } catch (err) {
       console.error(err);
@@ -49,12 +57,18 @@ export default function ProjectsPage() {
               Discover high-value interior design, architecture, and construction projects posted directly by homeowners and businesses. Submit your best bid and grow your revenue.
             </p>
             <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm font-medium">
+              <button 
+                onClick={() => { setFilterType("Residential"); fetchProjects("Residential"); }}
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm font-medium hover:bg-white/20 transition-all"
+              >
                 <Home className="w-4 h-4 text-[#ff9d5c]" /> <span>Residential & Commercial</span>
-              </div>
-              <div className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm font-medium">
+              </button>
+              <button 
+                onClick={() => { setFilterType("Renovation"); fetchProjects("Renovation"); }}
+                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm font-medium hover:bg-white/20 transition-all"
+              >
                 <Ruler className="w-4 h-4 text-[#ff9d5c]" /> <span>Renovations & Build</span>
-              </div>
+              </button>
             </div>
           </div>
         </div>
@@ -72,17 +86,29 @@ export default function ProjectsPage() {
                 <label className="text-sm font-semibold mb-2 block text-slate-700">Project Type</label>
                 <div className="relative">
                   <LayoutDashboard className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <Input placeholder="e.g., Interior, Architecture..." className="pl-9 bg-slate-50 border-slate-200 focus:border-[#E8701A] focus:ring-[#E8701A]" />
+                  <Input 
+                    placeholder="e.g., Interior, Architecture..." 
+                    className="pl-9 bg-slate-50 border-slate-200 focus:border-[#E8701A] focus:ring-[#E8701A]" 
+                    value={filterType}
+                    onChange={(e) => setFilterType(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && fetchProjects()}
+                  />
                 </div>
               </div>
               <div>
                 <label className="text-sm font-semibold mb-2 block text-slate-700">Location</label>
                 <div className="relative">
                   <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <Input placeholder="City or Pincode" className="pl-9 bg-slate-50 border-slate-200 focus:border-[#E8701A] focus:ring-[#E8701A]" />
+                  <Input 
+                    placeholder="City or Pincode" 
+                    className="pl-9 bg-slate-50 border-slate-200 focus:border-[#E8701A] focus:ring-[#E8701A]" 
+                    value={filterCity}
+                    onChange={(e) => setFilterCity(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && fetchProjects()}
+                  />
                 </div>
               </div>
-              <Button className="w-full bg-[#0a1c3a] hover:bg-[#1a2c5a] text-white font-bold h-12 rounded-xl transition-all shadow-md">
+              <Button onClick={() => fetchProjects()} className="w-full bg-[#0a1c3a] hover:bg-[#1a2c5a] text-white font-bold h-12 rounded-xl transition-all shadow-md">
                 Find Projects
               </Button>
             </div>

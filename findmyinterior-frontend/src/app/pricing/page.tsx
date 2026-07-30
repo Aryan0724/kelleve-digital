@@ -42,7 +42,7 @@ export default function PricingPage() {
             <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2"><Star className="w-6 h-6 text-[#ff6b00] fill-[#ff6b00]" /> Premium</h3>
             <p className="text-slate-300 mb-6 min-h-[48px]">For growing businesses that want more leads.</p>
             <div className="mb-6">
-              <span className="text-4xl font-extrabold text-white">₹1,999</span><span className="text-slate-400">/month</span>
+              <span className="text-4xl font-extrabold text-white">₹4,999</span><span className="text-slate-400">/month</span>
             </div>
             <Link href="/dashboard">
               <Button className="w-full h-12 text-base font-semibold mb-8 bg-[#ff6b00] hover:bg-[#ea580c] border-none text-white shadow-lg">Upgrade to Premium</Button>
@@ -61,13 +61,13 @@ export default function PricingPage() {
             <h3 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2"><Zap className="w-6 h-6 text-yellow-500 fill-yellow-500" /> Elite</h3>
             <p className="text-slate-500 mb-6 min-h-[48px]">Maximum visibility and unlimited access.</p>
             <div className="mb-6">
-              <span className="text-4xl font-extrabold">₹4,999</span><span className="text-slate-500">/month</span>
+              <span className="text-4xl font-extrabold">₹14,999</span><span className="text-slate-500">/month</span>
             </div>
             <Link href="/dashboard">
               <Button variant="outline" className="w-full h-12 text-base font-semibold mb-8 border-[#0b1b36] text-[#0b1b36] hover:bg-[#0b1b36] hover:text-white">Contact Sales</Button>
             </Link>
             <ul className="space-y-4">
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600 font-semibold">Top 3 Ranking Guarantee</span></li>
+              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600 font-semibold">Top 10 Ranking Guarantee</span></li>
               <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">Dedicated Account Manager</span></li>
               <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">50% Discount on Lead Unlocks</span></li>
               <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">Featured in Weekly Newsletter</span></li>

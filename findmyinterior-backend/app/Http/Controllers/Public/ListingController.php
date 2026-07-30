@@ -53,7 +53,18 @@ class ListingController extends Controller
         // 'name' param - search by company/person name specifically
         if ($request->filled('name')) {
             $nameVal = strtolower(trim($request->name));
-            $query->whereRaw('LOWER(title) LIKE ?', ["%{$nameVal}%"]);
+            $query->where(function($q) use ($nameVal) {
+                $q->whereRaw('LOWER(title) LIKE ?', ["%{$nameVal}%"])
+                  ->orWhereHas('user', function ($uq) use ($nameVal) {
+                      $uq->whereRaw('LOWER(name) LIKE ?', ["%{$nameVal}%"])
+                         ->orWhereHas('builder', function ($bq) use ($nameVal) {
+                             $bq->whereRaw('LOWER(company_name) LIKE ?', ["%{$nameVal}%"]);
+                         })
+                         ->orWhereHas('supplier', function ($sq) use ($nameVal) {
+                             $sq->whereRaw('LOWER(company_name) LIKE ?', ["%{$nameVal}%"]);
+                         });
+                  });
+            });
         }
         if ($request->filled('min_rating')) {
             $query->where('avg_rating', '>=', $request->min_rating);

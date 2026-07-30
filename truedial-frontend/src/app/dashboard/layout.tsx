@@ -5,7 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, 
-  CreditCard, Star, FileText, Bell, ChevronRight, Globe, ArrowLeft, Heart, ShieldAlert
+  CreditCard, Star, FileText, Bell, ChevronRight, Globe, ArrowLeft, Heart, ShieldAlert,
+  Utensils, Stethoscope, Wrench, Briefcase, CalendarCheck, ClipboardList
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
@@ -53,12 +54,45 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
     ];
   } else if (hasVendorRole) {
+    const roles = user?.roles || (user?.role ? [user.role] : []);
+    const isRealEstate = roles.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
+    const isService = roles.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
+    const isMedical = roles.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
+    const isRestaurant = roles.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
+
+    let catalogLabel = "Products & Services";
+    let catalogIcon = FileText;
+    let crmLabel = "Leads & Inquiries";
+    let crmIcon = Users;
+
+    if (isMedical) {
+      catalogLabel = "Clinic Services";
+      catalogIcon = Stethoscope;
+      crmLabel = "Appointments";
+      crmIcon = CalendarCheck;
+    } else if (isRestaurant) {
+      catalogLabel = "Menu Management";
+      catalogIcon = Utensils;
+      crmLabel = "Reservations";
+      crmIcon = CalendarCheck;
+    } else if (isService) {
+      catalogLabel = "Service Catalog";
+      catalogIcon = Wrench;
+      crmLabel = "Service Requests";
+      crmIcon = ClipboardList;
+    } else if (isRealEstate) {
+      catalogLabel = "Project Portfolio";
+      catalogIcon = Briefcase;
+      crmLabel = "High-Value Leads";
+      crmIcon = Users;
+    }
+
     links = [
       { label: "Overview", href: "/dashboard/vendor", icon: LayoutDashboard },
       { label: "Business Profile", href: "/dashboard/vendor/profile", icon: Settings },
-      { label: "Products & Services", href: "/dashboard/vendor/catalog", icon: FileText },
+      { label: catalogLabel, href: "/dashboard/vendor/catalog", icon: catalogIcon },
       { label: "Analytics", href: "/dashboard/vendor/analytics", icon: LayoutDashboard },
-      { label: "Leads & Inquiries", href: "/dashboard/vendor/crm", icon: Users },
+      { label: crmLabel, href: "/dashboard/vendor/crm", icon: crmIcon },
       { label: "Marketing (SMS)", href: "/dashboard/vendor/marketing", icon: Megaphone },
       { label: "Manage Offers", href: "/dashboard/vendor/offers", icon: Star },
       { label: "Reviews & Ratings", href: "/dashboard/vendor/reputation", icon: Star },

@@ -14,6 +14,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("Patna");
+  const [apiSuggestions, setApiSuggestions] = useState<any[]>([]);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
@@ -81,6 +82,24 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
     router.push(url);
   };
 
+  useEffect(() => {
+    const q = debouncedQuery.toLowerCase();
+    if (!q) {
+      setApiSuggestions([]);
+      return;
+    }
+    
+    // Fetch live suggestions from API
+    const params = new URLSearchParams({ search: q, per_page: '3' });
+    if (selectedLocation) params.append('city', selectedLocation);
+    
+    api.get(`/listings?${params.toString()}`).then(res => {
+      if (res.data?.data) {
+        setApiSuggestions(res.data.data);
+      }
+    }).catch(console.error);
+  }, [debouncedQuery, selectedLocation]);
+
   const getSuggestions = (query: string) => {
     const q = debouncedQuery.toLowerCase();
     if (!q) return [];
@@ -108,7 +127,16 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
       });
     }
 
-    return newSuggestions;
+    // Add API suggestions
+    apiSuggestions.forEach(listing => {
+      newSuggestions.push({
+        type: "listing",
+        text: listing.business_name || listing.title,
+        href: `/professionals/${listing.slug}`
+      });
+    });
+
+    return newSuggestions.slice(0, 5);
   };
 
   const suggestions = getSuggestions(searchQuery);

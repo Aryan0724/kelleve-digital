@@ -33,7 +33,8 @@ import {
   ShieldAlert,
   Moon,
   Sun,
-  X
+  X,
+  Globe
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationDropdown } from "./NotificationDropdown";
@@ -159,12 +160,25 @@ export function Navbar() {
               </button>
             )}
 
+            <div className="relative group">
+              <button className="p-2 text-gray-500 hover:text-[#0a1c3a] dark:text-gray-400 dark:hover:text-white transition-colors rounded-full hover:bg-gray-50 dark:hover:bg-gray-800">
+                <Globe className="w-5 h-5" />
+              </button>
+              {/* Dropdown */}
+              <div className="absolute right-0 mt-2 w-32 bg-white dark:bg-slate-800 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 border border-gray-100 dark:border-slate-700 z-50">
+                <div className="py-2">
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-[#E8701A] transition-colors font-medium">English</button>
+                  <button className="w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-slate-700 hover:text-[#E8701A] transition-colors font-medium">हिंदी (Hindi)</button>
+                </div>
+              </div>
+            </div>
+
             <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2"></div>
             
             {(!_hasHydrated && !mounted) ? null : (!user || ["homeowner", "customer"].includes(user?.role || "")) ? (
-              <Link href={isAuthenticated ? "/dashboard?tab=bids_received" : "/post-requirement"}>
+              <Link href="/compare">
                 <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                  COMPARE BIDS
+                  COMPARE PROS
                 </button>
               </Link>
             ) : ["skilled_worker", "worker"].includes(user?.role || "") ? (

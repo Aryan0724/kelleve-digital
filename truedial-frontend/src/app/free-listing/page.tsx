@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { 
   Store, MapPin, Tags, FileCheck, ArrowRight, ArrowLeft, 
-  CheckCircle, Loader2, UploadCloud, Search, AlertCircle, Navigation
+  CheckCircle, Loader2, UploadCloud, Search, AlertCircle, Navigation,
+  Stethoscope, Utensils, Wrench, Briefcase, Building2
 } from "lucide-react";
 import { TrueDialAPI } from "@/lib/api";
 
@@ -35,6 +36,15 @@ export default function FreeListingPage() {
   const [businessName, setBusinessName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
+  const [businessType, setBusinessType] = useState("");
+
+  const BUSINESS_TYPES = [
+    { id: "doctor", label: "Medical & Health", icon: Stethoscope },
+    { id: "restaurant", label: "Food & Dining", icon: Utensils },
+    { id: "builder", label: "Real Estate & Construction", icon: Briefcase },
+    { id: "plumber", label: "Home & Local Services", icon: Wrench },
+    { id: "business", label: "Retail & Other Business", icon: Building2 },
+  ];
 
   // Step 2: Taxonomy & Location
   const [city, setCity] = useState("");
@@ -112,6 +122,10 @@ export default function FreeListingPage() {
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
+    if (step === 1 && !businessType) {
+      setError("Please select your primary business type.");
+      return;
+    }
     if (step === 2 && selectedCategories.length === 0) {
       setError("Please select at least one category for your business.");
       return;
@@ -136,6 +150,7 @@ export default function FreeListingPage() {
         address,
         categories: selectedCategories.map(c => c.id),
         gst_number: gstNumber,
+        business_type: businessType,
       };
 
       // Attempt to hit the actual vendor businesses endpoint
@@ -245,6 +260,39 @@ export default function FreeListingPage() {
                     required 
                     autoFocus
                   />
+                </div>
+
+                <div className="space-y-4 pt-2">
+                  <label className="text-sm font-semibold text-foreground">Primary Business Type</label>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+                    {BUSINESS_TYPES.map((type) => {
+                      const isSelected = businessType === type.id;
+                      const Icon = type.icon;
+                      return (
+                        <div 
+                          key={type.id}
+                          onClick={() => setBusinessType(type.id)}
+                          className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 flex flex-col items-center justify-center text-center gap-2 ${
+                            isSelected 
+                              ? 'border-[#E8701A] bg-[#E8701A]/5 shadow-md' 
+                              : 'border-border bg-background hover:border-primary/40 hover:bg-muted/30'
+                          }`}
+                        >
+                          {isSelected && (
+                            <div className="absolute top-2 right-2 text-[#E8701A]">
+                              <CheckCircle className="w-4 h-4 fill-current text-white bg-[#E8701A] rounded-full" />
+                            </div>
+                          )}
+                          <div className={`p-3 rounded-full ${isSelected ? 'bg-[#E8701A]/10 text-[#E8701A]' : 'bg-muted text-muted-foreground'}`}>
+                            <Icon className="w-6 h-6" />
+                          </div>
+                          <span className={`font-semibold text-sm ${isSelected ? 'text-foreground' : 'text-muted-foreground'}`}>
+                            {type.label}
+                          </span>
+                        </div>
+                      )
+                    })}
+                  </div>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

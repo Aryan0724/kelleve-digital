@@ -12,9 +12,28 @@ class OpportunityProjectController extends Controller
 {
     use \App\Traits\ApiResponse, \App\Traits\ParsesBudget;
 
-    public function index()
+    public function index(\Illuminate\Http\Request $request)
     {
-        return $this->success(Requirement::latest()->get());
+        $query = Requirement::latest();
+        
+        if ($request->filled('type')) {
+            $type = $request->type;
+            $query->where(function($q) use ($type) {
+                $q->where('opportunity_type', 'LIKE', '%' . $type . '%')
+                  ->orWhere('requirement_type', 'LIKE', '%' . $type . '%')
+                  ->orWhere('project_category', 'LIKE', '%' . $type . '%');
+            });
+        }
+        
+        if ($request->filled('city')) {
+            $city = $request->city;
+            $query->where(function($q) use ($city) {
+                $q->where('city', 'LIKE', '%' . $city . '%')
+                  ->orWhere('district', 'LIKE', '%' . $city . '%');
+            });
+        }
+        
+        return $this->success($query->get());
     }
 
     public function store(Request $request)

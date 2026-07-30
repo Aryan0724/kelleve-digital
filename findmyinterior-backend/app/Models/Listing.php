@@ -162,6 +162,18 @@ class Listing extends Model
                          ->orWhereHas('category', function ($catQ) use ($word, $singularWord) {
                              $catQ->whereRaw('LOWER(name) LIKE ?', ["%{$word}%"])
                                   ->orWhereRaw('LOWER(name) LIKE ?', ["%{$singularWord}%"]);
+                         })
+                         ->orWhereHas('user', function ($userQ) use ($word, $singularWord) {
+                             $userQ->whereRaw('LOWER(name) LIKE ?', ["%{$word}%"])
+                                   ->orWhereRaw('LOWER(name) LIKE ?', ["%{$singularWord}%"])
+                                   ->orWhereHas('builder', function ($bQ) use ($word, $singularWord) {
+                                       $bQ->whereRaw('LOWER(company_name) LIKE ?', ["%{$word}%"])
+                                          ->orWhereRaw('LOWER(company_name) LIKE ?', ["%{$singularWord}%"]);
+                                   })
+                                   ->orWhereHas('supplier', function ($sQ) use ($word, $singularWord) {
+                                       $sQ->whereRaw('LOWER(company_name) LIKE ?', ["%{$word}%"])
+                                          ->orWhereRaw('LOWER(company_name) LIKE ?', ["%{$singularWord}%"]);
+                                   });
                          });
                 });
             }
