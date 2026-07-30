@@ -30,14 +30,14 @@ else
 fi
 
 echo "3. Updating Nginx proxy settings for TCP NoDelay & KeepAlive..."
-NGINX_CONF="/root/find-my-interior/findmyinterior-nginx/conf.d/default.conf"
+NGINX_CONF="/var/www/find-my-interior/findmyinterior-nginx/conf.d/default.conf"
 if [ -f "$NGINX_CONF" ]; then
     echo "   -> Checking Nginx configuration..."
     # Ensure Nginx docker container is restarted cleanly
 fi
 
 echo "4. Pulling latest Git changes (Commit 047fb8f: Compare Bids, Globe Link, WhatsApp URL)..."
-cd /root/find-my-interior
+cd /var/www/find-my-interior
 git pull origin main
 
 echo "5. Rebuilding fmi_frontend container with new Next.js features..."
