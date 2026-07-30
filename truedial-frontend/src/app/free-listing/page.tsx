@@ -25,6 +25,74 @@ interface Category {
   slug: string;
 }
 
+// Pre-suggested categories keyed by business type selection
+const CATEGORY_SUGGESTIONS: Record<string, Category[]> = {
+  doctor: [
+    { id: 101, name: "General Physician", slug: "general-physician" },
+    { id: 102, name: "Dentist", slug: "dentist" },
+    { id: 103, name: "Dermatologist", slug: "dermatologist" },
+    { id: 104, name: "Paediatrician", slug: "paediatrician" },
+    { id: 105, name: "Gynaecologist", slug: "gynaecologist" },
+    { id: 106, name: "Orthopaedic", slug: "orthopaedic" },
+    { id: 107, name: "Eye Specialist", slug: "eye-specialist" },
+    { id: 108, name: "Psychiatrist", slug: "psychiatrist" },
+    { id: 109, name: "Cardiologist", slug: "cardiologist" },
+    { id: 110, name: "Hospital", slug: "hospital" },
+    { id: 111, name: "Diagnostic Centre", slug: "diagnostic-centre" },
+    { id: 112, name: "Pharmacy", slug: "pharmacy" },
+  ],
+  restaurant: [
+    { id: 201, name: "Restaurant", slug: "restaurant" },
+    { id: 202, name: "Cafe & Coffee Shop", slug: "cafe" },
+    { id: 203, name: "Fast Food", slug: "fast-food" },
+    { id: 204, name: "Bakery & Sweets", slug: "bakery" },
+    { id: 205, name: "Dhaba", slug: "dhaba" },
+    { id: 206, name: "Cloud Kitchen", slug: "cloud-kitchen" },
+    { id: 207, name: "Catering Service", slug: "catering" },
+    { id: 208, name: "Ice Cream Parlour", slug: "ice-cream" },
+    { id: 209, name: "Juice Bar", slug: "juice-bar" },
+    { id: 210, name: "Banquet Hall", slug: "banquet" },
+  ],
+  builder: [
+    { id: 301, name: "Interior Designer", slug: "interior-designer" },
+    { id: 302, name: "Architect", slug: "architect" },
+    { id: 303, name: "Builder & Developer", slug: "builder" },
+    { id: 304, name: "Civil Contractor", slug: "civil-contractor" },
+    { id: 305, name: "Modular Kitchen", slug: "modular-kitchen" },
+    { id: 306, name: "Furniture Shop", slug: "furniture" },
+    { id: 307, name: "Material Supplier", slug: "material-supplier" },
+    { id: 308, name: "Real Estate Agent", slug: "real-estate-agent" },
+    { id: 309, name: "Vastu Consultant", slug: "vastu" },
+    { id: 310, name: "Painting Contractor", slug: "painting" },
+  ],
+  plumber: [
+    { id: 401, name: "Plumber", slug: "plumber" },
+    { id: 402, name: "Electrician", slug: "electrician" },
+    { id: 403, name: "AC Repair & Service", slug: "ac-repair" },
+    { id: 404, name: "Carpenter", slug: "carpenter" },
+    { id: 405, name: "Pest Control", slug: "pest-control" },
+    { id: 406, name: "House Cleaning", slug: "cleaning" },
+    { id: 407, name: "CCTV & Security", slug: "cctv" },
+    { id: 408, name: "Mechanic / Garage", slug: "mechanic" },
+    { id: 409, name: "Inverter & Battery", slug: "inverter" },
+    { id: 410, name: "Packers & Movers", slug: "packers-movers" },
+  ],
+  business: [
+    { id: 501, name: "Grocery Store", slug: "grocery" },
+    { id: 502, name: "Clothing & Apparel", slug: "clothing" },
+    { id: 503, name: "Mobile & Electronics", slug: "electronics" },
+    { id: 504, name: "Salon & Spa", slug: "salon" },
+    { id: 505, name: "Gym & Fitness", slug: "gym" },
+    { id: 506, name: "School & Coaching", slug: "education" },
+    { id: 507, name: "Travel Agency", slug: "travel" },
+    { id: 508, name: "Lawyer & Legal", slug: "legal" },
+    { id: 509, name: "Chartered Accountant", slug: "ca" },
+    { id: 510, name: "Printing & Stationery", slug: "printing" },
+    { id: 511, name: "Event Management", slug: "events" },
+    { id: 512, name: "Photographer", slug: "photography" },
+  ],
+};
+
 export default function FreeListingPage() {
   const router = useRouter();
   const { user } = useAuth();
@@ -65,29 +133,31 @@ export default function FreeListingPage() {
     }
   }, [user]);
 
-  // Fetch Categories dynamically
+  // Seed categories from the macro-category map and try to enrich from backend
   useEffect(() => {
+    // First, immediately seed with local suggestions based on the selected businessType
+    const suggested = CATEGORY_SUGGESTIONS[businessType] || Object.values(CATEGORY_SUGGESTIONS).flat();
+    setAvailableCategories(suggested);
+    // Clear selected categories when type changes
+    setSelectedCategories([]);
+
+    // Then try to enrich from the backend
     async function fetchCategories() {
       try {
         const res = await TrueDialAPI.getCategories();
-        if (res.data) {
-          setAvailableCategories(res.data);
+        if (res.data && res.data.length > 0) {
+          // Merge: put backend results first, then add any local suggestions not already included
+          const backendSlugs = new Set(res.data.map((c: Category) => c.slug));
+          const extraSuggestions = suggested.filter(s => !backendSlugs.has(s.slug));
+          setAvailableCategories([...res.data, ...extraSuggestions]);
         }
       } catch (e) {
-        console.error("Failed to fetch categories", e);
-        // Fallback for UI testing if backend is unreachable
-        setAvailableCategories([
-          { id: 1, name: "Restaurants", slug: "restaurants" },
-          { id: 2, name: "Hotels", slug: "hotels" },
-          { id: 3, name: "Hospitals", slug: "hospitals" },
-          { id: 4, name: "Education", slug: "education" },
-          { id: 5, name: "Real Estate", slug: "real-estate" },
-          { id: 6, name: "Home Services", slug: "home-services" },
-        ]);
+        // Backend unreachable — local suggestions already shown, nothing to do
+        console.info("Category API unavailable, using local suggestions.");
       }
     }
     fetchCategories();
-  }, []);
+  }, [businessType]);
 
   const handleGetLocation = () => {
     if ("geolocation" in navigator) {
@@ -333,7 +403,9 @@ export default function FreeListingPage() {
                 
                 <div className="space-y-4 mb-8">
                   <label className="text-sm font-semibold text-foreground">Business Category</label>
-                  <p className="text-sm text-muted-foreground mb-4">Select the categories that best describe your services.</p>
+                  <p className="text-sm text-muted-foreground mb-4">
+                    Showing suggestions based on your selected business type. Select all that apply.
+                  </p>
                   
                   <div className="relative">
                     <Search className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
@@ -346,26 +418,45 @@ export default function FreeListingPage() {
                     />
                   </div>
 
-                  <div className="flex flex-wrap gap-2 mt-4 max-h-48 overflow-y-auto p-2 border border-border rounded-lg bg-muted/20">
-                    {filteredCategories.length > 0 ? filteredCategories.map(cat => {
-                      const isSelected = selectedCategories.some(c => c.id === cat.id);
-                      return (
-                        <div 
-                          key={cat.id} 
-                          onClick={() => toggleCategory(cat)}
-                          className={`px-4 py-2 rounded-full text-sm cursor-pointer transition-all border font-medium flex items-center gap-2 ${
-                            isSelected 
-                              ? 'bg-[#E8701A] text-white border-[#E8701A] shadow-md shadow-[#E8701A]/20' 
-                              : 'bg-background hover:bg-muted text-foreground border-border hover:border-primary/50'
-                          }`}
-                        >
-                          {isSelected && <CheckCircle className="w-4 h-4" />}
+                  {selectedCategories.length > 0 && (
+                    <div className="flex flex-wrap gap-1 mt-3">
+                      <span className="text-xs font-semibold text-muted-foreground mr-1 self-center">Selected:</span>
+                      {selectedCategories.map(cat => (
+                        <span key={cat.id} className="px-2 py-0.5 bg-[#E8701A] text-white text-xs rounded-full font-medium flex items-center gap-1">
                           {cat.name}
-                        </div>
-                      )
-                    }) : (
-                      <p className="text-sm text-muted-foreground p-4 text-center w-full">No categories found matching "{searchCategory}"</p>
-                    )}
+                          <button type="button" onClick={() => toggleCategory(cat)} className="ml-0.5 hover:text-white/70">×</button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="mt-3">
+                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
+                      ✨ Suggested for you
+                    </span>
+                    <div className="flex flex-wrap gap-2 mt-2 max-h-52 overflow-y-auto p-3 border border-border rounded-xl bg-muted/20">
+                      {filteredCategories.length > 0 ? filteredCategories.map(cat => {
+                        const isSelected = selectedCategories.some(c => c.id === cat.id);
+                        return (
+                          <div 
+                            key={cat.id} 
+                            onClick={() => toggleCategory(cat)}
+                            className={`px-4 py-2 rounded-full text-sm cursor-pointer transition-all border font-medium flex items-center gap-2 ${
+                              isSelected 
+                                ? 'bg-[#E8701A] text-white border-[#E8701A] shadow-md shadow-[#E8701A]/20' 
+                                : 'bg-background hover:bg-muted text-foreground border-border hover:border-primary/50'
+                            }`}
+                          >
+                            {isSelected && <CheckCircle className="w-4 h-4" />}
+                            {cat.name}
+                          </div>
+                        )
+                      }) : (
+                        <p className="text-sm text-muted-foreground p-4 text-center w-full">
+                          No categories found matching &ldquo;{searchCategory}&rdquo;
+                        </p>
+                      )}
+                    </div>
                   </div>
                 </div>
 
