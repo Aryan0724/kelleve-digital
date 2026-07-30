@@ -40,10 +40,10 @@ echo "4. Pulling latest Git changes (Commit 047fb8f: Compare Bids, Globe Link, W
 cd /var/www/find-my-interior
 git pull origin main
 
-echo "5. Rebuilding fmi_frontend container with new Next.js features..."
-docker compose build fmi_frontend
-docker compose up -d --no-deps fmi_frontend
-docker compose restart fmi_nginx || true
+echo "5. Rebuilding frontend container with new Next.js features..."
+docker compose build frontend
+docker compose up -d --no-deps frontend
+docker compose restart nginx || docker restart fmi_nginx || true
 
 echo "=========================================================="
 echo "  VPS WI-FI OPTIMIZATION & DEPLOYMENT COMPLETED SUCCESSFULLY!"
