@@ -15,7 +15,7 @@ export function Footer() {
             interior designers, builders, suppliers, and skilled workers.
           </p>
           <div className="flex items-center gap-3">
-            <Link href="#" className="hover:text-white transition-colors" aria-label="Website">
+            <Link href="/" className="hover:text-white transition-colors" aria-label="Website">
               <Globe className="h-5 w-5" />
             </Link>
             <Link href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors" aria-label="Email">

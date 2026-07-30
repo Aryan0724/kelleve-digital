@@ -42,7 +42,7 @@ export default function PricingPage() {
             <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2"><Star className="w-6 h-6 text-[#ff6b00] fill-[#ff6b00]" /> Premium</h3>
             <p className="text-slate-300 mb-6 min-h-[48px]">For growing businesses that want more leads.</p>
             <div className="mb-6">
-              <span className="text-4xl font-extrabold text-white">₹4,999</span><span className="text-slate-400">/month</span>
+              <span className="text-4xl font-extrabold text-white">₹1,999</span><span className="text-slate-400">/month</span>
             </div>
             <Link href="/dashboard">
               <Button className="w-full h-12 text-base font-semibold mb-8 bg-[#ff6b00] hover:bg-[#ea580c] border-none text-white shadow-lg">Upgrade to Premium</Button>
@@ -61,7 +61,7 @@ export default function PricingPage() {
             <h3 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2"><Zap className="w-6 h-6 text-yellow-500 fill-yellow-500" /> Elite</h3>
             <p className="text-slate-500 mb-6 min-h-[48px]">Maximum visibility and unlimited access.</p>
             <div className="mb-6">
-              <span className="text-4xl font-extrabold">₹14,999</span><span className="text-slate-500">/month</span>
+              <span className="text-4xl font-extrabold">₹4,999</span><span className="text-slate-500">/month</span>
             </div>
             <Link href="/dashboard">
               <Button variant="outline" className="w-full h-12 text-base font-semibold mb-8 border-[#0b1b36] text-[#0b1b36] hover:bg-[#0b1b36] hover:text-white">Contact Sales</Button>
