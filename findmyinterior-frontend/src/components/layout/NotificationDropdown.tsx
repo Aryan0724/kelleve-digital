@@ -24,16 +24,22 @@ export function NotificationDropdown() {
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
+    function handleClickOutside(event: MouseEvent | TouchEvent) {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setIsOpen(false);
       }
     }
-    document.addEventListener("mousedown", handleClickOutside);
+    if (isOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      document.addEventListener("touchstart", handleClickOutside);
+      document.addEventListener("click", handleClickOutside);
+    }
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("click", handleClickOutside);
     };
-  }, [dropdownRef]);
+  }, [isOpen]);
 
   const fetchNotifications = async () => {
     if (!token) return;
@@ -85,8 +91,14 @@ export function NotificationDropdown() {
       </button>
 
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-slate-100 z-50 overflow-hidden">
-          <div className="flex justify-between items-center p-3 border-b bg-slate-50">
+        <>
+          {/* Transparent full-screen overlay to catch clicks outside the popup */}
+          <div 
+            className="fixed inset-0 z-40" 
+            onClick={() => setIsOpen(false)}
+          />
+          <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-slate-100 z-50 overflow-hidden">
+            <div className="flex justify-between items-center p-3 border-b bg-slate-50">
             <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
           </div>
           
@@ -122,6 +134,7 @@ export function NotificationDropdown() {
             )}
           </div>
         </div>
+        </>
       )}
     </div>
   );
