@@ -22,7 +22,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-[#0a1c3a] to-[#1a2c5a]",
     ctas: [
       { label: "Post New Requirement", href: "/post-requirement", primary: true },
-      { label: "Compare Pros", href: "/compare" },
+      { label: "Compare Bids", href: "/compare" },
     ],
     quickCards: [
       { label: "Active Projects", key: "total_projects", icon: Briefcase, href: "/dashboard" },
@@ -40,7 +40,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-[#0a1c3a] to-[#1a2c5a]",
     ctas: [
       { label: "Post New Requirement", href: "/post-requirement", primary: true },
-      { label: "Compare Pros", href: "/compare" },
+      { label: "Compare Bids", href: "/compare" },
     ],
     quickCards: [
       { label: "Active Projects", key: "total_projects", icon: Briefcase, href: "/dashboard" },

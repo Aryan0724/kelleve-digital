@@ -15,10 +15,10 @@ export function Footer() {
             interior designers, builders, suppliers, and skilled workers.
           </p>
           <div className="flex items-center gap-3">
-            <Link href="/" className="hover:text-white transition-colors" aria-label="Website">
+            <a href="https://findmyinterior.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="Website" title="Visit Find My Interior Website">
               <Globe className="h-5 w-5" />
-            </Link>
-            <Link href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors" aria-label="Email">
+            </a>
+            <Link href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors" aria-label="Email" title="Email Us">
               <Mail className="h-5 w-5" />
             </Link>
           </div>
@@ -48,6 +48,11 @@ export function Footer() {
         <div>
           <h3 className="font-semibold text-white mb-4">Contact</h3>
           <ul className="space-y-3 text-sm">
+            <li>
+              <Link href="/contact" className="inline-flex items-center gap-1.5 text-orange-400 font-bold hover:text-orange-300 transition-colors">
+                → Contact Us Page &amp; Support Form
+              </Link>
+            </li>
             <li className="flex items-center gap-2">
               <Mail className="h-4 w-4 shrink-0 text-orange-400" />
               <a href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors">info@findmyinterior.com</a>
