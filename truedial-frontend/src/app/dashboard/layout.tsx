@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
+import VendorTabBar from "@/components/dashboard/VendorTabBar";
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, clearUser } = useAuth();
@@ -331,6 +332,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </div>
         </header>
         
+        {/* Vendor Tab Bar — personalized by business type */}
+        {hasVendorRole && <VendorTabBar />}
+
         {/* Scrollable Content */}
         <div 
           className="flex-1 overflow-y-auto p-6 bg-background"
