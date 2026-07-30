@@ -7,8 +7,15 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Loader2, Save, Store, MapPin, Phone, Globe, Link, Briefcase, Users } from "lucide-react";
+import { useAuth } from "@/context/AuthContext";
+import VendorProfileRoleSection from "@/components/dashboard/VendorProfileRoleSection";
 
 export default function VendorProfilePage() {
+  const { user } = useAuth();
+  const rawRoles = user?.roles || (user?.role ? [user.role] : []);
+  const roleStrings: string[] = rawRoles.map((r: any) =>
+    typeof r === "string" ? r : r?.slug || r?.name || ""
+  );
   const [business, setBusiness] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -270,6 +277,9 @@ export default function VendorProfilePage() {
           </div>
         </CardContent>
       </Card>
+
+      {/* Role-specific business settings (Clinic Hours, Service Area, Awards/RERA, Dining Amenities) */}
+      <VendorProfileRoleSection roles={roleStrings} />
 
       <Card className="border-0 shadow-lg bg-white dark:bg-[#0a1c3a]/50 dark:border dark:border-white/10 backdrop-blur-md">
         <CardHeader>

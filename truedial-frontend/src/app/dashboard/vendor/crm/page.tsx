@@ -5,7 +5,8 @@ import { useAuth } from "@/context/AuthContext";
 import {
   Phone, Clock, CheckCircle, XCircle, CalendarDays, Users,
   MapPin, IndianRupee, Utensils, Wrench, Briefcase, Stethoscope,
-  Filter, Search, ChevronDown, ArrowRight, MessageSquare
+  Filter, Search, ChevronDown, ArrowRight, MessageSquare,
+  Power, ShoppingBag, Truck, Flame, AlertCircle
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -24,6 +25,12 @@ const MOCK_RESERVATIONS = [
   { id: 2, name: "Sneha Patil", guests: 2, date: "Today", time: "9:30 PM", requests: "Anniversary cake", status: "Pending" },
   { id: 3, name: "Karan Mehta", guests: 10, date: "Tomorrow", time: "7:30 PM", requests: "Banquet setup", status: "Confirmed" },
   { id: 4, name: "Riya Joshi", guests: 3, date: "This Weekend", time: "1:00 PM", requests: "—", status: "Pending" },
+];
+
+const MOCK_DELIVERY_ORDERS = [
+  { id: 101, name: "Varun Sharma", items: "2x Paneer Tikka Masala, 4x Butter Naan", total: "₹780", status: "Preparing", phone: "9800011111", time: "10 mins ago" },
+  { id: 102, name: "Pooja Hegde", items: "1x Veg Biryani, 1x Raita, 1x Gulab Jamun", total: "₹420", status: "Out for Delivery", phone: "9800022222", time: "25 mins ago" },
+  { id: 103, name: "Rohan Das", items: "1x Family Meal Combo (4 persons)", total: "₹1,450", status: "New Order", phone: "9800033333", time: "Just now" },
 ];
 
 const MOCK_SERVICE_REQUESTS = [
@@ -51,13 +58,17 @@ function StatusBadge({ status }: { status: string }) {
   const map: Record<string, string> = {
     "Waiting": "bg-amber-500/10 text-amber-600 border-amber-500/20",
     "Pending": "bg-amber-500/10 text-amber-600 border-amber-500/20",
+    "New Order": "bg-amber-500/10 text-amber-600 border-amber-500/20",
     "Follow-up Needed": "bg-amber-500/10 text-amber-600 border-amber-500/20",
     "Confirmed": "bg-blue-500/10 text-blue-600 border-blue-500/20",
     "Accepted": "bg-blue-500/10 text-blue-600 border-blue-500/20",
+    "Preparing": "bg-blue-500/10 text-blue-600 border-blue-500/20",
     "Site Visit Scheduled": "bg-blue-500/10 text-blue-600 border-blue-500/20",
     "Priority": "bg-red-500/10 text-red-600 border-red-500/20",
     "Completed": "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
     "Closed": "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+    "Delivered": "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
+    "Out for Delivery": "bg-purple-500/10 text-purple-600 border-purple-500/20",
     "New": "bg-primary/10 text-primary border-primary/20",
     "New Lead": "bg-primary/10 text-primary border-primary/20",
     "Quotation Sent": "bg-purple-500/10 text-purple-600 border-purple-500/20",
@@ -73,13 +84,36 @@ function StatusBadge({ status }: { status: string }) {
 // ─── Appointments View (Medical) ───────────────────────────────────────────────
 function AppointmentsView() {
   const [items, setItems] = useState(MOCK_APPOINTMENTS);
+  const [isClinicOpen, setIsClinicOpen] = useState(true);
   const todayCount = items.filter(i => i.date === "Today").length;
   const priorityCount = items.filter(i => i.status === "Priority").length;
 
   const updateStatus = (id: number, status: string) => setItems(items.map(i => i.id === id ? { ...i, status } : i));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Clinic Hours & Live Status Banner */}
+      <div className={`p-4 rounded-xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 ${
+        isClinicOpen ? "bg-emerald-500/10 border-emerald-500/20" : "bg-red-500/10 border-red-500/20"
+      }`}>
+        <div className="flex items-center gap-3">
+          <span className={`w-3 h-3 rounded-full animate-pulse ${isClinicOpen ? "bg-emerald-500" : "bg-red-500"}`} />
+          <div>
+            <h3 className="font-bold text-foreground text-sm">
+              {isClinicOpen ? "Clinic is Currently OPEN" : "Clinic is Currently CLOSED"}
+            </h3>
+            <p className="text-xs text-muted-foreground">Standard timing: Today • 9:00 AM – 8:00 PM</p>
+          </div>
+        </div>
+        <Button
+          onClick={() => setIsClinicOpen(!isClinicOpen)}
+          variant="outline"
+          className="text-xs font-bold h-9"
+        >
+          {isClinicOpen ? "Pause Walk-in Check-ins" : "Resume Walk-in Check-ins"}
+        </Button>
+      </div>
+
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: "Today's Appointments", value: todayCount, color: "text-blue-500" },
@@ -129,72 +163,183 @@ function AppointmentsView() {
   );
 }
 
-// ─── Reservations View (Restaurant) ───────────────────────────────────────────
+// ─── Reservations & Delivery Orders View (Restaurant) ─────────────────────────
 function ReservationsView() {
+  const [tab, setTab] = useState<"reservations" | "delivery">("reservations");
   const [items, setItems] = useState(MOCK_RESERVATIONS);
-  const todayCovers = items.filter(i => i.date === "Today").reduce((sum, r) => sum + r.guests, 0);
+  const [orders, setOrders] = useState(MOCK_DELIVERY_ORDERS);
 
+  const todayCovers = items.filter(i => i.date === "Today").reduce((sum, r) => sum + r.guests, 0);
   const updateStatus = (id: number, status: string) => setItems(items.map(i => i.id === id ? { ...i, status } : i));
+  const updateOrder = (id: number, status: string) => setOrders(orders.map(o => o.id === id ? { ...o, status } : o));
 
   return (
-    <div className="space-y-6">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-        <div className="bg-card border border-border rounded-xl p-4">
-          <div className="text-3xl font-bold text-emerald-500">{todayCovers}</div>
-          <div className="text-xs text-muted-foreground mt-1">Today's Total Covers</div>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-4">
-          <div className="text-3xl font-bold text-amber-500">{items.filter(i => i.status === "Pending").length}</div>
-          <div className="text-xs text-muted-foreground mt-1">Awaiting Approval</div>
-        </div>
-        <div className="bg-card border border-border rounded-xl p-4">
-          <div className="text-3xl font-bold text-blue-500">{items.filter(i => i.status === "Confirmed").length}</div>
-          <div className="text-xs text-muted-foreground mt-1">Confirmed Bookings</div>
-        </div>
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Sub-tab switch: Table Reservations vs Delivery Orders */}
+      <div className="flex border-b border-border gap-6">
+        <button
+          onClick={() => setTab("reservations")}
+          className={`pb-3 text-sm font-bold border-b-2 transition flex items-center gap-2 ${
+            tab === "reservations" ? "border-[#E8701A] text-[#E8701A]" : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Utensils className="w-4 h-4" /> Table Reservations ({items.filter(i => i.status === "Pending").length})
+        </button>
+        <button
+          onClick={() => setTab("delivery")}
+          className={`pb-3 text-sm font-bold border-b-2 transition flex items-center gap-2 ${
+            tab === "delivery" ? "border-[#E8701A] text-[#E8701A]" : "border-transparent text-muted-foreground hover:text-foreground"
+          }`}
+        >
+          <Truck className="w-4 h-4" /> Direct Delivery Orders ({orders.filter(o => o.status === "New Order").length})
+        </button>
       </div>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-border">
-          <h2 className="font-bold text-foreground flex items-center gap-2"><Utensils className="w-4 h-4 text-primary" /> Upcoming Reservations</h2>
-        </div>
-        <div className="divide-y divide-border">
-          {items.map(res => (
-            <div key={res.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition">
-              <div className="flex-1">
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="font-semibold text-foreground">{res.name}</span>
-                  <span className="px-2 py-0.5 text-xs bg-muted text-foreground rounded-full font-bold">{res.guests} Guests</span>
-                  <StatusBadge status={res.status} />
-                </div>
-                <p className="text-xs text-muted-foreground">{res.date} at {res.time}</p>
-                {res.requests !== "—" && <p className="text-xs italic text-muted-foreground mt-0.5">📝 {res.requests}</p>}
-              </div>
-              <div className="flex items-center gap-2">
-                {res.status === "Pending" && (
-                  <>
-                    <button onClick={() => updateStatus(res.id, "Confirmed")} className="px-3 py-1.5 text-xs font-bold bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition">Approve</button>
-                    <button onClick={() => updateStatus(res.id, "Rejected")} className="px-3 py-1.5 text-xs font-bold bg-red-500/10 text-red-600 rounded-lg hover:bg-red-500/20 border border-red-500/20 transition">Decline</button>
-                  </>
-                )}
-                {res.status === "Confirmed" && (
-                  <button onClick={() => updateStatus(res.id, "Completed")} className="px-3 py-1.5 text-xs font-bold bg-blue-500/10 text-blue-600 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition">Mark Arrived</button>
-                )}
-              </div>
+      {tab === "reservations" ? (
+        <>
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            <div className="bg-card border border-border rounded-xl p-4">
+              <div className="text-3xl font-bold text-emerald-500">{todayCovers}</div>
+              <div className="text-xs text-muted-foreground mt-1">Today's Total Covers</div>
             </div>
-          ))}
+            <div className="bg-card border border-border rounded-xl p-4">
+              <div className="text-3xl font-bold text-amber-500">{items.filter(i => i.status === "Pending").length}</div>
+              <div className="text-xs text-muted-foreground mt-1">Awaiting Approval</div>
+            </div>
+            <div className="bg-card border border-border rounded-xl p-4">
+              <div className="text-3xl font-bold text-blue-500">{items.filter(i => i.status === "Confirmed").length}</div>
+              <div className="text-xs text-muted-foreground mt-1">Confirmed Bookings</div>
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl overflow-hidden">
+            <div className="p-4 border-b border-border">
+              <h2 className="font-bold text-foreground flex items-center gap-2"><Utensils className="w-4 h-4 text-primary" /> Upcoming Reservations</h2>
+            </div>
+            <div className="divide-y divide-border">
+              {items.map(res => (
+                <div key={res.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className="font-semibold text-foreground">{res.name}</span>
+                      <span className="px-2 py-0.5 text-xs bg-muted text-foreground rounded-full font-bold">{res.guests} Guests</span>
+                      <StatusBadge status={res.status} />
+                    </div>
+                    <p className="text-xs text-muted-foreground">{res.date} at {res.time}</p>
+                    {res.requests !== "—" && <p className="text-xs italic text-muted-foreground mt-0.5">📝 {res.requests}</p>}
+                  </div>
+                  <div className="flex items-center gap-2">
+                    {res.status === "Pending" && (
+                      <>
+                        <button onClick={() => updateStatus(res.id, "Confirmed")} className="px-3 py-1.5 text-xs font-bold bg-emerald-500 text-white rounded-lg hover:bg-emerald-600 transition">Approve</button>
+                        <button onClick={() => updateStatus(res.id, "Rejected")} className="px-3 py-1.5 text-xs font-bold bg-red-500/10 text-red-600 rounded-lg hover:bg-red-500/20 border border-red-500/20 transition">Decline</button>
+                      </>
+                    )}
+                    {res.status === "Confirmed" && (
+                      <button onClick={() => updateStatus(res.id, "Completed")} className="px-3 py-1.5 text-xs font-bold bg-blue-500/10 text-blue-600 rounded-lg border border-blue-500/20 hover:bg-blue-500/20 transition">Mark Arrived</button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </>
+      ) : (
+        /* Delivery Orders Tracking View */
+        <div className="bg-card border border-border rounded-xl overflow-hidden">
+          <div className="p-4 border-b border-border flex items-center justify-between">
+            <h2 className="font-bold text-foreground flex items-center gap-2"><Truck className="w-4 h-4 text-[#E8701A]" /> Direct Commission-Free Orders</h2>
+            <span className="text-xs text-muted-foreground font-semibold">0% platform fee</span>
+          </div>
+          <div className="divide-y divide-border">
+            {orders.map(order => (
+              <div key={order.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition">
+                <div className="flex-1 space-y-1">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-foreground">Order #{order.id} • {order.name}</span>
+                    <StatusBadge status={order.status} />
+                  </div>
+                  <p className="text-sm font-medium text-foreground">{order.items}</p>
+                  <p className="text-xs text-muted-foreground flex items-center gap-2">
+                    <span>Total: <strong className="text-[#E8701A]">{order.total}</strong></span>
+                    <span>•</span>
+                    <span>Ordered {order.time}</span>
+                  </p>
+                </div>
+                <div className="flex items-center gap-2">
+                  {order.status === "New Order" && (
+                    <button onClick={() => updateOrder(order.id, "Preparing")} className="px-3 py-1.5 text-xs font-bold bg-[#E8701A] text-white rounded-lg hover:bg-[#E8701A]/90 transition">Accept & Prepare</button>
+                  )}
+                  {order.status === "Preparing" && (
+                    <button onClick={() => updateOrder(order.id, "Out for Delivery")} className="px-3 py-1.5 text-xs font-bold bg-purple-500/10 text-purple-600 rounded-lg border border-purple-500/20 transition">Out for Delivery</button>
+                  )}
+                  {order.status === "Out for Delivery" && (
+                    <button onClick={() => updateOrder(order.id, "Delivered")} className="px-3 py-1.5 text-xs font-bold bg-emerald-500/10 text-emerald-600 rounded-lg border border-emerald-500/20 transition">Mark Delivered</button>
+                  )}
+                  <a href={`tel:${order.phone}`} className="p-2 bg-background border border-border rounded-lg text-foreground hover:bg-primary hover:text-white transition">
+                    <Phone className="w-4 h-4" />
+                  </a>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
 
-// ─── Service Requests View (Home Services) ─────────────────────────────────────
+// ─── Service Requests View with "Accepting Jobs" Toggle (Home Services) ────────
 function ServiceRequestsView() {
   const [items, setItems] = useState(MOCK_SERVICE_REQUESTS);
+  const [acceptingJobs, setAcceptingJobs] = useState(true);
   const updateStatus = (id: number, status: string) => setItems(items.map(i => i.id === id ? { ...i, status } : i));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Prominent "Accepting Jobs" Online/Offline Toggle Banner */}
+      <div className={`p-5 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm transition-colors ${
+        acceptingJobs
+          ? "bg-gradient-to-r from-emerald-500/15 via-emerald-500/5 to-background border-emerald-500/30"
+          : "bg-muted/50 border-border"
+      }`}>
+        <div className="flex items-center gap-3.5">
+          <div className={`w-11 h-11 rounded-xl flex items-center justify-center shrink-0 ${
+            acceptingJobs ? "bg-emerald-500 text-white shadow-md shadow-emerald-500/30" : "bg-muted-foreground/20 text-muted-foreground"
+          }`}>
+            <Power className="w-6 h-6" />
+          </div>
+          <div>
+            <div className="flex items-center gap-2">
+              <h3 className="font-bold text-foreground text-base">
+                {acceptingJobs ? "You are ONLINE & Accepting Service Jobs" : "You are currently OFFLINE"}
+              </h3>
+              <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded-full ${
+                acceptingJobs ? "bg-emerald-500 text-white" : "bg-muted text-muted-foreground"
+              }`}>
+                {acceptingJobs ? "Live" : "Paused"}
+              </span>
+            </div>
+            <p className="text-xs text-muted-foreground mt-0.5">
+              {acceptingJobs
+                ? "Customers in your 15km radius can see your profile and request service instantly."
+                : "Your profile is hidden from instant booking searches until you go back online."
+              }
+            </p>
+          </div>
+        </div>
+        <Button
+          onClick={() => setAcceptingJobs(!acceptingJobs)}
+          className={`h-11 px-6 rounded-xl font-bold transition shadow-sm ${
+            acceptingJobs
+              ? "bg-card border border-border text-foreground hover:bg-muted"
+              : "bg-[#E8701A] hover:bg-[#E8701A]/90 text-white"
+          }`}
+        >
+          {acceptingJobs ? "Go Offline (Pause Jobs)" : "Go Online (Accept Jobs)"}
+        </Button>
+      </div>
+
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
         <div className="bg-card border border-border rounded-xl p-4">
           <div className="text-3xl font-bold text-amber-500">{items.filter(i => i.status === "Pending").length}</div>
@@ -264,7 +409,7 @@ function LeadsPipelineView() {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
         {[
           { label: "New Leads", value: items.filter(i => i.stage === "New Lead").length, color: "text-primary" },
@@ -322,7 +467,7 @@ function InquiriesView() {
   const updateStatus = (id: number, status: string) => setItems(items.map(i => i.id === id ? { ...i, status } : i));
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 animate-in fade-in duration-300">
       <div className="bg-card border border-border rounded-xl overflow-hidden">
         <div className="p-4 border-b border-border">
           <h2 className="font-bold text-foreground flex items-center gap-2"><MessageSquare className="w-4 h-4 text-primary" /> Leads & Inquiries</h2>
