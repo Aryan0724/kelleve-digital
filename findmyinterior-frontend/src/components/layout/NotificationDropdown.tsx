@@ -1,7 +1,8 @@
 "use client";
 
 import { useState, useEffect, useRef } from "react";
-import { Bell, Check, Loader2 } from "lucide-react";
+import { createPortal } from "react-dom";
+import { Bell, Check, Loader2, X } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
@@ -29,13 +30,24 @@ export function NotificationDropdown() {
         setIsOpen(false);
       }
     }
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setIsOpen(false);
+      }
+    }
     if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside);
-      document.addEventListener("touchstart", handleClickOutside);
+      document.addEventListener("mousedown", handleClickOutside, true);
+      document.addEventListener("pointerdown", handleClickOutside, true);
+      document.addEventListener("touchstart", handleClickOutside, true);
+      document.addEventListener("click", handleClickOutside, true);
+      document.addEventListener("keydown", handleKeyDown, true);
     }
     return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-      document.removeEventListener("touchstart", handleClickOutside);
+      document.removeEventListener("mousedown", handleClickOutside, true);
+      document.removeEventListener("pointerdown", handleClickOutside, true);
+      document.removeEventListener("touchstart", handleClickOutside, true);
+      document.removeEventListener("click", handleClickOutside, true);
+      document.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [isOpen]);
 
@@ -90,18 +102,28 @@ export function NotificationDropdown() {
 
       {isOpen && (
         <>
-          {/* Full-screen transparent backdrop overlay so clicking anywhere outside the notification popup closes it automatically */}
-          <div 
-            className="fixed inset-0 z-40 bg-transparent cursor-default" 
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(false);
-            }}
-          />
+          {/* React Portal full-screen transparent backdrop at z-30 on document.body so clicking anywhere outside on the screen area always closes popup */}
+          {typeof window !== "undefined" && createPortal(
+            <div 
+              className="fixed inset-0 w-screen h-screen z-[30] bg-transparent cursor-default" 
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsOpen(false);
+              }}
+            />,
+            document.body
+          )}
           <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-slate-100 z-50 overflow-hidden">
             <div className="flex justify-between items-center p-3 border-b bg-slate-50">
-            <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
-          </div>
+              <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
+              <button
+                onClick={() => setIsOpen(false)}
+                className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-colors"
+                title="Close notifications"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
           
           <div className="max-h-96 overflow-y-auto">
             {loading ? (
