@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Globe, Mail, Phone, MapPin } from "lucide-react";
+import { Mail, Phone, MapPin } from "lucide-react";
 
 export function Footer() {
   return (
@@ -15,9 +15,6 @@ export function Footer() {
             interior designers, builders, suppliers, and skilled workers.
           </p>
           <div className="flex items-center gap-3">
-            <a href="https://findmyinterior.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors" aria-label="Website" title="Visit Find My Interior Website">
-              <Globe className="h-5 w-5" />
-            </a>
             <Link href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors" aria-label="Email" title="Email Us">
               <Mail className="h-5 w-5" />
             </Link>

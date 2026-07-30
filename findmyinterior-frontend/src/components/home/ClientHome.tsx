@@ -7,7 +7,6 @@ import { Hero } from "@/components/home/Hero";
 import { Stats } from "@/components/home/Stats";
 import { Categories } from "@/components/home/Categories";
 import { Hubs } from "@/components/home/Hubs";
-import { ActionBanner } from "@/components/home/ActionBanner";
 import { TrustFooter } from "@/components/home/TrustFooter";
 import { FeaturedProfessionals } from "@/components/home/FeaturedProfessionals";
 import { MobileStickyCTA } from "@/components/home/MobileStickyCTA";
@@ -54,7 +53,6 @@ export function ClientHome() {
         <AdSlot location="mid_page" className="w-full h-32 md:h-64 rounded-xl" />
       </div>
       <Hubs homeData={homeData} />
-      <ActionBanner />
       <TrustFooter />
       <MobileStickyCTA />
     </>
