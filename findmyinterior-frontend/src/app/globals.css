@@ -202,26 +202,3 @@
   from { opacity: 0; transform: translateX(-20px); }
   to { opacity: 1; transform: translateX(0); }
 }
-
-/* GLOBAL RESPONSIVE & MOBILE-FIRST SAFEGUARDS */
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-  -webkit-tap-highlight-color: transparent;
-}
-
-/* Ensure images and embeds never overflow their container on small screens */
-img,
-video,
-iframe {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Ensure responsive scrolling for tables on mobile */
-.table-responsive-wrapper {
-  width: 100%;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
-}
