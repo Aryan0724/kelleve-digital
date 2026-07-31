@@ -56,18 +56,49 @@ export default function ProjectsPage() {
             <p className="text-white/70 max-w-2xl text-lg leading-relaxed mb-8">
               Discover high-value interior design, architecture, and construction projects posted directly by homeowners and businesses. Submit your best bid and grow your revenue.
             </p>
-            <div className="flex flex-wrap items-center gap-4">
+            <div className="flex flex-wrap items-center gap-3">
               <button 
-                onClick={() => { setFilterType("Residential"); fetchProjects("Residential"); }}
-                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm font-medium hover:bg-white/20 transition-all"
+                type="button"
+                onClick={() => { setFilterType(""); fetchProjects(""); }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-sm ${
+                  !filterType 
+                    ? "bg-[#E8701A] text-white ring-2 ring-white/30 shadow-lg" 
+                    : "bg-white/10 backdrop-blur-sm border border-white/10 text-white hover:bg-white/20"
+                }`}
               >
-                <Home className="w-4 h-4 text-[#ff9d5c]" /> <span>Residential & Commercial</span>
+                <span>All Projects</span>
               </button>
               <button 
-                onClick={() => { setFilterType("Renovation"); fetchProjects("Renovation"); }}
-                className="flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/10 px-4 py-2 rounded-full text-sm font-medium hover:bg-white/20 transition-all"
+                type="button"
+                onClick={() => { 
+                  const nextType = filterType === "Residential" ? "" : "Residential";
+                  setFilterType(nextType); 
+                  fetchProjects(nextType); 
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-sm ${
+                  filterType === "Residential" 
+                    ? "bg-[#E8701A] text-white ring-2 ring-white/30 shadow-lg" 
+                    : "bg-white/10 backdrop-blur-sm border border-white/10 text-white hover:bg-white/20"
+                }`}
               >
-                <Ruler className="w-4 h-4 text-[#ff9d5c]" /> <span>Renovations & Build</span>
+                <Home className="w-4 h-4 text-[#ff9d5c]" /> 
+                <span>Residential & Commercial</span>
+              </button>
+              <button 
+                type="button"
+                onClick={() => { 
+                  const nextType = filterType === "Renovation" ? "" : "Renovation";
+                  setFilterType(nextType); 
+                  fetchProjects(nextType); 
+                }}
+                className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-bold transition-all transform hover:scale-105 shadow-sm ${
+                  filterType === "Renovation" 
+                    ? "bg-[#E8701A] text-white ring-2 ring-white/30 shadow-lg" 
+                    : "bg-white/10 backdrop-blur-sm border border-white/10 text-white hover:bg-white/20"
+                }`}
+              >
+                <Ruler className="w-4 h-4 text-[#ff9d5c]" /> 
+                <span>Renovations & Build</span>
               </button>
             </div>
           </div>
@@ -108,9 +139,30 @@ export default function ProjectsPage() {
                   />
                 </div>
               </div>
-              <Button onClick={() => fetchProjects()} className="w-full bg-[#0a1c3a] hover:bg-[#1a2c5a] text-white font-bold h-12 rounded-xl transition-all shadow-md">
-                Find Projects
-              </Button>
+              <div className="space-y-2">
+                <Button 
+                  type="button"
+                  onClick={() => fetchProjects()} 
+                  className="w-full bg-[#0a1c3a] hover:bg-[#1a2c5a] text-white font-bold h-12 rounded-xl transition-all shadow-md flex items-center justify-center gap-2"
+                >
+                  <Search className="w-4 h-4" />
+                  {loading ? "Searching..." : "Find Projects"}
+                </Button>
+                {(filterType || filterCity) && (
+                  <Button 
+                    type="button"
+                    variant="outline"
+                    onClick={() => {
+                      setFilterType("");
+                      setFilterCity("");
+                      fetchProjects("");
+                    }} 
+                    className="w-full border-slate-200 text-slate-600 hover:bg-slate-100 font-semibold h-10 rounded-xl transition-all text-xs"
+                  >
+                    Reset Filters 🔄
+                  </Button>
+                )}
+              </div>
             </div>
           </Card>
         </div>

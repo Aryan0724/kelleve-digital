@@ -21,7 +21,10 @@ class OpportunityProjectController extends Controller
             $query->where(function($q) use ($type) {
                 $q->where('opportunity_type', 'LIKE', '%' . $type . '%')
                   ->orWhere('requirement_type', 'LIKE', '%' . $type . '%')
-                  ->orWhere('project_category', 'LIKE', '%' . $type . '%');
+                  ->orWhere('project_category', 'LIKE', '%' . $type . '%')
+                  ->orWhere('project_type', 'LIKE', '%' . $type . '%')
+                  ->orWhere('title', 'LIKE', '%' . $type . '%')
+                  ->orWhere('description', 'LIKE', '%' . $type . '%');
             });
         }
         
@@ -29,7 +32,9 @@ class OpportunityProjectController extends Controller
             $city = $request->city;
             $query->where(function($q) use ($city) {
                 $q->where('city', 'LIKE', '%' . $city . '%')
-                  ->orWhere('district', 'LIKE', '%' . $city . '%');
+                  ->orWhere('district', 'LIKE', '%' . $city . '%')
+                  ->orWhere('title', 'LIKE', '%' . $city . '%')
+                  ->orWhere('description', 'LIKE', '%' . $city . '%');
             });
         }
         
