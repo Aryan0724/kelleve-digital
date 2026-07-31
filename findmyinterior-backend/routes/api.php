@@ -310,6 +310,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('users', [AdminController::class, 'users']);
         Route::patch('users/{id}/toggle-active', [AdminController::class, 'toggleUserActive']);
         Route::patch('users/{id}/verify', [AdminController::class, 'verifyUser']);
+        Route::patch('users/{id}/subscription', [AdminController::class, 'assignUserSubscription']);
         Route::delete('users/{id}', [AdminController::class, 'deleteUser']);
         Route::delete('users/mock/purge', [AdminController::class, 'purgeMockUsers']);
         

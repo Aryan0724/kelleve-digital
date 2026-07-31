@@ -141,6 +141,37 @@ class AdminController extends Controller
         ]);
     }
 
+    /**
+     * PATCH /api/v1/admin/users/{id}/subscription
+     */
+    public function assignUserSubscription(Request $request, int $id): JsonResponse
+    {
+        $request->validate([
+            'plan_id' => 'required|exists:subscription_plans,id',
+        ]);
+
+        $user = User::findOrFail($id);
+        $plan = \App\Models\SubscriptionPlan::findOrFail($request->plan_id);
+
+        \App\Models\UserSubscription::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->update(['status' => 'cancelled']);
+
+        $subscription = \App\Models\UserSubscription::create([
+            'user_id'              => $user->id,
+            'subscription_plan_id' => $plan->id,
+            'status'               => 'active',
+            'starts_at'            => now(),
+            'ends_at'              => now()->addYear(),
+        ]);
+
+        return response()->json([
+            'success'      => true,
+            'message'      => "User subscription plan updated to {$plan->name}.",
+            'subscription' => $subscription->load('plan'),
+        ]);
+    }
+
     // ─── Listings ─────────────────────────────────────────────────────────────
 
     /**

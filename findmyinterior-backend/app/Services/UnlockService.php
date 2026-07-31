@@ -21,16 +21,26 @@ class UnlockService
     /**
      * Unlock a customer's contact for a specific requirement using the wallet.
      */
-    public static function getUnlockFee($requirement = null): float
+    public static function getUnlockFee($requirement = null, ?User $vendor = null): float
     {
+        $baseFee = (float) config('marketplace.unlock_fee', 49.00);
         if ($requirement && $requirement->unlock_price !== null && is_numeric($requirement->unlock_price)) {
-            return (float) $requirement->unlock_price;
+            $baseFee = (float) $requirement->unlock_price;
+        } else {
+            $settingVal = \App\Models\Setting::where('key', 'contact_unlock_fee')->value('value');
+            if ($settingVal !== null && is_numeric($settingVal)) {
+                $baseFee = (float) $settingVal;
+            }
         }
-        $settingVal = \App\Models\Setting::where('key', 'contact_unlock_fee')->value('value');
-        if ($settingVal !== null && is_numeric($settingVal)) {
-            return (float) $settingVal;
+
+        if ($vendor && $vendor->activeSubscription && $vendor->activeSubscription->plan) {
+            $discount = (int) ($vendor->activeSubscription->plan->unlock_discount_percent ?? 0);
+            if ($discount > 0 && $discount <= 100) {
+                $baseFee = round($baseFee * (1 - ($discount / 100)), 2);
+            }
         }
-        return (float) config('marketplace.unlock_fee', 49.00);
+
+        return max(0, $baseFee);
     }
 
     public function unlockContact(User $vendor, $requirement): array
@@ -56,7 +66,7 @@ class UnlockService
         }
 
         // 2. Fetch the fee consistently from requirement, setting, or config
-        $fee = self::getUnlockFee($requirement);
+        $fee = self::getUnlockFee($requirement, $vendor);
 
         // Workers and Skilled Workers can unlock any requirement for free
         if ($vendor->hasRole('worker') || $vendor->hasRole('skilled_worker')) {

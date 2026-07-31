@@ -7,7 +7,7 @@ import type React from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -80,6 +80,8 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [usersMeta, setUsersMeta] = useState<any>({});
+  const [assignPlanUser, setAssignPlanUser] = useState<any>(null);
+  const [selectedPlanId, setSelectedPlanId] = useState<string>("");
 
   const isAdmin = user?.isAdmin || user?.role === "admin";
 
@@ -408,6 +410,14 @@ export default function AdminDashboard() {
                     <Button
                       size="sm"
                       variant="outline"
+                      className="h-7 text-xs bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 font-semibold"
+                      onClick={() => { setAssignPlanUser(item); setSelectedPlanId(""); }}
+                    >
+                      Change Plan
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
                       className="h-7 text-xs text-red-600 border-red-200 hover:bg-red-50"
                       disabled={busyId === `delete-user-${item.id}`}
                       onClick={() => {
@@ -722,6 +732,65 @@ export default function AdminDashboard() {
           </Card>
         )}
       </div>
+
+      {/* Assign User Plan Modal */}
+      {assignPlanUser && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4">
+          <Card className="w-full max-w-md shadow-2xl">
+            <CardHeader className="border-b pb-4">
+              <CardTitle className="text-lg font-bold">Assign Subscription Plan</CardTitle>
+              <p className="text-xs text-slate-500">
+                Update active plan for <strong>{assignPlanUser.name}</strong> ({assignPlanUser.email})
+              </p>
+            </CardHeader>
+            <CardContent className="space-y-4 pt-4">
+              <div className="space-y-2">
+                <label className="text-xs font-semibold text-slate-700">Select Target Subscription Plan</label>
+                <select
+                  value={selectedPlanId}
+                  onChange={(e) => setSelectedPlanId(e.target.value)}
+                  className="w-full border border-slate-300 rounded-lg p-2.5 text-sm bg-white font-medium focus:ring-2 focus:ring-indigo-500 outline-none"
+                >
+                  <option value="">-- Choose Plan --</option>
+                  {plans.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.name} (₹{p.price_monthly}/mo) - Max {p.max_listings >= 99 ? "Unlimited" : p.max_listings} Listings
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="bg-indigo-50/70 border border-indigo-100 rounded-lg p-3 text-xs text-indigo-900">
+                <strong>Dynamic Backend Enforcement:</strong> When assigned, all limits (max listings, gallery images, lead unlock discount, search priority) will immediately apply to this user.
+              </div>
+            </CardContent>
+            <CardFooter className="flex justify-end gap-2 bg-slate-50 p-4 rounded-b-xl border-t">
+              <Button variant="outline" size="sm" onClick={() => setAssignPlanUser(null)}>
+                Cancel
+              </Button>
+              <Button
+                size="sm"
+                className="bg-indigo-600 hover:bg-indigo-700 font-semibold"
+                disabled={!selectedPlanId}
+                onClick={async () => {
+                  try {
+                    await api.patch(`/admin/users/${assignPlanUser.id}/subscription`, {
+                      plan_id: Number(selectedPlanId),
+                    });
+                    alert("Plan updated and limits applied successfully!");
+                    setAssignPlanUser(null);
+                    // Refresh users list
+                    fetchUsers();
+                  } catch (e: any) {
+                    alert(e.response?.data?.message || "Failed to assign plan.");
+                  }
+                }}
+              >
+                Save Assignment
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      )}
     </div>
   );
 }
