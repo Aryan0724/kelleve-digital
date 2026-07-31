@@ -1,89 +1,43 @@
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Star, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
+import { PricingClient } from "@/components/pricing/PricingClient";
 
 export const metadata = {
   title: "Pricing Plans | Find My Interior",
-  description: "Upgrade your professional profile on Find My Interior to rank higher, unlock more leads, and grow your business.",
+  description: "Upgrade your professional profile on Find My Interior to rank higher, unlock more leads, and grow your business with transparent, backend-enforced subscription tiers.",
 };
 
 export default function PricingPage() {
   return (
-    <div className="bg-slate-50 min-h-screen py-16">
+    <div className="bg-slate-50 dark:bg-slate-950 min-h-screen py-16 transition-colors">
       <div className="container mx-auto px-4 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">Grow Your Business with Premium</h1>
-        <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-16">
-          Choose a subscription plan that fits your goals. Get more visibility, direct client calls, and higher trust.
-        </p>
-        
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-          
-          {/* Basic Plan */}
-          <div className="bg-white rounded-2xl border shadow-sm p-8 text-left relative overflow-hidden">
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Starter</h3>
-            <p className="text-slate-500 mb-6 min-h-[48px]">Perfect for new professionals getting started.</p>
-            <div className="mb-6">
-              <span className="text-4xl font-extrabold">Free</span>
-            </div>
-            <Link href="/dashboard">
-              <Button variant="outline" className="w-full h-12 text-base font-semibold mb-8">Current Plan</Button>
-            </Link>
-            <ul className="space-y-4">
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-slate-300 shrink-0" /><span className="text-slate-600">Basic Profile Listing</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-slate-300 shrink-0" /><span className="text-slate-600">Pay-per-lead unlocks</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-slate-300 shrink-0" /><span className="text-slate-600">Standard Support</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-slate-300 shrink-0" /><span className="text-slate-600">Up to 3 Portfolio Images</span></li>
-            </ul>
-          </div>
-
-          {/* Premium Plan */}
-          <div className="bg-[#0b1b36] rounded-2xl border shadow-xl p-8 text-left relative overflow-hidden transform md:-translate-y-4">
-            <div className="absolute top-0 right-0 bg-[#ff6b00] text-white text-xs font-bold px-3 py-1 rounded-bl-lg">RECOMMENDED</div>
-            <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2"><Star className="w-6 h-6 text-[#ff6b00] fill-[#ff6b00]" /> Premium</h3>
-            <p className="text-slate-300 mb-6 min-h-[48px]">For growing businesses that want more leads.</p>
-            <div className="mb-6">
-              <span className="text-4xl font-extrabold text-white">₹4,999</span><span className="text-slate-400">/month</span>
-            </div>
-            <Link href="/dashboard">
-              <Button className="w-full h-12 text-base font-semibold mb-8 bg-[#ff6b00] hover:bg-[#ea580c] border-none text-white shadow-lg">Upgrade to Premium</Button>
-            </Link>
-            <ul className="space-y-4 text-slate-200">
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>Verified Badge on Profile</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>Rank higher in search results</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>20% Discount on Lead Unlocks</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>Unlimited Portfolio Images</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>Priority Support</span></li>
-            </ul>
-          </div>
-
-          {/* Elite Plan */}
-          <div className="bg-white rounded-2xl border shadow-sm p-8 text-left relative overflow-hidden">
-            <h3 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2"><Zap className="w-6 h-6 text-yellow-500 fill-yellow-500" /> Elite</h3>
-            <p className="text-slate-500 mb-6 min-h-[48px]">Maximum visibility and unlimited access.</p>
-            <div className="mb-6">
-              <span className="text-4xl font-extrabold">₹14,999</span><span className="text-slate-500">/month</span>
-            </div>
-            <Link href="/dashboard">
-              <Button variant="outline" className="w-full h-12 text-base font-semibold mb-8 border-[#0b1b36] text-[#0b1b36] hover:bg-[#0b1b36] hover:text-white">Contact Sales</Button>
-            </Link>
-            <ul className="space-y-4">
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600 font-semibold">Top 10 Ranking Guarantee</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">Dedicated Account Manager</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">50% Discount on Lead Unlocks</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">Featured in Weekly Newsletter</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">Custom SEO Profile Link</span></li>
-            </ul>
-          </div>
-
+        <div className="max-w-3xl mx-auto mb-12">
+          <span className="inline-block px-3.5 py-1 text-xs font-semibold uppercase tracking-wider text-indigo-700 bg-indigo-100 dark:text-indigo-300 dark:bg-indigo-950/60 rounded-full mb-3">
+            Transparent Pricing & Live Backend Enforcement
+          </span>
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 dark:text-white mb-4 tracking-tight">
+            Grow Your Interior Business with Premium Reach
+          </h1>
+          <p className="text-lg text-slate-600 dark:text-slate-400 max-w-2xl mx-auto">
+            Choose a subscription plan tailored to your scale. Gain higher search ranking, direct verified client leads, and discounted contact unlocks.
+          </p>
         </div>
-        
-        <div className="mt-16 bg-orange-50 border border-orange-100 rounded-xl p-8 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-left">
+
+        {/* Dynamic 4-Plan Interactive Pricing Component */}
+        <PricingClient />
+
+        {/* Enterprise & Custom Plan Section */}
+        <div className="mt-16 bg-gradient-to-r from-orange-50 to-amber-50 dark:from-slate-900 dark:to-slate-900 border border-orange-100 dark:border-slate-800 rounded-2xl p-8 max-w-4xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6 text-left shadow-sm">
           <div>
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Need a Custom Plan?</h3>
-            <p className="text-slate-600">For large agencies and enterprise teams needing bulk unlocks and API integrations.</p>
+            <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">Need a Custom Enterprise Plan?</h3>
+            <p className="text-slate-600 dark:text-slate-400 text-sm">
+              For large architectural firms, developers, and suppliers requiring bulk unlock discounts, multi-city listings, and API integration.
+            </p>
           </div>
           <Link href="/contact">
-            <Button className="bg-[#0b1b36] text-white hover:bg-slate-800 h-12 px-8 whitespace-nowrap">Contact Enterprise Sales</Button>
+            <Button className="bg-[#0b1b36] text-white hover:bg-slate-800 dark:bg-amber-500 dark:hover:bg-amber-600 dark:text-slate-950 h-12 px-8 whitespace-nowrap font-semibold shadow-md">
+              Contact Enterprise Sales
+            </Button>
           </Link>
         </div>
       </div>
