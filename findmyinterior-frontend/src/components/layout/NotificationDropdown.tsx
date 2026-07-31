@@ -115,16 +115,20 @@ export function NotificationDropdown() {
 
       {isOpen && (
         <>
-          {/* Full-screen fixed transparent backdrop at z-[9998] so clicking anywhere outside on the screen area always closes popup */}
+          {/* Full-screen fixed transparent backdrop at z-[9998] so clicking/tapping anywhere outside always closes popup */}
           <div 
             className="fixed inset-0 w-screen h-screen z-[9998] bg-transparent cursor-default" 
             onClick={(e) => {
               e.stopPropagation();
               setIsOpen(false);
             }}
+            onTouchStart={(e) => {
+              e.stopPropagation();
+              setIsOpen(false);
+            }}
           />
-          <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-slate-100 z-[9999] overflow-hidden">
-            <div className="flex justify-between items-center p-3 border-b bg-slate-50">
+          <div className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] max-w-[20rem] sm:w-80 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-800 z-[9999] overflow-hidden">
+            <div className="flex justify-between items-center p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60">
               <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
               <button
                 onClick={() => setIsOpen(false)}

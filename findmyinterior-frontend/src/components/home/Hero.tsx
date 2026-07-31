@@ -117,26 +117,26 @@ export function Hero() {
             </>
           ) : isPro ? (
             <>
-              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.15] mb-5">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-tight sm:leading-[1.15] mb-5">
                 Grow Your Business in <span className="text-[#E8701A] relative inline-block">
                   Bihar
                   <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
                 </span>
               </h1>
-              <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
                 Find new projects, submit quotes, and manage your incoming leads directly from your dashboard.
               </p>
             </>
           ) : (
             <>
-              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.15] mb-5">
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-tight sm:leading-[1.15] mb-5">
                 Find & Hire The Best<br/>
                 Interior Experts in <span className="text-[#E8701A] relative inline-block">
                   Bihar
                   <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
                 </span>
               </h1>
-              <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
+              <p className="text-sm sm:text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
                 From top-rated Interior Designers to skilled Contractors & Material Suppliers. Compare quotes and save up to 30% on your next home project.
               </p>
             </>
