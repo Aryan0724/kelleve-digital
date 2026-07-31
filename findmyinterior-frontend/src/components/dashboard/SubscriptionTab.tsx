@@ -7,6 +7,21 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Wallet, Crown } from "lucide-react";
 
+// Load Razorpay Script dynamically
+const loadRazorpayScript = () => {
+  return new Promise<boolean>((resolve) => {
+    if (typeof window !== "undefined" && (window as any).Razorpay) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = "https://checkout.razorpay.com/v1/checkout.js";
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -28,41 +43,76 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
   };
 
   const handleSubscribe = async (planId: number) => {
+    const selectedPlan = plans.find((p) => p.id === planId);
+    if (!selectedPlan) return;
+
+    const price = billingCycle === "yearly" ? selectedPlan.price_yearly : selectedPlan.price_monthly;
+    const amountInPaise = Math.round(Number(price) * 100);
+
     try {
-      const res = await api.post("/payments/create-order", {
-        purpose: "subscription",
-        subscription_plan_id: planId,
-        billing_cycle: billingCycle,
+      // 1. Create order on backend
+      const res = await api.post("/create-order", {
+        amount: amountInPaise,
+        currency: "INR",
+        receipt: `sub_${planId}_${Date.now()}`,
       });
 
-      const { order_id, amount, currency, payment_id } = res.data;
-      
+      const { order_id, amount, currency } = res.data;
+
+      if (!order_id) {
+        throw new Error("Failed to create Razorpay order.");
+      }
+
+      // 2. Load script
+      const scriptLoaded = await loadRazorpayScript();
+      if (!scriptLoaded) {
+        alert("Razorpay checkout script failed to load. Are you offline?");
+        return;
+      }
+
+      // 3. Configure Razorpay checkout modal
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock", 
-        amount: amount,
-        currency: currency,
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TKAMwh6HKLnjZV",
+        amount: amount.toString(),
+        currency: currency || "INR",
         name: "Find My Interior",
-        description: "Subscription Upgrade",
+        description: `Upgrade to ${selectedPlan.name} (${billingCycle})`,
         order_id: order_id,
         handler: async function (response: any) {
           try {
-            await api.post("/payments/verify", {
+            // 4. Verify HMAC-SHA256 signature on backend
+            const verifyRes = await api.post("/verify-payment", {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
-            alert("Subscription successful!");
-            window.location.reload();
+
+            if (verifyRes.data?.success) {
+              alert("Payment verified! Subscription upgraded successfully.");
+              window.location.reload();
+            } else {
+              alert(verifyRes.data?.message || "Payment signature verification failed.");
+            }
           } catch (e: any) {
             alert(e.response?.data?.message || "Payment verification failed.");
           }
         },
+        modal: {
+          ondismiss: function () {
+            alert("Payment was cancelled.");
+          },
+        },
         theme: {
-          color: "#ea580c"
-        }
+          color: "#ea580c", // Orange-600
+        },
       };
-      
+
       const rzp = new (window as any).Razorpay(options);
+
+      rzp.on("payment.failed", function (response: any) {
+        alert(response.error?.description || "Payment transaction failed.");
+      });
+
       rzp.open();
     } catch (e: any) {
       alert(e.response?.data?.message || "Failed to initialize payment");

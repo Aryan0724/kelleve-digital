@@ -7,15 +7,15 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 
 // Load Razorpay Script dynamically
 const loadScript = (src: string) => {
-  return new Promise((resolve) => {
+  return new Promise<boolean>((resolve) => {
+    if (typeof window !== "undefined" && (window as any).Razorpay) {
+      resolve(true);
+      return;
+    }
     const script = document.createElement("script");
     script.src = src;
-    script.onload = () => {
-      resolve(true);
-    };
-    script.onerror = () => {
-      resolve(false);
-    };
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
     document.body.appendChild(script);
   });
 };
@@ -26,7 +26,7 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
 
   const displayRazorpay = async () => {
     if (!user) {
-      alert("Please login first.");
+      alert("Please login first to continue checkout.");
       return;
     }
 
@@ -34,9 +34,13 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
 
     try {
       // 1. Create order on backend
-      const { data } = await api.post("/payments/create-order", {
-        type: "subscription",
-        plan_id: planId
+      const { data } = await api.post("/create-order", {
+        amount: Math.round(amount * 100), // convert INR to paise
+        currency: "INR",
+        receipt: `sub_${user.id}_${Date.now()}`,
+        purpose: "subscription",
+        subscription_plan_id: planId,
+        billing_cycle: "monthly",
       });
 
       const orderId = data.order_id;
@@ -52,30 +56,41 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
 
       // 3. Configure Razorpay Options
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Use test key
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_TKAMwh6HKLnjZV",
         amount: amountInPaise.toString(),
-        currency: "INR",
+        currency: data.currency || "INR",
         name: "FindMyInterior",
         description: `Upgrade to ${label}`,
         order_id: orderId,
         handler: async function (response: any) {
           // 4. Verify payment on backend
           try {
-            await api.post("/payments/verify", {
+            const verifyRes = await api.post("/verify-payment", {
               razorpay_order_id: response.razorpay_order_id,
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
-            alert("Payment Successful! Your subscription is now active.");
-            window.location.reload(); // Quick refresh to update state
-          } catch (err) {
-            alert("Payment verification failed!");
+
+            if (verifyRes.data?.success) {
+              alert("Payment Successful! Your subscription is now active.");
+              window.location.reload();
+            } else {
+              alert(verifyRes.data?.message || "Payment verification failed!");
+            }
+          } catch (err: any) {
+            alert(err.response?.data?.message || "Payment verification failed!");
           }
         },
+        modal: {
+          ondismiss: function () {
+            // User dismissed modal
+            setLoading(false);
+          },
+        },
         prefill: {
-          name: user.name,
-          email: user.email,
-          contact: user.phone,
+          name: user.name || "",
+          email: user.email || "",
+          contact: user.phone || "",
         },
         theme: {
           color: "#ea580c", // Orange-600
@@ -83,11 +98,19 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
       };
 
       const paymentObject = new (window as any).Razorpay(options);
+
+      // Handle payment failed event
+      paymentObject.on("payment.failed", function (response: any) {
+        const errDesc = response.error?.description || "Payment failed.";
+        alert(errDesc);
+        setLoading(false);
+      });
+
       paymentObject.open();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Failed to initiate payment.");
-    } finally {
+      const errMsg = error.response?.data?.message || "Failed to initiate payment.";
+      alert(errMsg);
       setLoading(false);
     }
   };
@@ -96,7 +119,7 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
     <Button 
       onClick={displayRazorpay} 
       disabled={loading} 
-      className="w-full bg-orange-600 hover:bg-orange-700 h-12 text-lg"
+      className="w-full bg-orange-600 hover:bg-orange-700 h-12 text-lg font-semibold"
     >
       {loading ? "Processing..." : label}
     </Button>

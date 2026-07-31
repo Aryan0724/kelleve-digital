@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -19,6 +20,34 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const setAuth = useAuthStore((state) => state.setAuth);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get("token");
+      const userStr = params.get("user");
+      const errorMsg = params.get("error");
+
+      if (errorMsg) {
+        setError(decodeURIComponent(errorMsg));
+        window.history.replaceState({}, document.title, window.location.pathname);
+      } else if (token && userStr) {
+        try {
+          const user = JSON.parse(decodeURIComponent(userStr));
+          setAuth(user, token);
+          window.history.replaceState({}, document.title, window.location.pathname);
+          if (user.role === "admin") {
+            router.push("/admin");
+          } else {
+            router.push("/dashboard");
+          }
+        } catch (e) {
+          console.error("Failed to parse user from Google Login", e);
+          setError("Failed to process Google login data.");
+        }
+      }
+    }
+  }, [router, setAuth]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -52,9 +81,23 @@ export default function LoginPage() {
             Enter your email and password to login to your account.
           </CardDescription>
         </CardHeader>
-        <form onSubmit={handleLogin}>
-          <CardContent className="space-y-4">
-            {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md">{error}</div>}
+        <CardContent className="space-y-4">
+          {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md">{error}</div>}
+          
+          <GoogleAuthButton text="Continue with Google" />
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 font-medium">
+                Or continue with email
+              </span>
+            </div>
+          </div>
+
+          <form onSubmit={handleLogin} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <Input 
@@ -66,6 +109,7 @@ export default function LoginPage() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
+
             <div className="space-y-2">
               <div className="flex items-center justify-between">
                 <Label htmlFor="password">Password</Label>
@@ -91,19 +135,20 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700" disabled={loading}>
+
+            <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700 mt-2" disabled={loading}>
               {loading ? "Logging in..." : "Login"}
             </Button>
-            <div className="text-center text-sm text-slate-500">
-              Don't have an account?{" "}
-              <Link href="/register" className="font-semibold text-orange-600 hover:text-orange-500">
-                Register here
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
+          </form>
+        </CardContent>
+        <CardFooter className="flex flex-col space-y-4">
+          <div className="text-center text-sm text-slate-500">
+            Don't have an account?{" "}
+            <Link href="/register" className="font-semibold text-orange-600 hover:text-orange-500">
+              Register here
+            </Link>
+          </div>
+        </CardFooter>
       </Card>
     </div>
   );

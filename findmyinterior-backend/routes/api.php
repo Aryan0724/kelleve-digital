@@ -26,9 +26,21 @@ use App\Http\Controllers\Api\V1\RecommendationController;
 use App\Http\Controllers\Api\V1\VendorMetricController;
 use App\Http\Controllers\Api\V1\InviteController;
 use App\Http\Controllers\Api\V1\Admin\RevenueController;
+use App\Http\Controllers\Api\V1\RazorpayCheckoutController;
+use App\Http\Controllers\Auth\GoogleAuthController;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+
+// Google OAuth Global Callback Aliases (matches Google Console redirect URIs)
+Route::get('/auth/google/callback', [GoogleAuthController::class, 'callback']);
+Route::get('/auth/callback/google', [GoogleAuthController::class, 'callback']);
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect']);
+
+// Razorpay Standard Web Checkout (/api level endpoints)
+Route::post('/create-order', [RazorpayCheckoutController::class, 'createOrder']);
+Route::post('/verify-payment', [RazorpayCheckoutController::class, 'verifySignature']);
+
 
 // E2E Testing DB Reset — ONLY available in explicit testing environment
 // DISABLED in production: never expose this endpoint outside of CI/CD pipelines
@@ -49,8 +61,12 @@ if (app()->environment('local', 'testing')) {
 */
 
 Route::prefix('v1')->middleware('throttle:api')->group(function () {
-    
+    // Razorpay Standard Web Checkout (/api/v1 level endpoints)
+    Route::post('/create-order', [RazorpayCheckoutController::class, 'createOrder']);
+    Route::post('/verify-payment', [RazorpayCheckoutController::class, 'verifySignature']);
+
     Route::get('/health', function () {
+
         $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
         $tenantSlug = \Illuminate\Support\Facades\DB::table('tenants')->where('id', $tenantId)->value('slug') ?? 'unknown';
 
@@ -105,6 +121,13 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('login', [AuthController::class, 'login']);
         Route::post('forgot-password', [PasswordResetController::class, 'forgotPassword']);
         Route::post('reset-password', [PasswordResetController::class, 'resetPassword']);
+
+        // Google OAuth routes
+        Route::get('google/redirect', [GoogleAuthController::class, 'redirect']);
+        Route::get('google/callback', [GoogleAuthController::class, 'callback']);
+        Route::post('google-login', [GoogleAuthController::class, 'loginDirect']);
+        Route::post('google/login', [GoogleAuthController::class, 'loginDirect']);
+
 
         Route::middleware('auth:sanctum')->group(function () {
             Route::get('me', [AuthController::class, 'me']);

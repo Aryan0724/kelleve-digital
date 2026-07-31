@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 // ─── Professional Type Taxonomy ───────────────────────────────────────────────
 const PROFESSIONAL_CATEGORIES = [
@@ -346,6 +347,19 @@ export default function RegisterPage() {
               {/* ── Step 1: Who are you? ── */}
               {step === "who" && (
                 <div className="space-y-4">
+                  <GoogleAuthButton text="Continue with Google" role="customer" />
+                  
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 font-medium">
+                        Or select your account type below
+                      </span>
+                    </div>
+                  </div>
+
                   {/* Customer option */}
                   <button
                     type="button"
@@ -383,7 +397,7 @@ export default function RegisterPage() {
                 <>
                   {/* Selected type display */}
                   {!isCustomer && (
-                    <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50 rounded-lg">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50 rounded-lg mb-4">
                       <CheckCircle2 className="w-4 h-4 text-orange-500 shrink-0" />
                       <span className="text-sm text-orange-700 dark:text-orange-400 font-medium">
                         {PROFESSIONAL_CATEGORIES.flatMap((c) => c.types).find((t) => t.value === formData.role)?.label}
@@ -397,6 +411,19 @@ export default function RegisterPage() {
                       </button>
                     </div>
                   )}
+
+                  <GoogleAuthButton text="Continue with Google" role={formData.role} />
+
+                  <div className="relative my-4">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+                    </div>
+                    <div className="relative flex justify-center text-xs uppercase">
+                      <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 font-medium">
+                        Or register with email
+                      </span>
+                    </div>
+                  </div>
 
                   {/* Name */}
                   <div className="space-y-1.5">
