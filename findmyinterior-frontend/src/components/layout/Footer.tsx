@@ -7,9 +7,9 @@ export function Footer() {
       <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10">
 
         <div>
-          <h2 className="text-2xl font-bold text-white mb-2">
-            <img src="/logo.jpg" alt="Find My Interior" className="h-24 w-auto mb-4 bg-white p-2 rounded-xl" />
-          </h2>
+          <div className="mb-4">
+            <img src="/logo.jpg" alt="Find My Interior" className="h-12 w-auto bg-white p-1.5 rounded-lg" />
+          </div>
           <p className="text-sm mb-4 text-slate-400">
             Bihar&apos;s largest marketplace connecting homeowners with verified
             interior designers, builders, suppliers, and skilled workers.

@@ -135,8 +135,8 @@ export function Navbar() {
         <div className="container mx-auto flex items-center justify-between gap-4">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0 group py-2">
-            <img src="/logo.jpg" alt="Find My Interior" className="h-20 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
+          <Link href="/" className="flex items-center flex-shrink-0 group py-1.5">
+            <img src="/logo.jpg" alt="Find My Interior" className="h-10 sm:h-11 md:h-12 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
           </Link>
 
           {/* Center Search Container */}
@@ -302,7 +302,7 @@ export function Navbar() {
             {/* Drawer Header */}
             <div className="flex items-center justify-between p-4 border-b dark:border-white/10">
               <Link href="/" onClick={closeMobileMenu} className="flex items-center">
-                <img src="/logo.jpg" alt="Find My Interior" className="h-12 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
+                <img src="/logo.jpg" alt="Find My Interior" className="h-10 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
               </Link>
               <button
                 onClick={closeMobileMenu}
