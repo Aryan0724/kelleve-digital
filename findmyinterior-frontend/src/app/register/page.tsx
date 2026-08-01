@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Eye, EyeOff, ChevronDown, ChevronRight, CheckCircle2, Search } from "lucide-react";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,6 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
-import { GoogleAuthButton } from "@/components/auth/GoogleAuthButton";
 
 // ─── Professional Type Taxonomy ───────────────────────────────────────────────
 const PROFESSIONAL_CATEGORIES = [
@@ -235,27 +234,6 @@ function ProfessionalTypePicker({
 
 // ─── Main Register Page ────────────────────────────────────────────────────────
 export default function RegisterPage() {
-  return (
-    <Suspense
-      fallback={
-        <div className="min-h-screen flex items-center justify-center bg-slate-50 dark:bg-slate-950">
-          <p className="text-sm text-slate-500">Loading...</p>
-        </div>
-      }
-    >
-      <RegisterForm />
-    </Suspense>
-  );
-}
-
-function RegisterForm() {
-  const searchParams = useSearchParams();
-  const googleEmail = searchParams?.get("google_email") || "";
-  const googleName = searchParams?.get("google_name") || "";
-  const googleId = searchParams?.get("google_id") || "";
-  const googleAvatar = searchParams?.get("google_avatar") || "";
-  const googleRole = searchParams?.get("role") || "";
-
   const [step, setStep] = useState<"who" | "details">("who");
   const [formData, setFormData] = useState({
     name: "",
@@ -273,20 +251,6 @@ function RegisterForm() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { user, setAuth, _hasHydrated } = useAuthStore();
-
-  useEffect(() => {
-    if (googleEmail) {
-      setFormData((prev) => ({
-        ...prev,
-        email: googleEmail,
-        name: googleName || prev.name,
-        role: googleRole && googleRole !== "customer" ? googleRole : prev.role,
-      }));
-      if (googleRole === "customer") {
-        setIsCustomer(true);
-      }
-    }
-  }, [googleEmail, googleName, googleRole]);
 
   // Auth guard: redirect if already logged in
   useEffect(() => {
@@ -308,33 +272,20 @@ function RegisterForm() {
       return;
     }
 
-    if (!googleId) {
-      if (formData.password !== formData.password_confirmation) {
-        setFieldErrors({ password_confirmation: "Passwords do not match." });
-        setLoading(false);
-        return;
-      }
+    if (formData.password !== formData.password_confirmation) {
+      setFieldErrors({ password_confirmation: "Passwords do not match." });
+      setLoading(false);
+      return;
+    }
 
-      if (formData.password.length < 8) {
-        setFieldErrors({ password: "Password must be at least 8 characters." });
-        setLoading(false);
-        return;
-      }
+    if (formData.password.length < 8) {
+      setFieldErrors({ password: "Password must be at least 8 characters." });
+      setLoading(false);
+      return;
     }
 
     try {
-      const payload = {
-        ...formData,
-        ...(googleId
-          ? {
-              google_id: googleId,
-              avatar: googleAvatar,
-              password: "GoogleUser@12345",
-              password_confirmation: "GoogleUser@12345",
-            }
-          : {}),
-      };
-      const res = await api.post("/auth/register", payload);
+      const res = await api.post("/auth/register", formData);
       const { user: newUser, token } = res.data.data;
       setAuth(newUser, token);
       router.push("/dashboard");
@@ -395,37 +346,6 @@ function RegisterForm() {
               {/* ── Step 1: Who are you? ── */}
               {step === "who" && (
                 <div className="space-y-4">
-                  {googleEmail && (
-                    <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/40 dark:to-amber-950/40 border border-orange-200 dark:border-orange-800/60 flex items-center gap-3">
-                      <span className="text-2xl">✨</span>
-                      <div>
-                        <p className="text-sm font-bold text-orange-900 dark:text-orange-200">
-                          Complete your registration with Google
-                        </p>
-                        <p className="text-xs text-orange-700 dark:text-orange-300 mt-0.5">
-                          Verified Google account: <span className="font-bold underline">{googleEmail}</span>. Please choose your account type and enter your mobile number.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {!googleEmail && (
-                    <>
-                      <GoogleAuthButton text="Continue with Google" role="customer" />
-                      
-                      <div className="relative my-4">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t border-slate-200 dark:border-slate-800" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 font-medium">
-                            Or select your account type below
-                          </span>
-                        </div>
-                      </div>
-                    </>
-                  )}
-
                   {/* Customer option */}
                   <button
                     type="button"
@@ -463,7 +383,7 @@ function RegisterForm() {
                 <>
                   {/* Selected type display */}
                   {!isCustomer && (
-                    <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50 rounded-lg mb-4">
+                    <div className="flex items-center gap-2 px-3 py-2 bg-orange-50 dark:bg-orange-900/20 border border-orange-200 dark:border-orange-800/50 rounded-lg">
                       <CheckCircle2 className="w-4 h-4 text-orange-500 shrink-0" />
                       <span className="text-sm text-orange-700 dark:text-orange-400 font-medium">
                         {PROFESSIONAL_CATEGORIES.flatMap((c) => c.types).find((t) => t.value === formData.role)?.label}
@@ -476,37 +396,6 @@ function RegisterForm() {
                         Change
                       </button>
                     </div>
-                  )}
-
-                  {googleEmail && (
-                    <div className="mb-4 p-4 rounded-xl bg-gradient-to-r from-orange-50 to-amber-50 dark:from-orange-950/40 dark:to-amber-950/40 border border-orange-200 dark:border-orange-800/60 flex items-center gap-3">
-                      <span className="text-2xl">✨</span>
-                      <div>
-                        <p className="text-sm font-bold text-orange-900 dark:text-orange-200">
-                          Complete your registration with Google
-                        </p>
-                        <p className="text-xs text-orange-700 dark:text-orange-300 mt-0.5">
-                          Verified Google account: <span className="font-bold underline">{googleEmail}</span>. Please enter your mobile number.
-                        </p>
-                      </div>
-                    </div>
-                  )}
-
-                  {!googleEmail && (
-                    <>
-                      <GoogleAuthButton text="Continue with Google" role={formData.role} />
-
-                      <div className="relative my-4">
-                        <div className="absolute inset-0 flex items-center">
-                          <span className="w-full border-t border-slate-200 dark:border-slate-800" />
-                        </div>
-                        <div className="relative flex justify-center text-xs uppercase">
-                          <span className="bg-white dark:bg-slate-900 px-2 text-slate-500 font-medium">
-                            Or register with email
-                          </span>
-                        </div>
-                      </div>
-                    </>
                   )}
 
                   {/* Name */}
@@ -557,64 +446,56 @@ function RegisterForm() {
                       id="email"
                       type="email"
                       required
-                      readOnly={!!googleEmail}
                       placeholder="you@example.com"
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                      className={`dark:bg-slate-800 dark:border-slate-700 dark:text-white ${googleEmail ? "bg-slate-100 dark:bg-slate-800/60 cursor-not-allowed border-green-500 text-green-700 dark:text-green-300 font-semibold" : ""} ${field("email") ? "border-red-400" : ""}`}
+                      className={`dark:bg-slate-800 dark:border-slate-700 dark:text-white ${field("email") ? "border-red-400" : ""}`}
                     />
                     {field("email") && <p className="text-xs text-red-600">{field("email")}</p>}
                   </div>
 
                   {/* Password */}
-                  {googleId ? (
-                    <div className="p-3.5 bg-green-50 dark:bg-green-950/20 rounded-xl border border-green-200 dark:border-green-800 text-xs text-green-800 dark:text-green-300 flex items-center gap-2.5">
-                      <span className="text-green-600 font-bold text-base">✓</span>
-                      <span>Password is not required when signing up with your verified Google account.</span>
-                    </div>
-                  ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-1.5">
-                        <Label htmlFor="password" className="text-sm font-medium dark:text-slate-300">Password</Label>
-                        <div className="relative">
-                          <Input
-                            id="password"
-                            type={showPassword ? "text" : "password"}
-                            required
-                            minLength={8}
-                            placeholder="Min 8 characters"
-                            value={formData.password}
-                            onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            className={`pr-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white ${field("password") ? "border-red-400" : ""}`}
-                          />
-                          <button type="button" onClick={() => setShowPassword(!showPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </button>
-                        </div>
-                        {field("password") && <p className="text-xs text-red-600">{field("password")}</p>}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="password" className="text-sm font-medium dark:text-slate-300">Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="password"
+                          type={showPassword ? "text" : "password"}
+                          required
+                          minLength={8}
+                          placeholder="Min 8 characters"
+                          value={formData.password}
+                          onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                          className={`pr-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white ${field("password") ? "border-red-400" : ""}`}
+                        />
+                        <button type="button" onClick={() => setShowPassword(!showPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
                       </div>
-                      <div className="space-y-1.5">
-                        <Label htmlFor="password_confirmation" className="text-sm font-medium dark:text-slate-300">Confirm Password</Label>
-                        <div className="relative">
-                          <Input
-                            id="password_confirmation"
-                            type={showConfirmPassword ? "text" : "password"}
-                            required
-                            placeholder="Repeat password"
-                            value={formData.password_confirmation}
-                            onChange={(e) => setFormData({ ...formData, password_confirmation: e.target.value })}
-                            className={`pr-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white ${field("password_confirmation") ? "border-red-400" : ""}`}
-                          />
-                          <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
-                            {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          </button>
-                        </div>
-                        {field("password_confirmation") && <p className="text-xs text-red-600">{field("password_confirmation")}</p>}
-                      </div>
+                      {field("password") && <p className="text-xs text-red-600">{field("password")}</p>}
                     </div>
-                  )}
+                    <div className="space-y-1.5">
+                      <Label htmlFor="password_confirmation" className="text-sm font-medium dark:text-slate-300">Confirm Password</Label>
+                      <div className="relative">
+                        <Input
+                          id="password_confirmation"
+                          type={showConfirmPassword ? "text" : "password"}
+                          required
+                          placeholder="Repeat password"
+                          value={formData.password_confirmation}
+                          onChange={(e) => setFormData({ ...formData, password_confirmation: e.target.value })}
+                          className={`pr-10 dark:bg-slate-800 dark:border-slate-700 dark:text-white ${field("password_confirmation") ? "border-red-400" : ""}`}
+                        />
+                        <button type="button" onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                          className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600">
+                          {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                      </div>
+                      {field("password_confirmation") && <p className="text-xs text-red-600">{field("password_confirmation")}</p>}
+                    </div>
+                  </div>
 
                   {/* Terms */}
                   <div className="flex items-start space-x-2 pt-1">

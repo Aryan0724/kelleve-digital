@@ -96,8 +96,8 @@ export class TrueDialAPI {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "X-Platform": process.env.NEXT_PUBLIC_PLATFORM_NAME || "truedial",
-          "X-Tenant-ID": process.env.NEXT_PUBLIC_TENANT_ID || "2"
+          "X-Platform": "truedial",
+          "X-Tenant-ID": "2"
         },
         body: JSON.stringify(credentials)
       });
@@ -115,8 +115,8 @@ export class TrueDialAPI {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "X-Platform": process.env.NEXT_PUBLIC_PLATFORM_NAME || "truedial",
-          "X-Tenant-ID": process.env.NEXT_PUBLIC_TENANT_ID || "2"
+          "X-Platform": "truedial",
+          "X-Tenant-ID": "2"
         },
         body: JSON.stringify(data)
       });
@@ -712,47 +712,3 @@ const MOCK_LISTINGS = [
     features: ["Live Grill", "Buffet", "Family Friendly"]
   }
 ];
-
-import axios from 'axios';
-import { useAuthStore } from '../stores/authStore';
-
-const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept': 'application/json',
-  },
-});
-
-api.interceptors.request.use(
-  (config) => {
-    // Only access Zustand store in browser
-    if (typeof window !== 'undefined') {
-      const token = useAuthStore.getState().token;
-      if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
-      }
-    }
-    
-    // Inject Tenant specific headers dynamically
-    config.headers['X-Platform'] = process.env.NEXT_PUBLIC_PLATFORM_NAME || 'truedial';
-    config.headers['X-Tenant-ID'] = process.env.NEXT_PUBLIC_TENANT_ID || '2';
-    
-    return config;
-  },
-  (error) => {
-    return Promise.reject(error);
-  }
-);
-
-api.interceptors.response.use(
-  (response) => response,
-  (error) => {
-    if (error.response && error.response.status === 401 && typeof window !== 'undefined') {
-      useAuthStore.getState().logout();
-    }
-    return Promise.reject(error);
-  }
-);
-
-export default api;

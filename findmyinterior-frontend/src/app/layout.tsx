@@ -7,8 +7,6 @@ import { Footer } from "@/components/layout/Footer";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { PopupAd } from "@/components/ads/PopupAd";
 import { TopRibbonAd } from "@/components/ads/TopRibbonAd";
-import { ConversionModalsAndTickers } from "@/components/conversion/ConversionModalsAndTickers";
-import { SEOStructuredData } from "@/components/seo/SEOStructuredData";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -63,11 +61,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SEOStructuredData />
           <TopRibbonAd />
           <Navbar />
           <PopupAd />
-          <ConversionModalsAndTickers />
           <main className="flex-1">
             {children}
           </main>

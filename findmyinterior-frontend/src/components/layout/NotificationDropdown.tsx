@@ -1,8 +1,7 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { createPortal } from "react-dom";
-import { Bell, Check, Loader2, X } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Bell, Check, Loader2 } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
@@ -22,88 +21,47 @@ export function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent | TouchEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setIsOpen(false);
-      }
-    }
-    function handleKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") {
-        setIsOpen(false);
-      }
-    }
-    if (isOpen) {
-      document.addEventListener("mousedown", handleClickOutside, true);
-      document.addEventListener("pointerdown", handleClickOutside, true);
-      document.addEventListener("touchstart", handleClickOutside, true);
-      document.addEventListener("click", handleClickOutside, true);
-      document.addEventListener("keydown", handleKeyDown, true);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside, true);
-      document.removeEventListener("pointerdown", handleClickOutside, true);
-      document.removeEventListener("touchstart", handleClickOutside, true);
-      document.removeEventListener("click", handleClickOutside, true);
-      document.removeEventListener("keydown", handleKeyDown, true);
-    };
-  }, [isOpen]);
 
   const fetchNotifications = async () => {
     if (!token) return;
-    setLoading(true);
     try {
       const res = await api.get("/notifications");
-      setNotifications(res.data.data || []);
+      setNotifications(res.data || []);
     } catch (err) {
-      console.error("Failed to fetch notifications:", err);
-    } finally {
-      setLoading(false);
+      console.error("Failed to fetch notifications", err);
     }
   };
 
   useEffect(() => {
-    if (isOpen) {
+    if (token && user) {
       fetchNotifications();
+      // Poll every 30 seconds
+      const interval = setInterval(fetchNotifications, 30000);
+      return () => clearInterval(interval);
     }
-  }, [isOpen]);
+  }, [token, user]);
 
   const markAsRead = async (id: string) => {
     try {
-      await api.post(`/notifications/${id}/read`);
-      setNotifications(notifications.map((n) => (n.id === id ? { ...n, read_at: new Date().toISOString() } : n)));
+      await api.patch(`/notifications/${id}/read`);
+      setNotifications(notifications.map(n => n.id === id ? { ...n, read_at: new Date().toISOString() } : n));
     } catch (err) {
-      console.error("Failed to mark notification as read", err);
+      console.error("Failed to mark as read", err);
     }
   };
 
-  const markAllAsRead = async () => {
-    try {
-      await api.post("/notifications/read-all");
-      setNotifications(notifications.map((n) => ({ ...n, read_at: new Date().toISOString() })));
-    } catch (err) {
-      console.error("Failed to mark all notifications as read", err);
-    }
-  };
-
-  const unreadCount = notifications.filter((n) => !n.read_at).length;
+  const unreadCount = notifications.filter(n => !n.read_at).length;
 
   if (!user) return null;
 
   return (
-    <div className="relative" ref={dropdownRef}>
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50"
-        aria-label="Notifications"
+    <div className="relative">
+      <button 
+        onClick={() => {
+          setIsOpen(!isOpen);
+          if (!isOpen && notifications.length === 0) fetchNotifications();
+        }}
+        className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50 focus:outline-none"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
@@ -114,30 +72,10 @@ export function NotificationDropdown() {
       </button>
 
       {isOpen && (
-        <>
-          {/* Full-screen fixed transparent backdrop at z-[9998] so clicking/tapping anywhere outside always closes popup */}
-          <div 
-            className="fixed inset-0 w-screen h-screen z-[9998] bg-transparent cursor-default" 
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsOpen(false);
-            }}
-            onTouchStart={(e) => {
-              e.stopPropagation();
-              setIsOpen(false);
-            }}
-          />
-          <div className="absolute right-0 mt-2 w-[calc(100vw-1.5rem)] max-w-[20rem] sm:w-80 bg-white dark:bg-slate-900 rounded-xl shadow-2xl border border-slate-100 dark:border-slate-800 z-[9999] overflow-hidden">
-            <div className="flex justify-between items-center p-3 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60">
-              <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1 rounded-full text-slate-400 hover:text-slate-600 hover:bg-slate-200/50 transition-colors"
-                title="Close notifications"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
+        <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-xl border border-slate-100 z-50 overflow-hidden">
+          <div className="flex justify-between items-center p-3 border-b bg-slate-50">
+            <h3 className="font-semibold text-slate-800 text-sm">Notifications</h3>
+          </div>
           
           <div className="max-h-96 overflow-y-auto">
             {loading ? (
@@ -171,7 +109,6 @@ export function NotificationDropdown() {
             )}
           </div>
         </div>
-        </>
       )}
     </div>
   );

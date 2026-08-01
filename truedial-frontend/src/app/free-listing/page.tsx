@@ -8,10 +8,8 @@ import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
 import { 
   Store, MapPin, Tags, FileCheck, ArrowRight, ArrowLeft, 
-  CheckCircle, Loader2, UploadCloud, Search, AlertCircle, Navigation,
-  Stethoscope, Utensils, Wrench, Briefcase, Building2
+  CheckCircle, Loader2, UploadCloud, Search, AlertCircle 
 } from "lucide-react";
-import { TrueDialAPI } from "@/lib/api";
 
 const STEPS = [
   { id: 1, title: "Business Profile", icon: Store },
@@ -25,74 +23,6 @@ interface Category {
   slug: string;
 }
 
-// Pre-suggested categories keyed by business type selection
-const CATEGORY_SUGGESTIONS: Record<string, Category[]> = {
-  doctor: [
-    { id: 101, name: "General Physician", slug: "general-physician" },
-    { id: 102, name: "Dentist", slug: "dentist" },
-    { id: 103, name: "Dermatologist", slug: "dermatologist" },
-    { id: 104, name: "Paediatrician", slug: "paediatrician" },
-    { id: 105, name: "Gynaecologist", slug: "gynaecologist" },
-    { id: 106, name: "Orthopaedic", slug: "orthopaedic" },
-    { id: 107, name: "Eye Specialist", slug: "eye-specialist" },
-    { id: 108, name: "Psychiatrist", slug: "psychiatrist" },
-    { id: 109, name: "Cardiologist", slug: "cardiologist" },
-    { id: 110, name: "Hospital", slug: "hospital" },
-    { id: 111, name: "Diagnostic Centre", slug: "diagnostic-centre" },
-    { id: 112, name: "Pharmacy", slug: "pharmacy" },
-  ],
-  restaurant: [
-    { id: 201, name: "Restaurant", slug: "restaurant" },
-    { id: 202, name: "Cafe & Coffee Shop", slug: "cafe" },
-    { id: 203, name: "Fast Food", slug: "fast-food" },
-    { id: 204, name: "Bakery & Sweets", slug: "bakery" },
-    { id: 205, name: "Dhaba", slug: "dhaba" },
-    { id: 206, name: "Cloud Kitchen", slug: "cloud-kitchen" },
-    { id: 207, name: "Catering Service", slug: "catering" },
-    { id: 208, name: "Ice Cream Parlour", slug: "ice-cream" },
-    { id: 209, name: "Juice Bar", slug: "juice-bar" },
-    { id: 210, name: "Banquet Hall", slug: "banquet" },
-  ],
-  builder: [
-    { id: 301, name: "Interior Designer", slug: "interior-designer" },
-    { id: 302, name: "Architect", slug: "architect" },
-    { id: 303, name: "Builder & Developer", slug: "builder" },
-    { id: 304, name: "Civil Contractor", slug: "civil-contractor" },
-    { id: 305, name: "Modular Kitchen", slug: "modular-kitchen" },
-    { id: 306, name: "Furniture Shop", slug: "furniture" },
-    { id: 307, name: "Material Supplier", slug: "material-supplier" },
-    { id: 308, name: "Real Estate Agent", slug: "real-estate-agent" },
-    { id: 309, name: "Vastu Consultant", slug: "vastu" },
-    { id: 310, name: "Painting Contractor", slug: "painting" },
-  ],
-  plumber: [
-    { id: 401, name: "Plumber", slug: "plumber" },
-    { id: 402, name: "Electrician", slug: "electrician" },
-    { id: 403, name: "AC Repair & Service", slug: "ac-repair" },
-    { id: 404, name: "Carpenter", slug: "carpenter" },
-    { id: 405, name: "Pest Control", slug: "pest-control" },
-    { id: 406, name: "House Cleaning", slug: "cleaning" },
-    { id: 407, name: "CCTV & Security", slug: "cctv" },
-    { id: 408, name: "Mechanic / Garage", slug: "mechanic" },
-    { id: 409, name: "Inverter & Battery", slug: "inverter" },
-    { id: 410, name: "Packers & Movers", slug: "packers-movers" },
-  ],
-  business: [
-    { id: 501, name: "Grocery Store", slug: "grocery" },
-    { id: 502, name: "Clothing & Apparel", slug: "clothing" },
-    { id: 503, name: "Mobile & Electronics", slug: "electronics" },
-    { id: 504, name: "Salon & Spa", slug: "salon" },
-    { id: 505, name: "Gym & Fitness", slug: "gym" },
-    { id: 506, name: "School & Coaching", slug: "education" },
-    { id: 507, name: "Travel Agency", slug: "travel" },
-    { id: 508, name: "Lawyer & Legal", slug: "legal" },
-    { id: 509, name: "Chartered Accountant", slug: "ca" },
-    { id: 510, name: "Printing & Stationery", slug: "printing" },
-    { id: 511, name: "Event Management", slug: "events" },
-    { id: 512, name: "Photographer", slug: "photography" },
-  ],
-};
-
 export default function FreeListingPage() {
   const router = useRouter();
   const { user } = useAuth();
@@ -104,15 +34,6 @@ export default function FreeListingPage() {
   const [businessName, setBusinessName] = useState("");
   const [phone, setPhone] = useState("");
   const [email, setEmail] = useState("");
-  const [businessType, setBusinessType] = useState("");
-
-  const BUSINESS_TYPES = [
-    { id: "doctor", label: "Medical & Health", icon: Stethoscope },
-    { id: "restaurant", label: "Food & Dining", icon: Utensils },
-    { id: "builder", label: "Real Estate & Construction", icon: Briefcase },
-    { id: "plumber", label: "Home & Local Services", icon: Wrench },
-    { id: "business", label: "Retail & Other Business", icon: Building2 },
-  ];
 
   // Step 2: Taxonomy & Location
   const [city, setCity] = useState("");
@@ -133,69 +54,35 @@ export default function FreeListingPage() {
     }
   }, [user]);
 
-  // Seed categories from the macro-category map and try to enrich from backend
+  // Fetch Categories dynamically
   useEffect(() => {
-    // First, immediately seed with local suggestions based on the selected businessType
-    const suggested = CATEGORY_SUGGESTIONS[businessType] || Object.values(CATEGORY_SUGGESTIONS).flat();
-    setAvailableCategories(suggested);
-    // Clear selected categories when type changes
-    setSelectedCategories([]);
-
-    // Then try to enrich from the backend
     async function fetchCategories() {
       try {
-        const res = await TrueDialAPI.getCategories();
-        if (res.data && res.data.length > 0) {
-          // Merge: put backend results first, then add any local suggestions not already included
-          const backendSlugs = new Set(res.data.map((c: Category) => c.slug));
-          const extraSuggestions = suggested.filter(s => !backendSlugs.has(s.slug));
-          setAvailableCategories([...res.data, ...extraSuggestions]);
+        const res = await fetch("/api/v1/truedial/public/categories");
+        if (res.ok) {
+          const data = await res.json();
+          // Assuming data is an array of categories or wrapped in a data object
+          setAvailableCategories(data.data || data || []);
+        } else {
+          // Fallback categories for display if API fails
+          setAvailableCategories([
+            { id: 1, name: "Restaurants", slug: "restaurants" },
+            { id: 2, name: "Hotels", slug: "hotels" },
+            { id: 3, name: "Hospitals", slug: "hospitals" },
+            { id: 4, name: "Education", slug: "education" },
+            { id: 5, name: "Real Estate", slug: "real-estate" },
+            { id: 6, name: "Home Services", slug: "home-services" },
+          ]);
         }
       } catch (e) {
-        // Backend unreachable — local suggestions already shown, nothing to do
-        console.info("Category API unavailable, using local suggestions.");
+        console.error("Failed to fetch categories", e);
       }
     }
     fetchCategories();
-  }, [businessType]);
-
-  const handleGetLocation = () => {
-    if ("geolocation" in navigator) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          try {
-            // Reverse geocoding via standard nominatim (OSM) for prototype, 
-            // in prod this should use Google Maps API or similar via backend
-            const { latitude, longitude } = position.coords;
-            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
-            const data = await res.json();
-            
-            if (data && data.address) {
-              const detectedCity = data.address.city || data.address.town || data.address.state_district || "";
-              if (detectedCity) {
-                setCity(detectedCity);
-              }
-            }
-          } catch (e) {
-            console.error("Geocoding failed", e);
-          }
-        },
-        (error) => {
-          console.error("Geolocation error", error);
-          alert("Could not get your location. Please enter your city manually.");
-        }
-      );
-    } else {
-      alert("Geolocation is not supported by your browser.");
-    }
-  };
+  }, []);
 
   const handleNextStep = (e: React.FormEvent) => {
     e.preventDefault();
-    if (step === 1 && !businessType) {
-      setError("Please select your primary business type.");
-      return;
-    }
     if (step === 2 && selectedCategories.length === 0) {
       setError("Please select at least one category for your business.");
       return;
@@ -220,7 +107,6 @@ export default function FreeListingPage() {
         address,
         categories: selectedCategories.map(c => c.id),
         gst_number: gstNumber,
-        business_type: businessType,
       };
 
       // Attempt to hit the actual vendor businesses endpoint
@@ -234,17 +120,17 @@ export default function FreeListingPage() {
       });
 
       if (res.ok) {
-        router.push("/dashboard/vendor?success=listing_created");
+        router.push("/dashboard/business?success=listing_created");
       } else {
         // If it fails (maybe due to auth), simulate success for UX walkthrough purposes
         setTimeout(() => {
-          router.push("/dashboard/vendor");
+          router.push("/dashboard/business");
         }, 1000);
       }
     } catch (err) {
       // Simulate success on network error for prototype
       setTimeout(() => {
-        router.push("/dashboard/vendor");
+        router.push("/dashboard/business");
       }, 1000);
     }
   };
@@ -265,12 +151,9 @@ export default function FreeListingPage() {
     <div className="min-h-screen bg-muted/30 py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
       <div className="w-full max-w-3xl">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center mb-4 group">
-            <img 
-              src="/logo.png" 
-              alt="TrueDial" 
-              className="h-14 sm:h-16 w-auto transition-transform group-hover:scale-105 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" 
-            />
+          <Link href="/" className="inline-flex items-center gap-2 mb-4">
+            <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg shadow-primary/30">T</div>
+            <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
           </Link>
           <h1 className="text-4xl font-extrabold text-navy dark:text-white tracking-tight">Business Onboarding</h1>
           <p className="mt-2 text-lg text-muted-foreground">Complete your profile to get verified and listed</p>
@@ -334,39 +217,6 @@ export default function FreeListingPage() {
                     autoFocus
                   />
                 </div>
-
-                <div className="space-y-4 pt-2">
-                  <label className="text-sm font-semibold text-foreground">Primary Business Type</label>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                    {BUSINESS_TYPES.map((type) => {
-                      const isSelected = businessType === type.id;
-                      const Icon = type.icon;
-                      return (
-                        <div 
-                          key={type.id}
-                          onClick={() => setBusinessType(type.id)}
-                          className={`relative p-4 rounded-xl border-2 cursor-pointer transition-all duration-200 flex flex-col items-center justify-center text-center gap-2 ${
-                            isSelected 
-                              ? 'border-[#E8701A] bg-[#E8701A]/5 shadow-md' 
-                              : 'border-border bg-background hover:border-primary/40 hover:bg-muted/30'
-                          }`}
-                        >
-                          {isSelected && (
-                            <div className="absolute top-2 right-2 text-[#E8701A]">
-                              <CheckCircle className="w-4 h-4 fill-current text-white bg-[#E8701A] rounded-full" />
-                            </div>
-                          )}
-                          <div className={`p-3 rounded-full ${isSelected ? 'bg-[#E8701A]/10 text-[#E8701A]' : 'bg-muted text-muted-foreground'}`}>
-                            <Icon className="w-6 h-6" />
-                          </div>
-                          <span className={`font-semibold text-sm ${isSelected ? 'text-foreground' : 'text-muted-foreground'}`}>
-                            {type.label}
-                          </span>
-                        </div>
-                      )
-                    })}
-                  </div>
-                </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
@@ -406,9 +256,7 @@ export default function FreeListingPage() {
                 
                 <div className="space-y-4 mb-8">
                   <label className="text-sm font-semibold text-foreground">Business Category</label>
-                  <p className="text-sm text-muted-foreground mb-4">
-                    Showing suggestions based on your selected business type. Select all that apply.
-                  </p>
+                  <p className="text-sm text-muted-foreground mb-4">Select the categories that best describe your services.</p>
                   
                   <div className="relative">
                     <Search className="absolute left-3 top-3.5 w-5 h-5 text-muted-foreground" />
@@ -421,60 +269,32 @@ export default function FreeListingPage() {
                     />
                   </div>
 
-                  {selectedCategories.length > 0 && (
-                    <div className="flex flex-wrap gap-1 mt-3">
-                      <span className="text-xs font-semibold text-muted-foreground mr-1 self-center">Selected:</span>
-                      {selectedCategories.map(cat => (
-                        <span key={cat.id} className="px-2 py-0.5 bg-[#E8701A] text-white text-xs rounded-full font-medium flex items-center gap-1">
+                  <div className="flex flex-wrap gap-2 mt-4 max-h-48 overflow-y-auto p-2 border border-border rounded-lg bg-muted/20">
+                    {filteredCategories.length > 0 ? filteredCategories.map(cat => {
+                      const isSelected = selectedCategories.some(c => c.id === cat.id);
+                      return (
+                        <div 
+                          key={cat.id} 
+                          onClick={() => toggleCategory(cat)}
+                          className={`px-4 py-2 rounded-full text-sm cursor-pointer transition-all border font-medium flex items-center gap-2 ${
+                            isSelected 
+                              ? 'bg-[#E8701A] text-white border-[#E8701A] shadow-md shadow-[#E8701A]/20' 
+                              : 'bg-background hover:bg-muted text-foreground border-border hover:border-primary/50'
+                          }`}
+                        >
+                          {isSelected && <CheckCircle className="w-4 h-4" />}
                           {cat.name}
-                          <button type="button" onClick={() => toggleCategory(cat)} className="ml-0.5 hover:text-white/70">×</button>
-                        </span>
-                      ))}
-                    </div>
-                  )}
-
-                  <div className="mt-3">
-                    <span className="text-xs font-bold text-muted-foreground uppercase tracking-wide">
-                      ✨ Suggested for you
-                    </span>
-                    <div className="flex flex-wrap gap-2 mt-2 max-h-52 overflow-y-auto p-3 border border-border rounded-xl bg-muted/20">
-                      {filteredCategories.length > 0 ? filteredCategories.map(cat => {
-                        const isSelected = selectedCategories.some(c => c.id === cat.id);
-                        return (
-                          <div 
-                            key={cat.id} 
-                            onClick={() => toggleCategory(cat)}
-                            className={`px-4 py-2 rounded-full text-sm cursor-pointer transition-all border font-medium flex items-center gap-2 ${
-                              isSelected 
-                                ? 'bg-[#E8701A] text-white border-[#E8701A] shadow-md shadow-[#E8701A]/20' 
-                                : 'bg-background hover:bg-muted text-foreground border-border hover:border-primary/50'
-                            }`}
-                          >
-                            {isSelected && <CheckCircle className="w-4 h-4" />}
-                            {cat.name}
-                          </div>
-                        )
-                      }) : (
-                        <p className="text-sm text-muted-foreground p-4 text-center w-full">
-                          No categories found matching &ldquo;{searchCategory}&rdquo;
-                        </p>
-                      )}
-                    </div>
+                        </div>
+                      )
+                    }) : (
+                      <p className="text-sm text-muted-foreground p-4 text-center w-full">No categories found matching "{searchCategory}"</p>
+                    )}
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <label className="text-sm font-semibold text-foreground">City</label>
-                      <button 
-                        type="button" 
-                        onClick={handleGetLocation}
-                        className="text-xs text-primary font-medium flex items-center hover:underline"
-                      >
-                        <Navigation className="w-3 h-3 mr-1" /> Use Current Location
-                      </button>
-                    </div>
+                    <label className="text-sm font-semibold text-foreground">City</label>
                     <Input 
                       type="text" 
                       value={city}

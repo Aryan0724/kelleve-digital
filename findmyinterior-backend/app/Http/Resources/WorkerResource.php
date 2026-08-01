@@ -12,12 +12,8 @@ class WorkerResource extends JsonResource
         return [
             'id'               => $this->id,
             'name'             => $this->name,
-            'title'            => $this->name,
-            'business_name'    => $this->name,
             'slug'             => $this->slug,
             'avatar'           => $this->avatar,
-            'image_url'        => $this->avatar,
-            'cover_image'      => $this->avatar,
             'city'             => $this->city,
             'district'         => $this->district,
             'skill'            => $this->skill,
@@ -29,7 +25,6 @@ class WorkerResource extends JsonResource
             'is_verified'      => $this->is_verified,
             'is_featured'      => $this->is_featured,
             'avg_rating'       => (float) $this->avg_rating,
-            'rating'           => (float) $this->avg_rating,
             'review_count'     => $this->review_count,
             'bio'              => $this->bio,
             'phone'            => $this->when(

@@ -1,21 +1,24 @@
 import Link from "next/link";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Globe, Mail, Phone, MapPin } from "lucide-react";
 
 export function Footer() {
   return (
-    <footer className="bg-slate-900 dark:bg-slate-950 py-12 text-slate-300 transition-colors">
-      <div className="container mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 sm:gap-10">
+    <footer className="bg-slate-900 py-12 text-slate-300">
+      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-5 gap-8">
 
         <div>
-          <div className="mb-4">
-            <img src="/logo.jpg" alt="Find My Interior" className="h-12 w-auto bg-white p-1.5 rounded-lg" />
-          </div>
+          <h2 className="text-2xl font-bold text-white mb-2">
+            <img src="/logo.jpg" alt="Find My Interior" className="h-24 w-auto mb-4 bg-white p-2 rounded-xl" />
+          </h2>
           <p className="text-sm mb-4 text-slate-400">
             Bihar&apos;s largest marketplace connecting homeowners with verified
             interior designers, builders, suppliers, and skilled workers.
           </p>
           <div className="flex items-center gap-3">
-            <Link href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors" aria-label="Email" title="Email Us">
+            <Link href="#" className="hover:text-white transition-colors" aria-label="Website">
+              <Globe className="h-5 w-5" />
+            </Link>
+            <Link href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors" aria-label="Email">
               <Mail className="h-5 w-5" />
             </Link>
           </div>
@@ -45,18 +48,13 @@ export function Footer() {
         <div>
           <h3 className="font-semibold text-white mb-4">Contact</h3>
           <ul className="space-y-3 text-sm">
-            <li>
-              <Link href="/contact" className="inline-flex items-center gap-1.5 text-orange-400 font-bold hover:text-orange-300 transition-colors">
-                → Contact Us Page &amp; Support Form
-              </Link>
-            </li>
             <li className="flex items-center gap-2">
               <Mail className="h-4 w-4 shrink-0 text-orange-400" />
-              <a href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors">info@findmyinterior.com</a>
+              info@findmyinterior.com
             </li>
             <li className="flex items-center gap-2">
               <Phone className="h-4 w-4 shrink-0 text-orange-400" />
-              <a href="tel:+919876543210" className="hover:text-white transition-colors">+91 98765 43210</a>
+              +91 98765 43210
             </li>
             <li className="flex items-center gap-2">
               <MapPin className="h-4 w-4 shrink-0 text-orange-400" />

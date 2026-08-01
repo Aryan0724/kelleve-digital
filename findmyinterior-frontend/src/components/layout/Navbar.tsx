@@ -33,8 +33,7 @@ import {
   ShieldAlert,
   Moon,
   Sun,
-  X,
-  Globe
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { NotificationDropdown } from "./NotificationDropdown";
@@ -135,8 +134,8 @@ export function Navbar() {
         <div className="container mx-auto flex items-center justify-between gap-4">
           
           {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0 group py-1.5">
-            <img src="/logo.jpg" alt="Find My Interior" className="h-14 sm:h-16 md:h-16 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
+          <Link href="/" className="flex items-center flex-shrink-0 group py-2">
+            <img src="/logo.jpg" alt="Find My Interior" className="h-20 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
           </Link>
 
           {/* Center Search Container */}
@@ -163,7 +162,7 @@ export function Navbar() {
             <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2"></div>
             
             {(!_hasHydrated && !mounted) ? null : (!user || ["homeowner", "customer"].includes(user?.role || "")) ? (
-              <Link href="/compare">
+              <Link href={isAuthenticated ? "/dashboard?tab=bids_received" : "/post-requirement"}>
                 <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
                   COMPARE BIDS
                 </button>

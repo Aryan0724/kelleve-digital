@@ -18,7 +18,6 @@ class ListingFactory extends Factory
             'category_id' => Category::factory(),
             'city_id'     => null,
             'title'       => $title,
-            'tenant_id'   => 1,
             'slug'        => Str::slug($title) . '-' . fake()->unique()->randomNumber(5),
             'description' => fake()->paragraph(),
             'status'      => 'active',

@@ -45,7 +45,7 @@ class Project extends Model
 
     public function getUnlockPriceDisplayAttribute()
     {
-        return '₹' . number_format(\App\Services\UnlockService::getUnlockFee($this));
+        return '₹' . number_format(config('marketplace.unlock_fee', 49.00));
     }
 
     public function activityLogs()

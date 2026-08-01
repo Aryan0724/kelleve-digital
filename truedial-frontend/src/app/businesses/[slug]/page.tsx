@@ -8,7 +8,6 @@ import InquiryForm from "@/components/forms/InquiryForm";
 import ReviewSection from "@/components/reviews/ReviewSection";
 import Link from "next/link";
 import TrackedLink from "@/components/shared/TrackedLink";
-import BookingCTA from "@/components/booking/BookingCTA";
 
 export default async function BusinessProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -264,15 +263,6 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                     </div>
                   </div>
                 )}
-              </div>
-
-              {/* Smart Booking CTA */}
-              <div className="mb-6">
-                <BookingCTA
-                  businessName={businessDTO.basicInfo.title}
-                  businessSlug={resolvedParams.slug}
-                  category={businessDTO.basicInfo.category || ""}
-                />
               </div>
 
               <div className="pt-6 border-t border-border">

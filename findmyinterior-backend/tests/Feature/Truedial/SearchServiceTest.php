@@ -33,8 +33,7 @@ class SearchServiceTest extends TestCase
             'avg_rating' => 5
         ]);
 
-        $response = $this->withHeaders(['X-Tenant-ID' => $tenant->id])
-            ->getJson('/api/v1/truedial/public/search?q=Plumber');
+        $response = $this->getJson('/api/v1/truedial/public/search?q=Plumber');
         $response->assertStatus(200);
         $data = $response->json('data.data.data');
         
@@ -53,8 +52,7 @@ class SearchServiceTest extends TestCase
             'status' => 'active',
         ]);
 
-        $response = $this->withHeaders(['X-Tenant-ID' => $tenant->id])
-            ->getJson('/api/v1/truedial/public/search/autocomplete?q=Elect');
+        $response = $this->getJson('/api/v1/truedial/public/search/autocomplete?q=Elect');
 
         $response->assertStatus(200);
         $data = $response->json('data');

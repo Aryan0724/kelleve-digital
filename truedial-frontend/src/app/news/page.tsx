@@ -86,7 +86,7 @@ export default function NewsPage() {
                     </div>
                   </div>
                 )}
-                { }
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img 
                   src={article.image} 
                   alt={article.title} 

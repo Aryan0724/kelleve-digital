@@ -79,7 +79,7 @@ export function TrustFooter() {
               </a>
               {/* WhatsApp */}
               <a
-                href="https://wa.me/919304355011?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
+                href={`https://wa.me/${phone}?text=Hi, I need help with FindMyInterior.`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2 bg-[#25D366]/80 hover:bg-[#25D366] transition-colors rounded-lg px-3 py-2"

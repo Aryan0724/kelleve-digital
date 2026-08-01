@@ -35,7 +35,7 @@ test.describe('Analytics Tracking Flows', () => {
 
   test('Verify tracking from business profile page', async ({ page }) => {
     // Intercept tracking requests
-    const trackedEvents: any[] = [];
+    let trackedEvents: any[] = [];
 
     await page.route('**/api/v1/truedial/public/analytics/track', async (route) => {
       trackedEvents.push(JSON.parse(route.request().postData() || '{}'));

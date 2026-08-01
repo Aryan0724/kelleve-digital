@@ -21,34 +21,13 @@ class UnlockService
     /**
      * Unlock a customer's contact for a specific requirement using the wallet.
      */
-    public static function getUnlockFee($requirement = null, ?User $vendor = null): float
-    {
-        $baseFee = (float) config('marketplace.unlock_fee', 49.00);
-        if ($requirement && $requirement->unlock_price !== null && is_numeric($requirement->unlock_price)) {
-            $baseFee = (float) $requirement->unlock_price;
-        } else {
-            $settingVal = \App\Models\Setting::where('key', 'contact_unlock_fee')->value('value');
-            if ($settingVal !== null && is_numeric($settingVal)) {
-                $baseFee = (float) $settingVal;
-            }
-        }
-
-        if ($vendor && $vendor->activeSubscription && $vendor->activeSubscription->plan) {
-            $discount = (int) ($vendor->activeSubscription->plan->unlock_discount_percent ?? 0);
-            if ($discount > 0 && $discount <= 100) {
-                $baseFee = round($baseFee * (1 - ($discount / 100)), 2);
-            }
-        }
-
-        return max(0, $baseFee);
-    }
-
     public function unlockContact(User $vendor, $requirement): array
     {
         $requirementType = $requirement->getMorphClass();
-        
+
         // 1. Check if already unlocked
-        $existing = ContactUnlock::where('user_id', $vendor->id)
+        $existing = DB::table('contact_unlocks')
+            ->where('user_id', $vendor->id)
             ->where('requirement_id', $requirement->id)
             ->where('requirement_type', $requirementType)
             ->first();
@@ -65,8 +44,8 @@ class UnlockService
             ];
         }
 
-        // 2. Fetch the fee consistently from requirement, setting, or config
-        $fee = self::getUnlockFee($requirement, $vendor);
+        // 2. Fetch the fee from requirement or configuration
+        $fee = $requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00);
 
         // Workers and Skilled Workers can unlock any requirement for free
         if ($vendor->hasRole('worker') || $vendor->hasRole('skilled_worker')) {

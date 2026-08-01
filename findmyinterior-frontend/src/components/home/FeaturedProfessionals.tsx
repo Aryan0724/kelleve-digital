@@ -26,42 +26,32 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayPros.map((pro, i) => {
-            const name = pro.business_name || pro.title || pro.company_name || pro.name || "Professional";
-            const image = pro.image_url || pro.cover_image || pro.logo || pro.avatar;
-            const rating = pro.rating || pro.avg_rating || "4.5";
-            const reviewCount = pro.review_count || pro.reviews_count || 0;
-            const categoryName = typeof pro.category === "string" ? pro.category : pro.category?.name || pro.business_type || pro.skill || "Professional";
-
-            return (
-              <div key={pro.id || i} className="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition">
-                <div className="flex items-center gap-4 mb-4">
-                  {image ? (
-                    <img src={image} alt={`${name} - Verified Interior Designer & Architect in Bihar`} loading="lazy" width={64} height={64} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100 dark:border-orange-950" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-100 to-amber-50 dark:from-orange-950/50 dark:to-amber-950/50 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-xl uppercase">
-                      {name.charAt(0)}
-                    </div>
-                  )}
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-1 line-clamp-1">
-                      {name} <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
-                    </h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{categoryName}</p>
-                  </div>
-                </div>
-                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
-                  <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                    {rating} <span className="text-gray-400 font-normal">({reviewCount})</span>
-                  </div>
-                  <div className="w-[100px]">
-                    <InquiryForm type="Listing" id={pro.id || 1} title={name} />
-                  </div>
+          {displayPros.map((pro, i) => (
+            <div key={pro.id || i} className="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition">
+              <div className="flex items-center gap-4 mb-4">
+                {pro.image_url ? (
+                  <img src={pro.image_url} alt={pro.business_name} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100" />
+                ) : (
+                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xl">{pro.business_name?.charAt(0)}</div>
+                )}
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-1 line-clamp-1">
+                    {pro.business_name} <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
+                  </h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{pro.category?.name || "Professional"}</p>
                 </div>
               </div>
-            );
-          })}
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
+                <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                  {pro.rating || "4.5"} <span className="text-gray-400 font-normal">({pro.review_count || 0})</span>
+                </div>
+                <div className="w-[100px]">
+                  <InquiryForm type="Listing" id={pro.id || 1} title={pro.business_name} />
+                </div>
+              </div>
+            </div>
+          ))}
         </div>
         <div className="mt-8 text-center md:hidden">
           <Link href="/professionals" className="inline-block border border-[#E8701A] text-[#E8701A] font-semibold px-6 py-2 rounded-lg hover:bg-orange-50">

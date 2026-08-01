@@ -259,7 +259,7 @@ function PostRequirementContent() {
       const oppDef = OPPORTUNITY_TYPES.find(t => t.id === selectedType);
       if (!oppDef) throw new Error("Invalid selection");
 
-      const payload: any = {
+      let payload: any = {
         title: formData.title || `${oppDef.label} Request`,
         description: formData.description,
         city: formData.city,

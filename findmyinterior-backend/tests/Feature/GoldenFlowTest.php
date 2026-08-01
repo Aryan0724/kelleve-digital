@@ -20,7 +20,6 @@ class GoldenFlowTest extends TestCase
     {
         parent::setUp();
         // Create basic dependencies needed for most flows
-        $this->tenant = \App\Models\Tenant::firstOrCreate(['slug' => 'findmyinterior'], ['status' => 'active', 'name' => 'Find My Interior', 'domain' => 'findmyinterior.com']);
         City::factory()->create(['name' => 'Patna']);
         District::factory()->create(['name' => 'Patna']);
         Category::factory()->create(['name' => 'Interior Designer', 'slug' => 'interior-designer']);
@@ -393,7 +392,6 @@ class GoldenFlowTest extends TestCase
      */
     public function test_admin_journey()
     {
-        $this->withoutExceptionHandling();
         // 1. Setup Admin User
         $adminRole = \App\Models\Role::firstOrCreate(['slug' => 'admin', 'name' => 'Admin']);
         $adminUser = User::factory()->create();
@@ -401,12 +399,11 @@ class GoldenFlowTest extends TestCase
 
         // 2. Setup a pending listing
         $listing = \App\Models\Listing::factory()->create([
-            'is_verified' => false,
-            'tenant_id' => $this->tenant->id
+            'is_verified' => false
         ]);
 
         // 3. Verify Listing (Action)
-        $verifyResponse = $this->actingAs($adminUser)->withHeaders(['X-Tenant-ID' => $this->tenant->id])->patchJson("/api/v1/admin/listings/{$listing->id}/verify");
+        $verifyResponse = $this->actingAs($adminUser)->patchJson("/api/v1/admin/listings/{$listing->id}/verify");
         $verifyResponse->assertStatus(200);
 
         // 4. Verification
@@ -425,13 +422,12 @@ class GoldenFlowTest extends TestCase
             'listing_id' => $listing->id,
             'reviewable_type' => \App\Models\Listing::class,
             'reviewable_id' => $listing->id,
-            'tenant_id' => $this->tenant->id,
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         // 6. Approve Review (Action)
-        $approveResponse = $this->actingAs($adminUser)->withHeaders(['X-Tenant-ID' => $this->tenant->id])->patchJson("/api/v1/admin/reviews/{$reviewId}/approve");
+        $approveResponse = $this->actingAs($adminUser)->patchJson("/api/v1/admin/reviews/{$reviewId}/approve");
         $approveResponse->assertStatus(200);
 
         // 7. Verification

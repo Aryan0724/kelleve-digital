@@ -1,7 +1,8 @@
 {
   "expo": {
     "name": "TrueDial",
-    "slug": "truedial-mobile",
+    "slug": "find-my-interior",
+    "owner": "integrals",
     "version": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",

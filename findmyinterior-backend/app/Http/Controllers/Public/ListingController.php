@@ -53,49 +53,13 @@ class ListingController extends Controller
         // 'name' param - search by company/person name specifically
         if ($request->filled('name')) {
             $nameVal = strtolower(trim($request->name));
-            $query->where(function($q) use ($nameVal) {
-                $q->whereRaw('LOWER(title) LIKE ?', ["%{$nameVal}%"])
-                  ->orWhereHas('user', function ($uq) use ($nameVal) {
-                      $uq->whereRaw('LOWER(name) LIKE ?', ["%{$nameVal}%"])
-                         ->orWhereHas('builder', function ($bq) use ($nameVal) {
-                             $bq->whereRaw('LOWER(company_name) LIKE ?', ["%{$nameVal}%"]);
-                         })
-                         ->orWhereHas('supplier', function ($sq) use ($nameVal) {
-                             $sq->whereRaw('LOWER(company_name) LIKE ?', ["%{$nameVal}%"]);
-                         });
-                  });
-            });
+            $query->whereRaw('LOWER(title) LIKE ?', ["%{$nameVal}%"]);
         }
         if ($request->filled('min_rating')) {
             $query->where('avg_rating', '>=', $request->min_rating);
         }
-        if ($request->filled('budget') && !in_array($request->budget, ['All Budget', 'All Budgets', 'all', ''])) {
-            $budgetVal = trim(explode(' ', $request->budget)[0]);
-            $query->whereRaw('LOWER(budget_tier) LIKE ?', ["%" . strtolower($budgetVal) . "%"]);
-        }
-        if ($request->filled('experience')) {
-            $minExp = (int) $request->experience;
-            if ($minExp > 0) {
-                $query->where(function($q) use ($minExp) {
-                    $q->where('years_experience', '>=', $minExp)
-                      ->orWhereHas('user', fn($uq) => $uq->where('years_of_experience', '>=', $minExp));
-                });
-            }
-        }
-        if ($request->filled('verification_level') && $request->verification_level !== 'all') {
-            $vLevel = trim($request->verification_level);
-            $query->whereHas('user', fn($q) => $q->where('verification_level', $vLevel));
-        }
-        if ($request->filled('availability') && $request->availability !== 'all') {
-            $query->where('status', 'active');
-        }
-        if ($request->filled('location') && !empty(trim($request->location))) {
-            $locVal = strtolower(trim($request->location));
-            $query->where(function($q) use ($locVal) {
-                $q->whereRaw('LOWER(city) LIKE ?', ["%{$locVal}%"])
-                  ->orWhereRaw('LOWER(district) LIKE ?', ["%{$locVal}%"])
-                  ->orWhereRaw('LOWER(address) LIKE ?', ["%{$locVal}%"]);
-            });
+        if ($request->filled('budget') && $request->budget !== 'All Budget') {
+            $query->where('budget_tier', $request->budget);
         }
 
         // Join users table to sort by trust metrics

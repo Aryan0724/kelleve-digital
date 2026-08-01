@@ -18,7 +18,6 @@ return new class extends Migration
             $table->integer('max_listings')->default(1);
             $table->integer('max_gallery_images')->default(10);
             $table->integer('lead_unlocks_per_month')->default(0)->comment('0 = not applicable');
-            $table->integer('unlock_discount_percent')->default(0)->comment('Percentage discount on contact unlocks');
             $table->boolean('can_see_all_leads')->default(false)->comment('Premium subscribers see all requirement contacts');
             $table->boolean('is_featured_listing')->default(false);
             $table->boolean('is_active')->default(true);
