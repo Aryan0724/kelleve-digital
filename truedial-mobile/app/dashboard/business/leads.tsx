@@ -38,6 +38,27 @@ export default function LeadsScreen() {
     }
   };
 
+  const handleSendMessage = async (lead: any) => {
+    if (lead.conversation_id) {
+      router.push(`/dashboard/chat/${lead.conversation_id}`);
+      return;
+    }
+    try {
+      const res = await api.post('/conversations', {
+        user_id: lead.user_id || lead.customer_id,
+        lead_id: lead.id
+      });
+      const convo = res.data?.data || res.data;
+      if (convo && convo.id) {
+        router.push(`/dashboard/chat/${convo.id}`);
+        return;
+      }
+    } catch {
+      // Fallback to conversation list
+    }
+    router.push('/dashboard/chat');
+  };
+
   const handleOptions = (lead: any) => {
     const options = ['Cancel', 'Mark Contacted', 'Mark Converted', 'Mark Invalid'];
     const statuses = ['', 'Contacted', 'Converted', 'Invalid'];
@@ -102,7 +123,7 @@ export default function LeadsScreen() {
         
         <TouchableOpacity 
           style={styles.chatBtn}
-          onPress={() => router.push('/dashboard/chat')}
+          onPress={() => handleSendMessage(item)}
         >
           <Text style={styles.chatBtnText}>Send Message</Text>
         </TouchableOpacity>

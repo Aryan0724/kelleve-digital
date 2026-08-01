@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
   StyleSheet, Text, View, FlatList, TextInput, TouchableOpacity,
-  ActivityIndicator, KeyboardAvoidingView, Platform
+  ActivityIndicator, KeyboardAvoidingView, Platform, Alert
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import api from '../../../services/api';
@@ -11,7 +11,9 @@ import { useAuth } from '../../../context/auth';
 
 interface Message {
   id: number;
-  body: string;
+  body?: string;
+  content?: string;
+  message?: string;
   sender_id: number;
   sender?: { name: string };
   created_at: string;
@@ -30,50 +32,71 @@ export default function ChatDetailScreen() {
   const [participantName, setParticipantName] = useState('Chat');
 
   useEffect(() => {
-    const fetchChat = async () => {
-      try {
-        const [convoRes, msgRes] = await Promise.all([
-          api.get(`/conversations/${id}`),
-          api.get(`/conversations/${id}/messages`),
-        ]);
-        const convo = convoRes.data?.data || convoRes.data;
-        setParticipantName(convo?.participant?.name || 'Chat');
-        const msgs = msgRes.data?.data || msgRes.data || [];
-        setMessages(Array.isArray(msgs) ? msgs : []);
-      } catch {
-        setMessages([]);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchChat();
   }, [id]);
 
-  const handleSend = async () => {
-    if (!inputText.trim() || sending) return;
-    setSending(true);
+  const fetchChat = async () => {
     try {
-      const res = await api.post(`/conversations/${id}/messages`, { body: inputText.trim() });
+      const [convoRes, msgRes] = await Promise.all([
+        api.get(`/conversations/${id}`).catch(() => null),
+        api.get(`/conversations/${id}/messages`).catch(() => null),
+      ]);
+      
+      const convo = convoRes?.data?.data || convoRes?.data;
+      if (convo) {
+        const participant = convo.participant || (user?.id === convo.vendor_id ? convo.customer : convo.vendor) || convo.user;
+        setParticipantName(participant?.name || convo.title || 'Chat');
+      }
+
+      const msgs = msgRes?.data?.data || msgRes?.data || [];
+      setMessages(Array.isArray(msgs) ? msgs : []);
+    } catch (err) {
+      console.warn('Failed to load chat detail:', err);
+      setMessages([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSend = async () => {
+    const text = inputText.trim();
+    if (!text || sending) return;
+    
+    setSending(true);
+    setInputText('');
+
+    const tempId = Date.now();
+    const optimistic: Message = {
+      id: tempId,
+      content: text,
+      body: text,
+      message: text,
+      sender_id: user?.id || 0,
+      created_at: new Date().toISOString(),
+    };
+
+    setMessages(prev => [...prev, optimistic]);
+    setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
+
+    try {
+      const res = await api.post(`/conversations/${id}/messages`, {
+        content: text,
+        body: text,
+        message: text
+      });
       const newMsg = res.data?.data || res.data;
-      setMessages(prev => [...prev, newMsg]);
-      setInputText('');
-      setTimeout(() => flatListRef.current?.scrollToEnd({ animated: true }), 100);
-    } catch {
-      // Optimistic: add locally anyway
-      const optimistic: Message = {
-        id: Date.now(),
-        body: inputText.trim(),
-        sender_id: user?.id || 0,
-        created_at: new Date().toISOString(),
-      };
-      setMessages(prev => [...prev, optimistic]);
-      setInputText('');
+      if (newMsg && newMsg.id) {
+        setMessages(prev => prev.map(m => m.id === tempId ? newMsg : m));
+      }
+    } catch (err) {
+      console.log('Sent message locally via fallback');
     } finally {
       setSending(false);
     }
   };
 
-  const formatTime = (dateStr: string) => {
+  const formatTime = (dateStr?: string) => {
+    if (!dateStr) return '';
     const d = new Date(dateStr);
     return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
@@ -91,11 +114,11 @@ export default function ChatDetailScreen() {
         </TouchableOpacity>
         <View style={styles.headerInfo}>
           <Text style={styles.headerName} numberOfLines={1}>{participantName}</Text>
-          <Text style={styles.headerSub}>Tap for details</Text>
+          <Text style={styles.headerSub}>TrueDial Direct Messaging</Text>
         </View>
       </View>
 
-      {/* Messages */}
+      {/* Messages List */}
       {loading ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color="#E8701A" />
@@ -104,15 +127,19 @@ export default function ChatDetailScreen() {
         <FlatList
           ref={flatListRef}
           data={messages}
-          keyExtractor={(item) => String(item.id)}
-          renderItem={({ item }) => (
-            <ChatBubble
-              message={item.body}
-              timestamp={formatTime(item.created_at)}
-              isMine={item.sender_id === user?.id}
-              senderName={item.sender?.name}
-            />
-          )}
+          keyExtractor={(item, index) => String(item.id || index)}
+          renderItem={({ item }) => {
+            const msgText = item.content || item.body || item.message || '';
+            const isMine = item.sender_id === user?.id || item.sender_id === 0;
+            return (
+              <ChatBubble
+                message={msgText}
+                timestamp={formatTime(item.created_at)}
+                isMine={isMine}
+                senderName={item.sender?.name}
+              />
+            );
+          }}
           contentContainerStyle={{ paddingVertical: 16 }}
           onContentSizeChange={() => flatListRef.current?.scrollToEnd({ animated: false })}
         />

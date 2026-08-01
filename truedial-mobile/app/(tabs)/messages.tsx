@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, ActivityIndicator, Image, RefreshControl } from 'react-native';
 import { useRouter } from 'expo-router';
 import { MessageSquare, Circle, Search, ArrowRight } from 'lucide-react-native';
 import api from '../../services/api';
@@ -10,6 +10,7 @@ export default function MessagesTab() {
   const { user } = useAuth();
   const [conversations, setConversations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {
     fetchConversations();
@@ -25,18 +26,24 @@ export default function MessagesTab() {
       setConversations([]);
     } finally {
       setLoading(false);
+      setRefreshing(false);
     }
   };
 
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchConversations();
+  };
+
   const getAvatar = (name: string) => {
-    const fallback = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=F05A24&color=fff&size=100`;
-    return fallback;
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=E8701A&color=fff&size=100`;
   };
 
   return (
-    <View className="flex-1 bg-white dark:bg-slate-950 pt-14">
+    <View className="flex-1 bg-white dark:bg-slate-950 pt-12">
+      {/* Header */}
       <View className="px-5 pb-4 border-b border-slate-100 dark:border-slate-800 flex-row justify-between items-center">
-        <Text className="text-[28px] font-extrabold text-slate-900 dark:text-white tracking-tight">Chats</Text>
+        <Text className="text-[28px] font-extrabold text-slate-900 dark:text-white tracking-tight">Messages</Text>
         <TouchableOpacity className="w-10 h-10 rounded-full bg-slate-50 dark:bg-slate-900 items-center justify-center border border-slate-200 dark:border-slate-800">
           <Search size={20} color="#64748B" />
         </TouchableOpacity>
@@ -44,43 +51,46 @@ export default function MessagesTab() {
 
       {loading ? (
         <View className="flex-1 items-center justify-center">
-          <ActivityIndicator size="large" color="#F05A24" />
+          <ActivityIndicator size="large" color="#E8701A" />
         </View>
       ) : conversations.length === 0 ? (
         <View className="flex-1 items-center justify-center p-8">
           <View className="w-20 h-20 bg-orange-50 dark:bg-orange-950/30 rounded-full items-center justify-center mb-6">
-            <MessageSquare size={32} color="#F05A24" />
+            <MessageSquare size={32} color="#E8701A" />
           </View>
           <Text className="text-[20px] font-extrabold text-slate-900 dark:text-white mb-2 text-center">No Messages Yet</Text>
           <Text className="text-[14px] text-slate-500 dark:text-slate-400 text-center leading-relaxed">
-            When you contact vendors or receive inquiries, your conversations will appear here.
+            When you contact vendors or receive inquiries, your chat messages will appear here.
           </Text>
         </View>
       ) : (
-        <ScrollView contentContainerStyle={{ padding: 16 }}>
+        <ScrollView 
+          contentContainerStyle={{ padding: 16 }}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E8701A" />}
+        >
           {conversations.map((conv) => {
-            const isVendor = user?.id === conv.vendor_id;
-            const otherUser = isVendor ? conv.customer : conv.vendor;
-            const name = otherUser?.name || 'Unknown User';
-            const lastMsg = conv.latest_message?.content || 'Started a conversation';
-            const time = conv.latest_message?.created_at ? new Date(conv.latest_message.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+            const participant = conv.participant || (user?.id === conv.vendor_id ? conv.customer : conv.vendor) || conv.user || conv.other_user;
+            const name = participant?.name || conv.title || 'Support Chat';
+            const lastMsgObj = conv.latest_message || conv.last_message || {};
+            const lastMsg = lastMsgObj.content || lastMsgObj.body || lastMsgObj.message || 'Started a conversation';
+            const time = lastMsgObj.created_at ? new Date(lastMsgObj.created_at).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
             
             return (
               <TouchableOpacity 
                 key={conv.id} 
                 className="flex-row items-center p-4 mb-3 bg-white dark:bg-slate-900 rounded-2xl border border-slate-100 dark:border-slate-800 shadow-sm"
-                onPress={() => router.push(`/chat/${conv.id}`)}
+                onPress={() => router.push(`/dashboard/chat/${conv.id}`)}
               >
-                <Image source={{ uri: getAvatar(name) }} className="w-14 h-14 rounded-full mr-4 bg-slate-200" />
+                <Image source={{ uri: getAvatar(name) }} className="w-13 h-13 rounded-full mr-3.5 bg-slate-200" />
                 <View className="flex-1">
                   <View className="flex-row justify-between items-center mb-1">
-                    <Text className="text-[16px] font-bold text-slate-900 dark:text-white" numberOfLines={1}>{name}</Text>
-                    <Text className="text-[12px] text-slate-400 font-medium">{time}</Text>
+                    <Text className="text-[15px] font-bold text-slate-900 dark:text-white" numberOfLines={1}>{name}</Text>
+                    <Text className="text-[11px] text-slate-400 font-medium">{time}</Text>
                   </View>
-                  <Text className="text-[14px] text-slate-500 dark:text-slate-400" numberOfLines={1}>{lastMsg}</Text>
+                  <Text className="text-[13px] text-slate-500 dark:text-slate-400" numberOfLines={1}>{lastMsg}</Text>
                 </View>
-                {!conv.latest_message?.is_read && conv.latest_message?.sender_id !== user?.id && (
-                  <Circle size={10} color="#F05A24" fill="#F05A24" className="ml-3" />
+                {!lastMsgObj.is_read && lastMsgObj.sender_id && lastMsgObj.sender_id !== user?.id && (
+                  <Circle size={10} color="#E8701A" fill="#E8701A" className="ml-3" />
                 )}
               </TouchableOpacity>
             );

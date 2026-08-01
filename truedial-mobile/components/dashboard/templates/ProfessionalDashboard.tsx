@@ -120,48 +120,44 @@ export default function ProfessionalDashboard() {
         </View>
       </View>
 
-      {/* KPI Stats */}
-      <View className="px-4 py-2">
-        <View className="flex-row mx-[-4px] mb-2">
-          <View className="flex-1 px-1">
-            <StatCard 
-              title="Bids Won" 
-              value={stats.bidsWon} 
-              icon={<Trophy size={18} color="#8B5CF6" />} 
-              iconBgClass="bg-purple-100 dark:bg-purple-900/30" 
-            />
-          </View>
-          <View className="flex-1 px-1">
-            <StatCard 
-              title="Portfolio Views" 
-              value={stats.portfolioViews > 999 ? `${(stats.portfolioViews/1000).toFixed(1)}k` : stats.portfolioViews} 
-              icon={<Eye size={18} color="#3B82F6" />} 
-              iconBgClass="bg-blue-100 dark:bg-blue-900/30" 
-            />
-          </View>
+      {/* KPI Stats Grid */}
+      <View className="px-4 py-3 flex-row flex-wrap justify-between">
+        <View className="w-[48%] mb-3">
+          <StatCard 
+            title="Bids Won" 
+            value={stats.bidsWon} 
+            icon={<Trophy size={18} color="#8B5CF6" />} 
+            iconBgClass="bg-purple-100 dark:bg-purple-900/30" 
+          />
         </View>
-        <View className="flex-row mx-[-4px]">
-          <View className="flex-1 px-1">
-            <StatCard 
-              title="Quotations Sent" 
-              value={stats.quotationsSent} 
-              icon={<FileText size={18} color="#10B981" />} 
-              iconBgClass="bg-emerald-100 dark:bg-emerald-900/30" 
-            />
-          </View>
-          <View className="flex-1 px-1">
-            <StatCard 
-              title="Bid Score" 
-              value={stats.bidScore} 
-              icon={<Target size={18} color="#E8701A" />} 
-              iconBgClass="bg-orange-100 dark:bg-orange-900/30" 
-            />
-          </View>
+        <View className="w-[48%] mb-3">
+          <StatCard 
+            title="Portfolio Views" 
+            value={stats.portfolioViews > 999 ? `${(stats.portfolioViews/1000).toFixed(1)}k` : stats.portfolioViews} 
+            icon={<Eye size={18} color="#3B82F6" />} 
+            iconBgClass="bg-blue-100 dark:bg-blue-900/30" 
+          />
+        </View>
+        <View className="w-[48%] mb-3">
+          <StatCard 
+            title="Quotations Sent" 
+            value={stats.quotationsSent} 
+            icon={<FileText size={18} color="#10B981" />} 
+            iconBgClass="bg-emerald-100 dark:bg-emerald-900/30" 
+          />
+        </View>
+        <View className="w-[48%] mb-3">
+          <StatCard 
+            title="Bid Score" 
+            value={stats.bidScore} 
+            icon={<Target size={18} color="#E8701A" />} 
+            iconBgClass="bg-orange-100 dark:bg-orange-900/30" 
+          />
         </View>
       </View>
 
       {/* Active Bid Pipeline */}
-      <View className="px-4 my-3">
+      <View className="px-4 my-2">
         <GlassCard className="p-4 border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/50 dark:bg-indigo-950/20">
           <View className="flex-row justify-between items-center mb-3">
             <Text className="text-sm font-bold text-slate-900 dark:text-white">Active Bid Pipeline</Text>

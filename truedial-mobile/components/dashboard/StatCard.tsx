@@ -12,9 +12,9 @@ interface StatCardProps {
 
 export default function StatCard({ title, value, icon, iconBgClass = 'bg-blue-100 dark:bg-blue-900/30', trend, trendUp }: StatCardProps) {
   return (
-    <View className="w-[48%] bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-slate-800">
-      <View className="flex-row items-center justify-between mb-3">
-        <View className={`w-10 h-10 rounded-xl items-center justify-center ${iconBgClass}`}>
+    <View className="w-full bg-white dark:bg-slate-900 rounded-2xl p-4 shadow-sm border border-slate-200 dark:border-slate-800">
+      <View className="flex-row items-center justify-between mb-2">
+        <View className={`w-9 h-9 rounded-xl items-center justify-center ${iconBgClass}`}>
           {icon}
         </View>
         {trend && (
@@ -23,8 +23,12 @@ export default function StatCard({ title, value, icon, iconBgClass = 'bg-blue-10
           </View>
         )}
       </View>
-      <Text className="text-[24px] font-extrabold text-slate-900 dark:text-white mb-1">{value}</Text>
-      <Text className="text-[12px] font-semibold text-slate-500 dark:text-slate-400">{title}</Text>
+      <Text className="text-[20px] font-extrabold text-slate-900 dark:text-white mb-0.5" numberOfLines={1}>
+        {value}
+      </Text>
+      <Text className="text-[11px] font-semibold text-slate-500 dark:text-slate-400" numberOfLines={1}>
+        {title}
+      </Text>
     </View>
   );
 }
