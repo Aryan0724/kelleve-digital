@@ -227,18 +227,18 @@ class ProfileController extends Controller
             'images'      => ['required', 'array', 'max:' . ($maxImages - $currentCount)],
             'images.*.data'     => ['required', 'string'],
             'images.*.caption' => ['nullable', 'string', 'max:255'],
+            'images.*.type' => ['nullable', 'string', 'in:image,video'],
         ]);
 
         foreach ($request->images as $index => $image) {
-            // Check if it's base64 or just a plain url
-            $imageUrl = $image['data'];
-            if (preg_match('/^data:image\/(\w+);base64,/', $imageUrl)) {
-                // We're just saving the base64 string directly in the database as image_url for now, or we could decode and upload
-            }
+            $type = $image['type'] ?? 'image';
+            $dataUrl = $image['data'];
 
             ListingGallery::create([
                 'listing_id' => $listing->id,
-                'image_url'  => $imageUrl,
+                'type'       => $type,
+                'image_url'  => $type === 'image' ? $dataUrl : null,
+                'video_url'  => $type === 'video' ? $dataUrl : null,
                 'caption'    => $image['caption'] ?? null,
                 'sort_order' => $currentCount + $index,
             ]);
