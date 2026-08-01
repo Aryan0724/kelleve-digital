@@ -9,8 +9,9 @@ import {
   Power, ShoppingBag, Truck, Flame, AlertCircle,
   KanbanSquare, List, Plus, MoreVertical
 } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Loader2, ChevronRight, UserCircle } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 // ─── Mock Data per category ────────────────────────────────────────────────────
 const MOCK_APPOINTMENTS = [
