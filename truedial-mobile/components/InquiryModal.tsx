@@ -49,7 +49,24 @@ export default function InquiryModal({ visible, onClose, targetTitle = 'Business
         city: 'Patna, Bihar',
       }).catch(() => {});
 
-      Alert.alert('Inquiry Sent!', `Your inquiry for "${targetTitle}" has been sent successfully. The provider will contact you shortly.`);
+      // Connect inquiry to messaging system
+      if (targetId) {
+        try {
+          const convRes = await api.post('/conversations', {
+            vendor_id: targetId,
+          });
+          const convo = convRes.data?.data || convRes.data;
+          if (convo?.id) {
+            await api.post(`/conversations/${convo.id}/messages`, {
+              message: `📩 Inquiry for "${targetTitle}":\n\nName: ${name}\nPhone: ${phone}${email ? '\nEmail: ' + email : ''}\n\nMessage: ${message}`
+            }).catch(() => {});
+          }
+        } catch (e) {
+          // Ignore conversation errors on public inquiry submit
+        }
+      }
+
+      Alert.alert('Inquiry Sent!', `Your inquiry for "${targetTitle}" has been sent. Check your Messages tab for live updates.`);
       setName('');
       setPhone('');
       setEmail('');

@@ -23,6 +23,7 @@ class BusinessProfileAssembler
             'category' => $business->category ? $business->category->name : null,
             'verified' => $business->is_verified,
             'created_at' => $business->created_at?->toIso8601String(),
+            'user_id' => $business->user_id,
             'whatsapp' => $business->whatsapp,
             'phone' => $business->phone,
             'website' => $business->website,

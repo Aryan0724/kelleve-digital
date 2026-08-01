@@ -33,6 +33,7 @@ export default function BusinessProfileScreen() {
   const [rating, setRating] = useState(5);
   const [reviewText, setReviewText] = useState('');
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [startingChat, setStartingChat] = useState(false);
 
   useEffect(() => {
     if (slug) fetchProfileData();
@@ -75,6 +76,43 @@ export default function BusinessProfileScreen() {
   const handleAction = (url: string) => {
     if (url) {
       Linking.openURL(url).catch(() => Alert.alert('Error', 'Unable to open link'));
+    }
+  };
+
+  const handleStartChat = async () => {
+    if (!user) {
+      Alert.alert('Sign In Required', 'Please sign in to message this business directly.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Sign In', onPress: () => router.push('/(auth)/login') }
+      ]);
+      return;
+    }
+
+    const vendorId = basicInfo?.user_id;
+    if (!vendorId) {
+      Alert.alert('Notice', 'Direct chat is initializing. You can also submit an inquiry or call.');
+      return;
+    }
+
+    if (user.id === vendorId) {
+      Alert.alert('Notice', 'This is your own business listing.');
+      return;
+    }
+
+    setStartingChat(true);
+    try {
+      const res = await api.post('/conversations', { vendor_id: vendorId });
+      const convo = res.data?.data || res.data;
+      if (convo?.id) {
+        router.push(`/dashboard/chat/${convo.id}`);
+      } else {
+        Alert.alert('Error', 'Unable to start chat with business.');
+      }
+    } catch (err: any) {
+      console.warn('Start chat failed:', err);
+      Alert.alert('Notice', err?.message || 'Could not start chat right now.');
+    } finally {
+      setStartingChat(false);
     }
   };
 
@@ -174,32 +212,43 @@ export default function BusinessProfileScreen() {
         </ImageBackground>
 
         {/* 2. QUICK ACTIONS */}
-        <View className="px-5 py-4 flex-row justify-between bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm z-20 -mt-2 rounded-t-2xl">
-          <TouchableOpacity className="items-center w-1/4" onPress={() => handleAction(`tel:${basicInfo.phone}`)}>
-            <View className="w-12 h-12 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mb-1">
-              <Phone size={20} color="#2563EB" />
+        <View className="px-3 py-4 flex-row justify-around bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 shadow-sm z-20 -mt-2 rounded-t-2xl">
+          <TouchableOpacity className="items-center" onPress={() => handleAction(`tel:${basicInfo.phone}`)}>
+            <View className="w-11 h-11 rounded-full bg-blue-100 dark:bg-blue-900/30 items-center justify-center mb-1">
+              <Phone size={18} color="#2563EB" />
             </View>
             <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Call</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity className="items-center w-1/4" onPress={() => handleAction(`whatsapp://send?phone=${basicInfo.phone}`)}>
-            <View className="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mb-1">
-              <MessageCircle size={20} color="#16A34A" />
+          <TouchableOpacity className="items-center" onPress={handleStartChat} disabled={startingChat}>
+            <View className="w-11 h-11 rounded-full bg-orange-100 dark:bg-orange-950/30 items-center justify-center mb-1 border border-orange-200 dark:border-orange-900">
+              {startingChat ? (
+                <ActivityIndicator size="small" color="#E8701A" />
+              ) : (
+                <MessageSquare size={18} color="#E8701A" />
+              )}
+            </View>
+            <Text className="text-[11px] font-extrabold text-orange-600 dark:text-orange-400">Chat</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity className="items-center" onPress={() => handleAction(`whatsapp://send?phone=${basicInfo.phone}`)}>
+            <View className="w-11 h-11 rounded-full bg-green-100 dark:bg-green-900/30 items-center justify-center mb-1">
+              <MessageCircle size={18} color="#16A34A" />
             </View>
             <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">WhatsApp</Text>
           </TouchableOpacity>
           
-          <TouchableOpacity className="items-center w-1/4" onPress={() => handleAction(`https://maps.google.com/?q=${encodeURIComponent(basicInfo.address || basicInfo.city)}`)}>
-            <View className="w-12 h-12 rounded-full bg-amber-100 dark:bg-amber-900/30 items-center justify-center mb-1">
-              <Navigation size={20} color="#D97706" />
+          <TouchableOpacity className="items-center" onPress={() => handleAction(`https://maps.google.com/?q=${encodeURIComponent(basicInfo.address || basicInfo.city)}`)}>
+            <View className="w-11 h-11 rounded-full bg-amber-100 dark:bg-amber-900/30 items-center justify-center mb-1">
+              <Navigation size={18} color="#D97706" />
             </View>
-            <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Direction</Text>
+            <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Directions</Text>
           </TouchableOpacity>
 
           {basicInfo.website && (
-            <TouchableOpacity className="items-center w-1/4" onPress={() => handleAction(basicInfo.website)}>
-              <View className="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 items-center justify-center mb-1">
-                <Globe size={20} color="#9333EA" />
+            <TouchableOpacity className="items-center" onPress={() => handleAction(basicInfo.website)}>
+              <View className="w-11 h-11 rounded-full bg-purple-100 dark:bg-purple-900/30 items-center justify-center mb-1">
+                <Globe size={18} color="#9333EA" />
               </View>
               <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Website</Text>
             </TouchableOpacity>
