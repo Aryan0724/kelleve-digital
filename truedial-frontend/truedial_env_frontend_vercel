@@ -10,8 +10,10 @@
 # 1. CLIENT-SIDE API URL (Bypasses Browser Mixed-Content HTTPS->HTTP errors via Vercel Rewrites)
 NEXT_PUBLIC_API_URL=/api-proxy
 
-# 2. SERVER-SIDE API URL (Direct connection from Vercel Serverless Node functions to VPS)
-INTERNAL_API_URL=http://187.127.164.142:8000/api/v1
+# 2. SERVER-SIDE API URL (Used by Next.js serverless functions on Vercel)
+# IMPORTANT: Must use HTTPS public URL - Vercel cannot reach VPS port 8000 directly (firewalled)
+INTERNAL_API_URL=https://findmyinterior.com/api/v1
 
 # 3. VPS BACKEND TARGET FOR NEXT.JS REWRITES (Used by next.config.ts for /api-proxy & /storage)
-VPS_BACKEND_URL=http://187.127.164.142:8000
+# IMPORTANT: Must use HTTPS - Vercel cannot reach VPS port 8000 directly (firewalled)
+VPS_BACKEND_URL=https://findmyinterior.com

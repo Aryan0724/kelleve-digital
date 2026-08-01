@@ -2,6 +2,7 @@ import paramiko
 import sys
 import time
 
+sys.stdout.reconfigure(encoding='utf-8')
 hostname = '187.127.164.142'
 username = 'root'
 password = 'Truedial@1111'
@@ -27,6 +28,7 @@ def run(cmd):
     return status, out, err
 
 # 1. Setup Directory
+run("cd /var/www/find-my-interior && git fetch origin && git reset --hard origin/main")
 run("mkdir -p /var/www")
 # Rather than cp -r which might copy node_modules and .next, we should just rsync or cp and remove them
 run("rm -rf /var/www/truedial")
@@ -76,13 +78,14 @@ run(f"cat << 'EOF' > /var/www/truedial/docker-compose.yml\n{docker_compose}\nEOF
 # 4. Environment Variables
 env_prod = """
 NEXT_PUBLIC_API_URL=https://findmyinterior.com/api/v1
+INTERNAL_API_URL=http://172.17.0.1:8000/api/v1
 NODE_ENV=production
 """
 run(f"cat << 'EOF' > /var/www/truedial/.env.production\n{env_prod}\nEOF")
 
 # 5. Build and Start
 print("Building and starting TRUEDIAL staging...")
-status, out, err = run("cd /var/www/truedial && docker compose up --build -d")
+status, out, err = run("cd /var/www/truedial && docker compose build --no-cache truedial_frontend && docker compose up -d")
 
 # 6. Verify Runtime Status
 time.sleep(10)

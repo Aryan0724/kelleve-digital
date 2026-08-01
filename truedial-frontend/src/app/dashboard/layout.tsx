@@ -2,7 +2,13 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, CreditCard, Star, FileText, Bell, CheckCircle2, X, Clock, ChevronRight, Globe, ArrowLeft, Home } from "lucide-react";
+import { usePathname, useRouter } from "next/navigation";
+import { 
+  LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, 
+  CreditCard, Star, FileText, Bell, ChevronRight, Globe, ArrowLeft, Heart, ShieldAlert,
+  Utensils, Stethoscope, Wrench, Briefcase, CalendarCheck, ClipboardList,
+  Store, Ticket, LineChart, UserCircle
+} from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
 import { useRouter } from "next/navigation";
@@ -34,8 +40,94 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setNotifications(notifications.map(n => ({ ...n, unread: false })));
   };
 
-  const markAllMessagesRead = () => {
-    setMessages(messages.map(m => ({ ...m, unread: false })));
+  const hasVendorRole = user?.roles?.some((r: any) => 
+    ['business', 'builder', 'supplier', 'worker', 'contractor', 'architect', 'interior_designer', 'skilled_worker', 'material_supplier'].includes(r.slug)
+  );
+  const hasAdminRole = user?.roles?.some((r: any) => ['admin', 'super_admin'].includes(r.slug));
+
+  let links: any[] = [];
+
+  if (hasAdminRole) {
+    links = [
+      { label: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
+      { label: "Users", href: "/dashboard/admin/users", icon: Users },
+      { label: "Vendors", href: "/dashboard/admin/vendors", icon: ShieldAlert },
+      { label: "Approvals", href: "/dashboard/admin/approvals", icon: FileText },
+      { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
+    ];
+  } else if (hasVendorRole) {
+    const roles = user?.roles || (user?.role ? [user.role] : []);
+    const isRealEstate = roles.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
+    const isService = roles.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
+    const isMedical = roles.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
+    const isRestaurant = roles.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
+
+    let catalogLabel = "Products & Services";
+    let catalogIcon = FileText;
+    let crmLabel = "CRM & Leads";
+    let crmIcon = Users;
+
+    if (isMedical) {
+      catalogLabel = "Clinic Services";
+      catalogIcon = Stethoscope;
+      crmLabel = "Appointments";
+      crmIcon = CalendarCheck;
+    } else if (isRestaurant) {
+      catalogLabel = "Menu Management";
+      catalogIcon = Utensils;
+      crmLabel = "Reservations";
+      crmIcon = CalendarCheck;
+    } else if (isService) {
+      catalogLabel = "Service Catalog";
+      catalogIcon = Wrench;
+      crmLabel = "Service Requests";
+      crmIcon = ClipboardList;
+    } else if (isRealEstate) {
+      catalogLabel = "Project Portfolio";
+      catalogIcon = Briefcase;
+      crmLabel = "High-Value Leads";
+      crmIcon = Users;
+    }
+
+    links = [
+      { label: "Overview", href: "/dashboard/vendor", icon: LayoutDashboard },
+      { label: "My Business", href: "/dashboard/vendor/profile", icon: Store },
+      { label: catalogLabel, href: "/dashboard/vendor/catalog", icon: catalogIcon },
+      { label: "Offers & Coupons", href: "/dashboard/vendor/offers", icon: Ticket },
+      { label: crmLabel, href: "/dashboard/vendor/crm", icon: crmIcon },
+      { label: "Marketing Center", href: "/dashboard/vendor/marketing", icon: Megaphone },
+      { label: "Reviews", href: "/dashboard/vendor/reputation", icon: Star },
+      { label: "Analytics", href: "/dashboard/vendor/analytics", icon: LineChart },
+      { label: "Subscription & Billing", href: "/dashboard/vendor/subscription", icon: CreditCard },
+      { label: "Staff", href: "/dashboard/vendor/staff", icon: UserCircle },
+      { label: "Notifications", href: "/dashboard/vendor/notifications", icon: Bell },
+      { label: "Settings", href: "/dashboard/vendor/settings", icon: Settings },
+    ];
+  } else {
+    links = [
+      { label: "Overview", href: "/dashboard/user", icon: LayoutDashboard },
+      { label: "Saved & Favorites", href: "/dashboard/user/favorites", icon: Heart },
+      { label: "My Reviews", href: "/dashboard/user/reviews", icon: Star },
+      { label: "Privilege Card", href: "/dashboard/user/privilege", icon: CreditCard },
+      { label: "Settings", href: "/dashboard/settings", icon: Settings },
+    ];
+  }
+
+  const NavLink = ({ item }: { item: any }) => {
+    const isActive = pathname === item.href;
+    const Icon = item.icon;
+    return (
+      <Link 
+        href={item.href} 
+        className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition ${
+          isActive 
+            ? 'bg-white/10 text-white font-medium shadow-inner' 
+            : 'text-navy-foreground/70 hover:text-white hover:bg-white/5'
+        }`}
+      >
+        <Icon className={`w-5 h-5 ${isActive ? 'text-primary' : ''}`} /> {item.label}
+      </Link>
+    );
   };
 
   return (
