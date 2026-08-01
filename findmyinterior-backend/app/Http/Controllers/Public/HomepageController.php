@@ -95,6 +95,24 @@ class HomepageController extends Controller
             ->take(8)
             ->get();
 
+        $openLeads = \App\Models\Requirement::with(['category', 'city'])
+            ->where('status', 'open')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        $openRfqs = \App\Models\Rfq::with(['category', 'city'])
+            ->where('status', 'open')
+            ->latest()
+            ->take(6)
+            ->get();
+
+        $openJobs = \App\Models\WorkerJob::with(['category', 'city'])
+            ->where('status', 'open')
+            ->latest()
+            ->take(6)
+            ->get();
+
         return [
             'stats'               => $stats,
             'categories'          => CategoryResource::collection($categories)->resolve(),
@@ -104,6 +122,9 @@ class HomepageController extends Controller
             'upcoming_projects'   => BuilderProjectResource::collection($upcomingProjects)->resolve(),
             'featured_suppliers'  => SupplierResource::collection($featuredSuppliers)->resolve(),
             'featured_workers'    => WorkerResource::collection($featuredWorkers)->resolve(),
+            'open_leads'          => class_exists(\App\Http\Resources\RequirementResource::class) ? \App\Http\Resources\RequirementResource::collection($openLeads)->resolve() : $openLeads,
+            'open_rfqs'           => $openRfqs,
+            'open_jobs'           => class_exists(\App\Http\Resources\WorkerJobResource::class) ? \App\Http\Resources\WorkerJobResource::collection($openJobs)->resolve() : $openJobs,
         ];
         });
 

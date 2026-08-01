@@ -28,8 +28,9 @@ class BidController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        if ($request->user()->cannot('create', Bid::class)) {
-            return $this->error('Only verified professionals can bid', 403);
+        $user = $request->user();
+        if ($user->role === 'customer' || $user->role === 'homeowner') {
+            return $this->error('Customers cannot place bids', 403);
         }
 
         $validated = $request->validate([
