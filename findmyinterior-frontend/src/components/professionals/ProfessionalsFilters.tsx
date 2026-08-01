@@ -144,11 +144,9 @@ export function ProfessionalsFilters() {
       {/* Mobile View: Sticky Filter Button + Sheet */}
       <div className="lg:hidden mb-2">
         <Sheet>
-          <SheetTrigger asChild>
-            <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-12 bg-white text-slate-900 dark:bg-slate-900 dark:text-white border-slate-200 dark:border-slate-700 font-semibold text-base shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800">
-              <Filter className="h-5 w-5 text-orange-500" /> 
-              Filter Results
-            </Button>
+          <SheetTrigger className="w-full flex items-center justify-center gap-2 h-12 bg-white text-slate-900 dark:bg-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 font-semibold text-base shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg">
+            <Filter className="h-5 w-5 text-orange-500" /> 
+            Filter Results
           </SheetTrigger>
           <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl overflow-y-auto px-5 pb-10">
             <SheetHeader className="mb-5 border-b pb-4 text-left">
