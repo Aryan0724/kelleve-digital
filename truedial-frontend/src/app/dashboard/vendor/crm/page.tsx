@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
   Phone, Clock, CheckCircle, XCircle, CalendarDays, Users,
@@ -12,6 +12,7 @@ import {
 import { Loader2, ChevronRight, UserCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 
 // ─── Mock Data per category ────────────────────────────────────────────────────
 const MOCK_APPOINTMENTS = [
