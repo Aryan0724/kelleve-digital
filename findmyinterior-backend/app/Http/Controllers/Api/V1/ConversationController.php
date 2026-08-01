@@ -170,4 +170,61 @@ class ConversationController extends Controller
             
         return response()->json($conversation);
     }
+
+    /**
+     * Initiate a direct conversation between current user and target user/vendor.
+     */
+    public function storeDirect(Request $request)
+    {
+        $user = $request->user();
+        
+        $request->validate([
+            'vendor_id' => 'nullable|exists:users,id',
+            'user_id' => 'nullable|exists:users,id',
+            'project_id' => 'nullable|integer',
+        ]);
+
+        $targetId = $request->vendor_id ?? $request->user_id;
+        if (!$targetId) {
+            return response()->json(['message' => 'Target user_id or vendor_id is required.'], 422);
+        }
+
+        if ((int)$targetId === $user->id) {
+            return response()->json(['message' => 'You cannot start a conversation with yourself.'], 422);
+        }
+
+        $customerId = $user->id;
+        $vendorId = (int)$targetId;
+        $projectId = $request->project_id;
+
+        // Search for existing conversation between these 2 users
+        $conversation = Conversation::where(function($q) use ($customerId, $vendorId) {
+            $q->where(function($q1) use ($customerId, $vendorId) {
+                $q1->where('customer_id', $customerId)->where('vendor_id', $vendorId);
+            })->orWhere(function($q2) use ($customerId, $vendorId) {
+                $q2->where('customer_id', $vendorId)->where('vendor_id', $customerId);
+            });
+        });
+
+        if ($projectId) {
+            $conversation->where('project_id', $projectId);
+        }
+
+        $existing = $conversation->first();
+
+        if ($existing) {
+            return response()->json($existing->load(['customer', 'vendor', 'project']), 200);
+        }
+
+        $newConv = Conversation::create([
+            'customer_id' => $customerId,
+            'vendor_id'   => $vendorId,
+            'project_id'  => $projectId,
+            'status'      => 'active',
+            'project_stage' => 'initiated',
+            'last_message_at' => now(),
+        ]);
+
+        return response()->json($newConv->load(['customer', 'vendor', 'project']), 201);
+    }
 }

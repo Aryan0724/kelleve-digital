@@ -1,25 +1,18 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import {
-  StyleSheet, Text, View, FlatList, TouchableOpacity,
-  ActivityIndicator, RefreshControl
+  Text, View, FlatList, TouchableOpacity,
+  ActivityIndicator, RefreshControl, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import api from '../../../services/api';
-import { MessageSquare, ChevronRight, ArrowLeft } from 'lucide-react-native';
+import { MessageSquare, ArrowLeft, Search } from 'lucide-react-native';
 import { useAuth } from '../../../context/auth';
-
-interface Conversation {
-  id: number;
-  participant?: { name: string };
-  last_message?: { body: string; created_at: string };
-  unread_count?: number;
-  requirement?: { title: string };
-}
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 export default function ConversationsScreen() {
   const router = useRouter();
   const { user } = useAuth();
-  const [conversations, setConversations] = useState<Conversation[]>([]);
+  const [conversations, setConversations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -36,9 +29,15 @@ export default function ConversationsScreen() {
     }
   }, []);
 
-  useEffect(() => { fetchConversations(); }, [fetchConversations]);
+  useEffect(() => {
+    if (user) fetchConversations();
+    else setLoading(false);
+  }, [user, fetchConversations]);
 
   const onRefresh = () => { setRefreshing(true); fetchConversations(); };
+
+  const getAvatar = (name: string) =>
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(name || 'U')}&background=E8701A&color=fff&size=100`;
 
   const formatTime = (dateStr?: string) => {
     if (!dateStr) return '';
@@ -50,111 +49,104 @@ export default function ConversationsScreen() {
     if (diffMin < 60) return `${diffMin}m ago`;
     const diffHrs = Math.floor(diffMin / 60);
     if (diffHrs < 24) return `${diffHrs}h ago`;
-    return `${Math.floor(diffHrs / 24)}d ago`;
+    return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
   };
 
-  const renderConversation = ({ item }: { item: Conversation }) => (
-    <TouchableOpacity
-      style={styles.chatRow}
-      onPress={() => router.push(`/dashboard/chat/${item.id}`)}
-    >
-      <View style={styles.avatar}>
-        <Text style={styles.avatarText}>
-          {(item.participant?.name || 'U').charAt(0).toUpperCase()}
-        </Text>
-      </View>
-      <View style={styles.chatInfo}>
-        <View style={styles.chatHeader}>
-          <Text style={styles.chatName} numberOfLines={1}>
-            {item.participant?.name || 'User'}
-          </Text>
-          <Text style={styles.chatTime}>
-            {formatTime(item.last_message?.created_at)}
+  const renderConversation = ({ item: conv }: { item: any }) => {
+    const isVendor = user?.id === conv.vendor_id;
+    const participant = isVendor ? conv.customer : conv.vendor;
+    const name = participant?.name || conv.project?.title || 'Chat';
+
+    const lastMsgArr = Array.isArray(conv.messages) ? conv.messages : [];
+    const lastMsgObj = lastMsgArr[0] || conv.latest_message || conv.last_message || null;
+
+    const lastMsg = lastMsgObj
+      ? (lastMsgObj.message || lastMsgObj.content || lastMsgObj.body || 'Sent a message')
+      : 'Tap to start chatting';
+
+    const time = lastMsgObj?.created_at ? formatTime(lastMsgObj.created_at) : '';
+    const unreadCount = isVendor ? (conv.vendor_unread_count || 0) : (conv.customer_unread_count || 0);
+    const hasUnread = unreadCount > 0;
+
+    return (
+      <TouchableOpacity
+        className={`flex-row items-center px-4 py-3.5 mx-4 mb-3 rounded-2xl border shadow-sm ${
+          hasUnread
+            ? 'bg-orange-50 border-orange-200 dark:bg-orange-950/20 dark:border-orange-800'
+            : 'bg-white border-slate-100 dark:bg-slate-900 dark:border-slate-800'
+        }`}
+        onPress={() => router.push(`/dashboard/chat/${conv.id}`)}
+        activeOpacity={0.75}
+      >
+        <Image
+          source={{ uri: getAvatar(name) }}
+          style={{ width: 50, height: 50, borderRadius: 25, marginRight: 12, backgroundColor: '#f1f5f9' }}
+        />
+        <View style={{ flex: 1 }}>
+          <View className="flex-row justify-between items-center mb-1">
+            <Text
+              className={`text-[15px] flex-1 mr-2 ${hasUnread ? 'font-extrabold text-slate-900 dark:text-white' : 'font-bold text-slate-800 dark:text-slate-200'}`}
+              numberOfLines={1}
+            >
+              {name}
+            </Text>
+            <Text className="text-[11px] text-slate-400 font-medium">{time}</Text>
+          </View>
+          {conv.project && (
+            <Text className="text-[11px] text-[#E8701A] font-semibold mb-0.5" numberOfLines={1}>
+              Re: {conv.project.title}
+            </Text>
+          )}
+          <Text
+            className={`text-[13px] ${hasUnread ? 'text-slate-800 dark:text-slate-100 font-semibold' : 'text-slate-500 dark:text-slate-400'}`}
+            numberOfLines={1}
+          >
+            {lastMsg}
           </Text>
         </View>
-        {item.requirement && (
-          <Text style={styles.requirementTag} numberOfLines={1}>
-            Re: {item.requirement.title}
-          </Text>
+        {hasUnread && (
+          <View className="w-6 h-6 rounded-full bg-[#E8701A] items-center justify-center ml-2">
+            <Text className="text-white text-[10px] font-extrabold">{unreadCount > 9 ? '9+' : unreadCount}</Text>
+          </View>
         )}
-        <Text style={styles.lastMessage} numberOfLines={1}>
-          {item.last_message?.body || 'No messages yet'}
-        </Text>
-      </View>
-      {(item.unread_count || 0) > 0 && (
-        <View style={styles.unreadBadge}>
-          <Text style={styles.unreadText}>{item.unread_count}</Text>
-        </View>
-      )}
-      <ChevronRight size={18} color="#CBD5E1" />
-    </TouchableOpacity>
-  );
+      </TouchableOpacity>
+    );
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
-          <ArrowLeft size={22} color="#1E293B" />
+    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-950" edges={['top']}>
+      <View className="px-4 py-3 bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 flex-row items-center justify-between">
+        <TouchableOpacity onPress={() => router.back()} className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center">
+          <ArrowLeft size={20} color="#64748B" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Messages</Text>
-        <View style={{ width: 40 }} />
+        <Text className="text-[20px] font-extrabold text-slate-900 dark:text-white">Messages</Text>
+        <View className="w-10" />
       </View>
 
       {loading ? (
-        <View style={styles.center}>
+        <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#E8701A" />
-        </View>
-      ) : conversations.length === 0 ? (
-        <View style={styles.center}>
-          <MessageSquare size={48} color="#CBD5E1" />
-          <Text style={styles.emptyTitle}>No conversations yet</Text>
-          <Text style={styles.emptyText}>
-            When you send an inquiry or receive a lead, your conversations will appear here.
-          </Text>
         </View>
       ) : (
         <FlatList
           data={conversations}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderConversation}
-          contentContainerStyle={{ paddingBottom: 40 }}
+          contentContainerStyle={{ paddingTop: 16, paddingBottom: 40 }}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E8701A" />}
+          ListEmptyComponent={
+            <View className="flex-1 items-center justify-center p-10 mt-16">
+              <View className="w-20 h-20 bg-orange-50 dark:bg-orange-950/30 rounded-full items-center justify-center mb-5 border border-orange-200 dark:border-orange-800">
+                <MessageSquare size={32} color="#E8701A" />
+              </View>
+              <Text className="text-[20px] font-extrabold text-slate-900 dark:text-white mb-2 text-center">No Messages Yet</Text>
+              <Text className="text-[14px] text-slate-500 dark:text-slate-400 text-center leading-relaxed mb-6">
+                When you send an inquiry or chat with a business, your messages will appear here.
+              </Text>
+            </View>
+          }
         />
       )}
-    </View>
+    </SafeAreaView>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFFFFF' },
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingTop: 56, paddingBottom: 16, paddingHorizontal: 16,
-    backgroundColor: '#FFFFFF', borderBottomWidth: 1, borderBottomColor: '#F1F5F9',
-  },
-  backBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: '#F8FAFC', alignItems: 'center', justifyContent: 'center' },
-  headerTitle: { fontSize: 20, fontWeight: '800', color: '#1E293B' },
-  center: { flex: 1, alignItems: 'center', justifyContent: 'center', padding: 40 },
-  emptyTitle: { fontSize: 18, fontWeight: '700', color: '#334155', marginTop: 16 },
-  emptyText: { fontSize: 14, color: '#94A3B8', textAlign: 'center', marginTop: 8, lineHeight: 20 },
-  chatRow: {
-    flexDirection: 'row', alignItems: 'center', paddingHorizontal: 16, paddingVertical: 14,
-    borderBottomWidth: 1, borderBottomColor: '#F8FAFC',
-  },
-  avatar: {
-    width: 48, height: 48, borderRadius: 24, backgroundColor: '#E8701A',
-    alignItems: 'center', justifyContent: 'center', marginRight: 12,
-  },
-  avatarText: { fontSize: 18, fontWeight: '800', color: '#FFFFFF' },
-  chatInfo: { flex: 1, marginRight: 8 },
-  chatHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
-  chatName: { fontSize: 15, fontWeight: '700', color: '#1E293B', flex: 1 },
-  chatTime: { fontSize: 11, color: '#94A3B8', fontWeight: '600' },
-  requirementTag: { fontSize: 11, color: '#E8701A', fontWeight: '600', marginTop: 2 },
-  lastMessage: { fontSize: 13, color: '#64748B', marginTop: 2 },
-  unreadBadge: {
-    width: 22, height: 22, borderRadius: 11, backgroundColor: '#E8701A',
-    alignItems: 'center', justifyContent: 'center', marginRight: 6,
-  },
-  unreadText: { fontSize: 11, fontWeight: '800', color: '#FFFFFF' },
-});
