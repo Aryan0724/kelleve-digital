@@ -1,57 +1,67 @@
-import { Search, FileText, CheckCircle, MessageSquare } from "lucide-react";
+"use client";
+
+import { FileEdit, MessageSquareText, Scale, Handshake } from "lucide-react";
+import Link from "next/link";
 
 export function HowItWorks() {
   const steps = [
     {
-      title: "Search or Post",
-      description: "Browse verified professionals or post your exact requirement to let them contact you.",
-      icon: Search,
+      icon: FileEdit,
+      title: "Post Your Project",
+      num: 1,
     },
     {
-      title: "Compare Profiles",
-      description: "Review past projects, check verified ratings, and compare quotes from multiple experts.",
-      icon: FileText,
+      icon: MessageSquareText,
+      title: "Get Multiple Quotes",
+      num: 2,
     },
     {
-      title: "Connect Instantly",
-      description: "Chat or call directly with professionals. No middleman, no hidden commission fees.",
-      icon: MessageSquare,
+      icon: Scale,
+      title: "Compare & Choose",
+      num: 3,
     },
     {
-      title: "Hire & Build",
-      description: "Finalize the deal and start building your dream space with trusted local experts.",
-      icon: CheckCircle,
+      icon: Handshake,
+      title: "Hire & Get It Done",
+      num: 4,
     },
   ];
 
   return (
-    <section className="w-full py-24 bg-slate-50">
-      <div className="container mx-auto px-4 text-center">
-        <h2 className="text-3xl font-bold tracking-tight text-slate-900 mb-4">
-          How FindMyInterior Works
-        </h2>
-        <p className="text-slate-500 text-lg mb-16 max-w-2xl mx-auto">
-          Your journey to a beautiful home starts here. Simple, transparent, and hassle-free.
-        </p>
+    <section className="py-8 bg-white dark:bg-background">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between mb-8">
+          <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">How It Works?</h2>
+          <Link href="/how-it-works" className="text-primary font-semibold text-sm hover:underline">
+            See All Steps
+          </Link>
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
-          {/* Connector line for desktop */}
-          <div className="hidden lg:block absolute top-12 left-[12%] right-[12%] h-0.5 bg-slate-200 z-0" />
+        <div className="relative">
+          {/* Connecting Line */}
+          <div className="hidden md:block absolute top-1/2 left-[10%] right-[10%] h-[2px] bg-slate-200 dark:bg-slate-800 -translate-y-1/2 z-0"></div>
           
-          {steps.map((step, index) => {
-            const Icon = step.icon;
-            return (
-              <div key={index} className="relative z-10 flex flex-col items-center group">
-                <div className="w-24 h-24 rounded-full bg-white border-4 border-slate-50 shadow-sm flex items-center justify-center mb-6 group-hover:border-orange-100 group-hover:scale-110 transition-all duration-300">
-                  <Icon className="h-10 w-10 text-orange-600" />
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 relative z-10">
+            {steps.map((step) => {
+              const Icon = step.icon;
+              return (
+                <div key={step.num} className="flex flex-col items-center text-center group">
+                  <div className="relative mb-4">
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-white dark:bg-slate-900 border-2 border-slate-100 dark:border-slate-800 rounded-full flex items-center justify-center shadow-sm group-hover:border-primary group-hover:shadow-md transition-all">
+                      <Icon className="w-8 h-8 text-slate-700 dark:text-slate-300 group-hover:text-primary transition-colors" />
+                    </div>
+                    {/* Number Badge */}
+                    <div className="absolute -top-1 -left-1 w-6 h-6 bg-primary text-white text-xs font-bold rounded-full flex items-center justify-center border-2 border-white dark:border-slate-900 shadow-sm">
+                      {step.num}
+                    </div>
+                  </div>
+                  <h3 className="font-semibold text-slate-900 dark:text-white text-sm md:text-base max-w-[120px]">
+                    {step.title}
+                  </h3>
                 </div>
-                <h3 className="text-xl font-bold text-slate-900 mb-3">{step.title}</h3>
-                <p className="text-slate-500 text-sm leading-relaxed px-4">
-                  {step.description}
-                </p>
-              </div>
-            );
-          })}
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>

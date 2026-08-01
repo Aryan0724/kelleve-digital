@@ -13,6 +13,9 @@ import { FeaturedProfessionals } from "@/components/home/FeaturedProfessionals";
 import { MobileStickyCTA } from "@/components/home/MobileStickyCTA";
 import { RoleBasedHomepage } from "@/components/home/RoleBasedHomepage";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { BannerCTA } from "@/components/home/BannerCTA";
+import { HowItWorks } from "@/components/home/HowItWorks";
+import { PublicProjects } from "@/components/home/PublicProjects";
 
 export function ClientHome() {
   const { user } = useAuthStore();
@@ -43,13 +46,26 @@ export function ClientHome() {
 
   return (
     <>
-      <div className="container mx-auto px-4 mt-6">
+      <div className="container mx-auto px-4 mt-2">
         <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
       </div>
       <Hero />
-      <Stats stats={homeData?.stats} />
-      <FeaturedProfessionals pros={homeData?.featured_listings} />
       <Categories categories={homeData?.categories} />
+      <BannerCTA />
+      <HowItWorks />
+      
+      {homeData?.open_leads?.length > 0 && (
+        <PublicProjects title="Live Project Requirements" projects={homeData.open_leads} type="lead" />
+      )}
+      
+      <FeaturedProfessionals pros={homeData?.featured_listings} />
+      
+      {homeData?.open_rfqs?.length > 0 && (
+        <PublicProjects title="Urgent Material Requirements" projects={homeData.open_rfqs} type="rfq" />
+      )}
+      
+      <Stats stats={homeData?.stats} />
+      
       <div className="container mx-auto px-4 my-8">
         <AdSlot location="mid_page" className="w-full h-32 md:h-64 rounded-xl" />
       </div>
