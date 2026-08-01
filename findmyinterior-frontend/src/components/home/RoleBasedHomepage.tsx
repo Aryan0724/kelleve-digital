@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
+import { TrustBadgesBanner } from "@/components/conversion/TrustBadgesBanner";
 
 // ─── Role Config ────────────────────────────────────────────────────────────
 
@@ -302,7 +303,7 @@ function ListingCard({ item }: { item: any }) {
     <div className="premium-card rounded-xl p-4 group flex gap-4 items-center">
       <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-slate-800/80 flex-shrink-0 overflow-hidden border border-slate-200/60 dark:border-slate-700/60">
         {image ? (
-          <img src={image} alt={name} className="w-full h-full object-cover" />
+          <img src={image} alt={`${name} - Verified Interior Designer & Builder in Bihar`} loading="lazy" width={64} height={64} className="w-full h-full object-cover" />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-orange-100 to-amber-50 dark:from-orange-950/50 dark:to-amber-950/50 text-orange-600 dark:text-orange-400 font-bold text-xl uppercase">
             {name.charAt(0)}
@@ -480,6 +481,9 @@ export function RoleBasedHomepage() {
           )}
         </div>
       </div>
+
+      {/* ─── High-Converting Trust Badges Strip ─────────────────── */}
+      <TrustBadgesBanner />
 
       <div className="container mx-auto px-4 py-8">
         <QuickStats stats={stats} config={config} />

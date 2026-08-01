@@ -37,7 +37,7 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
               <div key={pro.id || i} className="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition">
                 <div className="flex items-center gap-4 mb-4">
                   {image ? (
-                    <img src={image} alt={name} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100 dark:border-orange-950" />
+                    <img src={image} alt={`${name} - Verified Interior Designer & Architect in Bihar`} loading="lazy" width={64} height={64} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100 dark:border-orange-950" />
                   ) : (
                     <div className="w-16 h-16 rounded-full bg-gradient-to-br from-orange-100 to-amber-50 dark:from-orange-950/50 dark:to-amber-950/50 flex items-center justify-center text-orange-600 dark:text-orange-400 font-bold text-xl uppercase">
                       {name.charAt(0)}
