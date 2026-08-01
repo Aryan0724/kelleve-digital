@@ -18,7 +18,7 @@ const TYPES = [
   { label: "Plumber", value: "Plumber", icon: Droplets },
 ];
 
-export function ProfessionalTypeSwitcher({ currentSearch }: { currentSearch: string }) {
+export function ProfessionalTypeSwitcher({ currentSearch, isMobile }: { currentSearch: string, isMobile?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
@@ -60,31 +60,29 @@ export function ProfessionalTypeSwitcher({ currentSearch }: { currentSearch: str
     </div>
   );
 
-  return (
-    <>
-      {/* Mobile View: Sticky Button + Sheet */}
-      <div className="lg:hidden mb-2">
-        <Sheet>
-          <SheetTrigger className="w-full flex items-center justify-center gap-2 h-12 bg-white text-slate-900 dark:bg-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 font-semibold text-base shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg">
-            <UserCircle2 className="h-5 w-5 text-orange-500" />
-            Change Role
-          </SheetTrigger>
-          <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl overflow-y-auto px-5 pb-10">
-            <SheetHeader className="mb-5 border-b pb-4 text-left">
-              <SheetTitle className="flex items-center gap-2 text-lg">
-                <UserCircle2 className="h-5 w-5 text-orange-500" /> Roles
-              </SheetTitle>
-            </SheetHeader>
-            {content}
-          </SheetContent>
-        </Sheet>
-      </div>
+  if (isMobile) {
+    return (
+      <Sheet>
+        <SheetTrigger className="w-full flex items-center justify-center gap-1.5 h-10 bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium text-sm shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
+          <UserCircle2 className="h-4 w-4 text-orange-500" />
+          Change Role
+        </SheetTrigger>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl overflow-y-auto px-5 pb-10">
+          <SheetHeader className="mb-5 border-b pb-4 text-left">
+            <SheetTitle className="flex items-center gap-2 text-lg">
+              <UserCircle2 className="h-5 w-5 text-orange-500" /> Roles
+            </SheetTitle>
+          </SheetHeader>
+          {content}
+        </SheetContent>
+      </Sheet>
+    );
+  }
 
-      {/* Desktop View */}
-      <div className="hidden lg:block mb-6">
-        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Browse by Type</p>
-        {content}
-      </div>
-    </>
+  return (
+    <div className="mb-6">
+      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Browse by Type</p>
+      {content}
+    </div>
   );
 }

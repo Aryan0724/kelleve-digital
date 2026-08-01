@@ -52,12 +52,24 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
     <div className="container mx-auto px-4 py-8">
 
 
-      {/* Professional Type Switcher Chips */}
-      <ProfessionalTypeSwitcher currentSearch={resolvedSearchParams.search || ''} />
+      {/* Mobile Actions Bar */}
+      <div className="flex lg:hidden gap-3 mb-6">
+        <div className="flex-1">
+          <ProfessionalTypeSwitcher isMobile currentSearch={resolvedSearchParams.search || ''} />
+        </div>
+        <div className="flex-1">
+          <ProfessionalsFilters isMobile />
+        </div>
+      </div>
+
+      {/* Desktop Professional Type Switcher Chips */}
+      <div className="hidden lg:block">
+        <ProfessionalTypeSwitcher currentSearch={resolvedSearchParams.search || ''} />
+      </div>
 
       <div className="flex flex-col lg:flex-row gap-8">
-        {/* Filters Sidebar */}
-        <div className="w-full lg:w-1/4 space-y-6">
+        {/* Desktop Filters Sidebar */}
+        <div className="hidden lg:block w-full lg:w-1/4 space-y-6">
           <ProfessionalsFilters />
         </div>
 

@@ -11,7 +11,7 @@ try:
     ssh.connect('187.127.164.142', username='root', password='Truedial@1111')
     
     # Run git pull and rebuild
-    command = "cd /var/www/find-my-interior && git reset --hard && git pull origin main && (docker-compose build frontend || docker compose build frontend) && (docker-compose up -d frontend || docker compose up -d frontend)"
+    command = "cd /var/www/find-my-interior && git reset --hard && git pull origin main && (docker-compose build frontend || docker compose build frontend) && (docker-compose up -d --renew-anon-volumes frontend || docker compose up -d --renew-anon-volumes frontend)"
     stdin, stdout, stderr = ssh.exec_command(command)
     
     for line in iter(stdout.readline, ""):

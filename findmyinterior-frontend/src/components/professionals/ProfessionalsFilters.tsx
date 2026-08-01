@@ -6,7 +6,7 @@ import { Filter, Search, X } from "lucide-react";
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
-export function ProfessionalsFilters() {
+export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [nameInput, setNameInput] = useState(searchParams.get("name") || "");
@@ -139,33 +139,31 @@ export function ProfessionalsFilters() {
       </div>
   );
 
-  return (
-    <>
-      {/* Mobile View: Sticky Filter Button + Sheet */}
-      <div className="lg:hidden mb-2">
-        <Sheet>
-          <SheetTrigger className="w-full flex items-center justify-center gap-2 h-12 bg-white text-slate-900 dark:bg-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 font-semibold text-base shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg">
-            <Filter className="h-5 w-5 text-orange-500" /> 
-            Filter Results
-          </SheetTrigger>
-          <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl overflow-y-auto px-5 pb-10">
-            <SheetHeader className="mb-5 border-b pb-4 text-left">
-              <SheetTitle className="flex items-center gap-2 text-lg">
-                <Filter className="h-5 w-5 text-orange-500" /> Filters
-              </SheetTitle>
-            </SheetHeader>
-            {filterContent}
-          </SheetContent>
-        </Sheet>
-      </div>
+  if (isMobile) {
+    return (
+      <Sheet>
+        <SheetTrigger className="w-full flex items-center justify-center gap-1.5 h-10 bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium text-sm shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
+          <Filter className="h-4 w-4 text-orange-500" /> 
+          Filter Results
+        </SheetTrigger>
+        <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl overflow-y-auto px-5 pb-10">
+          <SheetHeader className="mb-5 border-b pb-4 text-left">
+            <SheetTitle className="flex items-center gap-2 text-lg">
+              <Filter className="h-5 w-5 text-orange-500" /> Filters
+            </SheetTitle>
+          </SheetHeader>
+          {filterContent}
+        </SheetContent>
+      </Sheet>
+    );
+  }
 
-      {/* Desktop View: Sidebar */}
-      <div className="hidden lg:block border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-white dark:bg-slate-900 sticky top-24">
-        <div className="flex items-center gap-2 font-semibold text-lg mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
-          <Filter className="h-5 w-5 text-orange-500" /> Filters
-        </div>
-        {filterContent}
+  return (
+    <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-white dark:bg-slate-900 sticky top-24">
+      <div className="flex items-center gap-2 font-semibold text-lg mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+        <Filter className="h-5 w-5 text-orange-500" /> Filters
       </div>
-    </>
+      {filterContent}
+    </div>
   );
 }
