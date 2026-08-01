@@ -13,6 +13,7 @@ import { Loader2, ChevronRight, UserCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 
 // ─── Mock Data per category ────────────────────────────────────────────────────
 const MOCK_APPOINTMENTS = [
