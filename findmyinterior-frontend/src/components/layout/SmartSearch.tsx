@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, ChevronDown } from "lucide-react";
+import { Search, MapPin, ChevronDown, LocateFixed, Loader2 } from "lucide-react";
 import { useDebounce } from "@/lib/hooks/useDebounce";
 import api from "@/lib/api";
 
@@ -14,6 +14,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [locations, setLocations] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("Patna");
+  const [isLocating, setIsLocating] = useState(false);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
@@ -39,6 +40,46 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   }, []);
 
   const debouncedQuery = useDebounce(searchQuery, 300);
+
+  const handleLocateMe = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          // Use OpenStreetMap Nominatim API for reverse geocoding
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`);
+          const data = await response.json();
+          
+          if (data && data.address) {
+            const city = data.address.city || data.address.town || data.address.county || data.address.state_district;
+            if (city) {
+              // Check if city exists in our locations, otherwise use raw
+              const exactMatch = locations.find(l => l.toLowerCase() === city.toLowerCase());
+              setSelectedLocation(exactMatch || city);
+              setShowLocationDropdown(false);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching city from coordinates", error);
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        alert("Unable to retrieve your location. Please check browser permissions.");
+        setIsLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -132,6 +173,21 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
           {showLocationDropdown && (
             <div className="absolute top-full left-0 mt-3 w-48 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
               <ul className="max-h-64 overflow-y-auto py-2">
+                <li>
+                  <button
+                    type="button"
+                    onClick={handleLocateMe}
+                    disabled={isLocating}
+                    className="w-full text-left px-4 py-2 text-sm font-semibold text-[#E8701A] hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors flex items-center border-b border-gray-100 dark:border-slate-700 pb-3 mb-1"
+                  >
+                    {isLocating ? (
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    ) : (
+                      <LocateFixed className="w-4 h-4 mr-2" />
+                    )}
+                    Use current location
+                  </button>
+                </li>
                 {locations.length > 0 ? locations.map((loc, idx) => (
                   <li key={idx}>
                     <button

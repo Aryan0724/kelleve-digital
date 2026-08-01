@@ -15,7 +15,9 @@ import {
   Settings,
   Wallet,
   LayoutDashboard,
-  Search as SearchIcon
+  Search as SearchIcon,
+  LocateFixed,
+  Loader2
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
@@ -28,6 +30,7 @@ export function Hero() {
   const [showCityDropdown, setShowCityDropdown] = useState(false);
   const [budget, setBudget] = useState("");
   const [showBudgetDropdown, setShowBudgetDropdown] = useState(false);
+  const [isLocating, setIsLocating] = useState(false);
 
   const isCustomer = !user || user?.role === 'customer';
   const isPro = user && ['interior_designer', 'architect', 'contractor', 'builder', 'supplier'].includes(user.role);
@@ -74,6 +77,47 @@ export function Hero() {
   const filteredServices = service.trim()
     ? availableServices.filter(s => s.toLowerCase().includes(service.toLowerCase()))
     : availableServices;
+
+  const handleLocateMe = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          // Use OpenStreetMap Nominatim API for reverse geocoding
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`);
+          const data = await response.json();
+          
+          if (data && data.address) {
+            const cityName = data.address.city || data.address.town || data.address.county || data.address.state_district;
+            if (cityName) {
+              // Check if city exists in our locations, otherwise use raw
+              const exactMatch = availableCities.find(l => l.toLowerCase() === cityName.toLowerCase());
+              setCity(exactMatch || cityName);
+              setShowCityDropdown(false);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching city from coordinates", error);
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        alert("Unable to retrieve your location. Please check browser permissions.");
+        setIsLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
 
   const handleSearch = () => {
     const params = new URLSearchParams();
@@ -215,8 +259,21 @@ export function Hero() {
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </div>
                 {/* City Autocomplete Dropdown */}
-                {showCityDropdown && filteredCities.length > 0 && (
+                {showCityDropdown && (
                   <div className="absolute top-full left-0 w-full mt-2 bg-white dark:bg-[#0a1c3a] border border-gray-200 dark:border-white/10 shadow-xl rounded-lg overflow-hidden z-50 max-h-60 overflow-y-auto">
+                    <button
+                      type="button"
+                      onClick={handleLocateMe}
+                      disabled={isLocating}
+                      className="w-full text-left px-4 py-2 text-sm font-semibold text-[#E8701A] hover:bg-orange-50 dark:hover:bg-white/10 transition-colors flex items-center border-b border-gray-100 dark:border-white/10 pb-3 mb-1"
+                    >
+                      {isLocating ? (
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      ) : (
+                        <LocateFixed className="w-4 h-4 mr-2" />
+                      )}
+                      Use current location
+                    </button>
                     {filteredCities.map(c => (
                       <div 
                         key={c} 
@@ -230,6 +287,11 @@ export function Hero() {
                         {c}
                       </div>
                     ))}
+                    {filteredCities.length === 0 && (
+                      <div className="px-4 py-2 text-sm text-gray-500">
+                        No matches found
+                      </div>
+                    )}
                   </div>
                 )}
               </div>
