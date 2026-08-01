@@ -50,11 +50,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
 
   return (
     <div className="container mx-auto px-4 py-8">
-      {/* Header & Search */}
-      <div className="mb-6 bg-slate-50 p-6 rounded-xl border">
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 mb-2">Find Interior Designers &amp; Contractors</h1>
-        <p className="text-slate-500">Browse verified professionals for your home project {resolvedSearchParams.city ? `in ${resolvedSearchParams.city}` : 'in Bihar'}.</p>
-      </div>
+
 
       {/* Professional Type Switcher Chips */}
       <ProfessionalTypeSwitcher currentSearch={resolvedSearchParams.search || ''} />
