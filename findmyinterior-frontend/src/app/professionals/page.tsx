@@ -142,10 +142,13 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                   <CardFooter className="p-5 pt-0 border-t border-slate-50 mt-auto">
                     <div className="flex items-center gap-3 pt-4 w-full">
                       <Avatar className="h-8 w-8">
-                        <AvatarImage src={listing.user?.avatar} />
+                        <AvatarImage src={listing.user?.avatar || listing.cover_image} />
                         <AvatarFallback className="bg-orange-100 text-orange-700 font-semibold text-xs">{listing.title.charAt(0)}</AvatarFallback>
                       </Avatar>
-                      <div className="text-xs text-slate-500 line-clamp-1 flex-1">{listing.category?.name}</div>
+                      <div className="flex flex-col flex-1 overflow-hidden">
+                        <div className="text-sm font-medium text-slate-900 truncate">{listing.user?.name || 'Professional'}</div>
+                        <div className="text-xs text-slate-500 truncate">{listing.category?.name}</div>
+                      </div>
                     </div>
                   </CardFooter>
                 </Card>

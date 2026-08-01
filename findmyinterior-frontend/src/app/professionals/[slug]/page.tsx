@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import ReviewSection from "@/components/reviews/ReviewSection";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, ShieldCheck, Phone, Mail, Globe, CheckCircle2 } from "lucide-react";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
@@ -70,16 +71,24 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
           <div className="w-full lg:w-2/3 space-y-6">
             <div className="bg-white rounded-xl shadow-sm border p-6 md:p-8">
               <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
-                <div>
-                  <div className="flex items-center gap-2 mb-2">
-                    <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>
-                    {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 ml-2" title="Elite Professional">Elite Professional</Badge>}
-                    {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 ml-2" title="Trusted Professional">Trusted Professional</Badge>}
-                    {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business" className="flex-shrink-0 ml-2"><ShieldCheck className="h-8 w-8 text-green-500" /></span>}
-                  </div>
-                  <div className="flex items-center text-slate-500 mb-2">
-                    <MapPin className="h-4 w-4 mr-1" /> {[listing.address, listing.city, listing.district, 'Bihar', 'India'].filter(Boolean).join(', ')}
-                  </div>
+                <div className="flex flex-col md:flex-row items-start gap-4">
+                  <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 border-orange-100 hidden md:block">
+                    <AvatarImage src={listing.user?.avatar || listing.cover_image} />
+                    <AvatarFallback className="bg-slate-100 text-slate-400 font-bold text-2xl">{listing.title.charAt(0)}</AvatarFallback>
+                  </Avatar>
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>
+                      {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 ml-2" title="Elite Professional">Elite</Badge>}
+                      {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 ml-2" title="Trusted Professional">Trusted</Badge>}
+                      {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business" className="flex-shrink-0 ml-2"><ShieldCheck className="h-8 w-8 text-green-500" /></span>}
+                    </div>
+                    {listing.user?.name && (
+                      <p className="text-lg text-slate-700 font-medium mb-2">{listing.user.name}</p>
+                    )}
+                    <div className="flex items-center text-slate-500 mb-2">
+                      <MapPin className="h-4 w-4 mr-1" /> {[listing.address, listing.city, listing.district, 'Bihar', 'India'].filter(Boolean).join(', ')}
+                    </div>
                   <div className="flex items-center gap-3">
                     <Badge variant="secondary">{listing.category?.name}</Badge>
                     <div className="flex items-center">
