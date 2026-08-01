@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
 import { useRouter } from 'expo-router';
 import { 
@@ -13,7 +13,6 @@ import {
   ChevronRight
 } from 'lucide-react-native';
 
-
 import { useAuth } from '../../../context/auth';
 import api from '../../../services/api';
 
@@ -26,34 +25,36 @@ export default function EducationDashboard() {
   const { user } = useAuth();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
+
   const [stats, setStats] = useState({
-    inquiries: '245',
-    inquiriesTrend: '+15%',
-    inquiriesUp: true,
-    enrollments: '84',
-    enrollmentsTrend: '+8%',
-    enrollmentsUp: true,
-    feeCollected: '₹4.2L',
-    feeTrend: '+12%',
-    feeUp: true,
-    rating: '4.8',
-    ratingTrend: 'Top 10%',
-    ratingUp: true
+    inquiries: 0,
+    enrollments: 0,
+    feeCollected: '₹0',
+    rating: 0
   });
 
   const fetchStats = async () => {
     try {
-      const response = await api.get('/truedial/vendor/analytics/overview');
-      if (response.data) {
-        // Map API response to stats if available
-        // Fallback already provided in initial state
-      }
+      const [analyticsRes, businessRes] = await Promise.all([
+        api.get('/truedial/vendor/analytics/overview').catch(() => null),
+        api.get('/truedial/vendor/my-business').catch(() => null)
+      ]);
+
+      const analytics = analyticsRes?.data?.data || analyticsRes?.data || {};
+      const biz = businessRes?.data?.data || businessRes?.data || {};
+
+      setStats({
+        inquiries: analytics.total_leads || analytics.inquiries_count || 0,
+        enrollments: analytics.conversions_count || biz.products_count || 0,
+        feeCollected: analytics.total_revenue ? `₹${analytics.total_revenue.toLocaleString('en-IN')}` : '₹0',
+        rating: analytics.avg_rating || analytics.rating || (analytics.total_reviews_count > 0 ? 4.8 : 0)
+      });
     } catch (error) {
-      console.error('Error fetching analytics:', error);
+      console.error('Error fetching education dashboard metrics:', error);
     }
   };
 
-  const onRefresh = React.useCallback(async () => {
+  const onRefresh = useCallback(async () => {
     setRefreshing(true);
     await fetchStats();
     setRefreshing(false);
@@ -73,18 +74,17 @@ export default function EducationDashboard() {
   ];
 
   return (
-    <ScrollView 
+    <ScrollView
       className="flex-1 bg-slate-50 dark:bg-slate-900"
       showsVerticalScrollIndicator={false}
+      contentContainerStyle={{ paddingBottom: 100 }}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#0D9488" />
       }
     >
       {/* Hero Banner */}
       <View className="px-4 pt-6 pb-6">
-        <View
-          className="rounded-3xl p-6 shadow-lg shadow-teal-500/30 bg-teal-700"
-        >
+        <View className="rounded-3xl p-6 shadow-lg shadow-teal-500/30 bg-teal-700">
           <View className="flex-row items-center justify-between mb-4">
             <View className="bg-white/20 p-3 rounded-2xl">
               <GraduationCap size={28} color="#FFFFFF" strokeWidth={2} />
@@ -101,131 +101,77 @@ export default function EducationDashboard() {
       {/* KPI Stats Grid */}
       <View className="px-4 flex-row flex-wrap justify-between">
         <View className="w-[48%] mb-4">
-          <StatCard 
-            title="Student Inquiries" 
-            value={stats.inquiries} 
-            icon={<UserPlus size={20} color="#0D9488" />} 
-            iconBgClass="bg-teal-50 dark:bg-teal-900/30" 
-            trend={stats.inquiriesTrend} 
-            trendUp={stats.inquiriesUp} 
+          <StatCard
+            title="Student Inquiries"
+            value={stats.inquiries}
+            icon={<UserPlus size={20} color="#0D9488" />}
+            iconBgClass="bg-teal-100 dark:bg-teal-900/30"
           />
         </View>
         <View className="w-[48%] mb-4">
-          <StatCard 
-            title="Course Enrollments" 
-            value={stats.enrollments} 
-            icon={<BookOpen size={20} color="#3B82F6" />} 
-            iconBgClass="bg-blue-50 dark:bg-blue-900/30" 
-            trend={stats.enrollmentsTrend} 
-            trendUp={stats.enrollmentsUp} 
+          <StatCard
+            title="Course Catalog"
+            value={stats.enrollments}
+            icon={<BookOpen size={20} color="#3B82F6" />}
+            iconBgClass="bg-blue-100 dark:bg-blue-900/30"
           />
         </View>
         <View className="w-[48%] mb-4">
-          <StatCard 
-            title="Fee Collected" 
-            value={stats.feeCollected} 
-            icon={<IndianRupee size={20} color="#10B981" />} 
-            iconBgClass="bg-emerald-50 dark:bg-emerald-900/30" 
-            trend={stats.feeTrend} 
-            trendUp={stats.feeUp} 
+          <StatCard
+            title="Revenue Tracked"
+            value={stats.feeCollected}
+            icon={<IndianRupee size={20} color="#10B981" />}
+            iconBgClass="bg-emerald-100 dark:bg-emerald-900/30"
           />
         </View>
         <View className="w-[48%] mb-4">
-          <StatCard 
-            title="Institute Rating" 
-            value={stats.rating} 
-            icon={<Star size={20} color="#EAB308" />} 
-            iconBgClass="bg-yellow-50 dark:bg-yellow-900/30" 
-            trend={stats.ratingTrend} 
-            trendUp={stats.ratingUp} 
+          <StatCard
+            title="Institute Rating"
+            value={stats.rating > 0 ? stats.rating.toFixed(1) : 'New'}
+            icon={<Star size={20} color="#EAB308" />}
+            iconBgClass="bg-yellow-100 dark:bg-yellow-900/30"
           />
         </View>
       </View>
 
       {/* Quick Actions */}
-      <View className="mt-2 mb-6">
-        <QuickActionGrid actions={actions} columns={3} />
-      </View>
-
-      {/* Course Enrollment Stats */}
-      <View className="px-4 mb-6">
-        <Text className="text-lg font-bold text-slate-800 dark:text-slate-100 mb-3 px-1">
-          Enrollment Overview
+      <View className="px-4 mt-2 mb-6">
+        <Text className="text-lg font-bold text-slate-800 dark:text-white mb-3">
+          Academic Management
         </Text>
-        <GlassCard className="p-5 border border-teal-200 dark:border-teal-900">
-          <View className="flex-col gap-4">
-            {/* Course 1 */}
-            <View>
-              <View className="flex-row justify-between items-center mb-1">
-                <Text className="text-slate-700 dark:text-slate-300 font-medium">JEE Advanced Batch</Text>
-                <Text className="text-slate-500 dark:text-slate-400 text-xs">42 students</Text>
-              </View>
-              <View className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <View className="h-full bg-teal-500 rounded-full" style={{ width: '84%' }} />
-              </View>
-            </View>
-
-            {/* Course 2 */}
-            <View>
-              <View className="flex-row justify-between items-center mb-1">
-                <Text className="text-slate-700 dark:text-slate-300 font-medium">NEET Foundation</Text>
-                <Text className="text-slate-500 dark:text-slate-400 text-xs">38 students</Text>
-              </View>
-              <View className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <View className="h-full bg-blue-500 rounded-full" style={{ width: '76%' }} />
-              </View>
-            </View>
-
-            {/* Course 3 */}
-            <View>
-              <View className="flex-row justify-between items-center mb-1">
-                <Text className="text-slate-700 dark:text-slate-300 font-medium">Spoken English</Text>
-                <Text className="text-slate-500 dark:text-slate-400 text-xs">25 students</Text>
-              </View>
-              <View className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
-                <View className="h-full bg-purple-500 rounded-full" style={{ width: '50%' }} />
-              </View>
-            </View>
-          </View>
-          
-          <TouchableOpacity 
-            className="mt-5 flex-row items-center justify-center py-2 border-t border-slate-100 dark:border-slate-800"
-            onPress={() => router.push('/dashboard/business/catalog')}
-          >
-            <Text className="text-teal-600 dark:text-teal-400 font-medium mr-1">Manage Courses</Text>
-            <ChevronRight size={16} color="#0D9488" />
-          </TouchableOpacity>
-        </GlassCard>
+        <QuickActionGrid actions={actions} columns={3} />
       </View>
 
       {/* Certification Badges */}
       <View className="px-4 mb-6">
-        <GlassCard className="p-4 border border-slate-200 dark:border-slate-800">
-          <View className="flex-row gap-3 mb-2">
-            <View className="flex-row items-center bg-emerald-50 dark:bg-emerald-900/30 px-3 py-1.5 rounded-full border border-emerald-100 dark:border-emerald-800/50">
-              <CheckCircle size={14} color="#10B981" />
-              <Text className="text-emerald-700 dark:text-emerald-400 text-xs font-medium ml-1.5">
+        <GlassCard className="p-4 border-slate-200 dark:border-slate-800">
+          <Text className="text-base font-bold text-slate-800 dark:text-white mb-3">
+            Institute Accreditation
+          </Text>
+          <View className="flex-row flex-wrap gap-2 mb-2">
+            <View className="flex-row items-center bg-teal-50 dark:bg-teal-950/40 border border-teal-200 dark:border-teal-800 px-3 py-1.5 rounded-full">
+              <CheckCircle size={14} color="#0D9488" className="mr-1.5" />
+              <Text className="text-xs font-semibold text-teal-800 dark:text-teal-300">
                 Verified Institute
               </Text>
             </View>
-            <View className="flex-row items-center bg-blue-50 dark:bg-blue-900/30 px-3 py-1.5 rounded-full border border-blue-100 dark:border-blue-800/50">
-              <CheckCircle size={14} color="#3B82F6" />
-              <Text className="text-blue-700 dark:text-blue-400 text-xs font-medium ml-1.5">
-                NAAC Accredited
+            <View className="flex-row items-center bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-800 px-3 py-1.5 rounded-full">
+              <CheckCircle size={14} color="#3B82F6" className="mr-1.5" />
+              <Text className="text-xs font-semibold text-blue-800 dark:text-blue-300">
+                TrueDial Certified
               </Text>
             </View>
           </View>
-          <Text className="text-slate-500 dark:text-slate-400 text-xs mt-1 px-1">
-            Accredited institutions receive 2x more inquiries
+          <Text className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+            Accredited institutions receive 2x more student inquiries.
           </Text>
         </GlassCard>
       </View>
 
       {/* Recent Leads */}
-      <View className="px-4 mb-8">
+      <View className="px-4 mb-6">
         <LeadsList maxItems={5} viewAllRoute="/dashboard/business/leads" />
       </View>
-
     </ScrollView>
   );
 }

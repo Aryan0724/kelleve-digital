@@ -25,6 +25,12 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "ACCESS_FINE_LOCATION",
+        "ACCESS_COARSE_LOCATION",
+        "POST_NOTIFICATIONS",
+        "CAMERA",
+        "READ_EXTERNAL_STORAGE",
+        "WRITE_EXTERNAL_STORAGE",
+        "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
       ]
     },
@@ -35,14 +41,14 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "8fc7f4cc-a79f-4fee-960c-2aba8f7d270b"
+        "projectId": "d7ade934-8a7f-4b52-9a34-a214a7dbe814"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/8fc7f4cc-a79f-4fee-960c-2aba8f7d270b"
+      "url": "https://u.expo.dev/d7ade934-8a7f-4b52-9a34-a214a7dbe814"
     }
   }
 }

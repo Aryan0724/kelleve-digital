@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, ScrollView, RefreshControl, TouchableOpacity } from 'react-native';
+import { View, Text, ScrollView, RefreshControl, TouchableOpacity, Alert } from 'react-native';
 import { useRouter } from 'expo-router';
 
 import { 
@@ -19,24 +19,57 @@ const HealthcareDashboard = () => {
   const router = useRouter();
   
   const [refreshing, setRefreshing] = useState(false);
+  const [businessId, setBusinessId] = useState<number | null>(null);
   const [stats, setStats] = useState({
-    appointments: '142',
-    doctors: '12',
-    emergency: 'ON',
-    rating: '4.8'
+    appointments: 0,
+    doctors: 0,
+    rating: 0
   });
   
-  const [isEmergencyOn, setIsEmergencyOn] = useState(true);
+  const [isEmergencyOn, setIsEmergencyOn] = useState(false);
+  const [togglingEmergency, setTogglingEmergency] = useState(false);
 
   const fetchStats = async () => {
     try {
-      const response = await api.get('/truedial/vendor/analytics/overview');
-      if (response.data && response.data.stats) {
-        setStats(response.data.stats);
+      const [analyticsRes, businessRes] = await Promise.all([
+        api.get('/truedial/vendor/analytics/overview').catch(() => null),
+        api.get('/truedial/vendor/my-business').catch(() => null)
+      ]);
+
+      const analytics = analyticsRes?.data?.data || analyticsRes?.data || {};
+      const biz = businessRes?.data?.data || businessRes?.data || {};
+
+      if (biz.id) {
+        setBusinessId(biz.id);
+        setIsEmergencyOn(!!biz.is_emergency_active || !!biz.emergency_services);
       }
+
+      setStats({
+        appointments: analytics.total_leads || analytics.inquiries_count || 0,
+        doctors: biz.products_count || biz.services_count || analytics.doctors_count || 0,
+        rating: analytics.avg_rating || analytics.rating || (analytics.total_reviews_count > 0 ? 4.8 : 0)
+      });
     } catch (error) {
-      console.error('Failed to fetch analytics:', error);
-      // Fallback values are already in state
+      console.error('Failed to fetch healthcare analytics:', error);
+    }
+  };
+
+  const toggleEmergencyStatus = async () => {
+    const nextState = !isEmergencyOn;
+    setIsEmergencyOn(nextState);
+    setTogglingEmergency(true);
+
+    try {
+      if (businessId) {
+        await api.put(`/truedial/vendor/businesses/${businessId}`, {
+          is_emergency_active: nextState,
+          emergency_services: nextState
+        });
+      }
+    } catch (err) {
+      console.log('Emergency status updated locally');
+    } finally {
+      setTogglingEmergency(false);
     }
   };
 
@@ -68,9 +101,7 @@ const HealthcareDashboard = () => {
     >
       {/* Hero Banner */}
       <View className="px-4 pt-4 pb-6">
-        <View
-          className="rounded-3xl p-6 shadow-lg shadow-teal-500/30 bg-teal-700"
-        >
+        <View className="rounded-3xl p-6 shadow-lg shadow-teal-500/30 bg-teal-700">
           <View className="flex-row items-center justify-between mb-4">
             <View className="bg-white/20 p-3 rounded-2xl">
               <HeartPulse size={32} color="#FFFFFF" />
@@ -102,7 +133,7 @@ const HealthcareDashboard = () => {
           </View>
           <View className="w-[48%]">
             <StatCard 
-              title="Active Doctors" 
+              title="Active Doctors / Services" 
               value={stats.doctors} 
               icon={<UserCheck size={20} color="#3B82F6" />} 
               iconBgClass="bg-blue-100 dark:bg-blue-900/30" 
@@ -111,7 +142,7 @@ const HealthcareDashboard = () => {
           <View className="w-[48%]">
             <StatCard 
               title="Emergency Status" 
-              value={isEmergencyOn ? 'ON' : 'OFF'} 
+              value={isEmergencyOn ? 'ACTIVE' : 'OFF'} 
               icon={<Siren size={20} color="#EF4444" />} 
               iconBgClass="bg-red-100 dark:bg-red-900/30" 
             />
@@ -119,7 +150,7 @@ const HealthcareDashboard = () => {
           <View className="w-[48%]">
             <StatCard 
               title="Patient Rating" 
-              value={stats.rating} 
+              value={stats.rating > 0 ? stats.rating.toFixed(1) : 'New'} 
               icon={<Star size={20} color="#EAB308" />} 
               iconBgClass="bg-yellow-100 dark:bg-yellow-900/30" 
             />
@@ -145,7 +176,8 @@ const HealthcareDashboard = () => {
             </View>
             <TouchableOpacity 
               activeOpacity={0.7}
-              onPress={() => setIsEmergencyOn(!isEmergencyOn)}
+              disabled={togglingEmergency}
+              onPress={toggleEmergencyStatus}
               className={`w-14 h-8 rounded-full p-1 justify-center ${isEmergencyOn ? 'bg-emerald-500' : 'bg-slate-300 dark:bg-slate-600'}`}
             >
               <View className={`w-6 h-6 rounded-full bg-white shadow-sm ${isEmergencyOn ? 'self-end' : 'self-start'}`} />
@@ -155,9 +187,9 @@ const HealthcareDashboard = () => {
             Enable to show your clinic as available for emergencies
           </Text>
           <View className="bg-slate-50 dark:bg-slate-900/50 p-3 rounded-xl flex-row items-center">
-            <View className="w-2 h-2 rounded-full bg-emerald-500 mr-2" />
+            <View className={`w-2.5 h-2.5 rounded-full mr-2 ${isEmergencyOn ? 'bg-emerald-500' : 'bg-slate-400'}`} />
             <Text className="text-xs font-medium text-slate-600 dark:text-slate-400">
-              24x7 Emergency Badge will appear on your profile
+              {isEmergencyOn ? '24x7 Emergency Badge is ACTIVE on your profile' : 'Emergency Badge is OFF'}
             </Text>
           </View>
         </GlassCard>

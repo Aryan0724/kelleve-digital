@@ -27,21 +27,33 @@ export default function HospitalityDashboard() {
   
   const [refreshing, setRefreshing] = useState(false);
   const [stats, setStats] = useState({
-    inquiries: '142',
-    redemptions: '24',
-    menuViews: '1.2k',
-    rating: '4.8'
+    inquiries: 0,
+    redemptions: 0,
+    menuViews: 0,
+    rating: 0
   });
+  const [offersCount, setOffersCount] = useState(0);
 
   const fetchStats = async () => {
     try {
-      const response = await api.get('/truedial/vendor/analytics/overview');
-      if (response.data) {
-        // In a real app we'd map response.data to state
-      }
+      const [analyticsRes, offersRes] = await Promise.all([
+        api.get('/truedial/vendor/analytics/overview').catch(() => null),
+        api.get('/truedial/vendor/offers').catch(() => null)
+      ]);
+
+      const analytics = analyticsRes?.data?.data || analyticsRes?.data || {};
+      const offers = offersRes?.data?.data || offersRes?.data || [];
+
+      setStats({
+        inquiries: analytics.total_leads || analytics.inquiries_count || analytics.total_inquiries || 0,
+        redemptions: analytics.redemptions_count || analytics.privilege_card_count || 0,
+        menuViews: analytics.profile_views || analytics.page_views || 0,
+        rating: analytics.avg_rating || analytics.rating || (analytics.total_reviews_count > 0 ? 4.8 : 0)
+      });
+
+      setOffersCount(Array.isArray(offers) ? offers.length : 0);
     } catch (error) {
       console.error('Failed to fetch hospitality stats', error);
-      // Keeping fallback values
     }
   };
 
@@ -67,7 +79,7 @@ export default function HospitalityDashboard() {
   return (
     <ScrollView
       className="flex-1 bg-slate-50 dark:bg-[#0A1C3A]"
-      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#F59E0B" />}
       contentContainerStyle={{ paddingBottom: 100 }}
     >
       {/* Hero Banner */}
@@ -92,8 +104,6 @@ export default function HospitalityDashboard() {
               value={stats.inquiries} 
               icon={<Users size={20} color="#3B82F6" />} 
               iconBgClass="bg-blue-100 dark:bg-blue-900/30" 
-              trend="↑12%" 
-              trendUp={true} 
             />
           </View>
           <View className="w-[48%] mb-4">
@@ -102,28 +112,22 @@ export default function HospitalityDashboard() {
               value={stats.redemptions} 
               icon={<CreditCard size={20} color="#F59E0B" />} 
               iconBgClass="bg-amber-100 dark:bg-amber-900/30" 
-              trend="↑8%" 
-              trendUp={true} 
             />
           </View>
           <View className="w-[48%] mb-4">
             <StatCard 
               title="Menu Views" 
-              value={stats.menuViews} 
+              value={stats.menuViews > 999 ? `${(stats.menuViews/1000).toFixed(1)}k` : stats.menuViews} 
               icon={<Eye size={20} color="#10B981" />} 
               iconBgClass="bg-emerald-100 dark:bg-emerald-900/30" 
-              trend="↑24%" 
-              trendUp={true} 
             />
           </View>
           <View className="w-[48%] mb-4">
             <StatCard 
               title="Avg Rating" 
-              value={stats.rating} 
+              value={stats.rating > 0 ? stats.rating.toFixed(1) : 'New'} 
               icon={<Star size={20} color="#EAB308" />} 
               iconBgClass="bg-yellow-100 dark:bg-yellow-900/30" 
-              trend="↑0.2" 
-              trendUp={true} 
             />
           </View>
         </View>
@@ -136,9 +140,14 @@ export default function HospitalityDashboard() {
 
         {/* Unique Section: Today's Specials */}
         <GlassCard className="p-5 mb-6 border border-orange-200 dark:border-[#E8701A]/30">
-          <View className="flex-row items-center mb-2">
-            <Sparkles size={20} color="#E8701A" />
-            <Text className="text-lg font-bold text-slate-800 dark:text-white ml-2">Today's Specials & Offers</Text>
+          <View className="flex-row items-center justify-between mb-2">
+            <View className="flex-row items-center">
+              <Sparkles size={20} color="#E8701A" />
+              <Text className="text-lg font-bold text-slate-800 dark:text-white ml-2">Today's Specials & Offers</Text>
+            </View>
+            <View className="bg-orange-100 dark:bg-orange-900/50 px-2.5 py-0.5 rounded-full">
+              <Text className="text-xs font-extrabold text-[#E8701A]">{offersCount} Active</Text>
+            </View>
           </View>
           <Text className="text-slate-500 dark:text-slate-400 text-sm mb-4">
             Create time-limited promotions to attract walk-in customers
@@ -160,13 +169,13 @@ export default function HospitalityDashboard() {
           </View>
           <View className="flex-row justify-between bg-slate-50 dark:bg-[#0A1C3A]/50 p-4 rounded-xl border border-slate-100 dark:border-slate-800">
             <View>
-              <Text className="text-slate-500 dark:text-slate-400 text-xs mb-1">This Month</Text>
-              <Text className="text-slate-800 dark:text-white font-bold text-lg">24 redemptions</Text>
+              <Text className="text-slate-500 dark:text-slate-400 text-xs mb-1">Total Redemptions</Text>
+              <Text className="text-slate-800 dark:text-white font-bold text-lg">{stats.redemptions} redemptions</Text>
             </View>
             <View className="w-[1px] bg-slate-200 dark:bg-slate-700" />
             <View>
-              <Text className="text-slate-500 dark:text-slate-400 text-xs mb-1">Discount Given</Text>
-              <Text className="text-emerald-600 dark:text-emerald-400 font-bold text-lg">₹12,400</Text>
+              <Text className="text-slate-500 dark:text-slate-400 text-xs mb-1">Partner Tier</Text>
+              <Text className="text-emerald-600 dark:text-emerald-400 font-bold text-lg">VIP Verified</Text>
             </View>
           </View>
         </GlassCard>
