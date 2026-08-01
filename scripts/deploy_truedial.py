@@ -78,6 +78,7 @@ run(f"cat << 'EOF' > /var/www/truedial/docker-compose.yml\n{docker_compose}\nEOF
 # 4. Environment Variables
 env_prod = """
 NEXT_PUBLIC_API_URL=https://findmyinterior.com/api/v1
+INTERNAL_API_URL=http://172.17.0.1:8000/api/v1
 NODE_ENV=production
 """
 run(f"cat << 'EOF' > /var/www/truedial/.env.production\n{env_prod}\nEOF")
