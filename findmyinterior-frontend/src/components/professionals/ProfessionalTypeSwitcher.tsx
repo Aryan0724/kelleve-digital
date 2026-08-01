@@ -1,7 +1,8 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { Sofa, Building2, HardHat, Hammer, Truck, Tag, Paintbrush, Wrench, Zap, Droplets } from "lucide-react";
+import { Sofa, Building2, HardHat, Hammer, Truck, Tag, Paintbrush, Wrench, Zap, Droplets, UserCircle2 } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 
 const TYPES = [
   { label: "All", value: "", icon: null },
@@ -36,29 +37,54 @@ export function ProfessionalTypeSwitcher({ currentSearch }: { currentSearch: str
     return currentSearch.toLowerCase().includes(value.toLowerCase());
   };
 
-  return (
-    <div className="mb-6">
-      <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Browse by Type</p>
-      <div className="flex flex-wrap gap-2">
-        {TYPES.map((type) => {
-          const Icon = type.icon;
-          const active = isActive(type.value);
-          return (
-            <button
-              key={type.value}
-              onClick={() => handleSelect(type.value)}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
-                active
-                  ? "bg-orange-600 text-white border-orange-600 shadow-sm"
-                  : "bg-white text-slate-600 border-slate-200 hover:border-orange-400 hover:text-orange-600"
-              }`}
-            >
-              {Icon && <Icon className="w-3.5 h-3.5" />}
-              {type.label}
-            </button>
-          );
-        })}
-      </div>
+  const content = (
+    <div className="flex flex-wrap gap-2">
+      {TYPES.map((type) => {
+        const Icon = type.icon;
+        const active = isActive(type.value);
+        return (
+          <button
+            key={type.value}
+            onClick={() => handleSelect(type.value)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-sm font-medium border transition-all ${
+              active
+                ? "bg-orange-600 text-white border-orange-600 shadow-sm"
+                : "bg-white text-slate-600 border-slate-200 hover:border-orange-400 hover:text-orange-600"
+            }`}
+          >
+            {Icon && <Icon className="w-3.5 h-3.5" />}
+            {type.label}
+          </button>
+        );
+      })}
     </div>
+  );
+
+  return (
+    <>
+      {/* Mobile View: Sticky Button + Sheet */}
+      <div className="lg:hidden mb-2">
+        <Sheet>
+          <SheetTrigger className="w-full flex items-center justify-center gap-2 h-12 bg-white text-slate-900 dark:bg-slate-900 dark:text-white border border-slate-200 dark:border-slate-700 font-semibold text-base shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg">
+            <UserCircle2 className="h-5 w-5 text-orange-500" />
+            Change Role
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl overflow-y-auto px-5 pb-10">
+            <SheetHeader className="mb-5 border-b pb-4 text-left">
+              <SheetTitle className="flex items-center gap-2 text-lg">
+                <UserCircle2 className="h-5 w-5 text-orange-500" /> Roles
+              </SheetTitle>
+            </SheetHeader>
+            {content}
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop View */}
+      <div className="hidden lg:block mb-6">
+        <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-3">Browse by Type</p>
+        {content}
+      </div>
+    </>
   );
 }
