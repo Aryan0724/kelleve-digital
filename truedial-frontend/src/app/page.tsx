@@ -38,14 +38,6 @@ export default async function Home() {
         <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-500/10 rounded-full blur-3xl -z-10 pointer-events-none"></div>
 
         <div className="z-10 max-w-4xl w-full text-center">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-orange-500/10 via-amber-500/10 to-orange-500/10 dark:from-orange-500/20 dark:via-amber-500/20 dark:to-orange-500/20 border border-orange-300 dark:border-orange-700 text-primary text-xs font-extrabold uppercase tracking-wider mb-6 shadow-sm">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
-            </span>
-            <span>India&apos;s #1 Local Business &amp; Interior Discovery Engine</span>
-          </div>
-
           <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-navy dark:text-white leading-tight mb-4 tracking-tight">
             Search Across <span className="text-primary bg-gradient-to-r from-orange-500 via-amber-500 to-red-500 bg-clip-text text-transparent">50,000+</span> Verified Businesses &amp; Studios
           </h1>
