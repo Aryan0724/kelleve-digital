@@ -40,10 +40,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setNotifications(notifications.map(n => ({ ...n, unread: false })));
   };
 
-  const hasVendorRole = user?.roles?.some((r: any) => 
-    ['business', 'builder', 'supplier', 'worker', 'contractor', 'architect', 'interior_designer', 'skilled_worker', 'material_supplier'].includes(r.slug)
-  );
-  const hasAdminRole = user?.roles?.some((r: any) => ['admin', 'super_admin'].includes(r.slug));
+  const rawRoles = user?.roles || (user?.role ? [user.role] : []);
+  const roleSlugs = rawRoles.map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
+
+  const hasAdminRole = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
+  
+  const isRealEstate = roleSlugs.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
+  const isService = roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
+  const isMedical = roleSlugs.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
+  const isRestaurant = roleSlugs.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
+  
+  const hasVendorRole = roleSlugs.includes('business') || isRealEstate || isService || isMedical || isRestaurant;
 
   let links: any[] = [];
 
@@ -56,12 +63,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
     ];
   } else if (hasVendorRole) {
-    const roles = user?.roles || (user?.role ? [user.role] : []);
-    const isRealEstate = roles.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
-    const isService = roles.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
-    const isMedical = roles.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
-    const isRestaurant = roles.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
-
     let catalogLabel = "Products & Services";
     let catalogIcon = FileText;
     let crmLabel = "CRM & Leads";
