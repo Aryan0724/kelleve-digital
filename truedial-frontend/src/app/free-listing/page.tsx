@@ -120,17 +120,17 @@ export default function FreeListingPage() {
       });
 
       if (res.ok) {
-        router.push("/dashboard/business?success=listing_created");
+        router.push("/dashboard/vendor?success=listing_created");
       } else {
         // If it fails (maybe due to auth), simulate success for UX walkthrough purposes
         setTimeout(() => {
-          router.push("/dashboard/business");
+          router.push("/dashboard/vendor");
         }, 1000);
       }
     } catch (err) {
       // Simulate success on network error for prototype
       setTimeout(() => {
-        router.push("/dashboard/business");
+        router.push("/dashboard/vendor");
       }, 1000);
     }
   };

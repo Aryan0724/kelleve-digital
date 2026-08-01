@@ -67,14 +67,21 @@ export default function UserDashboard() {
     setMounted(true);
   }, []);
 
+  // Auth guard — only redirect when auth state is clear
   useEffect(() => {
     if (!mounted || !_hasHydrated) return;
     if (!token) {
       router.push("/login");
-      return;
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, mounted, _hasHydrated]);
+
+  // Data fetch — runs once after auth confirmed
+  useEffect(() => {
+    if (!mounted || !_hasHydrated || !token) return;
     fetchDashboard();
-  }, [token, mounted, _hasHydrated, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, mounted, _hasHydrated]);
 
   if (!mounted || !_hasHydrated || loading) return <div className="p-20 text-center">Loading dashboard...</div>;
   if (!user) return null;

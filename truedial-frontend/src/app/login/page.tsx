@@ -40,7 +40,18 @@ function LoginForm() {
 
       if (data.success) {
         await refreshUser();
-        const dest = redirectTo || (data.role === "business" ? "/dashboard/business" : "/dashboard/user");
+        const roleSlugs = (data.roles || (data.role ? [data.role] : [])).map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
+        
+        const isVendor = roleSlugs.some((r: string) => 
+          ['business', 'builder', 'supplier', 'worker', 'contractor', 'architect', 'interior_designer', 'skilled_worker', 'material_supplier', 'doctor', 'hospital', 'clinic', 'dentist', 'restaurant', 'cafe', 'bakery', 'food', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r)
+        );
+        const isAdmin = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
+        
+        let dashboardRoute = "/dashboard/user";
+        if (isAdmin) dashboardRoute = "/dashboard/admin";
+        else if (isVendor) dashboardRoute = "/dashboard/vendor";
+
+        const dest = redirectTo || dashboardRoute;
         router.push(dest);
       } else {
         setError(data.message || "Invalid credentials. Please try again.");

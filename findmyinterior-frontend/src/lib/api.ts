@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuthStore } from './store/useAuthStore';
 
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
+  baseURL: 'https://findmyinterior.com/api/v1',
   timeout: 120000, // 2 minutes to accommodate Render free tier cold starts
   headers: {
     'Accept': 'application/json',
@@ -21,16 +21,26 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Response Interceptor: Handle 401s
+// Prevent multiple simultaneous 401s from all triggering logout (race condition guard)
+let isLoggingOut = false;
+
+// Response Interceptor: Handle 401s — only logout if user actually has a token
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
-        useAuthStore.getState().logout();
-        window.location.href = '/login';
-        // Prevent unhandled rejection overlay but still reject the promise so the caller unblocks
-        return Promise.reject(error);
+        const { token, logout } = useAuthStore.getState();
+        // Only force-logout if the user is actually logged in and not already logging out
+        if (token && !isLoggingOut) {
+          isLoggingOut = true;
+          logout();
+          // Small delay so any in-flight state updates settle before redirect
+          setTimeout(() => {
+            window.location.href = '/login';
+            isLoggingOut = false;
+          }, 300);
+        }
       }
     }
     return Promise.reject(error);

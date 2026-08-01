@@ -173,15 +173,23 @@ export default function AdminDashboard() {
     }
   }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers, fetchListings, fetchDbTables, fetchInquiries, fetchBlogs, fetchPlans, fetchCategories]);
 
+  // Auth guard — only depends on token/isAdmin/hydration, NOT on data-fetching functions
   useEffect(() => {
     if (!_hasHydrated) return;
     if (!token || !isAdmin) {
       router.push("/login");
-      return;
     }
-    refreshAll();
-  }, [token, isAdmin, router, refreshAll, _hasHydrated]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [token, isAdmin, _hasHydrated]);
 
+  // Data loading — runs once after auth is confirmed
+  useEffect(() => {
+    if (!_hasHydrated || !token || !isAdmin) return;
+    refreshAll();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [_hasHydrated, token, isAdmin]);
+
+  // Re-fetch users when search/filter/page changes
   useEffect(() => {
     if (token && isAdmin) fetchUsers();
   }, [fetchUsers, token, isAdmin]);

@@ -11,11 +11,12 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
-import { useRouter } from "next/navigation";
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoggedIn, role, clearUser } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [showMessages, setShowMessages] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -40,10 +41,21 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setNotifications(notifications.map(n => ({ ...n, unread: false })));
   };
 
-  const hasVendorRole = user?.roles?.some((r: any) => 
-    ['business', 'builder', 'supplier', 'worker', 'contractor', 'architect', 'interior_designer', 'skilled_worker', 'material_supplier'].includes(r.slug)
-  );
-  const hasAdminRole = user?.roles?.some((r: any) => ['admin', 'super_admin'].includes(r.slug));
+  const markAllMessagesRead = () => {
+    setMessages(messages.map(m => ({ ...m, unread: false })));
+  };
+
+  const rawRoles = user?.roles || (user?.role ? [user.role] : []);
+  const roleSlugs = rawRoles.map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
+
+  const hasAdminRole = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
+  
+  const isRealEstate = roleSlugs.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
+  const isService = roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
+  const isMedical = roleSlugs.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
+  const isRestaurant = roleSlugs.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
+  
+  const hasVendorRole = roleSlugs.includes('business') || isRealEstate || isService || isMedical || isRestaurant;
 
   let links: any[] = [];
 
@@ -56,12 +68,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
     ];
   } else if (hasVendorRole) {
-    const roles = user?.roles || (user?.role ? [user.role] : []);
-    const isRealEstate = roles.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
-    const isService = roles.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
-    const isMedical = roles.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
-    const isRestaurant = roles.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
-
     let catalogLabel = "Products & Services";
     let catalogIcon = FileText;
     let crmLabel = "CRM & Leads";
@@ -146,43 +152,9 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <ArrowLeft className="w-5 h-5 shrink-0" /> Back to Homepage
           </Link>
 
-          <Link href="/dashboard/business" className="flex items-center gap-3 px-3 py-2.5 rounded-md bg-white/10 text-white font-medium">
-            <LayoutDashboard className="w-5 h-5 text-primary" /> Overview
-          </Link>
-          <Link href="/dashboard/business/profile" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Settings className="w-5 h-5" /> Business Profile
-          </Link>
-          <Link href="/dashboard/business/catalog" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <FileText className="w-5 h-5" /> Products & Services
-          </Link>
-          <Link href="/dashboard/business/analytics" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <LayoutDashboard className="w-5 h-5" /> Analytics
-          </Link>
-          <Link href="/dashboard/business/leads" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Users className="w-5 h-5" /> Leads & Inquiries
-          </Link>
-          <Link href="/dashboard/business/marketing" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Megaphone className="w-5 h-5" /> Marketing (SMS)
-          </Link>
-          <Link href="/dashboard/business/offers" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Star className="w-5 h-5" /> Manage Offers
-          </Link>
-          <Link href="/dashboard/business/reviews" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Star className="w-5 h-5" /> Reviews & Ratings
-          </Link>
-          <Link href="/dashboard/business/subscription" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <CreditCard className="w-5 h-5" /> Subscription
-          </Link>
-          
-          <div className="pt-6 pb-2">
-            <p className="px-3 text-xs font-semibold text-navy-foreground/50 uppercase tracking-wider">Account</p>
-          </div>
-          <Link href="/dashboard/user" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <FileText className="w-5 h-5" /> Privilege Card
-          </Link>
-          <Link href="/dashboard/settings" className="flex items-center gap-3 px-3 py-2.5 rounded-md text-navy-foreground/70 hover:text-white hover:bg-white/5 transition">
-            <Settings className="w-5 h-5" /> Settings
-          </Link>
+          {links.map((link) => (
+            <NavLink key={link.href} item={link} />
+          ))}
         </nav>
         
         <div className="p-4 border-t border-white/10">

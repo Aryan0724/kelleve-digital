@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import {
   Phone, Clock, CheckCircle, XCircle, CalendarDays, Users,
@@ -9,8 +9,11 @@ import {
   Power, ShoppingBag, Truck, Flame, AlertCircle,
   KanbanSquare, List, Plus, MoreVertical
 } from "lucide-react";
+import { Loader2, ChevronRight, UserCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, Phone, Clock, ChevronRight, UserCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
 
 // ─── Mock Data per category ────────────────────────────────────────────────────
 const MOCK_APPOINTMENTS = [
