@@ -110,13 +110,16 @@ class AuthController extends Controller
     public function register(Request $request): JsonResponse
     {
         Log::info("AuthController::register - start");
+        $isGoogleAuth = $request->filled('google_id');
         $data = $request->validate([
             'name'              => ['required', 'string', 'max:255'],
             'email'             => ['required', 'email', 'unique:users'],
             'phone'             => ['required', 'string', 'regex:/^[6-9]\d{9}$/'],
-            'password'          => ['required', 'confirmed', Password::min(8)],
+            'password'          => $isGoogleAuth ? ['nullable', 'string', 'min:8'] : ['required', 'confirmed', Password::min(8)],
             'role'              => ['required', 'in:' . implode(',', self::getAllowedTypes())],
             'professional_type' => ['nullable', 'string', 'max:100'], // Optional override
+            'google_id'         => ['nullable', 'string'],
+            'avatar'            => ['nullable', 'string'],
         ]);
         Log::info("AuthController::register - validation passed");
 
@@ -129,11 +132,18 @@ class AuthController extends Controller
                 'name'              => $data['name'],
                 'email'             => $data['email'],
                 'phone'             => $data['phone'],
-                'password'          => Hash::make($data['password']),
+                'password'          => Hash::make($data['password'] ?? \Illuminate\Support\Str::random(32)),
                 'is_active'         => true,
+                'google_id'         => $data['google_id'] ?? null,
+                'avatar'            => $data['avatar'] ?? null,
+                'is_verified'       => $isGoogleAuth ? true : false,
                 // Store the specific type for display/search (e.g. "modular_kitchen_designer")
                 'professional_type' => $data['professional_type'] ?? $specificType,
             ]);
+            if ($isGoogleAuth) {
+                $user->email_verified_at = now();
+                $user->save();
+            }
             Log::info("AuthController::register - user created, id={$user->id}, type={$specificType}, broad_role={$broadRole}");
 
             // Attach the broad role (only 5 exist in DB)

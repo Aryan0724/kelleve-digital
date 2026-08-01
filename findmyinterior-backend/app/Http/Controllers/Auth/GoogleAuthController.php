@@ -116,7 +116,25 @@ class GoogleAuthController extends Controller
             $googleData = $userRes->json();
             $roleOverride = $request->query('state', 'customer');
 
-            $user = $this->findOrCreateGoogleUser($googleData, $roleOverride);
+            $user = $this->findExistingGoogleUser($googleData);
+
+            if (!$user) {
+                // New user - redirect to registration page asking for all required details (role, phone, etc.)
+                $email    = $googleData['email'] ?? '';
+                $name     = $googleData['name'] ?? '';
+                $googleId = $googleData['sub'] ?? '';
+                $picture  = $googleData['picture'] ?? '';
+
+                $query = http_build_query([
+                    'google_email'  => $email,
+                    'google_name'   => $name,
+                    'google_id'     => $googleId,
+                    'google_avatar' => $picture,
+                    'role'          => $roleOverride,
+                ]);
+
+                return redirect()->away($frontendUrl . '/register?' . $query);
+            }
 
             if (!$user->is_active) {
                 return redirect()->away($frontendUrl . '/login?error=' . urlencode('Your account has been suspended. Please contact support.'));
@@ -212,6 +230,39 @@ class GoogleAuthController extends Controller
                 'message' => 'Google login failed due to a server error.',
             ], 500);
         }
+    }
+
+    /**
+     * Find existing user by google_id or email without creating a new user.
+     */
+    protected function findExistingGoogleUser(array $googleData): ?User
+    {
+        $googleId = $googleData['sub'] ?? null;
+        $email    = $googleData['email'] ?? null;
+        $picture  = $googleData['picture'] ?? null;
+
+        $user = null;
+        if ($googleId) {
+            $user = User::where('google_id', $googleId)->first();
+        }
+        if (!$user && $email) {
+            $user = User::where('email', $email)->first();
+        }
+
+        if ($user) {
+            if (!$user->google_id && $googleId) {
+                $user->google_id = $googleId;
+            }
+            if (!$user->avatar && $picture) {
+                $user->avatar = $picture;
+            }
+            if (!$user->email_verified_at) {
+                $user->email_verified_at = now();
+            }
+            $user->save();
+        }
+
+        return $user;
     }
 
     /**
