@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import {
   Text, View, FlatList, TouchableOpacity,
-  TextInput, ActivityIndicator, Modal, ScrollView
+  TextInput, ActivityIndicator, Modal, ScrollView, Alert
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import api from '../../services/api';
 import { 
   ArrowLeft, Search as SearchIcon, Filter, MapPin, 
-  Star, Building2, ShieldCheck, CheckSquare, Square, X 
+  Star, Building2, ShieldCheck, CheckSquare, Square, X, MessageSquare 
 } from 'lucide-react-native';
+import { useAuth } from '../../context/auth';
 
 export default function SearchResultsScreen() {
   const router = useRouter();
+  const { user } = useAuth();
   const { q, city: initialCity, category: initialCategory } = useLocalSearchParams<{ q: string, city: string, category: string }>();
   
   const [query, setQuery] = useState(q || '');
@@ -51,6 +53,32 @@ export default function SearchResultsScreen() {
       setLoading(false);
       setFilterVisible(false);
     }
+  };
+
+  const handleStartChat = async (item: any) => {
+    if (!user) {
+      Alert.alert('Login Required', 'Please log in to chat with businesses.', [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Login', onPress: () => router.push('/(auth)/login') }
+      ]);
+      return;
+    }
+
+    const vendorId = item.user_id || item.vendor_id || item.id;
+    try {
+      const res = await api.post('/conversations', {
+        vendor_id: vendorId,
+        business_id: item.id
+      });
+      const convo = res.data?.data || res.data;
+      if (convo && convo.id) {
+        router.push(`/dashboard/chat/${convo.id}`);
+        return;
+      }
+    } catch {
+      // Fallback to messages tab
+    }
+    router.push('/(tabs)/messages');
   };
 
   const renderItem = ({ item }: { item: any }) => (
@@ -95,9 +123,19 @@ export default function SearchResultsScreen() {
             <Text className="text-[12px] font-bold text-amber-600">{item.avg_rating || item.reviews_avg_rating || '4.5'}</Text>
           </View>
           
-          <TouchableOpacity className="bg-[#E8701A] px-4 py-2 rounded-lg">
-            <Text className="text-white text-[12px] font-bold">View Details</Text>
-          </TouchableOpacity>
+          <View className="flex-row gap-2">
+            <TouchableOpacity 
+              className="bg-orange-50 dark:bg-orange-950 border border-orange-200 dark:border-orange-800 px-3 py-1.5 rounded-lg flex-row items-center" 
+              onPress={() => handleStartChat(item)}
+            >
+              <MessageSquare size={13} color="#E8701A" className="mr-1" />
+              <Text className="text-[#E8701A] text-[12px] font-bold">Chat</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity className="bg-[#E8701A] px-4 py-1.5 rounded-lg" onPress={() => router.push(`/listing/${item.slug}`)}>
+              <Text className="text-white text-[12px] font-bold">View Details</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
     </TouchableOpacity>
