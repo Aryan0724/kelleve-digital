@@ -74,11 +74,12 @@ export default function UserDashboard() {
         <div className="relative z-10 p-8 text-white h-72 flex flex-col justify-between">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 bg-white text-navy rounded-full flex items-center justify-center font-bold text-xl shadow-lg shadow-white/20">
-                T
-              </div>
+              <img
+                src="/logo.png"
+                alt="TrueDial"
+                className="h-12 sm:h-14 w-auto bg-white/95 p-1.5 rounded-xl shadow-lg"
+              />
               <div>
-                <span className="text-2xl font-extrabold tracking-wider">truedial</span>
                 <div className="text-[10px] font-bold tracking-widest text-amber-400 uppercase">
                   PRIVILEGE CARD
                 </div>

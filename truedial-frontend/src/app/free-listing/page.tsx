@@ -265,9 +265,12 @@ export default function FreeListingPage() {
     <div className="min-h-screen bg-muted/30 py-12 px-4 sm:px-6 lg:px-8 flex flex-col justify-center items-center">
       <div className="w-full max-w-3xl">
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2 mb-4">
-            <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-xl shadow-lg shadow-primary/30">T</div>
-            <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
+          <Link href="/" className="inline-flex items-center mb-4 group">
+            <img 
+              src="/logo.png" 
+              alt="TrueDial" 
+              className="h-14 sm:h-16 w-auto transition-transform group-hover:scale-105 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" 
+            />
           </Link>
           <h1 className="text-4xl font-extrabold text-navy dark:text-white tracking-tight">Business Onboarding</h1>
           <p className="mt-2 text-lg text-muted-foreground">Complete your profile to get verified and listed</p>

@@ -24,6 +24,11 @@ const inter = Inter({
 export const metadata: Metadata = {
   title: "TrueDial | B2B Interior & Architectural Marketplace",
   description: "India's premier B2B directory and ecosystem for interior designers, architects, contractors, and suppliers.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
 };
 
 import { LocationProvider } from "@/context/LocationContext";

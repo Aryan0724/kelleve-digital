@@ -71,9 +71,12 @@ export default function RegisterPage() {
         <div className={`absolute inset-0 bg-gradient-to-tl ${role === 'business' ? 'from-[#E8701A] via-[#E8701A]/90 to-navy/30' : 'from-navy via-navy/90 to-primary/30'}`}></div>
         
         <div className="relative z-10 text-white max-w-lg">
-          <Link href="/" className="flex items-center gap-2 mb-12">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg ${role === 'business' ? 'bg-white text-[#E8701A] shadow-white/20' : 'bg-primary text-white shadow-primary/20'}`}>T</div>
-            <span className="text-3xl font-bold">truedial</span>
+          <Link href="/" className="flex items-center mb-12 group">
+            <img 
+              src="/logo.png" 
+              alt="TrueDial" 
+              className="h-14 sm:h-16 w-auto bg-white/95 p-1.5 rounded-xl shadow-lg transition-transform group-hover:scale-105" 
+            />
           </Link>
           <h1 className="text-4xl font-bold mb-6 leading-tight">
             {role === 'business' ? "Grow your business beyond limits." : "Join India's most trusted network."}

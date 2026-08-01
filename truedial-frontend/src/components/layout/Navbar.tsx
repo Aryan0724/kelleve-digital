@@ -37,9 +37,12 @@ export default async function Navbar() {
       {/* Main Navbar */}
       <header className="bg-background py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm border-b border-border gap-6">
         <div className="flex items-center gap-4 flex-shrink-0">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl">T</div>
-            <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
+          <Link href="/" className="flex items-center flex-shrink-0 group py-1">
+            <img 
+              src="/logo.png" 
+              alt="TrueDial - 100% Verified Business Discovery Platform" 
+              className="h-14 sm:h-16 md:h-16 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" 
+            />
           </Link>
           <NavbarLocationPill />
         </div>
