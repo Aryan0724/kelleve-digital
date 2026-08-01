@@ -39,8 +39,8 @@ export function Categories({ categories }: { categories?: any[] }) {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="flex justify-between items-end mb-6">
-          <h2 className="text-xl md:text-2xl font-bold text-slate-900 dark:text-white">
-            Find the Right Professional
+          <h2 className="text-[1.1rem] font-bold text-[#0a1c3a] dark:text-white uppercase tracking-wide">
+            Browse By Services
           </h2>
           <Link href="/professionals" className="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline">
             View All
@@ -72,7 +72,7 @@ export function Categories({ categories }: { categories?: any[] }) {
                 <Grid3X3 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />
               </div>
               <span className="text-[10px] sm:text-xs font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
-                More
+                More Services
               </span>
             </Link>
           </div>

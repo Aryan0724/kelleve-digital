@@ -13,8 +13,6 @@ import { FeaturedProfessionals } from "@/components/home/FeaturedProfessionals";
 import { MobileStickyCTA } from "@/components/home/MobileStickyCTA";
 import { RoleBasedHomepage } from "@/components/home/RoleBasedHomepage";
 import { AdSlot } from "@/components/ads/AdSlot";
-import { BannerCTA } from "@/components/home/BannerCTA";
-import { HowItWorks } from "@/components/home/HowItWorks";
 import { PublicProjects } from "@/components/home/PublicProjects";
 
 export function ClientHome() {
@@ -44,18 +42,27 @@ export function ClientHome() {
     );
   }
 
+  const interiorProjects = homeData?.open_leads?.filter((l: any) => l.category?.name?.toLowerCase().includes('interior') || l.category?.name?.toLowerCase().includes('architect')) || [];
+  const contractProjects = homeData?.open_leads?.filter((l: any) => l.category?.name?.toLowerCase().includes('contractor') || l.category?.name?.toLowerCase().includes('civil') || l.category?.name?.toLowerCase().includes('build')) || [];
+  const otherProjects = homeData?.open_leads?.filter((l: any) => !interiorProjects.includes(l) && !contractProjects.includes(l)) || [];
+
   return (
     <>
-      <div className="container mx-auto px-4 mt-2">
+      <div className="container mx-auto px-4 mt-6">
         <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
       </div>
       <Hero />
-      <Categories categories={homeData?.categories} />
-      <BannerCTA />
-      <HowItWorks />
+      <Stats stats={homeData?.stats} />
       
-      {homeData?.open_leads?.length > 0 && (
-        <PublicProjects title="Live Project Requirements" projects={homeData.open_leads} type="lead" />
+      {/* Dynamic Project Sections */}
+      {interiorProjects.length > 0 && (
+        <PublicProjects title="Interior Design & Architecture Projects" projects={interiorProjects} type="lead" />
+      )}
+      {contractProjects.length > 0 && (
+        <PublicProjects title="Construction & Contract Projects" projects={contractProjects} type="lead" />
+      )}
+      {otherProjects.length > 0 && (
+        <PublicProjects title="Other Live Projects" projects={otherProjects} type="lead" />
       )}
       
       <FeaturedProfessionals pros={homeData?.featured_listings} />
@@ -63,9 +70,11 @@ export function ClientHome() {
       {homeData?.open_rfqs?.length > 0 && (
         <PublicProjects title="Urgent Material Requirements" projects={homeData.open_rfqs} type="rfq" />
       )}
-      
-      <Stats stats={homeData?.stats} />
-      
+      {homeData?.open_jobs?.length > 0 && (
+        <PublicProjects title="Latest Worker Jobs" projects={homeData.open_jobs} type="job" />
+      )}
+
+      <Categories categories={homeData?.categories} />
       <div className="container mx-auto px-4 my-8">
         <AdSlot location="mid_page" className="w-full h-32 md:h-64 rounded-xl" />
       </div>
