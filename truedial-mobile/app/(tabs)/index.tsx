@@ -87,7 +87,7 @@ export default function SearchIndex() {
         <View className="flex-row items-center justify-between mb-3">
           <TouchableOpacity 
             className="w-10 h-10 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center border border-slate-200 dark:border-slate-700" 
-            onPress={() => router.push('/profile')}
+            onPress={() => router.push('/(tabs)/dashboard')}
           >
             <UserIcon size={20} color="#E8701A" />
           </TouchableOpacity>

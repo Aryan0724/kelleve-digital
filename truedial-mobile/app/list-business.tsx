@@ -100,7 +100,7 @@ export default function ListBusinessScreen() {
         </Text>
         <CustomButton 
           title="Go to Dashboard" 
-          onPress={() => router.replace('/(tabs)/profile')}
+          onPress={() => router.replace('/(tabs)/dashboard')}
           className="w-full mt-6"
         />
       </View>

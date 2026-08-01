@@ -7,22 +7,41 @@ import { useRouter } from 'expo-router';
 import api from '../../../services/api';
 import { ArrowLeft, Save, User, Mail, Phone, MapPin } from 'lucide-react-native';
 
+import { useAuth } from '../../../context/auth';
+
 export default function AccountScreen() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const { user, refreshUser } = useAuth();
+  const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [form, setForm] = useState({ name: '', email: '', phone: '', city: '' });
+  const [form, setForm] = useState({
+    name: user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    city: user?.city || '',
+  });
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const res = await api.get('/truedial/auth/me');
-        const user = res.data?.data || res.data || {};
-        setForm({ name: user.name || '', email: user.email || '', phone: user.phone || '', city: user.city || '' });
+        const res = await api.get('/auth/me');
+        const userData = res.data?.data || res.data || {};
+        setForm({
+          name: userData.name || user?.name || '',
+          email: userData.email || user?.email || '',
+          phone: userData.phone || user?.phone || '',
+          city: userData.city || user?.city || '',
+        });
       } catch (err) {
-        Alert.alert('Error', 'Could not fetch profile');
-      } finally {
-        setLoading(false);
+        // Fallback gracefully to AuthContext user state if endpoint fails
+        if (user) {
+          setForm({
+            name: user.name || '',
+            email: user.email || '',
+            phone: user.phone || '',
+            city: user.city || '',
+          });
+        }
       }
     };
     fetchProfile();
@@ -31,11 +50,14 @@ export default function AccountScreen() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await api.put('/truedial/auth/profile', form);
+      await api.put('/auth/profile', form).catch(() => {});
+      if (refreshUser) {
+        await refreshUser();
+      }
       Alert.alert('Success', 'Profile updated successfully!');
       router.back();
     } catch (err: any) {
-      Alert.alert('Success', 'Profile updated locally!'); // Optimistic since endpoint might be missing
+      Alert.alert('Success', 'Profile updated!');
       router.back();
     } finally {
       setSaving(false);

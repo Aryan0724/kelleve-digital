@@ -11,6 +11,7 @@ interface User {
   city?: string;
   role?: string;
   has_listing?: boolean;
+  business_category?: string;
 }
 
 interface AuthContextType {
