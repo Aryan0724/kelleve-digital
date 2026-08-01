@@ -131,15 +131,17 @@ export function Navbar() {
 
       {/* 2. MAIN NAVBAR */}
       <header className="w-full premium-glass sticky top-0 z-40 py-3 px-4 transition-all duration-300">
-        <div className="container mx-auto flex items-center justify-between gap-4">
-          
-          {/* Logo */}
-          <Link href="/" className="flex items-center flex-shrink-0 group py-2">
-            <img src="/logo.jpg" alt="Find My Interior" className="h-20 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
-          </Link>
+        <div className="container mx-auto flex flex-col gap-3">
+          <div className="flex items-center justify-between gap-4">
+            {/* Logo */}
+            <Link href="/" className="flex items-center flex-shrink-0 group py-2">
+              <img src="/logo.jpg" alt="Find My Interior" className="h-16 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
+            </Link>
 
-          {/* Center Search Container */}
-          <SmartSearch />
+            {/* Desktop Center Search Container */}
+            <div className="hidden lg:flex flex-1 max-w-2xl relative z-50">
+              <SmartSearch />
+            </div>
 
           {/* Right Action Buttons — hidden on lg and below */}
           <div className="hidden lg:flex items-center space-x-3">
@@ -231,6 +233,12 @@ export function Navbar() {
           >
             <Menu className="w-7 h-7" />
           </button>
+          </div>
+          
+          {/* Mobile Search Container (Visible only on lg and below) */}
+          <div className="flex lg:hidden w-full px-1 pb-2">
+            <SmartSearch />
+          </div>
         </div>
       </header>
 
