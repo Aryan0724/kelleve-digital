@@ -114,14 +114,14 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   const suggestions = getSuggestions(searchQuery);
 
   return (
-    <div className="hidden lg:flex flex-1 max-w-2xl relative z-50">
+    <div className="flex flex-1 w-full max-w-2xl relative z-50">
       <form onSubmit={handleSearch} className="flex flex-1 items-center bg-gray-50/80 dark:bg-slate-800/80 backdrop-blur-sm border border-gray-200 dark:border-slate-700 rounded-xl p-1.5 shadow-inner transition-all duration-300 focus-within:bg-white dark:focus-within:bg-slate-800 focus-within:shadow-md focus-within:border-orange-200">
         
         {/* Location Dropdown Trigger */}
         <div 
           ref={locationRef}
           onClick={() => setShowLocationDropdown(!showLocationDropdown)}
-          className="flex items-center px-4 border-r border-gray-300 dark:border-slate-600 min-w-[130px] cursor-pointer hover:bg-gray-100/50 dark:hover:bg-slate-700/50 rounded-l-lg transition-colors py-1 relative"
+          className="flex items-center px-2 sm:px-4 border-r border-gray-300 dark:border-slate-600 min-w-[90px] sm:min-w-[130px] cursor-pointer hover:bg-gray-100/50 dark:hover:bg-slate-700/50 rounded-l-lg transition-colors py-1 relative"
         >
           <MapPin className="w-4 h-4 text-[#E8701A] mr-2" />
           <span className="text-xs text-gray-500 dark:text-gray-400 font-medium whitespace-nowrap hidden sm:block">Searching in</span>
@@ -194,10 +194,10 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
             )}
         </div>
 
-        <button type="submit" className="flex items-center px-4 border-l border-transparent min-w-[120px] cursor-pointer bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white rounded-lg py-2 transition-all duration-300 transform shadow-sm hover:shadow-md">
+        <button type="submit" className="flex items-center px-2 sm:px-4 border-l border-transparent min-w-[48px] sm:min-w-[120px] cursor-pointer bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white rounded-lg py-2 transition-all duration-300 transform shadow-sm hover:shadow-md">
           <div className="flex items-center justify-center w-full">
-            <Search className="w-4 h-4 mr-2" />
-            <span className="text-sm font-bold tracking-wide">SEARCH</span>
+            <Search className="w-4 h-4 sm:mr-2" />
+            <span className="hidden sm:inline text-sm font-bold tracking-wide">SEARCH</span>
           </div>
         </button>
       </form>
