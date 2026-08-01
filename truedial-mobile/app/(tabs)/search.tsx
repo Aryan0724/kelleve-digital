@@ -16,7 +16,7 @@ export default function SearchResultsScreen() {
   const { q, city: initialCity, category: initialCategory } = useLocalSearchParams<{ q: string, city: string, category: string }>();
   
   const [query, setQuery] = useState(q || '');
-  const [city, setCity] = useState(initialCity || 'Mumbai');
+  const [city, setCity] = useState(initialCity || 'Patna');
   const [category, setCategory] = useState(initialCategory || '');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
   const [premiumOnly, setPremiumOnly] = useState(false);
@@ -42,8 +42,12 @@ export default function SearchResultsScreen() {
           premium: premiumOnly ? 'true' : '',
           min_rating: minRating
         } 
-      });
-      const data = res.data?.data || res.data || [];
+      }).catch(() => null);
+      let data = res?.data?.data?.data || res?.data?.data || res?.data || [];
+      if (Array.isArray(data) && data.length === 0 && !query && !category) {
+        const fallback = await api.get('/truedial/public/businesses').catch(() => null);
+        data = fallback?.data?.data?.data || fallback?.data?.data || fallback?.data || [];
+      }
       setResults(Array.isArray(data) ? data : []);
     } catch {
       setResults([]);

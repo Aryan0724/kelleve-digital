@@ -44,7 +44,7 @@ export default function SearchIndex() {
   const { unreadCount } = useNotifications();
   
   const [query, setQuery] = useState('');
-  const [city, setCity] = useState('Mumbai');
+  const [city, setCity] = useState('Patna');
   const [listings, setListings] = useState<Listing[]>([]);
   const [offers, setOffers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
@@ -57,14 +57,20 @@ export default function SearchIndex() {
     setLoading(true);
     try {
       const [listingsRes, offersRes] = await Promise.all([
-        api.get(`/truedial/public/businesses?city=${encodeURIComponent(city)}`),
-        api.get(`/truedial/public/offers`)
+        api.get(`/truedial/public/businesses?city=${encodeURIComponent(city)}`).catch(() => null),
+        api.get(`/truedial/public/offers`).catch(() => null)
       ]);
-      const lData = listingsRes.data?.data || listingsRes.data || [];
-      const oData = offersRes.data?.data || offersRes.data || [];
+      let lData = listingsRes?.data?.data?.data || listingsRes?.data?.data || listingsRes?.data || [];
+      if (Array.isArray(lData) && lData.length === 0) {
+        // Fallback fetch all listings if specific city returns 0 items
+        const fallbackRes = await api.get(`/truedial/public/businesses`).catch(() => null);
+        lData = fallbackRes?.data?.data?.data || fallbackRes?.data?.data || fallbackRes?.data || [];
+      }
+
+      const oData = offersRes?.data?.data?.data || offersRes?.data?.data || offersRes?.data || [];
       
-      setListings(Array.isArray(lData) ? lData.slice(0, 8) : []);
-      setOffers(Array.isArray(oData) ? oData.slice(0, 4) : []);
+      setListings(Array.isArray(lData) ? lData.slice(0, 10) : []);
+      setOffers(Array.isArray(oData) ? oData.slice(0, 5) : []);
     } catch (error) {
       console.warn("Failed to fetch home data:", error);
     } finally {
