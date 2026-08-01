@@ -42,9 +42,16 @@ export function ClientHome() {
     );
   }
 
-  const interiorProjects = homeData?.open_leads?.filter((l: any) => l.category?.name?.toLowerCase().includes('interior') || l.category?.name?.toLowerCase().includes('architect')) || [];
-  const contractProjects = homeData?.open_leads?.filter((l: any) => l.category?.name?.toLowerCase().includes('contractor') || l.category?.name?.toLowerCase().includes('civil') || l.category?.name?.toLowerCase().includes('build')) || [];
-  const otherProjects = homeData?.open_leads?.filter((l: any) => !interiorProjects.includes(l) && !contractProjects.includes(l)) || [];
+  // Group open leads by category dynamically to create specific sections for businesses
+  const groupedLeads = (homeData?.open_leads || []).reduce((acc: any, lead: any) => {
+    // Some categories might have ' Designer' or ' Contractor' in them. We can just use the name directly.
+    const categoryName = lead.category?.name || 'General';
+    if (!acc[categoryName]) {
+      acc[categoryName] = [];
+    }
+    acc[categoryName].push(lead);
+    return acc;
+  }, {});
 
   return (
     <>
@@ -54,16 +61,15 @@ export function ClientHome() {
       <Hero />
       <Stats stats={homeData?.stats} />
       
-      {/* Dynamic Project Sections */}
-      {interiorProjects.length > 0 && (
-        <PublicProjects title="Interior Design & Architecture Projects" projects={interiorProjects} type="lead" />
-      )}
-      {contractProjects.length > 0 && (
-        <PublicProjects title="Construction & Contract Projects" projects={contractProjects} type="lead" />
-      )}
-      {otherProjects.length > 0 && (
-        <PublicProjects title="Other Live Projects" projects={otherProjects} type="lead" />
-      )}
+      {/* Dynamic Project Sections grouped by Category */}
+      {Object.entries(groupedLeads).map(([categoryName, projects]: [string, any]) => (
+        <PublicProjects 
+          key={categoryName} 
+          title={`Live ${categoryName} Projects`} 
+          projects={projects} 
+          type="lead" 
+        />
+      ))}
       
       <FeaturedProfessionals pros={homeData?.featured_listings} />
       
