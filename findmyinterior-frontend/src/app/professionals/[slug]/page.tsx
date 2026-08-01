@@ -120,6 +120,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                     )}
                   </div>
                 </div>
+                </div>
               </div>
 
               <div className="prose max-w-none mb-6">
