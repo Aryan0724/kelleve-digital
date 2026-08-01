@@ -26,13 +26,22 @@ local_api_routes = r't:\Main projects\kelleve-digital-main\findmyinterior-backen
 remote_api_routes = '/var/www/find-my-interior/findmyinterior-backend/routes/api.php'
 sftp.put(local_api_routes, remote_api_routes)
 
-local_assembler = r't:\Main projects\kelleve-digital-main\findmyinterior-backend\app\Modules\Truedial\Services\BusinessProfileAssembler.php'
-remote_assembler = '/var/www/find-my-interior/findmyinterior-backend/app/Modules/Truedial/Services/BusinessProfileAssembler.php'
-sftp.put(local_assembler, remote_assembler)
+local_offer = r't:\Main projects\kelleve-digital-main\findmyinterior-backend\app\Models\Offer.php'
+remote_offer = '/var/www/find-my-interior/findmyinterior-backend/app/Models/Offer.php'
+sftp.put(local_offer, remote_offer)
+
+local_page_service = r't:\Main projects\kelleve-digital-main\findmyinterior-backend\app\Modules\Truedial\Services\BusinessPageService.php'
+remote_page_service = '/var/www/find-my-interior/findmyinterior-backend/app/Modules/Truedial/Services/BusinessPageService.php'
+sftp.put(local_page_service, remote_page_service)
+
+local_dto = r't:\Main projects\kelleve-digital-main\findmyinterior-backend\app\Modules\Truedial\DTOs\BusinessProfileDTO.php'
+remote_dto = '/var/www/find-my-interior/findmyinterior-backend/app/Modules/Truedial/DTOs/BusinessProfileDTO.php'
+sftp.put(local_dto, remote_dto)
 
 sftp.close()
 
-print("Executing TruedialSeeder on fmi_backend container...")
+print("Clearing backend cache & running TruedialSeeder...")
+client.exec_command('docker exec fmi_backend php artisan cache:clear')
 cmd = 'cd /var/www/find-my-interior/findmyinterior-backend && docker exec fmi_backend php artisan db:seed --class=TruedialSeeder --force'
 stdin, stdout, stderr = client.exec_command(cmd)
 

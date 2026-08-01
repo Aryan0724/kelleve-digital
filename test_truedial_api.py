@@ -31,6 +31,18 @@ def test_api():
     for cat in categories[:5]:
         print(f" - {cat.get('name')} (Slug: {cat.get('slug')})")
 
+    print("\nTesting TrueDial Offers Endpoint...")
+    offer_res = requests.get(f"{BASE_URL}/truedial/public/offers", headers=HEADERS, verify=False)
+    print("Offers Status:", offer_res.status_code)
+    if offer_res.status_code != 200:
+        print("Offers Error:", offer_res.text[:300])
+
+    print("\nTesting Business Detail Profile Endpoint...")
+    prof_res = requests.get(f"{BASE_URL}/truedial/public/businesses/the-great-indian-restaurant", headers=HEADERS, verify=False)
+    print("Profile Status:", prof_res.status_code)
+    if prof_res.status_code != 200:
+        print("Profile Error:", prof_res.text[:300])
+
     print("\nTesting Login and Conversations...")
     login_res = requests.post(f"{BASE_URL}/auth/login", headers=HEADERS, json={
         "email": "customer@truedial.in",
