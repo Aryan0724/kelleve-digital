@@ -2,12 +2,13 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import { Filter, Search, X } from "lucide-react";
+import { Filter, Search, X, ChevronDown, ChevronUp } from "lucide-react";
 
 export function ProfessionalsFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [nameInput, setNameInput] = useState(searchParams.get("name") || "");
+  const [isOpen, setIsOpen] = useState(false);
 
   const createQueryString = useCallback(
     (updates: Record<string, string>) => {
@@ -30,12 +31,20 @@ export function ProfessionalsFilters() {
   };
 
   return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-white dark:bg-slate-900 sticky top-24">
-      <div className="flex items-center gap-2 font-semibold text-lg mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
-        <Filter className="h-5 w-5 text-orange-500" /> Filters
+    <div className="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 sticky top-24">
+      <div 
+        className="flex items-center justify-between p-5 lg:pb-4 lg:border-b border-slate-100 dark:border-slate-800 cursor-pointer lg:cursor-default"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <div className="flex items-center gap-2 font-semibold text-lg text-slate-900 dark:text-white">
+          <Filter className="h-5 w-5 text-orange-500" /> Filters
+        </div>
+        <div className="lg:hidden text-slate-500">
+          {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
+        </div>
       </div>
 
-      <div className="space-y-5">
+      <div className={`px-5 pb-5 space-y-5 ${isOpen ? 'block' : 'hidden lg:block'}`}>
         {/* ── Search by Name ── */}
         <div>
           <h3 className="font-semibold text-sm text-slate-900 dark:text-white mb-2">Search by Name</h3>
