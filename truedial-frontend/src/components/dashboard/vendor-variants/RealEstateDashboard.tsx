@@ -1,165 +1,100 @@
 import { useState } from "react";
 import { 
-  Building2, HardHat, PhoneCall, Image as ImageIcon,
-  TrendingUp, ArrowRight, Eye, Briefcase
+  Building2, HardHat, Eye, Briefcase, ChevronRight
 } from "lucide-react";
 import Link from "next/link";
 import { AuthUser } from "@/context/AuthContext";
+import GenericVendorDashboard from "./GenericVendorDashboard";
 
 export default function RealEstateDashboard({ user }: { user: AuthUser | null }) {
-  const [stats, setStats] = useState({
-    portfolioViews: 8900,
-    activeLeads: 45,
-    ongoingProjects: 8,
-    clientInquiries: 124
-  });
-
-  const [leads, setLeads] = useState([
-    { id: 1, name: "Rajesh Kumar", interest: "3BHK Interior Design", time: "2 hours ago", status: "Site Visit Scheduled", budget: "₹15L - ₹20L" },
-    { id: 2, name: "Sunita Gupta", interest: "Office Renovation", time: "5 hours ago", status: "New Lead", budget: "₹50L+" },
-    { id: 3, name: "Kunal Shah", interest: "Modular Kitchen", time: "1 day ago", status: "Quotation Sent", budget: "₹5L - ₹8L" }
+  const [projects] = useState([
+    { id: 1, name: "3BHK Renovation", client: "Rajesh Kumar", stage: "3D Rendering", budget: "₹18L", due: "Aug 15", status: "On Track" },
+    { id: 2, name: "Office Interior", client: "TechCorp", stage: "Execution", budget: "₹55L", due: "Sep 1", status: "Delayed" },
   ]);
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-navy dark:text-white">
-            Welcome, {user?.name || "Professional"}!
-          </h1>
-          <p className="text-muted-foreground mt-1">Manage your projects, portfolio, and high-value leads.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link 
-            href="/dashboard/vendor/catalog" 
-            className="px-4 py-2 bg-background border border-border rounded-lg text-sm font-medium hover:bg-muted transition flex items-center gap-2"
-          >
-            <ImageIcon className="w-4 h-4" /> Add Project to Portfolio
-          </Link>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-muted-foreground">Portfolio Views</h3>
-            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <Eye className="w-5 h-5 text-blue-500" />
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground">{stats.portfolioViews}</span>
-            <span className="text-xs font-medium text-emerald-500 flex items-center mb-1">
-              <TrendingUp className="w-3 h-3 mr-0.5" /> +15%
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-muted-foreground">Active Leads</h3>
-            <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <PhoneCall className="w-5 h-5 text-emerald-500" />
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground">{stats.activeLeads}</span>
-            <span className="text-xs font-medium text-emerald-500 flex items-center mb-1">
-              High Intent
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-muted-foreground">Active Projects</h3>
-            <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
-              <HardHat className="w-5 h-5 text-purple-500" />
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground">{stats.ongoingProjects}</span>
-            <span className="text-xs font-medium text-muted-foreground mb-1">
-              Currently executing
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-muted-foreground">Total Inquiries</h3>
-            <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <Building2 className="w-5 h-5 text-amber-500" />
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground">{stats.clientInquiries}</span>
-            <span className="text-xs font-medium text-muted-foreground mb-1">
-              This Month
-            </span>
-          </div>
-        </div>
-      </div>
-
+    <GenericVendorDashboard user={user}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Leads */}
+        
+        {/* Project Pipeline */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <Briefcase className="w-5 h-5 text-primary" />
-              High-Value Leads Pipeline
+          <div className="p-5 border-b border-border flex items-center justify-between bg-purple-500/5">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <HardHat className="w-4 h-4 text-purple-500" />
+              Project Pipeline
             </h2>
-            <Link href="/dashboard/vendor/crm" className="text-sm text-primary hover:underline font-medium flex items-center gap-1">
-              View All CRM <ArrowRight className="w-4 h-4" />
-            </Link>
+            <Link href="/dashboard/vendor/catalog" className="text-xs text-purple-500 hover:underline font-medium">View All Projects</Link>
           </div>
-          <div className="divide-y divide-border">
-            {leads.map((lead) => (
-              <div key={lead.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/50 transition">
-                <div>
-                  <h3 className="font-semibold text-foreground flex items-center gap-2">
-                    {lead.name}
-                  </h3>
-                  <p className="text-sm font-medium text-primary mt-1">{lead.interest}</p>
-                  <p className="text-xs text-muted-foreground mt-0.5">Budget: {lead.budget}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 text-xs font-bold rounded-full ${
-                    lead.status === 'New Lead' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/20' :
-                    lead.status === 'Quotation Sent' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                    'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
-                  }`}>
-                    {lead.status}
-                  </span>
-                  <button className="p-2 bg-background border border-border rounded-lg text-foreground hover:bg-primary hover:text-white hover:border-primary transition" title="Contact Lead">
-                    <PhoneCall className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-muted/30 text-xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Project</th>
+                  <th className="px-4 py-3 font-medium">Client</th>
+                  <th className="px-4 py-3 font-medium">Stage</th>
+                  <th className="px-4 py-3 font-medium">Budget</th>
+                  <th className="px-4 py-3 font-medium">Due Date</th>
+                  <th className="px-4 py-3 font-medium text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {projects.map((proj) => (
+                  <tr key={proj.id} className="hover:bg-muted/50 transition">
+                    <td className="px-4 py-3 font-semibold text-foreground">{proj.name}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{proj.client}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{proj.stage}</td>
+                    <td className="px-4 py-3 font-medium">{proj.budget}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{proj.due}</td>
+                    <td className="px-4 py-3 text-right">
+                      <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${
+                        proj.status === 'On Track' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-red-500/10 text-red-500'
+                      }`}>
+                        {proj.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-card border border-border rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-bold text-foreground mb-6">Business Tools</h2>
-          <div className="space-y-3">
-            <Link href="/dashboard/vendor/catalog" className="flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-primary/5 hover:text-primary transition group border border-transparent hover:border-primary/20">
-              <span className="font-medium text-sm">Upload 3D Renders / Photos</span>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link href="/dashboard/vendor/crm" className="flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-primary/5 hover:text-primary transition group border border-transparent hover:border-primary/20">
-              <span className="font-medium text-sm">Follow-up with Leads</span>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link href="/dashboard/vendor/profile" className="flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-primary/5 hover:text-primary transition group border border-transparent hover:border-primary/20">
-              <span className="font-medium text-sm">Update Experience & Awards</span>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-transform" />
-            </Link>
+        {/* Portfolio Performance */}
+        <div className="bg-card border border-border rounded-xl shadow-sm p-5">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <Eye className="w-4 h-4 text-blue-500" />
+              Portfolio Performance
+            </h2>
+          </div>
+          <div className="space-y-4">
+            <div className="flex gap-3 items-center">
+              <div className="w-16 h-12 bg-muted rounded overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?w=100&q=80" alt="Living Room" className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">Modern Living Room</p>
+                <p className="text-xs text-muted-foreground">342 views • 12 inquiries</p>
+              </div>
+            </div>
+            <div className="flex gap-3 items-center">
+              <div className="w-16 h-12 bg-muted rounded overflow-hidden">
+                <img src="https://images.unsplash.com/photo-1556912173-3bb406ef7e77?w=100&q=80" alt="Kitchen" className="w-full h-full object-cover" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-semibold text-foreground truncate">Modular Kitchen</p>
+                <p className="text-xs text-muted-foreground">215 views • 8 inquiries</p>
+              </div>
+            </div>
+          </div>
+          <div className="mt-6 p-3 bg-blue-500/5 border border-blue-500/20 rounded-lg">
+            <p className="text-xs text-blue-600 font-medium flex items-start gap-1.5">
+              <span className="shrink-0 mt-0.5">💡</span> Projects with "before & after" photos get 3x more leads.
+            </p>
           </div>
         </div>
+
       </div>
-    </div>
+    </GenericVendorDashboard>
   );
 }

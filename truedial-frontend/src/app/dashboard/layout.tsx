@@ -6,7 +6,8 @@ import { usePathname, useRouter } from "next/navigation";
 import { 
   LayoutDashboard, Users, Megaphone, Settings, LogOut, MessageSquare, 
   CreditCard, Star, FileText, Bell, ChevronRight, Globe, ArrowLeft, Heart, ShieldAlert,
-  Utensils, Stethoscope, Wrench, Briefcase, CalendarCheck, ClipboardList
+  Utensils, Stethoscope, Wrench, Briefcase, CalendarCheck, ClipboardList,
+  Store, Ticket, LineChart, UserCircle
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
@@ -63,7 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     let catalogLabel = "Products & Services";
     let catalogIcon = FileText;
-    let crmLabel = "Leads & Inquiries";
+    let crmLabel = "CRM & Leads";
     let crmIcon = Users;
 
     if (isMedical) {
@@ -90,14 +91,17 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
     links = [
       { label: "Overview", href: "/dashboard/vendor", icon: LayoutDashboard },
-      { label: "Business Profile", href: "/dashboard/vendor/profile", icon: Settings },
+      { label: "My Business", href: "/dashboard/vendor/profile", icon: Store },
       { label: catalogLabel, href: "/dashboard/vendor/catalog", icon: catalogIcon },
-      { label: "Analytics", href: "/dashboard/vendor/analytics", icon: LayoutDashboard },
+      { label: "Offers & Coupons", href: "/dashboard/vendor/offers", icon: Ticket },
       { label: crmLabel, href: "/dashboard/vendor/crm", icon: crmIcon },
-      { label: "Marketing (SMS)", href: "/dashboard/vendor/marketing", icon: Megaphone },
-      { label: "Manage Offers", href: "/dashboard/vendor/offers", icon: Star },
-      { label: "Reviews & Ratings", href: "/dashboard/vendor/reputation", icon: Star },
-      { label: "Subscription", href: "/dashboard/vendor/subscription", icon: CreditCard },
+      { label: "Marketing Center", href: "/dashboard/vendor/marketing", icon: Megaphone },
+      { label: "Reviews", href: "/dashboard/vendor/reputation", icon: Star },
+      { label: "Analytics", href: "/dashboard/vendor/analytics", icon: LineChart },
+      { label: "Subscription & Billing", href: "/dashboard/vendor/subscription", icon: CreditCard },
+      { label: "Staff", href: "/dashboard/vendor/staff", icon: UserCircle },
+      { label: "Notifications", href: "/dashboard/vendor/notifications", icon: Bell },
+      { label: "Settings", href: "/dashboard/vendor/settings", icon: Settings },
     ];
   } else {
     links = [

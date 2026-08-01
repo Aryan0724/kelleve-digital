@@ -1,172 +1,102 @@
 import { useState } from "react";
 import { 
-  Utensils, Users, Star, Eye,
-  TrendingUp, ArrowRight, UtensilsCrossed, CalendarDays
+  Utensils, Users, ChevronRight, Percent, CalendarCheck
 } from "lucide-react";
 import Link from "next/link";
 import { AuthUser } from "@/context/AuthContext";
+import GenericVendorDashboard from "./GenericVendorDashboard";
 
 export default function RestaurantDashboard({ user }: { user: AuthUser | null }) {
-  const [stats, setStats] = useState({
-    menuViews: 3420,
-    tableReservations: 18,
-    averageRating: 4.6,
-    deliveryOrders: 45
-  });
-
-  const [reservations, setReservations] = useState([
-    { id: 1, name: "Amit Singh", guests: 4, time: "Today, 8:00 PM", status: "Confirmed", type: "Dine-in" },
-    { id: 2, name: "Sneha Patil", guests: 2, time: "Today, 9:30 PM", status: "Pending", type: "Dine-in" },
-    { id: 3, name: "Karan Johar", guests: 10, time: "Tomorrow, 7:30 PM", status: "Confirmed", type: "Banquet" }
+  const [bookings] = useState([
+    { id: 1, time: "7:00 PM", party: "4 people", customer: "Priya S.", status: "Confirmed" },
+    { id: 2, time: "8:30 PM", party: "2 people", customer: "Rahul M.", status: "Pending" },
   ]);
 
   return (
-    <div className="space-y-6 animate-fade-in">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-navy dark:text-white">
-            Welcome, {user?.name || "Restaurateur"}!
-          </h1>
-          <p className="text-muted-foreground mt-1">Here is how your restaurant is performing.</p>
-        </div>
-        <div className="flex items-center gap-3">
-          <Link 
-            href="/dashboard/vendor/catalog" 
-            className="px-4 py-2 bg-background border border-border rounded-lg text-sm font-medium hover:bg-muted transition flex items-center gap-2"
-          >
-            <UtensilsCrossed className="w-4 h-4" /> Edit Menu
-          </Link>
-          <Link 
-            href="/dashboard/vendor/offers" 
-            className="px-4 py-2 bg-[#E8701A] text-white rounded-lg text-sm font-medium hover:bg-[#E8701A]/90 transition shadow-lg shadow-[#E8701A]/20"
-          >
-            Create Happy Hour Offer
-          </Link>
-        </div>
-      </div>
-
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-muted-foreground">Menu Views</h3>
-            <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center">
-              <Eye className="w-5 h-5 text-blue-500" />
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground">{stats.menuViews}</span>
-            <span className="text-xs font-medium text-emerald-500 flex items-center mb-1">
-              <TrendingUp className="w-3 h-3 mr-0.5" /> +22%
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-muted-foreground">Table Reservations</h3>
-            <div className="w-10 h-10 rounded-full bg-emerald-500/10 flex items-center justify-center">
-              <CalendarDays className="w-5 h-5 text-emerald-500" />
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground">{stats.tableReservations}</span>
-            <span className="text-xs font-medium text-muted-foreground mb-1">
-              For Today
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-muted-foreground">Delivery Orders</h3>
-            <div className="w-10 h-10 rounded-full bg-purple-500/10 flex items-center justify-center">
-              <Utensils className="w-5 h-5 text-purple-500" />
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground">{stats.deliveryOrders}</span>
-            <span className="text-xs font-medium text-emerald-500 flex items-center mb-1">
-              <TrendingUp className="w-3 h-3 mr-0.5" /> +5%
-            </span>
-          </div>
-        </div>
-
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm hover:shadow-md transition">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold text-muted-foreground">Avg. Rating</h3>
-            <div className="w-10 h-10 rounded-full bg-amber-500/10 flex items-center justify-center">
-              <Star className="w-5 h-5 text-amber-500" />
-            </div>
-          </div>
-          <div className="flex items-end gap-2">
-            <span className="text-3xl font-bold text-foreground">{stats.averageRating}</span>
-            <span className="text-xs font-medium text-muted-foreground mb-1">
-              / 5.0
-            </span>
-          </div>
-        </div>
-      </div>
-
+    <GenericVendorDashboard user={user}>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Reservations */}
+        
+        {/* Today's Bookings */}
         <div className="lg:col-span-2 bg-card border border-border rounded-xl shadow-sm overflow-hidden">
-          <div className="p-6 border-b border-border flex items-center justify-between">
-            <h2 className="text-lg font-bold text-foreground flex items-center gap-2">
-              <CalendarDays className="w-5 h-5 text-primary" />
-              Upcoming Reservations
+          <div className="p-5 border-b border-border flex items-center justify-between bg-amber-500/5">
+            <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+              <CalendarCheck className="w-4 h-4 text-amber-500" />
+              Today's Bookings
             </h2>
-            <Link href="/dashboard/vendor/crm" className="text-sm text-primary hover:underline font-medium flex items-center gap-1">
-              View All <ArrowRight className="w-4 h-4" />
-            </Link>
+            <Link href="/dashboard/vendor/crm" className="text-xs text-amber-500 hover:underline font-medium">View All</Link>
           </div>
-          <div className="divide-y divide-border">
-            {reservations.map((res) => (
-              <div key={res.id} className="p-6 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/50 transition">
-                <div>
-                  <h3 className="font-semibold text-foreground flex items-center gap-2">
-                    {res.name} 
-                    <span className="px-2 py-0.5 bg-muted text-foreground text-[10px] rounded-full font-bold">{res.guests} Guests</span>
-                  </h3>
-                  <p className="text-sm text-muted-foreground mt-1">{res.time}</p>
-                </div>
-                <div className="flex items-center gap-3">
-                  <span className={`px-3 py-1 text-xs font-bold rounded-full ${
-                    res.status === 'Pending' ? 'bg-amber-500/10 text-amber-500 border border-amber-500/20' :
-                    'bg-emerald-500/10 text-emerald-500 border border-emerald-500/20'
-                  }`}>
-                    {res.status}
-                  </span>
-                  {res.status === 'Pending' && (
-                    <button className="px-3 py-1 bg-primary text-white rounded-lg text-xs font-bold hover:bg-primary/90 transition">
-                      Approve
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))}
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-muted/30 text-xs uppercase text-muted-foreground">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Time</th>
+                  <th className="px-4 py-3 font-medium">Party Size</th>
+                  <th className="px-4 py-3 font-medium">Customer</th>
+                  <th className="px-4 py-3 font-medium text-right">Status</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {bookings.map((b) => (
+                  <tr key={b.id} className="hover:bg-muted/50 transition">
+                    <td className="px-4 py-3 font-semibold text-foreground">{b.time}</td>
+                    <td className="px-4 py-3 text-muted-foreground">{b.party}</td>
+                    <td className="px-4 py-3 font-medium">{b.customer}</td>
+                    <td className="px-4 py-3 text-right">
+                      <span className={`px-2 py-0.5 text-[10px] font-bold uppercase rounded ${
+                        b.status === 'Confirmed' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-amber-500/10 text-amber-500'
+                      }`}>
+                        {b.status}
+                      </span>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
 
-        {/* Quick Actions */}
-        <div className="bg-card border border-border rounded-xl shadow-sm p-6">
-          <h2 className="text-lg font-bold text-foreground mb-6">Restaurant Manager</h2>
-          <div className="space-y-3">
-            <Link href="/dashboard/vendor/catalog" className="flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-primary/5 hover:text-primary transition group border border-transparent hover:border-primary/20">
-              <span className="font-medium text-sm">Update Digital Menu</span>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link href="/dashboard/vendor/marketing" className="flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-primary/5 hover:text-primary transition group border border-transparent hover:border-primary/20">
-              <span className="font-medium text-sm">Send SMS to Past Guests</span>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-transform" />
-            </Link>
-            <Link href="/dashboard/vendor/profile" className="flex items-center justify-between p-4 bg-muted/50 rounded-xl hover:bg-primary/5 hover:text-primary transition group border border-transparent hover:border-primary/20">
-              <span className="font-medium text-sm">Update Restaurant Photos</span>
-              <ArrowRight className="w-4 h-4 text-muted-foreground group-hover:text-primary group-hover:translate-x-1 transition-transform" />
-            </Link>
+        {/* Menu Performance & Offers */}
+        <div className="space-y-6">
+          <div className="bg-card border border-border rounded-xl shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Utensils className="w-4 h-4 text-red-500" />
+                Menu Performance
+              </h2>
+            </div>
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium">Paneer Butter Masala</span>
+                <span className="text-xs text-muted-foreground">120 views</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium">Chicken Biryani</span>
+                <span className="text-xs text-muted-foreground">95 views</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span className="font-medium">Dal Makhani</span>
+                <span className="text-xs text-muted-foreground">80 views</span>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-card border border-border rounded-xl shadow-sm p-5">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                <Percent className="w-4 h-4 text-pink-500" />
+                Active Happy Hours
+              </h2>
+            </div>
+            <div className="p-3 bg-pink-500/5 border border-pink-500/20 rounded-lg">
+              <div className="flex justify-between items-center mb-1">
+                <span className="text-sm font-semibold">20% Off on Dine-in</span>
+              </div>
+              <p className="text-xs text-muted-foreground">14 redemptions today</p>
+            </div>
           </div>
         </div>
+
       </div>
-    </div>
+    </GenericVendorDashboard>
   );
 }

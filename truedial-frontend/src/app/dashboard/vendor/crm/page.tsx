@@ -6,7 +6,8 @@ import {
   Phone, Clock, CheckCircle, XCircle, CalendarDays, Users,
   MapPin, IndianRupee, Utensils, Wrench, Briefcase, Stethoscope,
   Filter, Search, ChevronDown, ArrowRight, MessageSquare,
-  Power, ShoppingBag, Truck, Flame, AlertCircle
+  Power, ShoppingBag, Truck, Flame, AlertCircle,
+  KanbanSquare, List, Plus, MoreVertical
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -392,10 +393,19 @@ function ServiceRequestsView() {
 
 // ─── Leads Pipeline View (Real Estate) ────────────────────────────────────────
 const STAGES = ["New Lead", "Contacted", "Site Visit Scheduled", "Quotation Sent", "Won", "Lost"];
+const STAGE_COLORS: Record<string, string> = {
+  "New Lead": "bg-blue-500",
+  "Contacted": "bg-amber-500",
+  "Site Visit Scheduled": "bg-purple-500",
+  "Quotation Sent": "bg-indigo-500",
+  "Won": "bg-emerald-500",
+  "Lost": "bg-red-500"
+};
 
 function LeadsPipelineView() {
   const [items, setItems] = useState(MOCK_LEADS);
   const [search, setSearch] = useState("");
+  const [viewMode, setViewMode] = useState<'kanban' | 'list'>('kanban');
 
   const filtered = items.filter(i => i.name.toLowerCase().includes(search.toLowerCase()) || i.project.toLowerCase().includes(search.toLowerCase()));
 
@@ -410,53 +420,143 @@ function LeadsPipelineView() {
 
   return (
     <div className="space-y-6 animate-in fade-in duration-300">
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        {[
-          { label: "New Leads", value: items.filter(i => i.stage === "New Lead").length, color: "text-primary" },
-          { label: "Site Visits", value: items.filter(i => i.stage === "Site Visit Scheduled").length, color: "text-blue-500" },
-          { label: "Quotations Sent", value: items.filter(i => i.stage === "Quotation Sent").length, color: "text-amber-500" },
-          { label: "Won Projects", value: items.filter(i => i.stage === "Won").length, color: "text-emerald-500" },
-        ].map(s => (
-          <div key={s.label} className="bg-card border border-border rounded-xl p-4">
-            <div className={`text-3xl font-bold ${s.color}`}>{s.value}</div>
-            <div className="text-xs text-muted-foreground mt-1">{s.label}</div>
-          </div>
-        ))}
+      {/* Header */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-bold text-navy dark:text-white flex items-center gap-2">
+            <Briefcase className="w-6 h-6 sm:w-8 sm:h-8 text-primary" /> CRM & Leads Pipeline
+          </h1>
+          <p className="text-muted-foreground mt-1">Manage your inquiries and convert them into customers.</p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button className="p-2 bg-background border border-border rounded-lg text-foreground hover:bg-muted transition shadow-sm">
+            <Plus className="w-5 h-5" />
+          </button>
+        </div>
       </div>
 
-      <div className="bg-card border border-border rounded-xl overflow-hidden">
-        <div className="p-4 border-b border-border flex items-center justify-between gap-4">
-          <h2 className="font-bold text-foreground flex items-center gap-2"><Briefcase className="w-4 h-4 text-primary" /> Leads Pipeline</h2>
-          <div className="relative max-w-xs w-full">
-            <Search className="absolute left-3 top-2.5 w-4 h-4 text-muted-foreground" />
-            <Input placeholder="Search leads..." value={search} onChange={e => setSearch(e.target.value)} className="pl-9 h-9 text-sm" />
+      {/* Toolbar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-card border border-border p-4 rounded-xl shadow-sm">
+        <div className="flex items-center gap-3 w-full sm:w-auto relative">
+          <Search className="w-4 h-4 absolute left-3 text-muted-foreground" />
+          <Input 
+            type="text" 
+            placeholder="Search leads..." 
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full sm:w-80 pl-9 pr-4 py-2 bg-background border-border rounded-lg text-sm focus:outline-none focus:border-primary transition"
+          />
+        </div>
+        <div className="flex items-center gap-3 self-end sm:self-auto">
+          <button className="flex items-center gap-2 px-3 py-2 bg-background border border-border rounded-lg text-sm font-medium hover:bg-muted transition">
+            <Filter className="w-4 h-4" /> Filter
+          </button>
+          <div className="flex bg-background border border-border rounded-lg overflow-hidden">
+            <button 
+              onClick={() => setViewMode('kanban')}
+              className={`p-2 transition ${viewMode === 'kanban' ? 'bg-primary text-white' : 'hover:bg-muted text-muted-foreground'}`}
+            >
+              <KanbanSquare className="w-4 h-4" />
+            </button>
+            <button 
+              onClick={() => setViewMode('list')}
+              className={`p-2 transition ${viewMode === 'list' ? 'bg-primary text-white' : 'hover:bg-muted text-muted-foreground'}`}
+            >
+              <List className="w-4 h-4" />
+            </button>
           </div>
         </div>
-        <div className="divide-y divide-border">
-          {filtered.map(lead => (
-            <div key={lead.id} className="p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:bg-muted/30 transition">
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-2 mb-1">
-                  <span className="font-semibold text-foreground">{lead.name}</span>
-                  <StatusBadge status={lead.stage} />
-                </div>
-                <p className="text-sm font-medium text-primary">{lead.project}</p>
-                <div className="flex items-center gap-3 mt-1 text-xs text-muted-foreground">
-                  <span className="flex items-center gap-1"><IndianRupee className="w-3 h-3" /> {lead.budget}</span>
-                  <span className="flex items-center gap-1"><Clock className="w-3 h-3" /> {lead.date}</span>
-                </div>
+      </div>
+
+      {viewMode === 'kanban' ? (
+        <div className="flex gap-6 overflow-x-auto pb-4 snap-x hide-scrollbar">
+          {STAGES.filter(s => s !== "Lost").map(stage => (
+            <div key={stage} className="min-w-[300px] w-[300px] shrink-0 snap-center flex flex-col">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-bold text-foreground flex items-center gap-2 text-sm">
+                  <div className={`w-2.5 h-2.5 rounded-full ${STAGE_COLORS[stage]}`}></div>
+                  {stage}
+                </h3>
+                <span className="bg-muted text-muted-foreground text-xs font-bold px-2 py-0.5 rounded-full">
+                  {filtered.filter(l => l.stage === stage).length}
+                </span>
               </div>
-              <div className="flex items-center gap-2">
-                <button onClick={() => moveStage(lead.id, -1)} className="px-2 py-1.5 text-xs font-bold bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition border border-border">◀ Back</button>
-                <button onClick={() => moveStage(lead.id, 1)} className="px-2 py-1.5 text-xs font-bold bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition border border-primary/20">Next ▶</button>
-                <a href={`tel:${lead.phone}`} className="p-2 bg-background border border-border rounded-lg text-foreground hover:bg-primary hover:text-white hover:border-primary transition">
-                  <Phone className="w-4 h-4" />
-                </a>
+              <div className="space-y-3 flex-1 bg-muted/30 rounded-xl p-3 border border-border/50">
+                {filtered.filter(l => l.stage === stage).map(lead => (
+                  <div key={lead.id} className="bg-card border border-border rounded-xl p-4 shadow-sm hover:shadow-md transition group relative overflow-hidden">
+                    <div className={`absolute top-0 left-0 w-1 h-full ${STAGE_COLORS[stage]}`}></div>
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="font-bold text-sm text-foreground">{lead.name}</h4>
+                      <button className="text-muted-foreground hover:text-primary transition opacity-0 group-hover:opacity-100">
+                        <MoreVertical className="w-4 h-4" />
+                      </button>
+                    </div>
+                    <p className="text-xs font-medium text-primary mb-1">{lead.project}</p>
+                    <p className="text-[10px] text-muted-foreground mb-3 font-medium bg-muted inline-block px-2 py-0.5 rounded border border-border/50">Budget: {lead.budget}</p>
+                    
+                    <div className="flex items-center justify-between mt-2 pt-3 border-t border-border border-dashed">
+                      <span className="text-[10px] text-muted-foreground flex items-center gap-1 font-medium">
+                        <Clock className="w-3 h-3" /> {lead.date}
+                      </span>
+                      <div className="flex gap-1.5 items-center">
+                        <button onClick={() => moveStage(lead.id, -1)} className="w-6 h-6 bg-muted text-muted-foreground rounded hover:bg-primary/20 hover:text-primary transition flex items-center justify-center font-bold">◀</button>
+                        <button onClick={() => moveStage(lead.id, 1)} className="w-6 h-6 bg-muted text-muted-foreground rounded hover:bg-primary/20 hover:text-primary transition flex items-center justify-center font-bold">▶</button>
+                        <a href={`tel:${lead.phone}`} className="w-7 h-7 rounded-full bg-blue-500/10 text-blue-500 flex items-center justify-center hover:bg-blue-500 hover:text-white transition ml-1">
+                          <Phone className="w-3.5 h-3.5" />
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {filtered.filter(l => l.stage === stage).length === 0 && (
+                  <div className="h-24 rounded-xl border-2 border-dashed border-border/50 flex items-center justify-center text-muted-foreground text-xs font-medium">
+                    Drop leads here
+                  </div>
+                )}
               </div>
             </div>
           ))}
         </div>
-      </div>
+      ) : (
+        <div className="bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-sm whitespace-nowrap">
+              <thead className="bg-muted/50 text-xs uppercase text-muted-foreground border-b border-border">
+                <tr>
+                  <th className="px-6 py-4 font-medium">Customer</th>
+                  <th className="px-6 py-4 font-medium">Interest</th>
+                  <th className="px-6 py-4 font-medium">Budget</th>
+                  <th className="px-6 py-4 font-medium">Added On</th>
+                  <th className="px-6 py-4 font-medium">Status</th>
+                  <th className="px-6 py-4 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border">
+                {filtered.map(lead => (
+                  <tr key={lead.id} className="hover:bg-muted/30 transition">
+                    <td className="px-6 py-4 font-semibold text-foreground">{lead.name}</td>
+                    <td className="px-6 py-4 font-medium text-primary">{lead.project}</td>
+                    <td className="px-6 py-4 text-muted-foreground flex items-center gap-1 mt-1"><IndianRupee className="w-3 h-3" /> {lead.budget}</td>
+                    <td className="px-6 py-4 text-muted-foreground flex items-center gap-1 mt-1"><Clock className="w-3 h-3" /> {lead.date}</td>
+                    <td className="px-6 py-4">
+                      <StatusBadge status={lead.stage} />
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button onClick={() => moveStage(lead.id, -1)} className="px-2 py-1.5 text-xs font-bold bg-muted text-muted-foreground rounded-lg hover:bg-muted/80 transition border border-border">◀</button>
+                        <button onClick={() => moveStage(lead.id, 1)} className="px-2 py-1.5 text-xs font-bold bg-primary/10 text-primary rounded-lg hover:bg-primary/20 transition border border-primary/20">▶</button>
+                        <a href={`tel:${lead.phone}`} className="p-2 rounded-lg bg-blue-500/10 text-blue-500 hover:bg-blue-500 hover:text-white transition ml-2">
+                          <Phone className="w-4 h-4" />
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

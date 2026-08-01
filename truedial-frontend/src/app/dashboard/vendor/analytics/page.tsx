@@ -44,12 +44,16 @@ export default function AnalyticsPage() {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Analytics</h1>
-        <p className="text-muted-foreground mt-2">
-          Track your business performance, views, and lead generation.
-        </p>
+    <div className="space-y-6 animate-in fade-in duration-300 pb-20">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-navy dark:text-white flex items-center gap-2">
+            <BarChart3 className="w-8 h-8 text-primary" /> Analytics
+          </h1>
+          <p className="text-muted-foreground mt-1">
+            Track your business performance, views, and lead generation.
+          </p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -98,13 +102,13 @@ export default function AnalyticsPage() {
         </Card>
       </div>
 
-      <Card className="border-0 shadow-lg bg-white dark:bg-[#0a1c3a]/50 dark:border dark:border-white/10 mt-8">
+      <Card className="border border-border shadow-sm bg-card mt-8">
         <CardHeader>
-          <CardTitle className="text-slate-900 dark:text-white">Performance Chart</CardTitle>
+          <CardTitle className="text-foreground">Performance Chart</CardTitle>
           <CardDescription>Views and engagement over the last 30 days.</CardDescription>
         </CardHeader>
-        <CardContent className="h-[300px] flex items-center justify-center border-t border-slate-100 dark:border-slate-800/50 mt-4">
-          <div className="text-center text-slate-500 dark:text-slate-400">
+        <CardContent className="h-[300px] flex items-center justify-center border-t border-border mt-4">
+          <div className="text-center text-muted-foreground">
             <BarChart3 className="mx-auto h-12 w-12 mb-2 opacity-20" />
             <p>Chart visualization will populate once sufficient data is gathered.</p>
           </div>

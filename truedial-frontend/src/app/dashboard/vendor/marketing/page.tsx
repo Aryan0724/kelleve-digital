@@ -105,16 +105,18 @@ export default function MarketingCampaignsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
+    <div className="space-y-6 animate-in fade-in duration-300 pb-20">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Marketing Campaigns</h1>
-          <p className="text-muted-foreground mt-2">
+          <h1 className="text-3xl font-bold text-navy dark:text-white flex items-center gap-2">
+            <Megaphone className="w-8 h-8 text-primary" /> Marketing Center
+          </h1>
+          <p className="text-muted-foreground mt-1">
             Reach your customers through SMS, WhatsApp, and Email blasts.
           </p>
         </div>
         {!isCreating && (
-          <Button onClick={() => setIsCreating(true)} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
+          <Button onClick={() => setIsCreating(true)} className="bg-primary hover:bg-primary/90 text-white shadow-md transition">
             <Plus className="mr-2 h-4 w-4" />
             Create Campaign
           </Button>
@@ -122,10 +124,10 @@ export default function MarketingCampaignsPage() {
       </div>
 
       {isCreating && (
-        <Card className="border-0 shadow-lg bg-white dark:bg-[#0a1c3a]/50 dark:border dark:border-white/10 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
-          <CardHeader>
-            <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center">
-              <Megaphone className="mr-2 h-5 w-5 text-[#E8701A]" />
+        <Card className="border border-border shadow-lg bg-card mb-8 animate-in fade-in slide-in-from-top-4 duration-300 rounded-xl overflow-hidden">
+          <CardHeader className="bg-muted/30 border-b border-border">
+            <CardTitle className="text-xl text-foreground flex items-center gap-2">
+              <Megaphone className="h-5 w-5 text-primary" />
               New Campaign
             </CardTitle>
             <CardDescription>Design your message and select your audience.</CardDescription>
@@ -184,7 +186,7 @@ export default function MarketingCampaignsPage() {
 
             <div className="flex justify-end space-x-2 pt-4">
               <Button variant="outline" onClick={() => setIsCreating(false)}>Cancel</Button>
-              <Button onClick={handleCreate} disabled={saving} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
+              <Button onClick={handleCreate} disabled={saving} className="bg-primary hover:bg-primary/90 text-white transition">
                 {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Megaphone className="mr-2 h-4 w-4" />}
                 Launch Campaign
               </Button>
@@ -197,14 +199,15 @@ export default function MarketingCampaignsPage() {
         {campaigns.map((campaign) => (
           <div 
             key={campaign.id} 
-            className="relative overflow-hidden rounded-2xl border border-white/20 p-6 shadow-xl backdrop-blur-md bg-white dark:bg-gradient-to-br dark:from-[#0a1c3a] dark:to-[#050f24] transition-all duration-300 hover:shadow-2xl"
+            className="relative overflow-hidden rounded-xl border border-border p-6 shadow-sm bg-card transition-all duration-300 hover:shadow-md group"
           >
+            <div className="absolute top-0 right-0 w-24 h-24 bg-primary/5 rounded-bl-full -z-10 group-hover:scale-110 transition-transform"></div>
             <div className="flex justify-between items-start mb-4">
-              <div className="flex items-center space-x-2">
-                <div className={`p-2 rounded-lg ${campaign.type === 'whatsapp' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-blue-100 dark:bg-blue-900/30'}`}>
+              <div className="flex items-center space-x-3">
+                <div className={`p-2.5 rounded-lg ${campaign.type === 'whatsapp' ? 'bg-emerald-500/10 text-emerald-500' : 'bg-blue-500/10 text-blue-500'}`}>
                   {getTypeIcon(campaign.type)}
                 </div>
-                <h3 className="font-semibold text-slate-900 dark:text-white">{campaign.name}</h3>
+                <h3 className="font-bold text-foreground">{campaign.name}</h3>
               </div>
               <Badge variant={campaign.status === 'completed' ? 'default' : 'secondary'} className={campaign.status === 'completed' ? 'bg-green-500 hover:bg-green-600 text-white' : ''}>
                 {campaign.status}
