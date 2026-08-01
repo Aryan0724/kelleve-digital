@@ -95,13 +95,13 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
         <div className="flex justify-center mb-8">
           <div className="bg-slate-100 p-1 rounded-lg inline-flex">
             <button 
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${billingCycle === 'monthly' ? 'bg-white shadow-sm text-slate-900' : 'text-slate-500'}`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${billingCycle === 'monthly' ? 'bg-green-600 shadow-sm text-white' : 'text-slate-500'}`}
               onClick={() => setBillingCycle('monthly')}
             >
               Monthly billing
             </button>
             <button 
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${billingCycle === 'yearly' ? 'bg-orange-600 shadow-sm text-white' : 'text-slate-500'}`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${billingCycle === 'yearly' ? 'bg-blue-600 shadow-sm text-white' : 'text-slate-500'}`}
               onClick={() => setBillingCycle('yearly')}
             >
               Yearly billing

@@ -70,6 +70,29 @@ export function PortfolioTab() {
     }
   };
 
+  const handleAddVideo = async () => {
+    if (!profileId) {
+      alert("Please complete your profile first before adding a video.");
+      return;
+    }
+    const url = window.prompt("Enter YouTube or Vimeo Video URL:");
+    if (!url) return;
+
+    setUploading(true);
+    try {
+      await api.post(`/listings/${profileId}/gallery`, {
+        images: [{ type: 'video', data: url, caption: "Video" }]
+      });
+      alert("Video added successfully!");
+      fetchGallery();
+    } catch (err: any) {
+      console.error(err);
+      alert(err.response?.data?.message || "Failed to add video.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleDelete = async (imageId: number) => {
     if (!profileId) return;
     if (!confirm("Are you sure you want to delete this image?")) return;
@@ -107,7 +130,16 @@ export function PortfolioTab() {
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
               {images.map((img: any) => (
                 <div key={img.id} className="relative aspect-square rounded-lg overflow-hidden border group bg-slate-100">
-                  <img src={img.image_url} alt={img.caption || "Portfolio item"} className="w-full h-full object-cover" />
+                  {img.type === 'video' ? (
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-slate-800 text-white p-2">
+                      <span className="text-xs absolute top-2 left-2 bg-black/60 px-2 py-1 rounded">VIDEO</span>
+                      <a href={img.video_url} target="_blank" rel="noreferrer" className="truncate w-full text-center text-sm text-indigo-300 hover:text-indigo-100 mt-2">
+                        {img.video_url}
+                      </a>
+                    </div>
+                  ) : (
+                    <img src={img.image_url} alt={img.caption || "Portfolio item"} className="w-full h-full object-cover" />
+                  )}
                   <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                     <Button variant="destructive" size="sm" onClick={() => handleDelete(img.id)}>
                       <X className="w-4 h-4 mr-2" /> Delete
@@ -132,10 +164,18 @@ export function PortfolioTab() {
                   </>
                 ) : (
                   <>
-                    <PlusCircle className="w-8 h-8 text-slate-400 mb-2" />
+                    <UploadCloud className="w-8 h-8 text-slate-400 mb-2" />
                     <span className="text-sm font-medium text-slate-600">Add Image</span>
                   </>
                 )}
+              </div>
+              
+              {/* Add Video Button */}
+              <div onClick={uploading ? undefined : handleAddVideo} className={`relative aspect-square rounded-lg border-2 border-dashed border-slate-300 hover:border-indigo-500 hover:bg-indigo-50 transition-colors flex flex-col items-center justify-center overflow-hidden ${uploading ? 'cursor-not-allowed opacity-50' : 'cursor-pointer'}`}>
+                  <>
+                    <PlusCircle className="w-8 h-8 text-slate-400 mb-2" />
+                    <span className="text-sm font-medium text-slate-600">Add Video Link</span>
+                  </>
               </div>
             </div>
           </div>

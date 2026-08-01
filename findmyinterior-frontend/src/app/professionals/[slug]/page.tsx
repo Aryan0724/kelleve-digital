@@ -219,7 +219,14 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                   {listing.gallery.map((img: any) => (
                     <div key={img.id} className="aspect-square rounded-lg overflow-hidden border">
-                      <img src={img.image_url} alt="Portfolio item" className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
+                      {img.type === 'video' ? (
+                        <a href={img.video_url} target="_blank" rel="noreferrer" className="w-full h-full flex flex-col items-center justify-center bg-slate-900 hover:bg-slate-800 transition-colors text-white group relative">
+                           <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 group-hover:scale-110 transition-transform">PLAY VIDEO</span>
+                           <span className="text-sm px-4 text-center line-clamp-2 text-slate-300">{img.video_url}</span>
+                        </a>
+                      ) : (
+                        <img src={img.image_url} alt="Portfolio item" className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
+                      )}
                     </div>
                   ))}
                 </div>

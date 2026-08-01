@@ -29,14 +29,14 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
           {displayPros.map((pro, i) => (
             <div key={pro.id || i} className="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition">
               <div className="flex items-center gap-4 mb-4">
-                {pro.image_url ? (
-                  <img src={pro.image_url} alt={pro.business_name} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100" />
+                {(pro.cover_image || pro.user?.profile_image) ? (
+                  <img src={pro.cover_image || pro.user?.profile_image} alt={pro.title || "Professional"} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100" />
                 ) : (
-                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xl">{pro.business_name?.charAt(0)}</div>
+                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xl">{(pro.title || "P").charAt(0).toUpperCase()}</div>
                 )}
                 <div className="flex-1 min-w-0">
                   <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-1 line-clamp-1">
-                    {pro.business_name} <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
+                    {pro.title || "Professional"} <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
                   </h3>
                   <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{pro.category?.name || "Professional"}</p>
                 </div>
@@ -47,7 +47,7 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
                   {pro.rating || "4.5"} <span className="text-gray-400 font-normal">({pro.review_count || 0})</span>
                 </div>
                 <div className="w-[100px]">
-                  <InquiryForm type="Listing" id={pro.id || 1} title={pro.business_name} />
+                  <InquiryForm type="Listing" id={pro.id || 1} title={pro.title || "Professional"} />
                 </div>
               </div>
             </div>

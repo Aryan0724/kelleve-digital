@@ -424,7 +424,7 @@ function PostRequirementContent() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="property_type">Property Type</Label>
+                      <Label htmlFor="property_type">Property Type <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, property_type: val})}>
                         <SelectTrigger><SelectValue placeholder="e.g. 3BHK Apartment" /></SelectTrigger>
                         <SelectContent>
@@ -437,7 +437,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="area">Total Area (sq ft)</Label>
+                      <Label htmlFor="area">Total Area (sq ft) <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, area: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Area" /></SelectTrigger>
                         <SelectContent>
@@ -452,7 +452,7 @@ function PostRequirementContent() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="budget">Estimated Budget</Label>
+                      <Label htmlFor="budget">Estimated Budget <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, budget: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Budget" /></SelectTrigger>
                         <SelectContent>
@@ -466,7 +466,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="timeline">Timeline</Label>
+                      <Label htmlFor="timeline">Timeline <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, timeline: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
                         <SelectContent>
@@ -479,7 +479,7 @@ function PostRequirementContent() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="style">Style Preferences</Label>
+                    <Label htmlFor="style">Style Preferences <span className="text-red-500 ml-1">*</span></Label>
                     <Input id="style" placeholder="e.g. Modern, Minimalist, Traditional" value={formData.style_preferences} onChange={(e) => setFormData({...formData, style_preferences: e.target.value})} />
                   </div>
                 </>
@@ -489,7 +489,7 @@ function PostRequirementContent() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="furniture_type">Furniture Type</Label>
+                      <Label htmlFor="furniture_type">Furniture Type <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, furniture_type: val})}>
                         <SelectTrigger><SelectValue placeholder="e.g. Wardrobe" /></SelectTrigger>
                         <SelectContent>
@@ -504,7 +504,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="furniture_material">Material Preference</Label>
+                      <Label htmlFor="furniture_material">Material Preference <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, furniture_material: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Material" /></SelectTrigger>
                         <SelectContent>
@@ -519,7 +519,7 @@ function PostRequirementContent() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="budget">Estimated Budget</Label>
+                      <Label htmlFor="budget">Estimated Budget <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, budget: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Budget" /></SelectTrigger>
                         <SelectContent>
@@ -532,7 +532,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="timeline">Required By</Label>
+                      <Label htmlFor="timeline">Required By <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, timeline: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
                         <SelectContent>
@@ -551,7 +551,7 @@ function PostRequirementContent() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="plot_size">Plot Size</Label>
+                      <Label htmlFor="plot_size">Plot Size <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, plot_size: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Plot Size" /></SelectTrigger>
                         <SelectContent>
@@ -564,7 +564,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="construction_stage">Current Stage</Label>
+                      <Label htmlFor="construction_stage">Current Stage <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, construction_stage: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Stage" /></SelectTrigger>
                         <SelectContent>
@@ -580,7 +580,7 @@ function PostRequirementContent() {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="budget">Estimated Budget</Label>
+                      <Label htmlFor="budget">Estimated Budget <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, budget: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Budget" /></SelectTrigger>
                         <SelectContent>
@@ -593,7 +593,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="timeline">Timeline</Label>
+                      <Label htmlFor="timeline">Timeline <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, timeline: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
                         <SelectContent>
@@ -613,7 +613,7 @@ function PostRequirementContent() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="material_type">Material Type</Label>
+                      <Label htmlFor="material_type">Material Type <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, material_type: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Material" /></SelectTrigger>
                         <SelectContent>
@@ -631,7 +631,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="quantity">Quantity Required</Label>
+                      <Label htmlFor="quantity">Quantity Required <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, quantity: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Quantity" /></SelectTrigger>
                         <SelectContent>
@@ -644,7 +644,7 @@ function PostRequirementContent() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="required_date">Required By</Label>
+                    <Label htmlFor="required_date">Required By <span className="text-red-500 ml-1">*</span></Label>
                     <Select onValueChange={(val: any) => setFormData({...formData, required_date: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
                         <SelectContent>
@@ -662,7 +662,7 @@ function PostRequirementContent() {
                 <>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="skill_required">Skill Required</Label>
+                      <Label htmlFor="skill_required">Skill Required <span className="text-red-500 ml-1">*</span></Label>
                       <Select value={formData.skill_required || ""} onValueChange={(v) => setFormData({...formData, skill_required: v || ""})}>
                         <SelectTrigger id="skill_required">
                           <SelectValue placeholder="Select a skill" />
@@ -682,7 +682,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="number_of_workers">Number of Workers</Label>
+                      <Label htmlFor="number_of_workers">Number of Workers <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, number_of_workers: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Number" /></SelectTrigger>
                         <SelectContent>
@@ -695,7 +695,7 @@ function PostRequirementContent() {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="duration">Estimated Duration</Label>
+                    <Label htmlFor="duration">Estimated Duration <span className="text-red-500 ml-1">*</span></Label>
                     <Select onValueChange={(val: any) => setFormData({...formData, duration: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
                         <SelectContent>
@@ -712,12 +712,12 @@ function PostRequirementContent() {
               {selectedType === 'builder_project' && (
                 <>
                   <div className="space-y-2">
-                    <Label htmlFor="project_name">Project Name</Label>
+                    <Label htmlFor="project_name">Project Name <span className="text-red-500 ml-1">*</span></Label>
                     <Input id="project_name" placeholder="e.g. Sunrise Apartments" value={formData.project_name} onChange={(e) => setFormData({...formData, project_name: e.target.value})} />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="project_scale">Project Scale</Label>
+                      <Label htmlFor="project_scale">Project Scale <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, project_scale: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Scale" /></SelectTrigger>
                         <SelectContent>
@@ -729,13 +729,13 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="project_location">Location Details</Label>
+                      <Label htmlFor="project_location">Location Details <span className="text-red-500 ml-1">*</span></Label>
                       <Input id="project_location" placeholder="e.g. Main Road, Block B" value={formData.project_location} onChange={(e) => setFormData({...formData, project_location: e.target.value})} />
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="budget">Estimated Budget</Label>
+                      <Label htmlFor="budget">Estimated Budget <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, budget: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Budget" /></SelectTrigger>
                         <SelectContent>
@@ -747,7 +747,7 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="timeline">Timeline</Label>
+                      <Label htmlFor="timeline">Timeline <span className="text-red-500 ml-1">*</span></Label>
                       <Select onValueChange={(val: any) => setFormData({...formData, timeline: val})}>
                         <SelectTrigger><SelectValue placeholder="Select Timeline" /></SelectTrigger>
                         <SelectContent>
@@ -770,7 +770,7 @@ function PostRequirementContent() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">City</Label>
+                  <Label htmlFor="city">City <span className="text-red-500 ml-1">*</span></Label>
                   <Select required value={formData.city} onValueChange={(val) => setFormData({...formData, city: val || ""})}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select City" />
@@ -784,7 +784,7 @@ function PostRequirementContent() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="district">District / Area</Label>
+                  <Label htmlFor="district">District / Area <span className="text-red-500 ml-1">*</span></Label>
                   <Input required id="district" value={formData.district} onChange={(e) => setFormData({...formData, district: e.target.value})} />
                 </div>
               </div>
