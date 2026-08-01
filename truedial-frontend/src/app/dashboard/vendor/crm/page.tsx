@@ -10,7 +10,7 @@ import {
   KanbanSquare, List, Plus, MoreVertical
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Users, Phone, Clock, ChevronRight, UserCircle } from "lucide-react";
+import { Loader2, ChevronRight, UserCircle } from "lucide-react";
 
 // ─── Mock Data per category ────────────────────────────────────────────────────
 const MOCK_APPOINTMENTS = [

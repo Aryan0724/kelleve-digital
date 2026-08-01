@@ -11,7 +11,7 @@ import {
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
-import { useRouter } from "next/navigation";
+
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoggedIn, role, clearUser } = useAuth();
