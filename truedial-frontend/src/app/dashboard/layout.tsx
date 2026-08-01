@@ -16,6 +16,7 @@ import ProtectedRoute from "@/components/shared/ProtectedRoute";
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoggedIn, role, clearUser } = useAuth();
   const router = useRouter();
+  const pathname = usePathname();
 
   const [showMessages, setShowMessages] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -38,6 +39,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const markAllNotificationsRead = () => {
     setNotifications(notifications.map(n => ({ ...n, unread: false })));
+  };
+
+  const markAllMessagesRead = () => {
+    setMessages(messages.map(m => ({ ...m, unread: false })));
   };
 
   const rawRoles = user?.roles || (user?.role ? [user.role] : []);
