@@ -7,11 +7,10 @@ import {
   ActivityIndicator,
   ScrollView,
   Platform,
-  Image,
-  SafeAreaView
+  Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
-import * as Location from 'expo-location';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { 
   Search, MapPin, Grid, Star, Sparkles, Utensils, Building, 
@@ -41,6 +40,7 @@ interface Listing {
 
 export default function SearchIndex() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const { unreadCount } = useNotifications();
   
   const [query, setQuery] = useState('');
@@ -78,8 +78,19 @@ export default function SearchIndex() {
     }
   };
 
+  const categoriesList = [
+    { name: "Restaurants", icon: Utensils, color: "#F97316", bg: "bg-orange-100 dark:bg-orange-950/50" },
+    { name: "Hotels", icon: Building, color: "#3B82F6", bg: "bg-blue-100 dark:bg-blue-950/50" },
+    { name: "Hospitals", icon: HeartPulse, color: "#EF4444", bg: "bg-red-100 dark:bg-red-950/50" },
+    { name: "Education", icon: GraduationCap, color: "#10B981", bg: "bg-green-100 dark:bg-green-950/50" },
+    { name: "Interior", icon: HardHat, color: "#CA8A04", bg: "bg-yellow-100 dark:bg-yellow-950/50" },
+    { name: "Real Estate", icon: HomeIcon, color: "#A855F7", bg: "bg-purple-100 dark:bg-purple-950/50" },
+    { name: "Movers", icon: Truck, color: "#06B6D4", bg: "bg-cyan-100 dark:bg-cyan-950/50" },
+    { name: "More", icon: Grid, color: "#64748B", bg: "bg-slate-100 dark:bg-slate-800" }
+  ];
+
   return (
-    <SafeAreaView className="flex-1 bg-slate-50 dark:bg-slate-950">
+    <View style={{ paddingTop: insets.top }} className="flex-1 bg-slate-50 dark:bg-slate-950">
       <StatusBar style="auto" />
       
       {/* 1. TOP HEADER (STICKY) */}
@@ -136,7 +147,7 @@ export default function SearchIndex() {
         </View>
       </View>
 
-      <ScrollView className="flex-1 bg-slate-50 dark:bg-slate-950" showsVerticalScrollIndicator={false}>
+      <ScrollView className="flex-1 bg-slate-50 dark:bg-slate-950" showsVerticalScrollIndicator={false} contentContainerStyle={{ paddingBottom: 100 }}>
         
         {/* 2. HERO SECTION */}
         <View className="px-4 py-8 bg-blue-50/50 dark:bg-slate-900 items-center border-b border-slate-200 dark:border-slate-800">
@@ -153,6 +164,7 @@ export default function SearchIndex() {
           
           <TouchableOpacity 
             className="w-full bg-[#EA580C] rounded-xl py-3.5 px-4 flex-row items-center justify-center shadow-lg shadow-orange-500/30"
+            onPress={() => router.push('/list-business')}
           >
             <Sparkles size={16} color="#FFFFFF" className="mr-2" />
             <Text className="text-white text-[15px] font-bold">Post Your Requirement / Get Quotes</Text>
@@ -162,7 +174,7 @@ export default function SearchIndex() {
         {/* 3. PROMOTIONAL FEATURE CARDS (Horizontal Scroll) */}
         <ScrollView horizontal showsHorizontalScrollIndicator={false} className="py-6 px-4" contentContainerStyle={{ paddingRight: 32 }}>
           {/* Card 1: VIP Club */}
-          <View className="w-72 bg-gradient-to-br from-amber-600 to-orange-600 rounded-3xl p-5 mr-4 overflow-hidden border border-orange-400/30">
+          <View className="w-72 bg-amber-600 rounded-3xl p-5 mr-4 overflow-hidden border border-orange-400/30">
             <View className="bg-white/20 self-start px-2.5 py-1 rounded-full mb-3 flex-row items-center">
               <Gem size={12} color="#FFF" />
               <Text className="text-[10px] font-bold text-white ml-1">TrueDial VIP Club</Text>
@@ -176,7 +188,7 @@ export default function SearchIndex() {
           </View>
 
           {/* Card 2: B2B */}
-          <View className="w-72 bg-gradient-to-br from-emerald-700 to-slate-900 rounded-3xl p-5 mr-4 overflow-hidden border border-emerald-600/30">
+          <View className="w-72 bg-emerald-800 rounded-3xl p-5 mr-4 overflow-hidden border border-emerald-600/30">
             <View className="bg-white/20 self-start px-2.5 py-1 rounded-full mb-3 flex-row items-center">
               <Briefcase size={12} color="#FFF" />
               <Text className="text-[10px] font-bold text-white ml-1">TrueDial B2B Supply</Text>
@@ -203,23 +215,14 @@ export default function SearchIndex() {
           </View>
 
           <View className="flex-row flex-wrap justify-between">
-            {[
-              { name: "Restaurants", icon: Utensils, color: "text-orange-500", bg: "bg-orange-100 dark:bg-orange-950/50" },
-              { name: "Hotels", icon: Building, color: "text-blue-500", bg: "bg-blue-100 dark:bg-blue-950/50" },
-              { name: "Hospitals", icon: HeartPulse, color: "text-red-500", bg: "bg-red-100 dark:bg-red-950/50" },
-              { name: "Education", icon: GraduationCap, color: "text-green-500", bg: "bg-green-100 dark:bg-green-950/50" },
-              { name: "Interior", icon: HardHat, color: "text-yellow-600", bg: "bg-yellow-100 dark:bg-yellow-950/50" },
-              { name: "Real Estate", icon: HomeIcon, color: "text-purple-500", bg: "bg-purple-100 dark:bg-purple-950/50" },
-              { name: "Movers", icon: Truck, color: "text-cyan-500", bg: "bg-cyan-100 dark:bg-cyan-950/50" },
-              { name: "More", icon: Grid, color: "text-slate-500", bg: "bg-slate-100 dark:bg-slate-800" }
-            ].map((cat, i) => (
+            {categoriesList.map((cat, i) => (
               <TouchableOpacity 
                 key={i} 
                 className="w-[23%] items-center mb-5"
                 onPress={() => cat.name === 'More' ? router.push('/category') : router.push(`/search?category=${encodeURIComponent(cat.name)}`)}
               >
                 <View className={`w-14 h-14 rounded-2xl justify-center items-center mb-1.5 ${cat.bg} shadow-sm border border-transparent dark:border-slate-800`}>
-                  <cat.icon size={24} className={cat.color} />
+                  <cat.icon size={24} color={cat.color} />
                 </View>
                 <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300 text-center leading-tight">{cat.name}</Text>
               </TouchableOpacity>
@@ -305,8 +308,8 @@ export default function SearchIndex() {
                 className="w-[48%] bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 mb-4 items-center"
                 onPress={() => router.push(sol.route as any)}
               >
-                <View className="w-12 h-12 bg-white dark:bg-slate-800 rounded-xl items-center justify-center shadow-sm mb-3 text-slate-700">
-                  <sol.icon size={22} color="#0F172A" className="dark:text-white" />
+                <View className="w-12 h-12 bg-white dark:bg-slate-800 rounded-xl items-center justify-center shadow-sm mb-3">
+                  <sol.icon size={22} color="#0F172A" />
                 </View>
                 <Text className="text-sm font-bold text-slate-900 dark:text-white text-center">{sol.title}</Text>
               </TouchableOpacity>
@@ -315,6 +318,6 @@ export default function SearchIndex() {
         </View>
 
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
