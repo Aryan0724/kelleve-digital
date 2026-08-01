@@ -292,29 +292,32 @@ function LeadCard({ item, role }: { item: any; role: string }) {
 }
 
 function ListingCard({ item }: { item: any }) {
+  const pfp = item.user?.avatar || item.cover_image || item.image_url;
+  const name = item.title || item.business_name || item.user?.name || "Professional";
+
   return (
     <div className="premium-card rounded-xl p-4 group flex gap-4 items-center">
       <div className="w-16 h-16 rounded-lg bg-slate-100 dark:bg-white/10 flex-shrink-0 overflow-hidden">
-        {item.image_url ? (
-           <img src={item.image_url} alt={item.business_name} className="w-full h-full object-cover" />
+        {pfp ? (
+           <img src={pfp} alt={name} className="w-full h-full object-cover" />
         ) : (
-           <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-xl">{item.business_name?.charAt(0)}</div>
+           <div className="w-full h-full flex items-center justify-center text-slate-400 font-bold text-xl">{name.charAt(0)}</div>
         )}
       </div>
       <div className="flex-1 min-w-0">
         <h4 className="font-semibold text-slate-900 dark:text-white text-sm line-clamp-1 group-hover:text-orange-600 transition-colors">
-          {item.business_name}
+          {name}
         </h4>
         <div className="flex items-center gap-1 mt-1">
           <Star className="w-3 h-3 text-orange-500 fill-orange-500" />
-          <span className="text-xs font-bold">{item.rating || '4.5'}</span>
+          <span className="text-xs font-bold">{(item.avg_rating ? item.avg_rating.toFixed(1) : item.rating) || '0.0'}</span>
           <span className="text-xs text-slate-400">({item.review_count || 0} reviews)</span>
         </div>
         <div className="flex flex-wrap gap-2 mt-2">
            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">{item.category?.name || "Professional"}</span>
         </div>
       </div>
-      <Link href={`/professionals/${item.slug}`}>
+      <Link href={`/professionals/${item.slug || ''}`}>
         <button className="w-8 h-8 rounded-full bg-slate-50 flex items-center justify-center text-orange-600 group-hover:bg-orange-50 transition-colors">
           <ChevronRight className="w-4 h-4" />
         </button>
