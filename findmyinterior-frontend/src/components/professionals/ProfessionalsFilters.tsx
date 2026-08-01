@@ -2,7 +2,9 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCallback, useState } from "react";
-import { Filter, Search, X, ChevronDown, ChevronUp } from "lucide-react";
+import { Filter, Search, X } from "lucide-react";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { Button } from "@/components/ui/button";
 
 export function ProfessionalsFilters() {
   const router = useRouter();
@@ -30,22 +32,9 @@ export function ProfessionalsFilters() {
     router.push("?" + createQueryString({ name: value }));
   };
 
-  return (
-    <div className="border border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-900 sticky top-24">
-      <div 
-        className="flex items-center justify-between p-5 lg:pb-4 lg:border-b border-slate-100 dark:border-slate-800 cursor-pointer lg:cursor-default"
-        onClick={() => setIsOpen(!isOpen)}
-      >
-        <div className="flex items-center gap-2 font-semibold text-lg text-slate-900 dark:text-white">
-          <Filter className="h-5 w-5 text-orange-500" /> Filters
-        </div>
-        <div className="lg:hidden text-slate-500">
-          {isOpen ? <ChevronUp className="h-5 w-5" /> : <ChevronDown className="h-5 w-5" />}
-        </div>
-      </div>
-
-      <div className={`px-5 pb-5 space-y-5 ${isOpen ? 'block' : 'hidden lg:block'}`}>
-        {/* ── Search by Name ── */}
+  const filterContent = (
+    <div className="space-y-5">
+      {/* ── Search by Name ── */}
         <div>
           <h3 className="font-semibold text-sm text-slate-900 dark:text-white mb-2">Search by Name</h3>
           <div className="relative">
@@ -148,6 +137,37 @@ export function ProfessionalsFilters() {
           </button>
         )}
       </div>
-    </div>
+  );
+
+  return (
+    <>
+      {/* Mobile View: Sticky Filter Button + Sheet */}
+      <div className="lg:hidden mb-2">
+        <Sheet>
+          <SheetTrigger asChild>
+            <Button variant="outline" className="w-full flex items-center justify-center gap-2 h-12 bg-white text-slate-900 dark:bg-slate-900 dark:text-white border-slate-200 dark:border-slate-700 font-semibold text-base shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800">
+              <Filter className="h-5 w-5 text-orange-500" /> 
+              Filter Results
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="bottom" className="h-[85vh] rounded-t-2xl overflow-y-auto px-5 pb-10">
+            <SheetHeader className="mb-5 border-b pb-4 text-left">
+              <SheetTitle className="flex items-center gap-2 text-lg">
+                <Filter className="h-5 w-5 text-orange-500" /> Filters
+              </SheetTitle>
+            </SheetHeader>
+            {filterContent}
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      {/* Desktop View: Sidebar */}
+      <div className="hidden lg:block border border-slate-200 dark:border-slate-700 rounded-xl p-5 bg-white dark:bg-slate-900 sticky top-24">
+        <div className="flex items-center gap-2 font-semibold text-lg mb-4 pb-4 border-b border-slate-100 dark:border-slate-800 text-slate-900 dark:text-white">
+          <Filter className="h-5 w-5 text-orange-500" /> Filters
+        </div>
+        {filterContent}
+      </div>
+    </>
   );
 }
