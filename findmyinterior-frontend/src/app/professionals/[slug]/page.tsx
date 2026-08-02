@@ -11,7 +11,7 @@ import { Metadata } from "next";
 
 async function getProfessional(slug: string) {
   try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/listings/${slug}`, {
+    const res = await fetch(`${getServerApiUrl()}/listings/${slug}`, {
       cache: 'no-store'
     });
     if (!res.ok) {

@@ -17,6 +17,8 @@ export const metadata: Metadata = {
   description: "Browse verified interior designers, architects, contractors, and more in Bihar. Get multiple quotes.",
 };
 
+import { getServerApiUrl } from "@/lib/serverApi";
+
 async function getProfessionals(searchParams: any) {
   try {
     const cleanParams: Record<string, string> = {};
@@ -26,7 +28,7 @@ async function getProfessionals(searchParams: any) {
       }
     }
     const params = new URLSearchParams(cleanParams).toString();
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/listings?${params}`, {
+    const res = await fetch(`${getServerApiUrl()}/listings?${params}`, {
       cache: 'no-store'
     });
     if (!res.ok) throw new Error('Failed to fetch');
