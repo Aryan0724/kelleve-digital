@@ -120,6 +120,10 @@ export function Hero() {
   };
 
   const handleSearch = () => {
+    if (!city.trim() && !service.trim()) {
+      alert("Please fill in the search option to find professionals.");
+      return;
+    }
     const params = new URLSearchParams();
     if (city && city !== "All Cities") params.append("city", city);
     if (service && service !== "All Services") params.append("search", service);
@@ -135,7 +139,136 @@ export function Hero() {
       />
       <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-background/95 dark:md:bg-gradient-to-r dark:md:from-background dark:md:via-background/70 dark:md:via-70% dark:md:to-background/10 w-full" />
       
-      <div className="container relative z-40 mx-auto px-4 py-10 md:py-20 flex flex-col lg:flex-row items-center justify-between gap-8">
+      <div className="container relative z-40 mx-auto px-4 py-6 lg:py-20 flex flex-col">
+        
+        {/* MOBILE LAYOUT */}
+        {isCustomer && (
+          <div className="flex lg:hidden flex-col w-full px-2 pt-2 pb-6">
+            <h1 className="text-[2.2rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.1] mb-3 text-left">
+              Meet <span className="text-[#E8701A]">Professionals</span>
+            </h1>
+            <p className="text-[0.95rem] text-slate-600 dark:text-gray-300 mb-6 font-medium leading-snug text-left max-w-sm">
+              Post your requirement, get multiple quotes & hire the best for your dream space.
+            </p>
+
+            <div className="flex flex-col gap-4 w-full mb-8">
+              <Link href="/post-requirement" className="w-full">
+                <button className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white font-bold text-base px-4 py-4 rounded-xl shadow-lg shadow-orange-500/30 transition-all flex items-center justify-center gap-2">
+                  <div className="bg-white/20 rounded-full p-0.5"><CheckCircle2 className="w-5 h-5" /></div> Post a Project
+                </button>
+              </Link>
+              
+              {/* Search Box inserted into the blank space from the mockup */}
+              <div className="w-full premium-glass p-3 rounded-2xl shadow-sm dark:bg-white/5 border border-slate-200 dark:border-white/10 relative z-50">
+                <div className="w-full text-center mb-2 pt-1 pb-2 border-b border-gray-100 dark:border-white/10">
+                  <span className="text-[10px] font-bold text-[#0a1c3a] dark:text-gray-300 tracking-wider uppercase">FIND THE RIGHT PROFESSIONAL</span>
+                </div>
+                <div className="flex flex-col gap-2">
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input 
+                      type="text"
+                      value={city}
+                      onChange={(e) => {
+                        setCity(e.target.value);
+                        setShowCityDropdown(true);
+                      }}
+                      onFocus={() => setShowCityDropdown(true)}
+                      onBlur={() => setTimeout(() => setShowCityDropdown(false), 200)}
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#E8701A] text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                      placeholder="e.g. Patna"
+                    />
+                    {showCityDropdown && (
+                      <div className="absolute top-full left-0 w-full mt-1 bg-white dark:bg-[#0a1c3a] border border-gray-200 dark:border-white/10 shadow-xl rounded-lg overflow-hidden z-50 max-h-48 overflow-y-auto">
+                        <button
+                          type="button"
+                          onClick={handleLocateMe}
+                          disabled={isLocating}
+                          className="w-full text-left px-4 py-2 text-xs font-semibold text-[#E8701A] hover:bg-orange-50 dark:hover:bg-white/10 transition-colors flex items-center border-b border-gray-100 dark:border-white/10"
+                        >
+                          {isLocating ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : <LocateFixed className="w-3 h-3 mr-2" />}
+                          Use current location
+                        </button>
+                        {filteredCities.map(c => (
+                          <div 
+                            key={c} 
+                            className="px-4 py-2 hover:bg-orange-50 dark:hover:bg-white/10 cursor-pointer text-xs font-medium text-slate-700 dark:text-gray-300"
+                            onMouseDown={(e) => { e.preventDefault(); setCity(c); setShowCityDropdown(false); }}
+                          >
+                            {c}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div className="relative">
+                    <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                    <input 
+                      type="text"
+                      value={service}
+                      onChange={(e) => {
+                        setService(e.target.value);
+                        setShowServiceDropdown(true);
+                      }}
+                      onFocus={() => setShowServiceDropdown(true)}
+                      onBlur={() => setTimeout(() => setShowServiceDropdown(false), 200)}
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#E8701A] text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                      placeholder="Search services..."
+                    />
+                    {showServiceDropdown && filteredServices.length > 0 && (
+                      <div className="absolute top-full left-0 w-full mt-1 bg-white dark:bg-[#0a1c3a] border border-gray-200 dark:border-white/10 shadow-xl rounded-lg overflow-hidden z-50 max-h-48 overflow-y-auto">
+                        {filteredServices.map(s => (
+                          <div 
+                            key={s} 
+                            className="px-4 py-2 hover:bg-orange-50 dark:hover:bg-white/10 cursor-pointer text-xs font-medium text-slate-700 dark:text-gray-300"
+                            onMouseDown={(e) => { e.preventDefault(); setService(s); setShowServiceDropdown(false); }}
+                          >
+                            {s}
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <button 
+                    onClick={handleSearch}
+                    className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 text-white font-bold text-sm py-3 rounded-xl shadow-sm transition-colors mt-1"
+                  >
+                    Search Pros →
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2 mb-2">
+              <div className="flex flex-col items-center text-center gap-1">
+                <ShieldCheck className="w-5 h-5 text-amber-700 dark:text-amber-500" />
+                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight">Verified<br/>Professionals</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1">
+                <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight">Multiple<br/>Quotes</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1">
+                <ShieldCheck className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight">Best Price<br/>Guarantee</span>
+              </div>
+              <div className="flex flex-col items-center text-center gap-1">
+                <CheckCircle2 className="w-5 h-5 text-slate-600 dark:text-slate-400" />
+                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight">On-Time<br/>Delivery</span>
+              </div>
+            </div>
+            
+            {/* Horizontal dots indicator like mockup */}
+            <div className="flex justify-center gap-1.5 mt-4">
+              <div className="w-4 h-1.5 rounded-full bg-[#E8701A]"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
+            </div>
+          </div>
+        )}
+
+        {/* DESKTOP LAYOUT (Hidden on mobile) */}
+        <div className="hidden lg:flex w-full items-center justify-between gap-8">
         
         {/* Left Content */}
         <div className="w-full lg:w-[60%] flex flex-col">
@@ -173,34 +306,16 @@ export function Hero() {
             </>
           ) : (
             <>
-              <h1 className="text-[2.5rem] md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.1] mb-4 mt-2">
-                Where Projects<br/>Meet <span className="text-[#E8701A] relative inline-block">
-                  Professionals
+              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.15] mb-5">
+                Find & Hire The Best<br/>
+                Interior Experts in <span className="text-[#E8701A] relative inline-block">
+                  Bihar
+                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
                 </span>
               </h1>
-              <p className="text-sm md:text-lg text-gray-700 dark:text-gray-300 mb-6 max-w-xl font-medium leading-relaxed pr-8">
-                Post your requirement, get multiple quotes & hire the best for your dream space.
+              <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
+                From top-rated Interior Designers to skilled Contractors & Material Suppliers. Compare quotes and save up to 30% on your next home project.
               </p>
-              
-              <div className="flex flex-wrap items-center gap-3 mb-8 opacity-0 animate-fade-in-up delay-200">
-                <Link href="/post-requirement">
-                  <button className="bg-[#E8701A] hover:bg-[#c25a12] text-white font-bold py-3 px-5 rounded-lg shadow-lg shadow-orange-500/30 flex items-center gap-2 transition-all text-sm">
-                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"></path></svg>
-                    Post a Project
-                  </button>
-                </Link>
-                <Link href="/how-it-works">
-                  <button className="bg-transparent text-slate-800 dark:text-white border border-slate-300 dark:border-slate-600 font-bold py-3 px-5 rounded-lg flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm">
-                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    How It Works
-                  </button>
-                </Link>
-              </div>
-
-              {/* Mobile Hero Image */}
-              <div className="block lg:hidden w-full h-48 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6 overflow-hidden relative">
-                <img src="/hero-family.jpg" alt="Family looking at laptop" className="w-full h-full object-cover opacity-80 mix-blend-multiply dark:mix-blend-screen" onError={(e) => e.currentTarget.style.display = 'none'} />
-              </div>
             </>
           )}
 
@@ -232,21 +347,17 @@ export function Hero() {
               </>
             ) : (
               <>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-[10px] sm:text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default gap-1">
-                  <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-slate-700 dark:text-slate-300" strokeWidth={1.5} />
-                  <span>Verified<br className="md:hidden"/>Professionals</span>
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
+                  <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Verified Pros
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-[10px] sm:text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default gap-1">
-                  <FileText className="w-6 h-6 md:w-5 md:h-5 text-slate-700 dark:text-slate-300" strokeWidth={1.5} />
-                  <span>Multiple<br className="md:hidden"/>Quotes</span>
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
+                  <FileText className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Multiple Quotes
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-[10px] sm:text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default gap-1">
-                  <svg className="w-6 h-6 md:w-5 md:h-5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
-                  <span>Best Price<br className="md:hidden"/>Guarantee</span>
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
+                  <IndianRupee className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Best Prices
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-[10px] sm:text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default gap-1">
-                  <svg className="w-6 h-6 md:w-5 md:h-5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  <span>On-Time<br className="md:hidden"/>Delivery</span>
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
+                  <CheckCircle2 className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> On-Time
                 </div>
               </>
             )}
@@ -256,7 +367,7 @@ export function Hero() {
           {!isWorker ? (
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-              className={`w-full max-w-3xl premium-glass p-3 md:p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex-col relative z-50 opacity-0 animate-fade-in-up delay-200 ${isCustomer ? 'hidden lg:flex' : 'flex'}`}
+              className="w-full max-w-3xl premium-glass p-3 md:p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex flex-col relative z-50 opacity-0 animate-fade-in-up delay-200"
             >
               <div className="w-full text-center md:hidden mb-2 pt-1 pb-2 border-b border-gray-100 dark:border-white/10">
                 <span className="text-[10px] sm:text-xs font-bold text-[#0a1c3a] dark:text-gray-300 tracking-wider uppercase">FIND THE RIGHT PROFESSIONAL FOR YOUR PROJECT</span>
@@ -430,7 +541,7 @@ export function Hero() {
         </div>
 
         {/* Right Content - Lead Card */}
-        <div className={`w-full lg:w-[38%] max-w-sm mt-12 lg:mt-0 opacity-0 animate-fade-in-right delay-200 ${isCustomer ? 'hidden lg:block' : 'block'}`}>
+        <div className="w-full lg:w-[38%] max-w-sm mt-12 lg:mt-0 opacity-0 animate-fade-in-right delay-200">
           <div className="premium-glass rounded-3xl overflow-hidden transform transition-transform duration-500 hover:scale-[1.02]">
             {user ? (
               <>
@@ -511,6 +622,7 @@ export function Hero() {
           </div>
         </div>
 
+        </div>
       </div>
     </section>
   );

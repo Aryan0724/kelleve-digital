@@ -1,11 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Home, Briefcase, Plus, MessageCircle, User } from "lucide-react";
+import { useAuthStore } from "@/lib/store/useAuthStore";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { user } = useAuthStore();
 
   // Highlight active path
   const isActive = (path: string) => pathname === path || pathname?.startsWith(path + '/');
@@ -52,13 +55,13 @@ export function MobileBottomNav() {
           <span className="text-[10px] font-medium">Messages</span>
         </Link>
         
-        <Link 
-          href="/profile" 
-          className={`flex flex-col items-center justify-center w-16 h-12 transition-colors ${isActive('/profile') ? 'text-[#E8701A]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}`}
+        <button 
+          onClick={() => router.push(user ? "/dashboard/profile" : "/login")}
+          className={`flex flex-col items-center justify-center w-16 h-12 transition-colors ${isActive('/dashboard/profile') || isActive('/profile') ? 'text-[#E8701A]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}`}
         >
-          <User className={`w-5 h-5 mb-1 ${isActive('/profile') ? 'fill-[#E8701A]/20' : ''}`} />
+          <User className={`w-5 h-5 mb-1 ${isActive('/dashboard/profile') || isActive('/profile') ? 'fill-[#E8701A]/20' : ''}`} />
           <span className="text-[10px] font-medium">Profile</span>
-        </Link>
+        </button>
       </div>
     </div>
   );

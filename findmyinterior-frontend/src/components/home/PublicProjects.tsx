@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, MapPin, IndianRupee, Clock, Briefcase, FileText } from "lucide-react";
+import { ArrowRight, MapPin, IndianRupee, Clock, Briefcase, FileText, CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
@@ -28,61 +28,77 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
           {projects.map((project: any, index: number) => (
             <div 
               key={project.id || index}
-              className="min-w-[280px] md:min-w-[320px] max-w-[320px] bg-white dark:bg-slate-800 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col overflow-hidden snap-center group hover:shadow-md transition-shadow"
+              className="min-w-[280px] md:min-w-[320px] max-w-[320px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col overflow-hidden snap-center group hover:shadow-lg transition-all"
             >
-              <div className="p-5 flex-1">
-                <div className="flex items-center gap-2 mb-3">
-                  <span className="bg-primary/10 text-primary text-xs font-bold px-2.5 py-1 rounded-md uppercase tracking-wide">
-                    {project.category?.name || (type === 'lead' ? 'Project' : type === 'rfq' ? 'Material' : 'Job')}
-                  </span>
-                  <span className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-1">
-                    <Clock className="w-3 h-3" /> Just now
-                  </span>
+              {/* Image Section */}
+              <div className="relative h-44 w-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
+                <Image 
+                  src={`https://images.unsplash.com/photo-${type === 'job' ? '1504307651254-35680f35eadf' : type === 'rfq' ? '1589939705384-5185137a7f0f' : '1600585154340-be6161a56a0c'}?q=80&w=600&auto=format&fit=crop`}
+                  alt={project.title || "Project"}
+                  fill
+                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute top-3 right-3 bg-white dark:bg-slate-800 px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                  <span className="text-amber-500 text-xs">★</span>
+                  <span className="text-xs font-bold text-slate-800 dark:text-white">{(4.5 + Math.random() * 0.5).toFixed(1)}</span>
                 </div>
                 
-                <h3 className="font-bold text-slate-900 dark:text-white text-base md:text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
-                  {project.title || project.description?.substring(0, 50)}
-                </h3>
-                
-                <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400 mb-4">
-                  <MapPin className="w-4 h-4 text-slate-400" />
-                  <span className="truncate">{project.city?.name || project.city || "Remote"}</span>
-                </div>
-                
-                <div className="flex flex-wrap gap-2 text-sm">
-                  {project.budget_min || project.budget_max ? (
-                    <div className="bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
-                      <IndianRupee className="w-4 h-4 text-emerald-500" />
-                      <span className="font-medium">
-                        {project.budget_max 
-                          ? `₹${project.budget_min?.toLocaleString() || 0} - ₹${project.budget_max.toLocaleString()}`
-                          : `₹${project.budget_min?.toLocaleString()}+`}
-                      </span>
-                    </div>
-                  ) : (
-                    <div className="bg-slate-50 dark:bg-slate-900 px-3 py-1.5 rounded-lg flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
-                      <IndianRupee className="w-4 h-4 text-emerald-500" />
-                      <span className="font-medium">Quote Based</span>
-                    </div>
-                  )}
+                {/* Fake Avatar */}
+                <div className="absolute -bottom-5 left-4">
+                  <div className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 overflow-hidden relative">
+                    <Image 
+                      src={`https://ui-avatars.com/api/?name=${encodeURIComponent(project.category?.name || 'User')}&background=random`}
+                      alt="Avatar"
+                      fill
+                    />
+                  </div>
                 </div>
               </div>
               
-              <div className="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
-                <Link 
-                  href={`/${type === 'lead' ? 'requirements' : type === 'rfq' ? 'rfqs' : 'jobs'}/${project.id}`}
-                  onClick={(e) => {
-                    if (!user) {
-                      e.preventDefault();
-                      alert("Please login or register to proceed and bid on this project.");
-                      router.push(`/login?redirect=${encodeURIComponent(`/${type === 'lead' ? 'requirements' : type === 'rfq' ? 'rfqs' : 'jobs'}/${project.id}`)}`);
-                    }
-                  }}
-                >
-                  <button className="w-full bg-slate-900 hover:bg-primary dark:bg-slate-700 dark:hover:bg-primary text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
-                    Submit Quote <ArrowRight className="w-4 h-4" />
-                  </button>
-                </Link>
+              <div className="pt-8 pb-4 px-4 flex-1 flex flex-col">
+                <div className="flex items-start justify-between mb-1">
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base line-clamp-1 group-hover:text-[#E8701A] transition-colors">
+                    {project.title || project.description?.substring(0, 50)}
+                  </h3>
+                  <div className="bg-green-100 dark:bg-green-900/30 p-1 rounded-full shrink-0 mt-0.5">
+                    <CheckCircle2 className="w-3 h-3 text-green-600 dark:text-green-400" />
+                  </div>
+                </div>
+                
+                <span className="text-xs font-medium text-slate-500 dark:text-slate-400 mb-3 block">
+                  {project.category?.name || (type === 'lead' ? 'Project' : type === 'rfq' ? 'Material' : 'Job')}
+                </span>
+                
+                <div className="flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 mb-4">
+                  <MapPin className="w-3.5 h-3.5" />
+                  <span className="truncate">{project.city?.name || project.city || "Remote"}</span>
+                </div>
+                
+                <div className="flex items-center justify-between mt-auto pt-4 border-t border-slate-100 dark:border-slate-700">
+                  <div className="flex flex-col">
+                    <span className="text-[10px] text-slate-400 uppercase tracking-wider font-semibold">Budget</span>
+                    <span className="font-bold text-slate-800 dark:text-white text-sm">
+                      {project.budget_max 
+                        ? `₹${project.budget_min?.toLocaleString() || 0} - ₹${project.budget_max.toLocaleString()}`
+                        : project.budget_min ? `₹${project.budget_min?.toLocaleString()}+` : 'Quote Based'}
+                    </span>
+                  </div>
+                  
+                  <Link 
+                    href={`/${type === 'lead' ? 'requirements' : type === 'rfq' ? 'rfqs' : 'jobs'}/${project.id}`}
+                    onClick={(e) => {
+                      if (!user) {
+                        e.preventDefault();
+                        alert("Please login or register to proceed and bid on this project.");
+                        router.push(`/login?redirect=${encodeURIComponent(`/${type === 'lead' ? 'requirements' : type === 'rfq' ? 'rfqs' : 'jobs'}/${project.id}`)}`);
+                      }
+                    }}
+                  >
+                    <button className="bg-slate-100 hover:bg-[#E8701A] dark:bg-slate-700 dark:hover:bg-[#E8701A] hover:text-white text-slate-800 dark:text-slate-200 text-xs font-bold py-2 px-4 rounded-lg transition-colors">
+                      Bid Now
+                    </button>
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
