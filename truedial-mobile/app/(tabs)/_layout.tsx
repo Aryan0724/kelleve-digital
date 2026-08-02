@@ -1,18 +1,18 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
-import { StyleSheet, View, Platform } from 'react-native';
-import { Home, Search, Tag, User, CreditCard, LayoutDashboard, MessageSquare } from 'lucide-react-native';
+import { StyleSheet, View, Platform, Text } from 'react-native';
+import { Home, Search, Plus, MessageSquare, User, FileText } from 'lucide-react-native';
 
 export default function TabsLayout() {
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: '#F05A24', // Active brand orange #F05A24
-        tabBarInactiveTintColor: '#64748B', // Inactive tint
+        tabBarActiveTintColor: '#1E40AF', // Deep Navy Blue brand tone
+        tabBarInactiveTintColor: '#64748B',
         tabBarStyle: styles.tabBar,
         tabBarLabelStyle: styles.tabBarLabel,
         headerStyle: {
-          backgroundColor: '#FFFFFF', // Light Header
+          backgroundColor: '#FFFFFF',
           borderBottomWidth: 1,
           borderBottomColor: '#E2E8F0',
         },
@@ -29,7 +29,9 @@ export default function TabsLayout() {
           title: 'Home',
           tabBarLabel: 'Home',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => <Home size={size} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Home size={22} color={focused ? '#1E40AF' : '#64748B'} strokeWidth={focused ? 2.5 : 2} />
+          ),
         }}
       />
       <Tabs.Screen
@@ -38,35 +40,50 @@ export default function TabsLayout() {
           title: 'Search',
           tabBarLabel: 'Search',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => <Search size={size} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <Search size={22} color={focused ? '#1E40AF' : '#64748B'} strokeWidth={focused ? 2.5 : 2} />
+          ),
         }}
       />
       <Tabs.Screen
-        name="offers"
+        name="post"
         options={{
-          title: 'Active Offers',
-          tabBarLabel: 'Offers',
-          headerTitle: 'Exclusive Discounts',
-          tabBarIcon: ({ color, size }) => <Tag size={size} color={color} />,
+          title: 'Post',
+          tabBarLabel: 'Post',
+          headerShown: false,
+          tabBarIcon: () => (
+            <View style={styles.centerButton}>
+              <Plus size={24} color="#FFFFFF" strokeWidth={3} />
+            </View>
+          ),
         }}
       />
       <Tabs.Screen
         name="messages"
         options={{
-          title: 'Chats',
-          tabBarLabel: 'Chats',
+          title: 'Leads',
+          tabBarLabel: 'Leads',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => <MessageSquare size={size} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <FileText size={22} color={focused ? '#1E40AF' : '#64748B'} strokeWidth={focused ? 2.5 : 2} />
+          ),
         }}
       />
       <Tabs.Screen
         name="dashboard"
         options={{
-          title: 'Dashboard',
-          tabBarLabel: 'Dashboard',
-          headerTitle: 'Dashboard',
+          title: 'Profile',
+          tabBarLabel: 'Profile',
           headerShown: false,
-          tabBarIcon: ({ color, size }) => <LayoutDashboard size={size} color={color} />,
+          tabBarIcon: ({ color, focused }) => (
+            <User size={22} color={focused ? '#1E40AF' : '#64748B'} strokeWidth={focused ? 2.5 : 2} />
+          ),
+        }}
+      />
+      <Tabs.Screen
+        name="offers"
+        options={{
+          href: null, // Hidden tab, accessible via deep links or internal routing
         }}
       />
     </Tabs>
@@ -75,24 +92,41 @@ export default function TabsLayout() {
 
 const styles = StyleSheet.create({
   tabBar: {
-    backgroundColor: '#FFFFFF', // Light Tab bar background
+    backgroundColor: '#FFFFFF',
     borderTopWidth: 1,
     borderTopColor: '#E2E8F0',
-    height: Platform.OS === 'ios' ? 88 : 64,
+    height: Platform.OS === 'ios' ? 88 : 68,
     paddingBottom: Platform.OS === 'ios' ? 28 : 10,
-    paddingTop: 10,
+    paddingTop: 8,
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    elevation: 8,
-    shadowColor: '#64748B',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.06,
-    shadowRadius: 6,
+    elevation: 12,
+    shadowColor: '#0F172A',
+    shadowOffset: { width: 0, height: -3 },
+    shadowOpacity: 0.08,
+    shadowRadius: 8,
   },
   tabBarLabel: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: '700',
+    marginTop: 2,
+  },
+  centerButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#1E40AF',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: -16,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    elevation: 6,
+    shadowColor: '#1E40AF',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.35,
+    shadowRadius: 6,
   },
 });
