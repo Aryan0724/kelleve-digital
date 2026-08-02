@@ -3,6 +3,7 @@ import ReviewSection from "@/components/reviews/ReviewSection";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, ShieldCheck, Box, Package, Truck, Info, Store } from "lucide-react";
 import { notFound } from "next/navigation";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 async function getSupplier(slug: string) {
   try {

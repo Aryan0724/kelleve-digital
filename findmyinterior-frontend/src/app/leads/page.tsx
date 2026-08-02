@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Building, Calendar, IndianRupee } from "lucide-react";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 function locationName(value: any) {
   return typeof value === "string" ? value : value?.name || "Location not set";

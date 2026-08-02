@@ -2,6 +2,7 @@ import { InquiryForm } from "@/components/forms/InquiryForm";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Building, Calendar, Grid3X3, Wallet } from "lucide-react";
 import { notFound } from "next/navigation";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 async function getProject(slug: string) {
   try {

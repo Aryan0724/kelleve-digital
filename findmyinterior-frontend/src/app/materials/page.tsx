@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Search, MapPin, Store, Star, ShieldCheck } from "lucide-react";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 async function getSuppliers(searchParams: any) {
   try {

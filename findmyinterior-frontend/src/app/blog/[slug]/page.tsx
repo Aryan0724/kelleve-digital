@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 import { Calendar, Eye, User, Tag, ArrowLeft, ChevronRight } from "lucide-react";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 async function getBlog(slug: string) {
   try {

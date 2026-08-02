@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Eye, Tag, ChevronRight } from "lucide-react";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 const CATEGORIES = [
   "All",

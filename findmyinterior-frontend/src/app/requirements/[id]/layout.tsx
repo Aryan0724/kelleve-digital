@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   try {

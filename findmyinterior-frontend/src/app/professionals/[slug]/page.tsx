@@ -8,6 +8,7 @@ import { MapPin, Star, ShieldCheck, Phone, Mail, Globe, CheckCircle2 } from "luc
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 async function getProfessional(slug: string) {
   try {

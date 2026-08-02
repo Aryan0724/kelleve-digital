@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MapPin, Star, ShieldCheck, Briefcase, IndianRupee, Clock, CheckCircle2 } from "lucide-react";
 import { notFound } from "next/navigation";
+import { getServerApiUrl } from "@/lib/serverApi";
 
 async function getWorker(slug: string) {
   try {
