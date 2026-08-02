@@ -42,3 +42,36 @@ Thumbs.db
 *.njsproj
 *.sln
 *.sw?
+
+# Debug / diagnostic scripts at repo root (never commit these)
+/*.py
+/check_*.py
+/deploy_*.py
+/fix_*.py
+/diagnose_*.py
+/verify_*.py
+/test_*.py
+/seed_*.py
+/get_*.py
+/fresh_*.py
+/find_*.py
+/extract_*.py
+/fetch_*.py
+/reset_*.py
+/pull_*.py
+/clean_*.py
+/clear_*.py
+/update_*.py
+/restart_*.py
+/run_*.py
+/deep_*.py
+/e2e_*.py
+/final_*.py
+
+# JSON dumps at repo root
+/*.json
+!/findmyinterior-backend/composer.json
+!/findmyinterior-backend/package.json
+!/findmyinterior-frontend/package.json
+!/findmyinterior-frontend/package-lock.json
+!/truedial-mobile/package.json
