@@ -21,6 +21,11 @@ class BusinessProfileDTO implements \JsonSerializable
 
     public function jsonSerialize(): mixed
     {
+        return $this->toArray();
+    }
+
+    public function toArray(): array
+    {
         return [
             'basicInfo' => $this->basicInfo,
             'actions' => $this->actions,

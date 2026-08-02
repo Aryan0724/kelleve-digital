@@ -17,9 +17,9 @@ class BusinessPageService
 
     public function getBusinessProfile(string $slug): BusinessProfileDTO
     {
-        $cacheKey = "business_profile_{$slug}";
+        $cacheKey = "business_profile_data_{$slug}";
 
-        return Cache::remember($cacheKey, now()->addHours(24), function () use ($slug) {
+        $data = Cache::remember($cacheKey, now()->addHours(24), function () use ($slug) {
             $business = Listing::with([
                 'category',
                 'media' => function($query) {
@@ -31,8 +31,10 @@ class BusinessPageService
               ->where('status', 'active')
               ->firstOrFail();
 
-            return $this->assembler->assemble($business);
+            return $this->assembler->assemble($business)->toArray();
         });
+
+        return new BusinessProfileDTO($data);
     }
 
     public function invalidateCache(int $listingId): void
@@ -40,6 +42,7 @@ class BusinessPageService
         $business = Listing::find($listingId);
         if ($business && $business->slug) {
             Cache::forget("business_profile_{$business->slug}");
+            Cache::forget("business_profile_data_{$business->slug}");
         }
     }
 }

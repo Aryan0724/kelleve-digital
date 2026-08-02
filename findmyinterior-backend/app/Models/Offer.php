@@ -35,7 +35,7 @@ class Offer extends Model
 
     public function media()
     {
-        return $this->morphMany(Media::class, 'model')->orderBy('order', 'asc');
+        return $this->morphMany(Media::class, 'model')->orderBy('sort_order', 'asc');
     }
 
     public function scopeActive($query)

@@ -25,19 +25,39 @@ class BusinessDirectoryController extends Controller
 
     public function index(Request $request)
     {
-        $query = Listing::forCurrentTenant()->with(['category', 'city', 'gallery'])
-            ->where('status', 'active')
-            ->where('is_verified', true);
+        $query = Listing::forCurrentTenant()->with(['category', 'city', 'media'])
+            ->where('status', 'active');
 
-        if ($request->has('search')) {
-            $query->search($request->search);
+        if ($request->filled('search') || $request->filled('q')) {
+            $search = $request->query('search') ?? $request->query('q');
+            $query->where(function($q) use ($search) {
+                $q->where('title', 'LIKE', "%{$search}%")
+                  ->orWhere('description', 'LIKE', "%{$search}%")
+                  ->orWhere('address', 'LIKE', "%{$search}%");
+            });
         }
 
-        if ($request->has('category_id')) {
+        if ($request->filled('city')) {
+            $city = $request->query('city');
+            $query->where(function($q) use ($city) {
+                $q->where('city', 'LIKE', "%{$city}%")
+                  ->orWhereHas('city', function($cq) use ($city) {
+                      $cq->where('name', 'LIKE', "%{$city}%");
+                  });
+            });
+        }
+
+        if ($request->filled('category_id')) {
             $query->byCategory($request->category_id);
+        } elseif ($request->filled('category_name') || $request->filled('category')) {
+            $cat = $request->query('category_name') ?? $request->query('category');
+            $query->whereHas('category', function($q) use ($cat) {
+                $q->where('name', 'LIKE', "%{$cat}%")
+                  ->orWhere('slug', 'LIKE', "%{$cat}%");
+            });
         }
 
-        $businesses = $query->paginate(15);
+        $businesses = $query->latest()->paginate(15);
         return $this->success($businesses);
     }
 
