@@ -101,19 +101,17 @@ class HomepageController extends Controller
             ->take(6)
             ->get();
 
-        $openRfqs = \App\Models\Rfq::with(['category', 'city'])
-            ->where('status', 'open')
+        $openRfqs = \App\Models\Rfq::where('status', 'open')
             ->latest()
             ->take(6)
             ->get();
 
-        $openJobs = \App\Models\WorkerJob::with(['category', 'city'])
-            ->where('status', 'open')
+        $openJobs = \App\Models\WorkerJob::where('status', 'open')
             ->latest()
             ->take(6)
             ->get();
 
-        return [
+        return json_decode(json_encode([
             'stats'               => $stats,
             'categories'          => CategoryResource::collection($categories)->resolve(),
             'featured_listings'   => ListingResource::collection($featuredListings)->resolve(),
@@ -125,7 +123,7 @@ class HomepageController extends Controller
             'open_leads'          => class_exists(\App\Http\Resources\RequirementResource::class) ? \App\Http\Resources\RequirementResource::collection($openLeads)->resolve() : $openLeads,
             'open_rfqs'           => $openRfqs,
             'open_jobs'           => class_exists(\App\Http\Resources\WorkerJobResource::class) ? \App\Http\Resources\WorkerJobResource::collection($openJobs)->resolve() : $openJobs,
-        ];
+        ]), true);
         });
 
         return response()->json([

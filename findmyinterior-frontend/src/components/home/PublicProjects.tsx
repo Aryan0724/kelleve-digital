@@ -3,8 +3,13 @@
 import Link from "next/link";
 import { ArrowRight, MapPin, IndianRupee, Clock, Briefcase, FileText } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useAuthStore } from "@/lib/store/useAuthStore";
 
 export function PublicProjects({ title, projects, type = "lead" }: { title: string, projects: any[], type?: "lead" | "rfq" | "job" }) {
+  const router = useRouter();
+  const user = useAuthStore((state) => state.user);
+
   if (!projects || projects.length === 0) return null;
 
   return (
@@ -64,7 +69,16 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
               </div>
               
               <div className="p-4 border-t border-slate-100 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800/50">
-                <Link href={`/${type === 'lead' ? 'requirements' : type === 'rfq' ? 'rfqs' : 'jobs'}/${project.id}`}>
+                <Link 
+                  href={`/${type === 'lead' ? 'requirements' : type === 'rfq' ? 'rfqs' : 'jobs'}/${project.id}`}
+                  onClick={(e) => {
+                    if (!user) {
+                      e.preventDefault();
+                      alert("Please login or register to proceed and bid on this project.");
+                      router.push(`/login?redirect=${encodeURIComponent(`/${type === 'lead' ? 'requirements' : type === 'rfq' ? 'rfqs' : 'jobs'}/${project.id}`)}`);
+                    }
+                  }}
+                >
                   <button className="w-full bg-slate-900 hover:bg-primary dark:bg-slate-700 dark:hover:bg-primary text-white font-medium py-2.5 rounded-lg transition-colors flex items-center justify-center gap-2">
                     Submit Quote <ArrowRight className="w-4 h-4" />
                   </button>

@@ -42,6 +42,12 @@ copy_file(
     '/var/www/html/app/Http/Controllers/Auth/AuthController.php'
 )
 
+# HomepageController
+copy_file(
+    fr'{base}\app\Http\Controllers\Public\HomepageController.php',
+    '/var/www/html/app/Http/Controllers/Public/HomepageController.php'
+)
+
 # ListingController
 copy_file(
     fr'{base}\app\Http\Controllers\Public\ListingController.php',

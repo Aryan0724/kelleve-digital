@@ -251,13 +251,23 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
   const { user, setAuth, _hasHydrated } = useAuthStore();
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRedirectUrl(params.get("redirect"));
+  }, []);
 
   // Auth guard: redirect if already logged in
   useEffect(() => {
     if (_hasHydrated && user) {
-      router.replace("/dashboard");
+      if (redirectUrl) {
+        router.replace(redirectUrl);
+      } else {
+        router.replace("/dashboard");
+      }
     }
-  }, [user, _hasHydrated, router]);
+  }, [user, _hasHydrated, router, redirectUrl]);
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -288,7 +298,11 @@ export default function RegisterPage() {
       const res = await api.post("/auth/register", formData);
       const { user: newUser, token } = res.data.data;
       setAuth(newUser, token);
-      router.push("/dashboard");
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else {
+        router.push("/dashboard");
+      }
     } catch (err: any) {
       const responseData = err.response?.data;
       console.error("Registration error:", responseData);

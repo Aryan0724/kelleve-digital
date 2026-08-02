@@ -4,6 +4,7 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { PopupAd } from "@/components/ads/PopupAd";
 import { TopRibbonAd } from "@/components/ads/TopRibbonAd";
@@ -70,10 +71,11 @@ export default function RootLayout({
           <TopRibbonAd />
           <Navbar />
           <PopupAd />
-          <main className="flex-1">
+          <main className="flex-1 pb-16 lg:pb-0">
             {children}
           </main>
           <Footer />
+          <MobileBottomNav />
         </ThemeProvider>
       </body>
     </html>

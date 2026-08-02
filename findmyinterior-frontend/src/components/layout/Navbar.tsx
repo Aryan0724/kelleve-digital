@@ -132,112 +132,164 @@ export function Navbar() {
       {/* 2. MAIN NAVBAR */}
       <header className="w-full premium-glass sticky top-0 z-50 py-3 px-4 transition-all duration-300">
         <div className="container mx-auto flex flex-col gap-3">
-          <div className="flex items-center justify-between gap-4">
+          {/* Desktop Layout (Hidden on Mobile) */}
+          <div className="hidden lg:flex items-center justify-between gap-4 w-full">
             {/* Logo */}
             <Link href="/" className="flex items-center flex-shrink-0 group py-2">
               <img src="/logo.jpg" alt="Find My Interior" className="h-16 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
             </Link>
 
             {/* Desktop Center Search Container */}
-            <div className="hidden lg:flex flex-1 max-w-2xl relative z-50">
+            <div className="flex-1 max-w-2xl relative z-50">
               <SmartSearch />
             </div>
 
-          {/* Right Action Buttons — hidden on lg and below */}
-          <div className="hidden lg:flex items-center space-x-3">
-            <Link href="/messages" className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50">
-              <MessageCircle className="w-5 h-5" />
-              <span className="absolute top-1 right-1 w-2 h-2 bg-[#E8701A] rounded-full ring-2 ring-white"></span>
-            </Link>
-            
-            <NotificationDropdown />
-            
-            {mounted && (
-              <button
-                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                className="p-2 text-gray-500 hover:text-[#0a1c3a] dark:text-gray-400 dark:hover:text-white transition-colors rounded-full hover:bg-gray-50 dark:hover:bg-gray-800"
-              >
-                {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-              </button>
-            )}
+            {/* Right Action Buttons */}
+            <div className="flex items-center space-x-3">
+              <Link href="/messages" className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50">
+                <MessageCircle className="w-5 h-5" />
+                <span className="absolute top-1 right-1 w-2 h-2 bg-[#E8701A] rounded-full ring-2 ring-white"></span>
+              </Link>
+              
+              <NotificationDropdown />
+              
+              {mounted && (
+                <button
+                  onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                  className="p-2 text-gray-500 hover:text-[#0a1c3a] dark:text-gray-400 dark:hover:text-white transition-colors rounded-full hover:bg-gray-50 dark:hover:bg-gray-800"
+                >
+                  {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                </button>
+              )}
 
-            <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2"></div>
-            
-            {(!_hasHydrated && !mounted) ? null : (!user || ["homeowner", "customer"].includes(user?.role || "")) ? (
-              <Link href={isAuthenticated ? "/dashboard?tab=bids_received" : "/post-requirement"}>
-                <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                  COMPARE BIDS
+              <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2"></div>
+              
+              {(!_hasHydrated && !mounted) ? null : (!user || ["homeowner", "customer"].includes(user?.role || "")) ? (
+                <Link href={isAuthenticated ? "/dashboard?tab=bids_received" : "/post-requirement"}>
+                  <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
+                    COMPARE BIDS
+                  </button>
+                </Link>
+              ) : ["skilled_worker", "worker"].includes(user?.role || "") ? (
+                <Link href="/dashboard">
+                  <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
+                    SEARCH JOBS
+                  </button>
+                </Link>
+              ) : ["admin"].includes(user?.role || "") ? (
+                <Link href="/admin">
+                  <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
+                    ADMIN PANEL
+                  </button>
+                </Link>
+              ) : (
+                <Link href="/dashboard">
+                  <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
+                    APPLY FOR PROJECTS
+                  </button>
+                </Link>
+              )}
+              
+              <Link href="/post-requirement">
+                <button className="bg-gradient-to-r from-[#E8701A] to-[#f08535] hover:from-[#c25a12] hover:to-[#E8701A] text-white flex items-center px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 h-full">
+                  <ClipboardList className="w-5 h-5 mr-2.5" />
+                  <div className="flex flex-col text-left">
+                    <span className="text-sm font-bold leading-tight tracking-wide">Post Requirement</span>
+                    <span className="text-[0.65rem] leading-tight text-white/90 font-medium">Get Multiple Quotes</span>
+                  </div>
                 </button>
               </Link>
-            ) : ["skilled_worker", "worker"].includes(user?.role || "") ? (
-              <Link href="/dashboard">
-                <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                  SEARCH JOBS
-                </button>
-              </Link>
-            ) : ["admin"].includes(user?.role || "") ? (
-              <Link href="/admin">
-                <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                  ADMIN PANEL
-                </button>
-              </Link>
-            ) : (
-              <Link href="/dashboard">
-                <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                  APPLY FOR PROJECTS
-                </button>
-              </Link>
-            )}
-            
-            <Link href="/post-requirement">
-              <button className="bg-gradient-to-r from-[#E8701A] to-[#f08535] hover:from-[#c25a12] hover:to-[#E8701A] text-white flex items-center px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 h-full">
-                <ClipboardList className="w-5 h-5 mr-2.5" />
-                <div className="flex flex-col text-left">
-                  <span className="text-sm font-bold leading-tight tracking-wide">Post Requirement</span>
-                  <span className="text-[0.65rem] leading-tight text-white/90 font-medium">Get Multiple Quotes</span>
+              
+              {(!_hasHydrated && !mounted) ? null : !isAuthenticated && (
+                <div className="flex items-center gap-2">
+                  <Link href="/login">
+                    <button className="text-[#0a1c3a] dark:text-white hover:text-[#E8701A] font-semibold text-sm px-4 py-2 transition-colors">
+                      Login
+                    </button>
+                  </Link>
+                  <Link href="/register">
+                    <button className="bg-[#0a1c3a] dark:bg-white dark:text-[#0a1c3a] hover:bg-[#0a1c3a]/90 text-white text-sm font-semibold px-5 py-2 rounded shadow-sm transition-all h-full flex items-center justify-center">
+                      Register
+                    </button>
+                  </Link>
+                  <Link href="/register">
+                    <button className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 flex items-center px-4 py-2 rounded shadow-sm transition-all h-full ml-2">
+                      <Briefcase className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
+                      <div className="flex flex-col text-left">
+                        <span className="text-sm font-semibold leading-tight">List Your Business</span>
+                        <span className="text-[0.65rem] leading-tight text-gray-500 dark:text-gray-400">Grow Your Business</span>
+                      </div>
+                    </button>
+                  </Link>
                 </div>
-              </button>
-            </Link>
-            
-            
-            {(!_hasHydrated && !mounted) ? null : !isAuthenticated && (
-              <div className="flex items-center gap-2">
-                <Link href="/login">
-                  <button className="text-[#0a1c3a] dark:text-white hover:text-[#E8701A] font-semibold text-sm px-4 py-2 transition-colors">
-                    Login
-                  </button>
-                </Link>
-                <Link href="/register">
-                  <button className="bg-[#0a1c3a] dark:bg-white dark:text-[#0a1c3a] hover:bg-[#0a1c3a]/90 text-white text-sm font-semibold px-5 py-2 rounded shadow-sm transition-all h-full flex items-center justify-center">
-                    Register
-                  </button>
-                </Link>
-                <Link href="/register">
-                  <button className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 flex items-center px-4 py-2 rounded shadow-sm transition-all h-full ml-2">
-                    <Briefcase className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
-                    <div className="flex flex-col text-left">
-                      <span className="text-sm font-semibold leading-tight">List Your Business</span>
-                      <span className="text-[0.65rem] leading-tight text-gray-500 dark:text-gray-400">Grow Your Business</span>
-                    </div>
-                  </button>
-                </Link>
-              </div>
-            )}
-          </div>
-
-          {/* Mobile Menu Toggle — visible on lg and below */}
-          <button 
-            className="lg:hidden p-2 text-gray-600 dark:text-white hover:text-[#0a1c3a] dark:hover:text-gray-300 focus:outline-none rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-            onClick={() => setIsMobileMenuOpen(true)}
-            aria-label="Open menu"
-          >
-            <Menu className="w-7 h-7" />
-          </button>
+              )}
+            </div>
           </div>
           
-          {/* Mobile Search Container (Visible only on lg and below) */}
-          <div className="flex lg:hidden w-full px-1 pb-2">
-            <SmartSearch />
+          {/* Mobile Layout (Visible only on mobile) */}
+          <div className="flex lg:hidden flex-col gap-3 w-full">
+            {/* Mobile Top Row */}
+            <div className="flex items-center justify-between w-full">
+              <div className="flex items-center gap-2">
+                <button 
+                  className="p-1 text-slate-700 dark:text-slate-200"
+                  onClick={() => setIsMobileMenuOpen(true)}
+                  aria-label="Open menu"
+                >
+                  <Menu className="w-7 h-7" />
+                </button>
+                <Link href="/" className="flex items-center">
+                  <img src="/logo.jpg" alt="Find My Interior" className="h-10 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
+                </Link>
+              </div>
+              
+              <div className="flex items-center gap-3 pr-2">
+                {isAuthenticated ? (
+                  <>
+                    <NotificationDropdown />
+                    <Link href="/profile" className="p-1.5 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </Link>
+                  </>
+                ) : (
+                  <>
+                    <button className="relative p-1.5 text-slate-700 dark:text-slate-200">
+                      <Bell className="w-6 h-6" />
+                      <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#E8701A] rounded-full border-2 border-white dark:border-slate-900"></span>
+                    </button>
+                    <Link href="/login" className="p-1.5 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700">
+                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </Link>
+                  </>
+                )}
+              </div>
+            </div>
+            
+            {/* Mobile Search Row */}
+            <div className="flex items-center gap-2 w-full">
+              <button className="flex items-center justify-between gap-1 bg-white dark:bg-slate-800 px-3 py-2.5 rounded-full text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border border-slate-200 dark:border-slate-700 shadow-sm w-[110px]">
+                <div className="flex items-center gap-1.5 overflow-hidden">
+                  <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
+                  <span className="truncate">Patna</span>
+                </div>
+                <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+              </button>
+              
+              <div className="flex-1 relative">
+                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input 
+                  type="text" 
+                  placeholder="Search services, professionals..." 
+                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full py-2.5 pl-9 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-[#E8701A] text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-sm"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                />
+                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#E8701A]">
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       </header>

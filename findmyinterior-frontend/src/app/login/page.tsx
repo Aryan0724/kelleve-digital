@@ -17,7 +17,15 @@ export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const router = useRouter();
+
+  import("react").then((m) => {
+    m.useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      setRedirectUrl(params.get("redirect"));
+    }, []);
+  });
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -30,8 +38,10 @@ export default function LoginPage() {
       const { user, token } = res.data.data;
       setAuth(user, token);
       
-      // Redirect based on role
-      if (user.role === 'admin') {
+      // Redirect based on role or intended destination
+      if (redirectUrl) {
+        router.push(redirectUrl);
+      } else if (user.role === 'admin') {
         router.push("/admin");
       } else {
         router.push("/dashboard");

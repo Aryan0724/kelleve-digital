@@ -173,16 +173,34 @@ export function Hero() {
             </>
           ) : (
             <>
-              <h1 className="text-4xl md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.15] mb-5">
-                Find & Hire The Best<br/>
-                Interior Experts in <span className="text-[#E8701A] relative inline-block">
-                  Bihar
-                  <svg className="absolute -bottom-2 left-0 w-full" viewBox="0 0 100 20" preserveAspectRatio="none"><path d="M0 15 Q50 0 100 15" fill="none" stroke="#E8701A" strokeWidth="4" strokeLinecap="round" /></svg>
+              <h1 className="text-[2.5rem] md:text-5xl lg:text-[3.5rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.1] mb-4 mt-2">
+                Where Projects<br/>Meet <span className="text-[#E8701A] relative inline-block">
+                  Professionals
                 </span>
               </h1>
-              <p className="text-base md:text-lg text-gray-700 dark:text-gray-300 mb-8 max-w-2xl font-medium leading-relaxed">
-                From top-rated Interior Designers to skilled Contractors & Material Suppliers. Compare quotes and save up to 30% on your next home project.
+              <p className="text-sm md:text-lg text-gray-700 dark:text-gray-300 mb-6 max-w-xl font-medium leading-relaxed pr-8">
+                Post your requirement, get multiple quotes & hire the best for your dream space.
               </p>
+              
+              <div className="flex flex-wrap items-center gap-3 mb-8 opacity-0 animate-fade-in-up delay-200">
+                <Link href="/post-requirement">
+                  <button className="bg-[#E8701A] hover:bg-[#c25a12] text-white font-bold py-3 px-5 rounded-lg shadow-lg shadow-orange-500/30 flex items-center gap-2 transition-all text-sm">
+                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M12 4v16m8-8H4"></path></svg>
+                    Post a Project
+                  </button>
+                </Link>
+                <Link href="/how-it-works">
+                  <button className="bg-transparent text-slate-800 dark:text-white border border-slate-300 dark:border-slate-600 font-bold py-3 px-5 rounded-lg flex items-center gap-2 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all text-sm">
+                    <svg className="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    How It Works
+                  </button>
+                </Link>
+              </div>
+
+              {/* Mobile Hero Image */}
+              <div className="block lg:hidden w-full h-48 bg-slate-100 dark:bg-slate-800 rounded-xl mb-6 overflow-hidden relative">
+                <img src="/hero-family.jpg" alt="Family looking at laptop" className="w-full h-full object-cover opacity-80 mix-blend-multiply dark:mix-blend-screen" onError={(e) => e.currentTarget.style.display = 'none'} />
+              </div>
             </>
           )}
 
@@ -214,17 +232,21 @@ export function Hero() {
               </>
             ) : (
               <>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
-                  <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Verified Pros
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-[10px] sm:text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default gap-1">
+                  <ShieldCheck className="w-6 h-6 md:w-5 md:h-5 text-slate-700 dark:text-slate-300" strokeWidth={1.5} />
+                  <span>Verified<br className="md:hidden"/>Professionals</span>
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
-                  <FileText className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Multiple Quotes
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-[10px] sm:text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default gap-1">
+                  <FileText className="w-6 h-6 md:w-5 md:h-5 text-slate-700 dark:text-slate-300" strokeWidth={1.5} />
+                  <span>Multiple<br className="md:hidden"/>Quotes</span>
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
-                  <IndianRupee className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> Best Prices
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-[10px] sm:text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default gap-1">
+                  <svg className="w-6 h-6 md:w-5 md:h-5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"></path></svg>
+                  <span>Best Price<br className="md:hidden"/>Guarantee</span>
                 </div>
-                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default">
-                  <CheckCircle2 className="w-6 h-6 md:w-5 md:h-5 text-[#E8701A] md:mr-2 mb-1 md:mb-0" /> On-Time
+                <div className="flex flex-col md:flex-row items-center md:justify-start justify-center text-center md:text-left text-[10px] sm:text-xs md:text-sm font-bold text-gray-800 dark:text-gray-200 hover:text-[#E8701A] transition-colors cursor-default gap-1">
+                  <svg className="w-6 h-6 md:w-5 md:h-5 text-slate-700 dark:text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  <span>On-Time<br className="md:hidden"/>Delivery</span>
                 </div>
               </>
             )}
@@ -234,7 +256,7 @@ export function Hero() {
           {!isWorker ? (
             <form 
               onSubmit={(e) => { e.preventDefault(); handleSearch(); }}
-              className="w-full max-w-3xl premium-glass p-3 md:p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex flex-col relative z-50 opacity-0 animate-fade-in-up delay-200"
+              className={`w-full max-w-3xl premium-glass p-3 md:p-2.5 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.1)] dark:shadow-[0_20px_50px_rgba(0,0,0,0.4)] flex-col relative z-50 opacity-0 animate-fade-in-up delay-200 ${isCustomer ? 'hidden lg:flex' : 'flex'}`}
             >
               <div className="w-full text-center md:hidden mb-2 pt-1 pb-2 border-b border-gray-100 dark:border-white/10">
                 <span className="text-[10px] sm:text-xs font-bold text-[#0a1c3a] dark:text-gray-300 tracking-wider uppercase">FIND THE RIGHT PROFESSIONAL FOR YOUR PROJECT</span>
@@ -408,7 +430,7 @@ export function Hero() {
         </div>
 
         {/* Right Content - Lead Card */}
-        <div className="w-full lg:w-[38%] max-w-sm mt-12 lg:mt-0 opacity-0 animate-fade-in-right delay-200">
+        <div className={`w-full lg:w-[38%] max-w-sm mt-12 lg:mt-0 opacity-0 animate-fade-in-right delay-200 ${isCustomer ? 'hidden lg:block' : 'block'}`}>
           <div className="premium-glass rounded-3xl overflow-hidden transform transition-transform duration-500 hover:scale-[1.02]">
             {user ? (
               <>
