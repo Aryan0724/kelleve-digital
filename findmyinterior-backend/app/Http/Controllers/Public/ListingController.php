@@ -61,6 +61,9 @@ class ListingController extends Controller
         if ($request->filled('budget') && $request->budget !== 'All Budget') {
             $query->where('budget_tier', $request->budget);
         }
+        if ($request->filled('experience')) {
+            $query->where('listings.years_experience', '>=', (int) $request->experience);
+        }
 
         // Join users table to sort by trust metrics
         $query->join('users', 'users.id', '=', 'listings.user_id')

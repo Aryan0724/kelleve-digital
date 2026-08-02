@@ -35,6 +35,12 @@ class ListingResource extends JsonResource
             'trust_score'      => $this->whenLoaded('user', fn() => $this->user->trust_score),
             'profile_completion_score' => $this->whenLoaded('user', fn() => $this->user->profile_completion_score),
             'verification_level' => $this->whenLoaded('user', fn() => $this->user->verification_level),
+            'user'             => $this->whenLoaded('user', fn() => [
+                'id'     => $this->user->id,
+                'name'   => $this->user->name,
+                'avatar' => $this->user->avatar ?? null,
+                'role'   => $this->user->role ?? null,
+            ]),
             'phone_clicks'     => $this->when($this->isOwner($request), $this->phone_clicks),
             'whatsapp_clicks'  => $this->when($this->isOwner($request), $this->whatsapp_clicks),
             'website_clicks'   => $this->when($this->isOwner($request), $this->website_clicks),
