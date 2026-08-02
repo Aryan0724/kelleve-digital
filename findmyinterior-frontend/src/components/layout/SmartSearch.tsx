@@ -228,7 +228,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
 
             {/* Dropdown Suggestions */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 w-full min-w-[280px] sm:min-w-[350px] mt-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div className="absolute top-full left-0 w-[calc(100%+2rem)] sm:w-full min-w-[300px] mt-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                 <ul className="py-2">
                   {suggestions.map((suggestion, idx) => (
                     <li key={idx}>
@@ -238,10 +238,10 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
                           setSearchQuery(suggestion.text);
                           handleSearch(undefined, suggestion.text, suggestion.href);
                         }}
-                        className="w-full text-left px-5 py-2.5 text-sm text-slate-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-500 flex items-center transition-colors truncate whitespace-nowrap"
+                        className="w-full text-left px-5 py-2.5 text-sm text-slate-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-500 flex items-center transition-colors overflow-hidden"
                       >
                         <Search className="w-4 h-4 mr-3 text-slate-400 group-hover:text-orange-500 shrink-0" />
-                        <span className="truncate">{suggestion.text}</span>
+                        <span className="truncate flex-1">{suggestion.text}</span>
                       </button>
                     </li>
                   ))}
