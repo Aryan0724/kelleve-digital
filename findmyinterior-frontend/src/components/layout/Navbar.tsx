@@ -227,52 +227,42 @@ export function Navbar() {
           </div>
           
           {/* Mobile Layout (Visible only on mobile) */}
-          <div className="flex lg:hidden flex-col gap-3 w-full">
-            {/* Mobile Top Row */}
+          <div className="flex lg:hidden flex-col gap-3 w-full pb-1">
+            {/* Mobile Top Row: Menu, Logo, Bell */}
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-3">
                 <button 
                   className="p-1 text-slate-700 dark:text-slate-200"
                   onClick={() => setIsMobileMenuOpen(true)}
                   aria-label="Open menu"
                 >
-                  <Menu className="w-7 h-7" />
+                  <Menu className="w-6 h-6" />
                 </button>
                 <Link href="/" className="flex items-center">
-                  <img src="/logo.jpg" alt="Find My Interior" className="h-10 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
+                  <img src="/logo.jpg" alt="Find My Interior" className="h-9 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
                 </Link>
               </div>
               
-              <div className="flex items-center gap-3 pr-2">
+              <div className="flex items-center">
                 {isAuthenticated ? (
-                  <>
-                    <NotificationDropdown />
-                    <Link href="/profile" className="p-1.5 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700">
-                      <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    </Link>
-                  </>
+                  <NotificationDropdown />
                 ) : (
-                  <>
-                    <button className="relative p-1.5 text-slate-700 dark:text-slate-200">
-                      <Bell className="w-6 h-6" />
-                      <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#E8701A] rounded-full border-2 border-white dark:border-slate-900"></span>
-                    </button>
-                    <Link href="/login" className="px-3 py-1.5 text-sm font-bold text-white bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] rounded-full shadow-sm hover:from-[#E8701A] hover:to-[#c25a12] transition-colors">
-                      Login
-                    </Link>
-                  </>
+                  <button className="relative p-1.5 text-slate-700 dark:text-slate-200">
+                    <Bell className="w-6 h-6" />
+                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#E8701A] rounded-full border-2 border-white dark:border-slate-900"></span>
+                  </button>
                 )}
               </div>
             </div>
             
             {/* Mobile Search Row */}
-            <div className="flex items-center gap-2 w-full">
+            <div className="flex items-center gap-2 w-full mt-1">
               <button 
                 onClick={() => {
                   const input = document.getElementById('mobile-search-input');
                   if(input) input.focus();
                 }}
-                className="flex items-center justify-between gap-1 bg-white dark:bg-slate-800 px-3 py-2.5 rounded-full text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border border-slate-200 dark:border-slate-700 shadow-sm w-[110px] hover:border-[#E8701A]/50 transition-colors"
+                className="flex items-center justify-between gap-1 bg-white dark:bg-slate-800 px-3 py-2.5 rounded-full text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border border-slate-200 dark:border-slate-700 shadow-sm w-[100px] hover:border-[#E8701A]/50 transition-colors"
               >
                 <div className="flex items-center gap-1.5 overflow-hidden">
                   <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
@@ -287,13 +277,13 @@ export function Navbar() {
                   id="mobile-search-input"
                   type="text" 
                   placeholder="Search services, professionals..." 
-                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full py-2.5 pl-9 pr-10 text-sm focus:outline-none focus:ring-1 focus:ring-[#E8701A] text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-sm"
+                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full py-2.5 pl-9 pr-10 text-[13px] font-medium focus:outline-none focus:ring-1 focus:ring-[#E8701A] text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-sm"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
                 <button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#E8701A]">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"></path></svg>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
                 </button>
               </div>
             </div>

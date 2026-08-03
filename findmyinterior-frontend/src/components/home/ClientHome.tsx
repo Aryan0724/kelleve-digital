@@ -6,6 +6,8 @@ import api from "@/lib/api";
 import { Hero } from "@/components/home/Hero";
 import { Stats } from "@/components/home/Stats";
 import { Categories } from "@/components/home/Categories";
+import { TellUsBanner } from "@/components/home/TellUsBanner";
+import { HowItWorksTimeline } from "@/components/home/HowItWorksTimeline";
 import { Hubs } from "@/components/home/Hubs";
 import { ActionBanner } from "@/components/home/ActionBanner";
 import { TrustFooter } from "@/components/home/TrustFooter";
@@ -60,6 +62,9 @@ export function ClientHome() {
       </div>
       <Hero />
       <Categories categories={homeData?.categories} />
+      <TellUsBanner />
+      <HowItWorksTimeline />
+      <FeaturedProfessionals pros={homeData?.featured_listings} />
       <Stats stats={homeData?.stats} />
       
       {/* Dynamic Project Sections grouped by Category */}
@@ -118,8 +123,6 @@ export function ClientHome() {
         type="job" 
       />
       
-      <FeaturedProfessionals pros={homeData?.featured_listings} />
-
       <div className="container mx-auto px-4 my-8">
         <AdSlot location="mid_page" className="w-full h-32 md:h-64 rounded-xl" />
       </div>

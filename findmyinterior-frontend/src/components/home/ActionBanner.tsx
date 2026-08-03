@@ -30,7 +30,7 @@ export function ActionBanner() {
   ];
 
   return (
-    <section className="w-full bg-white dark:bg-slate-900 border-y border-gray-200 dark:border-slate-800 py-6 transition-colors duration-300">
+    <section className="hidden lg:block w-full bg-white dark:bg-slate-900 border-y border-gray-200 dark:border-slate-800 py-6 transition-colors duration-300">
       <div className="container mx-auto px-4">
         <div className="flex flex-col lg:flex-row justify-between gap-6 divide-y lg:divide-y-0 lg:divide-x divide-gray-200 dark:divide-slate-800">
           {actions.map((action, idx) => (

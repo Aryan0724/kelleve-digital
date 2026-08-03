@@ -13,50 +13,96 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
   }
 
   return (
-    <section className="py-16 bg-gray-50 dark:bg-background transition-colors duration-300">
+    <section className="py-6 lg:py-16 bg-white dark:bg-slate-900 transition-colors duration-300">
       <div className="container mx-auto px-4">
-        <div className="flex justify-between items-end mb-8">
-          <div>
-            <h2 className="text-3xl font-bold text-[#0a1c3a] dark:text-white mb-2">Top Rated Professionals</h2>
-            <p className="text-gray-600 dark:text-gray-400">Hire the most trusted experts in Bihar</p>
+        
+        {/* MOBILE VIEW */}
+        <div className="lg:hidden">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-[1.15rem] font-black text-[#0a1c3a] dark:text-white">Top Professionals</h2>
+            <Link href="/professionals" className="text-xs font-bold text-[#E8701A] hover:underline">
+              View All
+            </Link>
           </div>
-          <Link href="/professionals" className="hidden md:block text-[#E8701A] font-semibold hover:underline">
-            View All Experts →
-          </Link>
+          <div className="flex overflow-x-auto no-scrollbar gap-4 pb-4 -mx-4 px-4">
+            {displayPros.map((pro, i) => (
+              <div key={pro.id || i} className="flex-shrink-0 w-[240px] bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700 overflow-hidden group">
+                <div className="relative h-[120px] bg-slate-200 dark:bg-slate-700">
+                  <img 
+                    src={pro.cover_image || "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop"} 
+                    alt={pro.title || "Professional"} 
+                    className="w-full h-full object-cover" 
+                  />
+                  {/* Rating Pill */}
+                  <div className="absolute top-2 left-2 bg-green-600 text-white text-[10px] font-bold px-1.5 py-0.5 rounded flex items-center gap-0.5 shadow-sm">
+                    <Star className="w-2.5 h-2.5 fill-white" />
+                    {pro.rating || "4.9"}
+                  </div>
+                  {/* Heart Icon */}
+                  <button className="absolute top-2 right-2 p-1.5 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition">
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                  </button>
+                </div>
+                <div className="p-3">
+                  <h3 className="font-extrabold text-[#0a1c3a] dark:text-white text-sm truncate flex items-center gap-1">
+                    {pro.title || "Space Interior Studio"} <ShieldCheck className="w-3.5 h-3.5 text-blue-500 shrink-0" />
+                  </h3>
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1 line-clamp-1 font-medium">
+                    {pro.category?.name || "Interior Designers"} | Modular Kitchens
+                  </p>
+                  <div className="mt-3">
+                    <Link href={`/professionals/${pro.slug || pro.id}`}>
+                      <button className="w-full py-1.5 border border-slate-200 dark:border-slate-600 rounded-lg text-xs font-bold text-[#0a1c3a] dark:text-white hover:bg-slate-50 dark:hover:bg-slate-700 transition">
+                        View Details
+                      </button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {displayPros.map((pro, i) => (
-            <div key={pro.id || i} className="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition">
-              <div className="flex items-center gap-4 mb-4">
-                {(pro.cover_image || pro.user?.profile_image) ? (
-                  <img src={pro.cover_image || pro.user?.profile_image} alt={pro.title || "Professional"} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100" />
-                ) : (
-                  <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xl">{(pro.title || "P").charAt(0).toUpperCase()}</div>
-                )}
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-1 line-clamp-1">
-                    {pro.title || "Professional"} <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
-                  </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{pro.category?.name || "Professional"}</p>
-                </div>
-              </div>
-              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
-                <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
-                  <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
-                  {pro.rating || "4.5"} <span className="text-gray-400 font-normal">({pro.review_count || 0})</span>
-                </div>
-                <div className="w-[100px]">
-                  <InquiryForm type="Listing" id={pro.id || 1} title={pro.title || "Professional"} />
-                </div>
-              </div>
+        {/* DESKTOP VIEW */}
+        <div className="hidden lg:block">
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="text-3xl font-bold text-[#0a1c3a] dark:text-white mb-2">Top Rated Professionals</h2>
+              <p className="text-gray-600 dark:text-gray-400">Hire the most trusted experts in Bihar</p>
             </div>
-          ))}
-        </div>
-        <div className="mt-8 text-center md:hidden">
-          <Link href="/professionals" className="inline-block border border-[#E8701A] text-[#E8701A] font-semibold px-6 py-2 rounded-lg hover:bg-orange-50">
-            View All Experts
-          </Link>
+            <Link href="/professionals" className="text-[#E8701A] font-semibold hover:underline">
+              View All Experts →
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {displayPros.map((pro, i) => (
+              <div key={pro.id || i} className="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition">
+                <div className="flex items-center gap-4 mb-4">
+                  {(pro.cover_image || pro.user?.profile_image) ? (
+                    <img src={pro.cover_image || pro.user?.profile_image} alt={pro.title || "Professional"} className="w-16 h-16 rounded-full object-cover border-2 border-orange-100" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center text-slate-400 font-bold text-xl">{(pro.title || "P").charAt(0).toUpperCase()}</div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-bold text-gray-900 dark:text-white flex items-center gap-1 line-clamp-1">
+                      {pro.title || "Professional"} <ShieldCheck className="w-4 h-4 text-blue-500 shrink-0" />
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-1">{pro.category?.name || "Professional"}</p>
+                  </div>
+                </div>
+                <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
+                  <div className="flex items-center gap-1 text-sm font-medium text-gray-700 dark:text-gray-300">
+                    <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                    {pro.rating || "4.5"} <span className="text-gray-400 font-normal">({pro.review_count || 0})</span>
+                  </div>
+                  <div className="w-[100px]">
+                    <InquiryForm type="Listing" id={pro.id || 1} title={pro.title || "Professional"} />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

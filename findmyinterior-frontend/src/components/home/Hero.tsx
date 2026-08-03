@@ -143,126 +143,32 @@ export function Hero() {
         
         {/* MOBILE LAYOUT */}
         {isCustomer && (
-          <div className="flex lg:hidden flex-col w-full px-2 pt-2 pb-6">
-            <h1 className="text-[2.2rem] font-extrabold tracking-tight text-[#0a1c3a] dark:text-white leading-[1.1] mb-3 text-left">
-              Meet <span className="text-[#E8701A]">Professionals</span>
-            </h1>
-            <p className="text-[0.95rem] text-slate-600 dark:text-gray-300 mb-6 font-medium leading-snug text-left max-w-sm">
-              Post your requirement, get multiple quotes & hire the best for your dream space.
-            </p>
+          <div className="flex lg:hidden flex-col w-full px-2 pt-4 pb-2">
+            
+            {/* Main Hero Banner Card */}
+            <div className="w-full bg-[#F8F9FA] dark:bg-slate-800 rounded-3xl p-5 relative overflow-hidden mb-5">
+              <div className="relative z-10 w-[60%]">
+                <h1 className="text-2xl font-black text-[#0a1c3a] dark:text-white leading-[1.1] mb-2">
+                  Where Projects<br/>
+                  <span className="text-[#E8701A]">Meet Professionals</span>
+                </h1>
+                <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-tight mb-5 pr-2">
+                  Post your requirement, get<br/>multiple quotes &amp; hire the best<br/>for your dream space.
+                </p>
 
-            <div className="flex flex-col gap-4 w-full mb-8">
-              <Link href="/post-requirement" className="w-full">
-                <button className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white font-bold text-base px-4 py-4 rounded-xl shadow-lg shadow-orange-500/30 transition-all flex items-center justify-center gap-2">
-                  <div className="bg-white/20 rounded-full p-0.5"><CheckCircle2 className="w-5 h-5" /></div> Post a Project
-                </button>
-              </Link>
-              
-              {/* Search Box inserted into the blank space from the mockup */}
-              <div className="w-full premium-glass p-3 rounded-2xl shadow-sm dark:bg-white/5 border border-slate-200 dark:border-white/10 relative z-50">
-                <div className="w-full text-center mb-2 pt-1 pb-2 border-b border-gray-100 dark:border-white/10">
-                  <span className="text-[10px] font-bold text-[#0a1c3a] dark:text-gray-300 tracking-wider uppercase">FIND THE RIGHT PROFESSIONAL</span>
-                </div>
-                <div className="flex flex-col gap-2">
-                  <div className="relative">
-                    <MapPin className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
-                      type="text"
-                      value={city}
-                      onChange={(e) => {
-                        setCity(e.target.value);
-                        setShowCityDropdown(true);
-                      }}
-                      onFocus={() => setShowCityDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowCityDropdown(false), 200)}
-                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#E8701A] text-slate-800 dark:text-slate-100 placeholder-slate-400"
-                      placeholder="e.g. Patna"
-                    />
-                    {showCityDropdown && (
-                      <div className="absolute top-full left-0 w-full mt-1 bg-white dark:bg-[#0a1c3a] border border-gray-200 dark:border-white/10 shadow-xl rounded-lg overflow-hidden z-50 max-h-48 overflow-y-auto">
-                        <button
-                          type="button"
-                          onClick={handleLocateMe}
-                          disabled={isLocating}
-                          className="w-full text-left px-4 py-2 text-xs font-semibold text-[#E8701A] hover:bg-orange-50 dark:hover:bg-white/10 transition-colors flex items-center border-b border-gray-100 dark:border-white/10"
-                        >
-                          {isLocating ? <Loader2 className="w-3 h-3 mr-2 animate-spin" /> : <LocateFixed className="w-3 h-3 mr-2" />}
-                          Use current location
-                        </button>
-                        {filteredCities.map(c => (
-                          <div 
-                            key={c} 
-                            className="px-4 py-2 hover:bg-orange-50 dark:hover:bg-white/10 cursor-pointer text-xs font-medium text-slate-700 dark:text-gray-300"
-                            onMouseDown={(e) => { e.preventDefault(); setCity(c); setShowCityDropdown(false); }}
-                          >
-                            {c}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <div className="relative">
-                    <SearchIcon className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                    <input 
-                      type="text"
-                      value={service}
-                      onChange={(e) => {
-                        setService(e.target.value);
-                        setShowServiceDropdown(true);
-                      }}
-                      onFocus={() => setShowServiceDropdown(true)}
-                      onBlur={() => setTimeout(() => setShowServiceDropdown(false), 200)}
-                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl py-3 pl-10 pr-4 text-sm font-semibold focus:outline-none focus:ring-1 focus:ring-[#E8701A] text-slate-800 dark:text-slate-100 placeholder-slate-400"
-                      placeholder="Search services..."
-                    />
-                    {showServiceDropdown && filteredServices.length > 0 && (
-                      <div className="absolute top-full left-0 w-full mt-1 bg-white dark:bg-[#0a1c3a] border border-gray-200 dark:border-white/10 shadow-xl rounded-lg overflow-hidden z-50 max-h-48 overflow-y-auto">
-                        {filteredServices.map(s => (
-                          <div 
-                            key={s} 
-                            className="px-4 py-2 hover:bg-orange-50 dark:hover:bg-white/10 cursor-pointer text-xs font-medium text-slate-700 dark:text-gray-300"
-                            onMouseDown={(e) => { e.preventDefault(); setService(s); setShowServiceDropdown(false); }}
-                          >
-                            {s}
-                          </div>
-                        ))}
-                      </div>
-                    )}
-                  </div>
-                  <button 
-                    onClick={handleSearch}
-                    className="w-full bg-slate-900 hover:bg-slate-800 dark:bg-slate-700 text-white font-bold text-sm py-3 rounded-xl shadow-sm transition-colors mt-1"
-                  >
-                    Search Pros →
+                <div className="flex flex-col gap-2 w-max">
+                  <Link href="/post-requirement">
+                    <button className="bg-[#E8701A] text-white font-bold text-xs px-4 py-2.5 rounded-full flex items-center justify-center gap-1.5 shadow-md">
+                      <div className="bg-white/20 rounded-full p-0.5"><Plus className="w-3 h-3" strokeWidth={3} /></div> 
+                      Post a Project
+                    </button>
+                  </Link>
+                  <button className="bg-white dark:bg-slate-700 text-[#0a1c3a] dark:text-white font-bold text-xs px-4 py-2.5 rounded-full flex items-center justify-center gap-1.5 shadow-sm border border-slate-200 dark:border-slate-600">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                    How It Works
                   </button>
                 </div>
               </div>
-            </div>
-
-            <div className="grid grid-cols-4 gap-2 mb-2">
-              <div className="flex flex-col items-center text-center gap-1">
-                <ShieldCheck className="w-5 h-5 text-amber-700 dark:text-amber-500" />
-                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight">Verified<br/>Professionals</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1">
-                <FileText className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight">Multiple<br/>Quotes</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1">
-                <ShieldCheck className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight">Best Price<br/>Guarantee</span>
-              </div>
-              <div className="flex flex-col items-center text-center gap-1">
-                <CheckCircle2 className="w-5 h-5 text-slate-600 dark:text-slate-400" />
-                <span className="text-[9px] font-bold text-slate-600 dark:text-slate-300 leading-tight">On-Time<br/>Delivery</span>
-              </div>
-            </div>
-            
-            {/* Horizontal dots indicator like mockup */}
-            <div className="flex justify-center gap-1.5 mt-4">
-              <div className="w-4 h-1.5 rounded-full bg-[#E8701A]"></div>
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
-              <div className="w-1.5 h-1.5 rounded-full bg-slate-200 dark:bg-slate-700"></div>
             </div>
           </div>
         )}
