@@ -38,7 +38,8 @@ interface Message {
   created_at: string;
 }
 
-export default function ConversationPage({ params }: { params: { id: string } }) {
+export default function ConversationPage() {
+  const params = useParams();
   const router = useRouter();
   const { user, token, _hasHydrated } = useAuthStore();
   const [mounted, setMounted] = useState(false);
