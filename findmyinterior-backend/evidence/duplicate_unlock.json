@@ -1,0 +1,9 @@
+{
+    "success": true,
+    "message": "Contact already unlocked",
+    "contact": {
+        "name": "Customer",
+        "phone": null,
+        "email": null
+    }
+}

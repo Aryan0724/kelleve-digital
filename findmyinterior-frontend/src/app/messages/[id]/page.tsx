@@ -103,7 +103,7 @@ export default function ConversationPage({ params }: { params: { id: string } })
     return () => {
       if (pollingInterval.current) clearInterval(pollingInterval.current);
     };
-  }, [token, params.id, router]);
+  }, [token, params.id, router, mounted, _hasHydrated]);
 
   // Auto-scroll
   useEffect(() => {

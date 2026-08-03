@@ -1,0 +1,32 @@
+{
+    "1_authorization": {
+        "vendor_a_bidder": "SUCCESS",
+        "vendor_b_no_bid": "SUCCESS",
+        "random_user": "SUCCESS",
+        "admin_access": "SUCCESS"
+    },
+    "2_unread_integrity": {
+        "vendor_count_after_customer_msgs": "SUCCESS",
+        "vendor_count_after_open": "SUCCESS",
+        "customer_count_after_vendor_reply": "SUCCESS"
+    },
+    "3_notification_engine": {
+        "customer_notifications": "SUCCESS",
+        "vendor_notifications": "SUCCESS"
+    },
+    "4_conversation_lifecycle": {
+        "transition_shortlisted": "SUCCESS",
+        "completed_to_active": "SUCCESS (Blocked)"
+    },
+    "5_message_attachments": {
+        "shell_php_blocked": "SUCCESS (Blocked)",
+        "pdf_allowed": "SUCCESS"
+    },
+    "6_context_integrity": {
+        "orphan_conversations": "SUCCESS"
+    },
+    "7_performance": {
+        "n_plus_one_conversations": "SUCCESS (5 queries)",
+        "n_plus_one_messages": "FAIL (6 queries)"
+    }
+}

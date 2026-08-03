@@ -1,0 +1,5 @@
+{
+    "notification_payloads": [],
+    "admin_access_restrictions": [],
+    "error": "Attempt to read property \"professional_id\" on null"
+}

@@ -1,0 +1,560 @@
+{
+    "Database Verification": {
+        "Users": 70,
+        "Requirements": 3,
+        "Bids": 0,
+        "Wallets": 62,
+        "Listings": 54,
+        "Builders": 0,
+        "Suppliers": 0,
+        "Workers": 0
+    },
+    "API Tests": {
+        "POST \/requirements": {
+            "status": 201,
+            "response": {
+                "success": true,
+                "message": "Your project requirement has been posted successfully.",
+                "data": {
+                    "id": 4,
+                    "title": "Need Interior Designer for 3BHK",
+                    "description": "Full furnishing needed.",
+                    "project_type": "general",
+                    "category": {
+                        "id": 1,
+                        "name": "Interior Designers",
+                        "slug": "interior-designers",
+                        "icon": "sofa",
+                        "image": null,
+                        "description": "Transform your home with Bihar's top interior designers. Modern, traditional and contemporary styles.",
+                        "sort_order": 1
+                    },
+                    "budget_min": null,
+                    "budget_max": null,
+                    "formatted_budget": "Flexible Budget",
+                    "city": "Mumbai",
+                    "district": "Mumbai Suburban",
+                    "status": "open",
+                    "images": [],
+                    "name": "***",
+                    "phone": "+91 ***** *****",
+                    "email": null,
+                    "is_unlocked": false,
+                    "created_at": "5 seconds ago"
+                }
+            }
+        },
+        "POST \/bids": {
+            "status": 422,
+            "response": {
+                "message": "The experience years field is required. (and 1 more error)",
+                "errors": {
+                    "experience_years": [
+                        "The experience years field is required."
+                    ],
+                    "estimated_cost": [
+                        "The estimated cost field is required."
+                    ]
+                }
+            }
+        },
+        "GET \/bids\/compare": {
+            "status": 200,
+            "response": {
+                "requirement_id": 4,
+                "bids_count": 0,
+                "comparison_matrix": []
+            }
+        },
+        "PATCH \/award": {
+            "status": 404,
+            "response": {
+                "message": "The route api\/v1\/bids\/\/award could not be found.",
+                "exception": "Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException",
+                "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\AbstractRouteCollection.php",
+                "line": 44,
+                "trace": [
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\RouteCollection.php",
+                        "line": 207,
+                        "function": "handleMatchedRoute",
+                        "class": "Illuminate\\Routing\\AbstractRouteCollection",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+                        "line": 777,
+                        "function": "match",
+                        "class": "Illuminate\\Routing\\RouteCollection",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+                        "line": 764,
+                        "function": "findRoute",
+                        "class": "Illuminate\\Routing\\Router",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+                        "line": 753,
+                        "function": "dispatchToRoute",
+                        "class": "Illuminate\\Routing\\Router",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+                        "line": 200,
+                        "function": "dispatch",
+                        "class": "Illuminate\\Routing\\Router",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 180,
+                        "function": "{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():197}",
+                        "class": "Illuminate\\Foundation\\Http\\Kernel",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+                        "line": 21,
+                        "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php",
+                        "line": 31,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+                        "line": 21,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php",
+                        "line": 51,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\TrimStrings",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php",
+                        "line": 27,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Http\\Middleware\\ValidatePostSize",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php",
+                        "line": 109,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php",
+                        "line": 74,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Http\\Middleware\\HandleCors",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php",
+                        "line": 58,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Http\\Middleware\\TrustProxies",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php",
+                        "line": 22,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePathEncoding.php",
+                        "line": 28,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Http\\Middleware\\ValidatePathEncoding",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 137,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+                        "line": 175,
+                        "function": "then",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+                        "line": 144,
+                        "function": "sendRequestThroughRouter",
+                        "class": "Illuminate\\Foundation\\Http\\Kernel",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php",
+                        "line": 1220,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Kernel",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\public\\index.php",
+                        "line": 20,
+                        "function": "handleRequest",
+                        "class": "Illuminate\\Foundation\\Application",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php",
+                        "line": 23,
+                        "function": "require_once"
+                    }
+                ]
+            }
+        },
+        "PATCH \/complete": {
+            "status": 200,
+            "response": {
+                "message": "Project completed successfully",
+                "requirement": {
+                    "id": 4,
+                    "user_id": 71,
+                    "category_id": 1,
+                    "city_id": null,
+                    "district_id": null,
+                    "title": "Need Interior Designer for 3BHK",
+                    "description": "Full furnishing needed.",
+                    "project_type": "general",
+                    "budget_min": null,
+                    "budget_max": null,
+                    "city": "Mumbai",
+                    "district": "Mumbai Suburban",
+                    "name": "Test Customer",
+                    "phone": "9999999999",
+                    "email": null,
+                    "status": "completed",
+                    "awarded_vendor_id": null,
+                    "awarded_bid_id": null,
+                    "award_value": null,
+                    "awarded_at": null,
+                    "deleted_at": null,
+                    "created_at": "2026-06-12T18:49:48.000000Z",
+                    "updated_at": "2026-06-12T18:51:16.000000Z"
+                }
+            }
+        }
+    },
+    "Wallet Tests": {
+        "Contact Unlock": {
+            "status": 400,
+            "response": {
+                "success": false,
+                "message": "SQLSTATE[42703]: Undefined column: 7 ERROR:  column \"meta_data\" of relation \"wallet_transactions\" does not exist\nLINE 1: ...s\" (\"wallet_id\", \"type\", \"amount\", \"description\", \"meta_data...\n                                                             ^ (Connection: pgsql, Host: dpg-d8luoscvikkc73bu2pd0-a.oregon-postgres.render.com, Port: 5432, Database: findmyinterior_db, SQL: insert into \"wallet_transactions\" (\"wallet_id\", \"type\", \"amount\", \"description\", \"meta_data\", \"created_at\", \"updated_at\") values (63, debit, 49, Unlocked contact for requirement ID: 4, {\"requirement_id\":4}, 2026-06-12 18:50:42, 2026-06-12 18:50:42))"
+            },
+            "balance_before": "100.00",
+            "balance_after": "100.00",
+            "deducted": 0
+        },
+        "Duplicate Unlock Prevention": {
+            "status": 400,
+            "response": {
+                "success": false,
+                "message": "SQLSTATE[42703]: Undefined column: 7 ERROR:  column \"meta_data\" of relation \"wallet_transactions\" does not exist\nLINE 1: ...s\" (\"wallet_id\", \"type\", \"amount\", \"description\", \"meta_data...\n                                                             ^ (Connection: pgsql, Host: dpg-d8luoscvikkc73bu2pd0-a.oregon-postgres.render.com, Port: 5432, Database: findmyinterior_db, SQL: insert into \"wallet_transactions\" (\"wallet_id\", \"type\", \"amount\", \"description\", \"meta_data\", \"created_at\", \"updated_at\") values (63, debit, 49, Unlocked contact for requirement ID: 4, {\"requirement_id\":4}, 2026-06-12 18:50:59, 2026-06-12 18:50:59))"
+            }
+        }
+    },
+    "Authorization Tests": {
+        "Vendor awarding project": {
+            "status": 404,
+            "response": {
+                "message": "The route api\/v1\/bids\/\/award could not be found.",
+                "exception": "Symfony\\Component\\HttpKernel\\Exception\\NotFoundHttpException",
+                "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\AbstractRouteCollection.php",
+                "line": 44,
+                "trace": [
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\RouteCollection.php",
+                        "line": 207,
+                        "function": "handleMatchedRoute",
+                        "class": "Illuminate\\Routing\\AbstractRouteCollection",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+                        "line": 777,
+                        "function": "match",
+                        "class": "Illuminate\\Routing\\RouteCollection",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+                        "line": 764,
+                        "function": "findRoute",
+                        "class": "Illuminate\\Routing\\Router",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Routing\\Router.php",
+                        "line": 753,
+                        "function": "dispatchToRoute",
+                        "class": "Illuminate\\Routing\\Router",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+                        "line": 200,
+                        "function": "dispatch",
+                        "class": "Illuminate\\Routing\\Router",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 180,
+                        "function": "{closure:Illuminate\\Foundation\\Http\\Kernel::dispatchToRouter():197}",
+                        "class": "Illuminate\\Foundation\\Http\\Kernel",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+                        "line": 21,
+                        "function": "{closure:Illuminate\\Pipeline\\Pipeline::prepareDestination():178}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull.php",
+                        "line": 31,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\ConvertEmptyStringsToNull",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest.php",
+                        "line": 21,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\TrimStrings.php",
+                        "line": 51,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\TransformsRequest",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\TrimStrings",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePostSize.php",
+                        "line": 27,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Http\\Middleware\\ValidatePostSize",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance.php",
+                        "line": 109,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\PreventRequestsDuringMaintenance",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\HandleCors.php",
+                        "line": 74,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Http\\Middleware\\HandleCors",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\TrustProxies.php",
+                        "line": 58,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Http\\Middleware\\TrustProxies",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks.php",
+                        "line": 22,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Middleware\\InvokeDeferredCallbacks",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Http\\Middleware\\ValidatePathEncoding.php",
+                        "line": 28,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 219,
+                        "function": "handle",
+                        "class": "Illuminate\\Http\\Middleware\\ValidatePathEncoding",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Pipeline\\Pipeline.php",
+                        "line": 137,
+                        "function": "{closure:{closure:Illuminate\\Pipeline\\Pipeline::carry():194}:195}",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+                        "line": 175,
+                        "function": "then",
+                        "class": "Illuminate\\Pipeline\\Pipeline",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php",
+                        "line": 144,
+                        "function": "sendRequestThroughRouter",
+                        "class": "Illuminate\\Foundation\\Http\\Kernel",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php",
+                        "line": 1220,
+                        "function": "handle",
+                        "class": "Illuminate\\Foundation\\Http\\Kernel",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\public\\index.php",
+                        "line": 20,
+                        "function": "handleRequest",
+                        "class": "Illuminate\\Foundation\\Application",
+                        "type": "->"
+                    },
+                    {
+                        "file": "D:\\find my interior\\findmyinterior-backend\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\resources\\server.php",
+                        "line": 23,
+                        "function": "require_once"
+                    }
+                ]
+            }
+        }
+    }
+}
