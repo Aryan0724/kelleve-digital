@@ -163,12 +163,12 @@ export function Hero() {
                 }}
               />
 
-              {/* Family Image on right side */}
-              <div className="absolute right-0 bottom-0 top-0 w-[46%] flex items-end justify-end overflow-hidden pointer-events-none z-10">
+              {/* Family Image on right side - Exactly positioned flush bottom-right like Figma IMAGE 1 */}
+              <div className="absolute right-0 bottom-0 w-[42%] sm:w-[40%] h-[82%] flex items-end justify-end pointer-events-none z-10 overflow-hidden rounded-br-[24px]">
                 <img
                   src="/hero-family.png"
                   alt="Family planning interior"
-                  className="object-contain object-bottom w-auto h-full max-h-[185px] drop-shadow-md"
+                  className="object-contain object-bottom w-full h-full drop-shadow-sm"
                 />
               </div>
 
