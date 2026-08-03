@@ -193,6 +193,22 @@ class ConversationController extends Controller
             return response()->json(['message' => 'You cannot start a conversation with yourself.'], 422);
         }
 
+        $targetUser = \App\Models\User::find($targetId);
+        if (!$targetUser) {
+            return response()->json(['message' => 'Target user not found.'], 404);
+        }
+
+        $userRole = $user->role;
+        $targetRole = $targetUser->role;
+        $professionalRoles = ['interior-designer', 'builder', 'contractor', 'material-supplier', 'skilled-worker'];
+        
+        $isUserProfessional = in_array($userRole, $professionalRoles);
+        $isTargetProfessional = in_array($targetRole, $professionalRoles);
+
+        if ($isUserProfessional && !$isTargetProfessional) {
+            return response()->json(['message' => 'Professionals cannot initiate unsolicited direct inquiries to customers.'], 403);
+        }
+
         $customerId = $user->id;
         $vendorId = (int)$targetId;
         $projectId = $request->project_id;

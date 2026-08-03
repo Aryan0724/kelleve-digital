@@ -47,9 +47,13 @@ export function ChatModal({ professionalId, professionalName, isOpen, onClose }:
         setSent(false);
         setMessage("");
       }, 2000);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Failed to send message", err);
-      alert("Failed to send message. Please try again.");
+      if (err.response?.status === 403) {
+        alert(err.response?.data?.message || "You are not authorized to send a message.");
+      } else {
+        alert("Failed to send message. Please try again.");
+      }
     } finally {
       setSending(false);
     }

@@ -107,10 +107,7 @@ export default function ConversationPage({ params }: { params: { id: string } })
 
   // Auto-scroll
   useEffect(() => {
-    const container = document.getElementById("chat-scroll-container");
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
