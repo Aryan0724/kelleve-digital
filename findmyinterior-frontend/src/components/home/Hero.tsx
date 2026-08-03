@@ -154,8 +154,8 @@ export function Hero() {
                   alt="Family planning interior"
                   className="w-full h-full object-cover object-center"
                 />
-                {/* 2. GLASSMORPHISM FROSTED BLUR OVERLAY ON LEFT SIDE FOR SHARP, HIGH-CONTRAST LETTERS */}
-                <div className="absolute inset-0 bg-gradient-to-r from-[#FFFDF9]/95 via-[#FFFDF9]/85 to-transparent backdrop-blur-[3px]" />
+                {/* 2. CREAM GRADIENT OVERLAY ON LEFT SIDE FOR HIGH-CONTRAST LETTERS - NO BLUR, RIGHT SIDE IMAGE STAYS CRISP */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#FFFDF9] via-[#FFFDF9]/90 to-transparent" />
                 {/* Subtle warm orange accent glow */}
                 <div 
                   className="absolute inset-0 pointer-events-none"
