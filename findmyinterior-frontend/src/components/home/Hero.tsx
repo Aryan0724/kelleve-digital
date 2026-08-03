@@ -212,12 +212,7 @@ export function Hero() {
               </div>
             </div>
 
-            {/* Pagination Dots (Mobile) */}
-            <div className="flex items-center justify-center gap-1.5 mt-3 mb-1">
-              <div className="w-4 h-1.5 bg-[#E8701A] rounded-full"></div>
-              <div className="w-1.5 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-              <div className="w-1.5 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
-            </div>
+
 
           </div>
         )}

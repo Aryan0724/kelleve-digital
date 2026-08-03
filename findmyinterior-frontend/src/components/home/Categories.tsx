@@ -1,60 +1,120 @@
 import Link from "next/link";
 import React from "react";
 
-// Beautiful custom multi-layered SVG icons matching professional home improvement design systems
+// Premium recognizable SVG icons per profession
 const customIcons: Record<string, React.ReactNode> = {
   "interior-designers": (
+    // Sofa / armchair — universally recognizable for interior design
     <svg className="w-9 h-9" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="4" y="16" width="32" height="14" rx="4" fill="#FFE5D0" />
-      <path d="M8 16V12C8 9.79 9.79 8 12 8H28C30.21 8 32 9.79 32 12V16" stroke="#0A1C3A" strokeWidth="2.2" strokeLinecap="round" />
-      <rect x="6" y="16" width="28" height="12" rx="3" fill="#FFF" stroke="#0A1C3A" strokeWidth="2.2" />
-      <rect x="14" y="11" width="12" height="7" rx="2" fill="#E8701A" />
-      <path d="M7 28V32M33 28V32" stroke="#0A1C3A" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Sofa base */}
+      <rect x="6" y="22" width="28" height="9" rx="3" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="2"/>
+      {/* Back cushion */}
+      <rect x="8" y="15" width="24" height="9" rx="3" fill="#FFF" stroke="#0A1C3A" strokeWidth="2"/>
+      {/* Left armrest */}
+      <rect x="4" y="19" width="6" height="12" rx="2.5" fill="#E8701A" stroke="#0A1C3A" strokeWidth="2"/>
+      {/* Right armrest */}
+      <rect x="30" y="19" width="6" height="12" rx="2.5" fill="#E8701A" stroke="#0A1C3A" strokeWidth="2"/>
+      {/* Legs */}
+      <line x1="10" y1="31" x2="10" y2="35" stroke="#0A1C3A" strokeWidth="2.2" strokeLinecap="round"/>
+      <line x1="30" y1="31" x2="30" y2="35" stroke="#0A1C3A" strokeWidth="2.2" strokeLinecap="round"/>
+      {/* Cushion divider */}
+      <line x1="20" y1="22" x2="20" y2="31" stroke="#0A1C3A" strokeWidth="1.5" strokeLinecap="round" strokeDasharray="2 1.5"/>
     </svg>
   ),
   "architects": (
+    // Blueprint/ruler + compass — architect's tool
     <svg className="w-9 h-9" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="6" y="8" width="28" height="24" rx="4" fill="#EBF3FF" stroke="#0A1C3A" strokeWidth="2.2" />
-      <path d="M20 13L13 27H27L20 13Z" fill="#FFE5D0" stroke="#E8701A" strokeWidth="2.2" strokeLinejoin="round" />
-      <circle cx="20" cy="17" r="2.5" fill="#0A1C3A" />
-      <path d="M16 23H24" stroke="#0A1C3A" strokeWidth="2" strokeLinecap="round" />
+      {/* Blueprint sheet */}
+      <rect x="6" y="7" width="22" height="26" rx="3" fill="#EBF3FF" stroke="#0A1C3A" strokeWidth="2"/>
+      {/* Blueprint grid lines */}
+      <line x1="6" y1="14" x2="28" y2="14" stroke="#0A1C3A" strokeWidth="1" strokeDasharray="2.5 2"/>
+      <line x1="6" y1="20" x2="28" y2="20" stroke="#0A1C3A" strokeWidth="1" strokeDasharray="2.5 2"/>
+      <line x1="14" y1="7" x2="14" y2="33" stroke="#0A1C3A" strokeWidth="1" strokeDasharray="2.5 2"/>
+      <line x1="21" y1="7" x2="21" y2="33" stroke="#0A1C3A" strokeWidth="1" strokeDasharray="2.5 2"/>
+      {/* House shape on blueprint */}
+      <path d="M10 26 L10 19 L17 14 L24 19 L24 26Z" fill="#FFE5D0" stroke="#E8701A" strokeWidth="1.8" strokeLinejoin="round"/>
+      {/* Ruler on right edge */}
+      <rect x="28" y="7" width="5" height="26" rx="1.5" fill="#E8701A" stroke="#0A1C3A" strokeWidth="1.5"/>
+      <line x1="28" y1="12" x2="30.5" y2="12" stroke="#0A1C3A" strokeWidth="1.2"/>
+      <line x1="28" y1="17" x2="30.5" y2="17" stroke="#0A1C3A" strokeWidth="1.2"/>
+      <line x1="28" y1="22" x2="30.5" y2="22" stroke="#0A1C3A" strokeWidth="1.2"/>
+      <line x1="28" y1="27" x2="30.5" y2="27" stroke="#0A1C3A" strokeWidth="1.2"/>
     </svg>
   ),
   "builders": (
+    // Building under construction with crane beam
     <svg className="w-9 h-9" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="10" y="8" width="20" height="26" rx="3" fill="#FFF" stroke="#0A1C3A" strokeWidth="2.2" />
-      <rect x="14" y="12" width="4" height="4" rx="1" fill="#E8701A" />
-      <rect x="22" y="12" width="4" height="4" rx="1" fill="#FFE5D0" />
-      <rect x="14" y="19" width="4" height="4" rx="1" fill="#FFE5D0" />
-      <rect x="22" y="19" width="4" height="4" rx="1" fill="#E8701A" />
-      <path d="M17 34V27H23V34" fill="#0A1C3A" />
+      {/* Building structure */}
+      <rect x="8" y="14" width="20" height="20" rx="2" fill="#FFF" stroke="#0A1C3A" strokeWidth="2"/>
+      {/* Windows */}
+      <rect x="12" y="18" width="4" height="4" rx="1" fill="#E8701A"/>
+      <rect x="20" y="18" width="4" height="4" rx="1" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="1"/>
+      <rect x="12" y="25" width="4" height="4" rx="1" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="1"/>
+      <rect x="20" y="25" width="4" height="4" rx="1" fill="#E8701A"/>
+      {/* Door */}
+      <rect x="16" y="29" width="4" height="5" rx="1" fill="#0A1C3A"/>
+      {/* Crane vertical */}
+      <line x1="30" y1="8" x2="30" y2="30" stroke="#0A1C3A" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* Crane arm */}
+      <line x1="16" y1="8" x2="30" y2="8" stroke="#E8701A" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* Crane hook line */}
+      <line x1="20" y1="8" x2="20" y2="14" stroke="#0A1C3A" strokeWidth="1.5" strokeDasharray="2 1.5"/>
     </svg>
   ),
   "civil-contractors": (
+    // Hard hat — universally recognized for contractors/construction
     <svg className="w-9 h-9" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <path d="M10 23C10 16.9249 14.4772 12 20 12C25.5228 12 30 16.9249 30 23V25H10V23Z" fill="#E8701A" stroke="#0A1C3A" strokeWidth="2.2" />
-      <path d="M7 25H33V28C33 29.1 32.1 30 31 30H9C7.9 30 7 29.1 7 28V25Z" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="2.2" />
-      <rect x="18" y="9" width="4" height="3" rx="1" fill="#0A1C3A" />
-      <circle cx="20" cy="20" r="3" fill="#FFF" />
+      {/* Hard hat dome */}
+      <path d="M7 25 C7 15 11 9 20 9 C29 9 33 15 33 25" fill="#E8701A" stroke="#0A1C3A" strokeWidth="2" strokeLinejoin="round"/>
+      {/* Brim */}
+      <rect x="5" y="24" width="30" height="4" rx="2" fill="#0A1C3A"/>
+      {/* Ventilation strip */}
+      <rect x="17" y="9" width="6" height="14" rx="3" fill="#FFE5D0" opacity="0.7"/>
+      {/* Side vents */}
+      <line x1="10" y1="18" x2="30" y2="18" stroke="#FFE5D0" strokeWidth="1.5" strokeLinecap="round" opacity="0.6"/>
+      {/* Tools crossed underneath */}
+      <path d="M13 31 L16 35 M21 31 L24 35" stroke="#0A1C3A" strokeWidth="2" strokeLinecap="round" opacity="0"/>
     </svg>
   ),
   "modular-kitchen-experts": (
+    // Kitchen stove/oven with burners — instantly recognizable
     <svg className="w-9 h-9" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="6" y="20" width="28" height="14" rx="3" fill="#FFF" stroke="#0A1C3A" strokeWidth="2.2" />
-      <path d="M6 26H34" stroke="#0A1C3A" strokeWidth="2" />
-      <rect x="10" y="22" width="6" height="2" rx="1" fill="#E8701A" />
-      <rect x="24" y="22" width="6" height="2" rx="1" fill="#E8701A" />
-      <path d="M14 7H26V13H14V7Z" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="2" />
-      <path d="M10 13H30" stroke="#E8701A" strokeWidth="2.5" strokeLinecap="round" />
+      {/* Oven body */}
+      <rect x="5" y="16" width="30" height="18" rx="3" fill="#FFF" stroke="#0A1C3A" strokeWidth="2"/>
+      {/* Oven window */}
+      <rect x="11" y="21" width="18" height="10" rx="2" fill="#EBF3FF" stroke="#0A1C3A" strokeWidth="1.5"/>
+      {/* Oven handle */}
+      <line x1="13" y1="19" x2="27" y2="19" stroke="#E8701A" strokeWidth="2.5" strokeLinecap="round"/>
+      {/* Stovetop surface */}
+      <rect x="5" y="10" width="30" height="8" rx="2" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="2"/>
+      {/* Burners */}
+      <circle cx="13" cy="14" r="2.5" fill="none" stroke="#0A1C3A" strokeWidth="1.8"/>
+      <circle cx="13" cy="14" r="1" fill="#E8701A"/>
+      <circle cx="27" cy="14" r="2.5" fill="none" stroke="#0A1C3A" strokeWidth="1.8"/>
+      <circle cx="27" cy="14" r="1" fill="#E8701A"/>
+      {/* Control knobs */}
+      <circle cx="20" cy="14" r="1.5" fill="#0A1C3A"/>
+    </svg>
+  ),
+  "painters": (
+    <svg className="w-9 h-9" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="10" y="6" width="20" height="12" rx="3" fill="#EBF3FF" stroke="#0A1C3A" strokeWidth="2"/>
+      <rect x="8" y="16" width="24" height="4" rx="2" fill="#E8701A" stroke="#0A1C3A" strokeWidth="1.5"/>
+      <line x1="20" y1="20" x2="20" y2="34" stroke="#0A1C3A" strokeWidth="2.5" strokeLinecap="round"/>
+      <ellipse cx="20" cy="34" rx="4" ry="1.5" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="1.5"/>
     </svg>
   ),
   "default": (
+    // Grid / apps icon for "More" — much cleaner than three dots
     <svg className="w-9 h-9" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <rect x="8" y="8" width="24" height="24" rx="6" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="2.2" />
-      <circle cx="20" cy="20" r="4" fill="#E8701A" />
+      <rect x="7" y="7" width="10" height="10" rx="2.5" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="2"/>
+      <rect x="23" y="7" width="10" height="10" rx="2.5" fill="#E8701A" stroke="#0A1C3A" strokeWidth="2"/>
+      <rect x="7" y="23" width="10" height="10" rx="2.5" fill="#E8701A" stroke="#0A1C3A" strokeWidth="2"/>
+      <rect x="23" y="23" width="10" height="10" rx="2.5" fill="#FFE5D0" stroke="#0A1C3A" strokeWidth="2"/>
     </svg>
   )
 };
+
 
 const exactCategories = [
   { name: "Restaurants", slug: "restaurants" },
@@ -113,16 +173,16 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
 
             <Link 
               href="/professionals"
-              className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] shrink-0"
+              className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] shrink-0 hover:border-orange-200 transition-all"
             >
               <div className="relative flex items-center justify-center w-12 h-12 mb-1">
-                <div className="absolute w-8 h-8 bg-slate-50 dark:bg-slate-700 rounded-full bottom-0 left-0"></div>
-                <div className="relative z-10 text-slate-700 dark:text-slate-300">
-                  <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/><circle cx="5" cy="12" r="1"/></svg>
+                <div className="absolute w-8 h-8 bg-orange-50 dark:bg-orange-900/40 rounded-full bottom-0 left-0"></div>
+                <div className="relative z-10 text-[#0a1c3a] dark:text-white">
+                  {customIcons.default}
                 </div>
               </div>
-              <span className="text-[10px] font-bold text-center text-slate-700 dark:text-slate-300 leading-tight">
-                More
+              <span className="text-[10px] font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
+                View All
               </span>
             </Link>
           </div>
