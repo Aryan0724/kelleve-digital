@@ -17,7 +17,8 @@ import {
   LayoutDashboard,
   Search as SearchIcon,
   LocateFixed,
-  Loader2
+  Loader2,
+  Plus
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
