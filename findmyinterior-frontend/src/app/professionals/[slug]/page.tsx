@@ -1,5 +1,6 @@
 import { InquiryForm } from "@/components/forms/InquiryForm";
 import { ContactButtons } from "@/components/professionals/ContactButtons";
+import { MessageProfessionalButton } from "@/components/professionals/MessageProfessionalButton";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import ReviewSection from "@/components/reviews/ReviewSection";
@@ -66,7 +67,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
       </div>
 
       <div className="container mx-auto px-4 -mt-24 relative z-10">
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col-reverse lg:flex-row gap-8">
           
           {/* Main Content Area */}
           <div className="w-full lg:w-2/3 space-y-6">
@@ -259,11 +260,10 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                 <InquiryForm type="Listing" id={listing.id} title={listing.title} />
                 
                 {listing.user && (
-                  <Link href={`/messages?user_id=${listing.user.id}`} className="block">
-                    <Button variant="outline" size="lg" className="w-full">
-                      Message Professional
-                    </Button>
-                  </Link>
+                  <MessageProfessionalButton 
+                    professionalId={listing.user.id} 
+                    professionalName={listing.user.name || listing.title} 
+                  />
                 )}
               </div>
 

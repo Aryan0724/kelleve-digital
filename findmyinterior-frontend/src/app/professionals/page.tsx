@@ -81,8 +81,8 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
             {listings.length > 0 ? listings.map((listing: any, index: number) => (
               <React.Fragment key={listing.id}>
               <Link href={`/professionals/${listing.slug}`}>
-                <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-all border-slate-200 group">
-                  <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
+                <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-all border-slate-200 dark:border-slate-800 dark:bg-slate-900 group">
+                  <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                     {listing.cover_image ? (
                       <img 
                         src={listing.cover_image} 
@@ -90,7 +90,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                       />
                     ) : (
-                      <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">No Image</div>
+                      <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500">No Image</div>
                     )}
                     <div className="absolute top-3 left-3 right-3 flex flex-wrap justify-between items-start pointer-events-none">
                       <div className="flex gap-2">
@@ -111,7 +111,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                   <CardContent className="p-5 flex-1">
                     <div className="flex justify-between items-start mb-2">
                       <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-lg text-slate-900 line-clamp-1 group-hover:text-orange-600 transition-colors">
+                        <h3 className="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 group-hover:text-orange-600 transition-colors">
                           {listing.title}
                         </h3>
                         {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 flex-shrink-0" title="Elite Professional">Elite</Badge>}
@@ -120,7 +120,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                       </div>
                     </div>
                     
-                    <div className="flex items-center text-sm text-slate-500 mb-4">
+                    <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 mb-4">
                       <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
                       <span className="line-clamp-1">{formatLocation(listing.city, listing.district)}</span>
                     </div>
@@ -128,28 +128,28 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                     <div className="flex items-center gap-1 mb-4 w-full">
                       <div className="flex text-amber-400">
                         {[...Array(5)].map((_, i) => (
-                          <Star key={i} className={`h-4 w-4 ${i < Math.floor(listing.avg_rating) ? 'fill-current' : 'text-slate-200'}`} />
+                          <Star key={i} className={`h-4 w-4 ${i < Math.floor(listing.avg_rating) ? 'fill-current' : 'text-slate-200 dark:text-slate-700'}`} />
                         ))}
                       </div>
-                      <span className="text-sm font-semibold text-slate-700 ml-1">{listing.avg_rating.toFixed(1)}</span>
-                      <span className="text-sm text-slate-400 ml-1">({listing.review_count})</span>
+                      <span className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1">{listing.avg_rating.toFixed(1)}</span>
+                      <span className="text-sm text-slate-400 dark:text-slate-500 ml-1">({listing.review_count})</span>
                       
                       {listing.trust_score > 0 && (
-                        <div className="ml-auto text-xs font-medium text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full whitespace-nowrap">
+                        <div className="ml-auto text-xs font-medium text-slate-600 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded-full whitespace-nowrap">
                           Trust: {listing.trust_score}/100
                         </div>
                       )}
                     </div>
                   </CardContent>
-                  <CardFooter className="p-5 pt-0 border-t border-slate-50 mt-auto">
+                  <CardFooter className="p-5 pt-0 border-t border-slate-50 dark:border-slate-800 mt-auto">
                     <div className="flex items-center gap-3 pt-4 w-full">
                       <Avatar className="h-8 w-8">
                         <AvatarImage src={listing.user?.avatar || listing.cover_image} />
-                        <AvatarFallback className="bg-orange-100 text-orange-700 font-semibold text-xs">{listing.title.charAt(0)}</AvatarFallback>
+                        <AvatarFallback className="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-semibold text-xs">{listing.title.charAt(0)}</AvatarFallback>
                       </Avatar>
                       <div className="flex flex-col flex-1 overflow-hidden">
-                        <div className="text-sm font-medium text-slate-900 truncate">{listing.user?.name || 'Professional'}</div>
-                        <div className="text-xs text-slate-500 truncate">{listing.category?.name}</div>
+                        <div className="text-sm font-medium text-slate-900 dark:text-white truncate">{listing.user?.name || 'Professional'}</div>
+                        <div className="text-xs text-slate-500 dark:text-slate-400 truncate">{listing.category?.name}</div>
                       </div>
                     </div>
                   </CardFooter>
