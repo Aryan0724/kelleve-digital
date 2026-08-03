@@ -100,42 +100,46 @@ export function Categories({ categories }: { categories?: any[] }) {
       <div className="hidden lg:block container mx-auto px-4">
         <div className="flex justify-between items-end mb-6">
           <h2 className="text-[1.1rem] font-bold text-[#0a1c3a] dark:text-white uppercase tracking-wide">
-            Browse By Services
+            Find the Right Professional
           </h2>
-          <Link href="/professionals" className="text-sm font-semibold text-blue-600 hover:text-blue-800 hover:underline">
+          <Link href="/professionals" className="text-sm font-semibold text-[#E8701A] hover:underline">
             View All
           </Link>
         </div>
 
-        {displayCategories.length > 0 && (
-          <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-between gap-3 md:gap-4">
-            {displayCategories.map((category, idx) => (
-              <Link 
-                href={`/professionals?category=${category.slug || category.name.replace(/ /g, '-')}`}
-                key={category.id || idx}
-                className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-900/50 transition-all cursor-pointer xl:w-[calc(9.09%-12px)] min-w-[100px]"
-              >
-                <div className="bg-orange-50/50 dark:bg-orange-900/20 p-3 rounded-full shrink-0">
-                  {getIcon(category.name)}
-                </div>
-                <span className="text-[10px] sm:text-xs font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
-                  {category.name}
-                </span>
-              </Link>
-            ))}
+        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-start gap-3 md:gap-4">
+          {[
+            { name: "Interior Designers", slug: "interior-designer", icon: <Sofa className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
+            { name: "Architects", slug: "architect", icon: <Compass className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
+            { name: "Builders", slug: "builder", icon: <HardHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
+            { name: "Contractors", slug: "contractor", icon: <Hammer className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
+            { name: "Modular Kitchen", slug: "modular-kitchen", icon: <Grid3X3 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> }
+          ].map((category, idx) => (
             <Link 
-              href="/professionals"
-              className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-900/50 transition-all cursor-pointer xl:w-[calc(9.09%-12px)] min-w-[100px]"
+              href={`/professionals?category=${category.slug}`}
+              key={idx}
+              className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-900/50 transition-all cursor-pointer xl:w-[calc(16.66%-14px)] min-w-[100px]"
             >
               <div className="bg-orange-50/50 dark:bg-orange-900/20 p-3 rounded-full shrink-0">
-                <Grid3X3 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />
+                {category.icon}
               </div>
               <span className="text-[10px] sm:text-xs font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
-                More Services
+                {category.name}
               </span>
             </Link>
-          </div>
-        )}
+          ))}
+          <Link 
+            href="/professionals"
+            className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-900/50 transition-all cursor-pointer xl:w-[calc(16.66%-14px)] min-w-[100px]"
+          >
+            <div className="bg-orange-50/50 dark:bg-orange-900/20 p-3 rounded-full shrink-0">
+              <MoreHorizontal className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} />
+            </div>
+            <span className="text-[10px] sm:text-xs font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
+              More Services
+            </span>
+          </Link>
+        </div>
       </div>
     </section>
   );
