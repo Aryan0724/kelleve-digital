@@ -146,7 +146,7 @@ export function Hero() {
           <div className="flex lg:hidden flex-col w-full pt-1 pb-3">
             
             {/* Main Hero Banner Card */}
-            <div className="w-full bg-gradient-to-r from-[#fefcf8] via-[#fdfbf6] to-[#faf6ed] dark:from-slate-900 dark:to-slate-950 rounded-[24px] p-5 relative overflow-hidden border border-orange-100/70 dark:border-slate-800 shadow-sm mb-3">
+            <div className="w-full bg-gradient-to-r from-[#FFFDF9] via-[#FEFCF7] to-[#FBF7EE] rounded-[24px] p-5 relative overflow-hidden border border-orange-100/80 shadow-sm mb-3">
               {/* Smooth golden-orange radial glow behind the family */}
               <div 
                 className="absolute inset-0 pointer-events-none"
@@ -156,7 +156,7 @@ export function Hero() {
               />
               {/* Subtle architectural grid accent */}
               <div 
-                className="absolute inset-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none"
+                className="absolute inset-0 opacity-[0.06] pointer-events-none"
                 style={{
                   backgroundImage: `radial-gradient(#0a1c3a 1px, transparent 1px)`,
                   backgroundSize: '18px 18px'
@@ -174,23 +174,23 @@ export function Hero() {
 
               {/* Left Content */}
               <div className="relative z-20 w-[62%] sm:w-[60%]">
-                <h1 className="text-[25px] sm:text-3xl font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-2 tracking-tight">
+                <h1 className="text-[25px] sm:text-3xl font-black text-[#0a1c3a] leading-[1.12] mb-2 tracking-tight">
                   Where Projects<br/>
                   <span className="text-[#E8701A]">Meet Professionals</span>
                 </h1>
-                <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-medium leading-[1.35] mb-4 pr-2">
+                <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-[1.35] mb-4 pr-2">
                   Post your requirement, get multiple quotes & hire the best for your dream space.
                 </p>
 
                 <div className="flex flex-row items-center gap-2">
                   <Link href="/post-requirement">
-                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[11px] sm:text-xs px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5">
+                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[11px] sm:text-xs px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap">
                       <div className="bg-white/20 rounded-full p-0.5"><Plus className="w-3.5 h-3.5" strokeWidth={2.5} /></div> 
                       <span>Post a Project</span>
                     </button>
                   </Link>
-                  <button className="bg-white dark:bg-slate-800 text-[#0a1c3a] dark:text-white font-bold text-[11px] sm:text-xs px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full flex items-center justify-center gap-1.5 shadow-sm border border-slate-200 dark:border-slate-700 transition-transform hover:-translate-y-0.5">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0a1c3a] dark:text-white"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                  <button className="bg-white text-[#0a1c3a] font-bold text-[11px] sm:text-xs px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full flex items-center justify-center gap-1.5 shadow-sm border border-slate-200 transition-transform hover:-translate-y-0.5 whitespace-nowrap">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0a1c3a]"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
                     <span>How It Works</span>
                   </button>
                 </div>
