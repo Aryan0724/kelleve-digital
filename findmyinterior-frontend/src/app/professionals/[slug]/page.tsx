@@ -125,7 +125,22 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                 </div>
               </div>
 
-              <div className="prose max-w-none mb-6">
+              {/* Mobile Contact Section (Visible only on mobile) */}
+              <div className="lg:hidden mt-6 pt-6 border-t border-slate-100">
+                <h3 className="text-sm font-semibold text-slate-900 mb-3">Contact Business</h3>
+                <ContactButtons listing={listing} />
+                <div className="space-y-3 mt-3">
+                  <InquiryForm type="Listing" id={listing.id} title={listing.title} />
+                  {listing.user && (
+                    <MessageProfessionalButton 
+                      professionalId={listing.user.id} 
+                      professionalName={listing.user.name || listing.title} 
+                    />
+                  )}
+                </div>
+              </div>
+
+              <div className="prose max-w-none mt-6 mb-6">
                 <h3 className="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">About Us</h3>
                 <p className="text-slate-600 leading-relaxed whitespace-pre-wrap">{listing.description}</p>
               </div>
@@ -249,8 +264,8 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
             <ReviewSection reviews={listing.reviews || []} reviewableType="listing" reviewableId={listing.id} professionalId={listing.user_id} />
           </div>
 
-          {/* Sidebar Area */}
-          <div className="w-full lg:w-1/3 space-y-6">
+          {/* Sidebar Area (Hidden on mobile as it's duplicated in main content) */}
+          <div className="hidden lg:block w-full lg:w-1/3 space-y-6">
             <div className="bg-white rounded-xl shadow-sm border p-6 sticky top-24">
               <h3 className="text-lg font-semibold text-slate-900 mb-4">Contact Business</h3>
               
