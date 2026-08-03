@@ -132,6 +132,46 @@ export default function ProfilePage() {
     }
   };
 
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0] || !listing) return;
+    const file = e.target.files[0];
+    const data = new FormData();
+    data.append('cover_image', file);
+    try {
+      setUploadingImage(true);
+      const res = await api.post(`/user/listings/${listing.id}/cover`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      setFormData(prev => ({ ...prev, cover_image: res.data.cover_image }));
+      alert("Cover image uploaded successfully!");
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload cover image.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleAvatarUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || !e.target.files[0]) return;
+    const file = e.target.files[0];
+    const data = new FormData();
+    data.append('avatar', file);
+    try {
+      setUploadingImage(true);
+      await api.post(`/user/avatar`, data, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      });
+      alert("Profile thumbnail uploaded successfully!");
+      window.location.reload();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload thumbnail.");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
   const handleAddImage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!listing) return;
@@ -212,6 +252,31 @@ export default function ProfilePage() {
               </div>
             </CardHeader>
             <CardContent>
+              <div className="mb-6 space-y-2 pb-6 border-b border-slate-100">
+                <Label>Profile Thumbnail (Avatar)</Label>
+                <div className="flex items-center gap-4">
+                  {user?.avatar ? (
+                    <img src={user.avatar} alt="Avatar" className="w-16 h-16 rounded-full object-cover border border-slate-200" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-slate-200 flex items-center justify-center text-slate-400">
+                      <User className="w-8 h-8" />
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <Input 
+                      type="file" 
+                      accept="image/*"
+                      onChange={handleAvatarUpload}
+                      disabled={uploadingImage} 
+                      className="file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 max-w-sm"
+                    />
+                    <p className="text-xs text-slate-500 mt-1">
+                      This is the thumbnail people will see on your card (Max 4MB).
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <form onSubmit={handleSaveListing} className="space-y-6">
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -272,9 +337,24 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label>Cover Image URL</Label>
-                  <Input type="url" value={formData.cover_image} onChange={e => setFormData({...formData, cover_image: e.target.value})} placeholder="https://example.com/cover.jpg" />
-                  <p className="text-xs text-slate-500">Provide a direct URL to your cover photo.</p>
+                  <Label>Background Cover Image</Label>
+                  <div className="flex items-center gap-4">
+                    {formData.cover_image && (
+                      <img src={formData.cover_image} alt="Cover" className="w-32 h-20 object-cover rounded-md border border-slate-200 shadow-sm" />
+                    )}
+                    <div className="flex-1">
+                      <Input 
+                        type="file" 
+                        accept="image/*"
+                        onChange={handleCoverUpload}
+                        disabled={!listing || uploadingImage} 
+                        className="file:mr-4 file:py-1 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-orange-50 file:text-orange-700 hover:file:bg-orange-100 max-w-sm"
+                      />
+                      <p className="text-xs text-slate-500 mt-1">
+                        {!listing ? "Save your profile first before uploading a cover image." : "Recommended size: 1200x400px (Max 5MB). This image appears at the top of your public profile."}
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
                 <Button type="submit" disabled={saving} className="bg-orange-600 hover:bg-orange-700 w-full md:w-auto">
