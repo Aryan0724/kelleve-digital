@@ -10,7 +10,9 @@ import {
   Wrench, 
   Box, 
   Layers, 
-  Grid3X3 
+  Grid3X3,
+  Compass,
+  MoreHorizontal
 } from "lucide-react";
 
 export function Categories({ categories }: { categories?: any[] }) {
@@ -40,40 +42,54 @@ export function Categories({ categories }: { categories?: any[] }) {
       {/* MOBILE VIEW */}
       <div className="lg:hidden w-full bg-white dark:bg-background py-6 mt-2 border-b border-gray-100 dark:border-slate-800">
         <div className="container mx-auto px-4">
-          <h2 className="text-lg font-bold text-[#0a1c3a] dark:text-white mb-4">
-            Featured Services
-          </h2>
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-[1.1rem] font-bold text-[#0a1c3a] dark:text-white">
+              Find the Right Professional
+            </h2>
+            <Link href="/professionals" className="text-sm font-semibold text-[#E8701A] hover:underline">
+              View All
+            </Link>
+          </div>
 
-          <div className="flex overflow-x-auto no-scrollbar gap-4 pb-2">
+          <div className="flex overflow-x-auto no-scrollbar gap-3 pb-4">
             {[
-              { name: "Interior Designers", slug: "interior-designer", icon: <Sofa className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-              { name: "Architects", slug: "architect", icon: <Building2 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-              { name: "Builders", slug: "builder", icon: <Building2 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-              { name: "Contractors", slug: "contractor", icon: <HardHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-              { name: "Modular Kitchen", slug: "modular-kitchen", icon: <ChefHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> }
+              { name: "Interior Designers", slug: "interior-designer", icon: <Sofa className="w-7 h-7" strokeWidth={1.5} /> },
+              { name: "Architects", slug: "architect", icon: <Compass className="w-7 h-7" strokeWidth={1.5} /> },
+              { name: "Builders", slug: "builder", icon: <HardHat className="w-7 h-7" strokeWidth={1.5} /> },
+              { name: "Contractors", slug: "contractor", icon: <Hammer className="w-7 h-7" strokeWidth={1.5} /> },
+              { name: "Modular Kitchen", slug: "modular-kitchen", icon: <Grid3X3 className="w-7 h-7" strokeWidth={1.5} /> }
             ].map((category, idx) => (
               <Link 
                 href={`/professionals?category=${category.slug}`}
                 key={idx}
-                className="flex flex-col items-center gap-2 flex-shrink-0 group w-[72px]"
+                className="flex flex-col items-center justify-center gap-2 flex-shrink-0 group w-[85px] h-[105px] bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700 hover:border-[#E8701A]/50 transition-all"
               >
-                <div className="w-16 h-16 rounded-full bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center border-2 border-transparent group-hover:border-[#E8701A]/30 transition-all shadow-sm">
-                  {category.icon}
+                <div className="relative flex items-center justify-center h-10 w-10 mt-1">
+                  {/* Subtle orange accent circle behind the icon */}
+                  <div className="absolute w-5 h-5 bg-orange-100 dark:bg-orange-900/40 rounded-full bottom-0 right-0 z-0"></div>
+                  <div className="relative z-10 text-[#0a1c3a] dark:text-white">
+                    {category.icon}
+                  </div>
                 </div>
-                <span className="text-[10px] font-semibold text-center text-[#0a1c3a] dark:text-white leading-tight">
+                <span className="text-[10px] font-semibold text-center text-[#0a1c3a] dark:text-white leading-tight px-1">
                   {category.name}
                 </span>
               </Link>
             ))}
+            
+            {/* View All / More Button */}
             <Link 
               href="/professionals"
-              className="flex flex-col items-center gap-2 flex-shrink-0 group w-[72px]"
+              className="flex flex-col items-center justify-center gap-2 flex-shrink-0 group w-[85px] h-[105px] bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700 hover:border-[#E8701A]/50 transition-all"
             >
-              <div className="w-16 h-16 rounded-full bg-slate-50 dark:bg-slate-800 flex items-center justify-center border-2 border-transparent group-hover:border-slate-300 dark:group-hover:border-slate-600 transition-all shadow-sm">
-                <Grid3X3 className="w-8 h-8 text-slate-400 dark:text-slate-500" strokeWidth={1.2} />
+              <div className="relative flex items-center justify-center h-10 w-10 mt-1">
+                <div className="absolute w-5 h-5 bg-slate-100 dark:bg-slate-700 rounded-full bottom-0 right-0 z-0 group-hover:bg-orange-100 transition-colors"></div>
+                <div className="relative z-10 text-slate-600 dark:text-slate-300 group-hover:text-[#E8701A] transition-colors">
+                  <MoreHorizontal className="w-7 h-7" strokeWidth={1.5} />
+                </div>
               </div>
-              <span className="text-[10px] font-semibold text-center text-slate-500 dark:text-slate-400 leading-tight">
-                View All
+              <span className="text-[10px] font-semibold text-center text-slate-600 dark:text-slate-300 group-hover:text-[#0a1c3a] dark:group-hover:text-white leading-tight">
+                More
               </span>
             </Link>
           </div>
