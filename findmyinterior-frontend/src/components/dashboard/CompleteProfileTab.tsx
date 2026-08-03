@@ -127,7 +127,7 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
         throw new Error("Listing ID not found. Please save your profile first.");
       }
       
-      const res = await api.post(`/listings/${listingId}/cover`, form);
+      const res = await api.post(`/user/listings/${listingId}/cover`, form);
       setPreview(res.data.cover_image);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
