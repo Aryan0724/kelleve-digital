@@ -195,19 +195,19 @@ export function Hero() {
               <div className="grid grid-cols-4 gap-1 sm:gap-2 items-center justify-between">
                 <div className="flex items-center justify-center gap-1 sm:gap-1.5">
                   <ShieldCheck className="w-4 h-4 shrink-0 text-[#E8701A]" />
-                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-tight">Verified<br/>Professionals</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-white leading-tight">Verified<br/>Professionals</span>
                 </div>
                 <div className="flex items-center justify-center gap-1 sm:gap-1.5">
                   <FileText className="w-4 h-4 shrink-0 text-[#E8701A]" />
-                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-tight">Multiple<br/>Quotes</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-white leading-tight">Multiple<br/>Quotes</span>
                 </div>
                 <div className="flex items-center justify-center gap-1 sm:gap-1.5">
                   <Award className="w-4 h-4 shrink-0 text-[#E8701A]" />
-                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-tight">Best Price<br/>Guarantee</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-white leading-tight">Best Price<br/>Guarantee</span>
                 </div>
                 <div className="flex items-center justify-center gap-1 sm:gap-1.5">
                   <Clock className="w-4 h-4 shrink-0 text-[#E8701A]" />
-                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-tight">On-Time<br/>Delivery</span>
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-white leading-tight">On-Time<br/>Delivery</span>
                 </div>
               </div>
             </div>

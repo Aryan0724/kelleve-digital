@@ -35,7 +35,9 @@ import {
   Sun,
   X,
   User,
-  Mic
+  Mic,
+  LocateFixed,
+  Loader2
 } from "lucide-react";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { SmartSearch } from "./SmartSearch";
@@ -46,6 +48,9 @@ export function Navbar() {
   const router = useRouter();
   const { theme, setTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
+  const [showMobileLocationDropdown, setShowMobileLocationDropdown] = useState(false);
+  const [selectedLocation, setSelectedLocation] = useState("Patna");
+  const [isLocating, setIsLocating] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
@@ -71,13 +76,54 @@ export function Navbar() {
     router.push("/login");
   };
 
+  const handleLocateMe = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const { latitude, longitude } = position.coords;
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`);
+          const data = await response.json();
+          if (data && data.address) {
+            const city = data.address.city || data.address.town || data.address.county || data.address.state_district;
+            if (city) {
+              setSelectedLocation(city);
+              setShowMobileLocationDropdown(false);
+            }
+          }
+        } catch (error) {
+          console.error("Error fetching city from coordinates", error);
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error("Geolocation error:", error);
+        alert("Unable to retrieve your location. Please check browser permissions.");
+        setIsLocating(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+    );
+  };
+
   const handleSearch = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
+    const params = new URLSearchParams();
     if (searchQuery.trim()) {
-      router.push(`/professionals?search=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      router.push("/professionals");
+      params.set("search", searchQuery.trim());
     }
+    if (selectedLocation && selectedLocation !== "All Bihar") {
+      params.set("city", selectedLocation);
+    }
+    const queryString = params.toString();
+    router.push(`/professionals${queryString ? `?${queryString}` : ""}`);
+    setShowMobileLocationDropdown(false);
   };
 
   return (
@@ -247,43 +293,98 @@ export function Navbar() {
               </div>
               
               <div className="flex items-center gap-2">
-                <button className="relative p-1.5 text-slate-700 dark:text-slate-200">
-                  <Bell className="w-6 h-6" />
-                  <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-[#E8701A] text-[9px] font-bold text-white border-2 border-white dark:border-slate-900">3</span>
-                </button>
-                <Link href={user ? "/dashboard" : "/login"} className="p-1.5 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 overflow-hidden">
-                  <User className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                </Link>
+                {(_hasHydrated || mounted) ? (
+                  isAuthenticated ? (
+                    <>
+                      <NotificationDropdown />
+                      <Link href="/dashboard" className="p-1.5 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 overflow-hidden">
+                        <User className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                      </Link>
+                    </>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <Link href="/login">
+                        <button className="px-4 py-1.5 bg-[#0a1c3a] dark:bg-white text-white dark:text-[#0a1c3a] font-bold text-xs rounded-full shadow-sm hover:opacity-90 transition-all">
+                          Login
+                        </button>
+                      </Link>
+                      <Link href="/register">
+                        <button className="px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
+                          Register
+                        </button>
+                      </Link>
+                    </div>
+                  )
+                ) : null}
               </div>
             </div>
             
             {/* Mobile Search Row */}
-            <div className="flex items-center w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm">
-              <button 
-                className="flex items-center justify-between gap-1 pl-4 pr-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border-r border-slate-200 dark:border-slate-700"
-              >
-                <div className="flex items-center gap-1.5 overflow-hidden">
-                  <MapPin className="w-4 h-4 text-[#E8701A] shrink-0" />
-                  <span className="truncate max-w-[70px]">Patna</span>
-                </div>
-                <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-              </button>
-              
-              <div className="flex-1 relative flex items-center">
-                <Search className="w-4 h-4 text-slate-400 ml-3 shrink-0" />
-                <input 
-                  id="mobile-search-input"
-                  type="text" 
-                  placeholder="Search services, professionals..." 
-                  className="w-full bg-transparent py-2.5 pl-2 pr-2 text-[13px] font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                />
-                <button className="p-2 text-slate-400 hover:text-[#E8701A] shrink-0 mr-2">
-                  <Mic className="w-4 h-4" />
+            <div className="relative">
+              <div className="flex items-center w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm">
+                <button 
+                  type="button"
+                  onClick={() => setShowMobileLocationDropdown(!showMobileLocationDropdown)}
+                  className="flex items-center justify-between gap-1 pl-4 pr-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border-r border-slate-200 dark:border-slate-700 active:bg-slate-50 dark:active:bg-slate-700 transition-colors"
+                >
+                  <div className="flex items-center gap-1.5 overflow-hidden">
+                    <MapPin className="w-4 h-4 text-[#E8701A] shrink-0" />
+                    <span className="truncate max-w-[70px]">{selectedLocation}</span>
+                  </div>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </button>
+                
+                <div className="flex-1 relative flex items-center">
+                  <Search className="w-4 h-4 text-slate-400 ml-3 shrink-0" />
+                  <input 
+                    id="mobile-search-input"
+                    type="text" 
+                    placeholder="Search services, professionals..." 
+                    className="w-full bg-transparent py-2.5 pl-2 pr-2 text-[13px] font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
+                  />
+                  <button type="button" onClick={() => handleSearch()} className="p-2 text-slate-400 hover:text-[#E8701A] shrink-0 mr-2">
+                    <Mic className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
+
+              {showMobileLocationDropdown && (
+                <div className="absolute top-12 left-0 right-0 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-3 animate-in fade-in zoom-in-95 duration-150">
+                  <button
+                    type="button"
+                    onClick={handleLocateMe}
+                    disabled={isLocating}
+                    className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-orange-50 dark:bg-orange-950/40 text-[#E8701A] hover:bg-orange-100 dark:hover:bg-orange-900/60 rounded-xl text-xs font-bold transition-colors mb-2"
+                  >
+                    {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LocateFixed className="w-3.5 h-3.5" />}
+                    <span>Detect Current Location</span>
+                  </button>
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">Select City in Bihar</div>
+                  <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
+                    {["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Purnia", "All Bihar"].map((city) => (
+                      <button
+                        key={city}
+                        type="button"
+                        onClick={() => {
+                          setSelectedLocation(city);
+                          setShowMobileLocationDropdown(false);
+                        }}
+                        className={`text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-between ${
+                          selectedLocation === city
+                            ? "bg-[#0a1c3a] text-white dark:bg-white dark:text-[#0a1c3a]"
+                            : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
+                        }`}
+                      >
+                        <span>{city}</span>
+                        {selectedLocation === city && <div className="w-1.5 h-1.5 rounded-full bg-[#E8701A]" />}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>

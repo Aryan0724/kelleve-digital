@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Home, Briefcase, Plus, MessageCircle, User } from "lucide-react";
+import { Home, Briefcase, Plus, MessageCircle, User, LogIn } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
 export function MobileBottomNav() {
@@ -49,8 +49,9 @@ export function MobileBottomNav() {
         >
           <div className="relative">
             <MessageCircle className={`w-5 h-5 mb-1 ${isActive('/messages') ? 'fill-[#E8701A]/20' : ''}`} />
-            {/* Example Badge */}
-            <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E8701A] rounded-full border-2 border-white dark:border-slate-900"></span>
+            {user && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E8701A] rounded-full border-2 border-white dark:border-slate-900"></span>
+            )}
           </div>
           <span className="text-[10px] font-medium">Messages</span>
         </Link>
@@ -59,8 +60,17 @@ export function MobileBottomNav() {
           onClick={() => router.push(user ? "/dashboard/profile" : "/login")}
           className={`flex flex-col items-center justify-center w-16 h-12 transition-colors ${isActive('/dashboard/profile') || isActive('/profile') ? 'text-[#E8701A]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}`}
         >
-          <User className={`w-5 h-5 mb-1 ${isActive('/dashboard/profile') || isActive('/profile') ? 'fill-[#E8701A]/20' : ''}`} />
-          <span className="text-[10px] font-medium">Profile</span>
+          {user ? (
+            <>
+              <User className={`w-5 h-5 mb-1 ${isActive('/dashboard/profile') || isActive('/profile') ? 'fill-[#E8701A]/20' : ''}`} />
+              <span className="text-[10px] font-medium">Profile</span>
+            </>
+          ) : (
+            <>
+              <LogIn className="w-5 h-5 mb-1" />
+              <span className="text-[10px] font-bold text-[#E8701A]">Login</span>
+            </>
+          )}
         </button>
       </div>
     </div>
