@@ -145,40 +145,33 @@ export function Hero() {
         {isCustomer && (
           <div className="flex lg:hidden flex-col w-full pt-1 pb-3">
             
-            {/* Main Hero Banner Card */}
-            <div className="w-full bg-gradient-to-r from-[#FFFDF9] via-[#FEFCF7] to-[#FBF7EE] rounded-[24px] p-5 relative overflow-hidden border border-orange-100/80 shadow-sm mb-3">
-              {/* Smooth golden-orange radial glow behind the family */}
-              <div 
-                className="absolute inset-0 pointer-events-none"
-                style={{
-                  background: `radial-gradient(circle at 85% 65%, rgba(232, 112, 26, 0.18) 0%, rgba(232, 112, 26, 0.04) 50%, transparent 75%)`
-                }}
-              />
-              {/* Subtle architectural grid accent */}
-              <div 
-                className="absolute inset-0 opacity-[0.06] pointer-events-none"
-                style={{
-                  backgroundImage: `radial-gradient(#0a1c3a 1px, transparent 1px)`,
-                  backgroundSize: '18px 18px'
-                }}
-              />
-
-              {/* Family Image on right side - Exactly positioned flush bottom-right like Figma IMAGE 1 */}
-              <div className="absolute right-0 bottom-0 w-[42%] sm:w-[40%] h-[82%] flex items-end justify-end pointer-events-none z-10 overflow-hidden rounded-br-[24px]">
+            {/* Main Hero Banner Card - Full Background Image with Frosted Glass Left Overlay */}
+            <div className="w-full rounded-[24px] p-5 sm:p-6 relative overflow-hidden border border-orange-100/80 shadow-sm mb-3 min-h-[220px] flex flex-col justify-center">
+              {/* 1. FULL CARD BACKGROUND IMAGE */}
+              <div className="absolute inset-0 z-0">
                 <img
                   src="/hero-family.png"
                   alt="Family planning interior"
-                  className="object-contain object-bottom w-full h-full drop-shadow-sm"
+                  className="w-full h-full object-cover object-center"
+                />
+                {/* 2. GLASSMORPHISM FROSTED BLUR OVERLAY ON LEFT SIDE FOR SHARP, HIGH-CONTRAST LETTERS */}
+                <div className="absolute inset-0 bg-gradient-to-r from-[#FFFDF9]/95 via-[#FFFDF9]/85 to-transparent backdrop-blur-[3px]" />
+                {/* Subtle warm orange accent glow */}
+                <div 
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: `radial-gradient(circle at 85% 60%, rgba(232, 112, 26, 0.15) 0%, transparent 70%)`
+                  }}
                 />
               </div>
 
-              {/* Left Content */}
-              <div className="relative z-20 w-[62%] sm:w-[60%]">
+              {/* 3. LEFT CONTENT WRITTEN ONTO THE FROSTED BLUR OVERLAY */}
+              <div className="relative z-10 w-[70%] sm:w-[65%]">
                 <h1 className="text-[25px] sm:text-3xl font-black text-[#0a1c3a] leading-[1.12] mb-2 tracking-tight">
                   Where Projects<br/>
                   <span className="text-[#E8701A]">Meet Professionals</span>
                 </h1>
-                <p className="text-[11px] sm:text-xs text-slate-600 font-medium leading-[1.35] mb-4 pr-2">
+                <p className="text-[11px] sm:text-xs text-slate-700 font-semibold leading-[1.35] mb-4 pr-2">
                   Post your requirement, get multiple quotes & hire the best for your dream space.
                 </p>
 
