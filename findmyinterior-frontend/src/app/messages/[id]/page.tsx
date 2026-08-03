@@ -163,7 +163,7 @@ export default function ConversationPage() {
   const otherUser = isCustomer ? conversation.vendor : conversation.customer;
 
   return (
-    <div className="bg-slate-50 absolute top-0 bottom-16 lg:bottom-0 left-0 right-0 flex flex-col z-10">
+    <div className="bg-slate-50 fixed inset-0 h-[100dvh] flex flex-col z-50">
       {/* Header */}
       <div className="bg-white border-b shrink-0">
         <div className="container mx-auto px-4 max-w-4xl h-16 flex items-center gap-4">

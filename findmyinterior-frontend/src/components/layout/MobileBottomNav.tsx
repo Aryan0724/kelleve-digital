@@ -13,6 +13,11 @@ export function MobileBottomNav() {
   // Highlight active path
   const isActive = (path: string) => pathname === path || pathname?.startsWith(path + '/');
 
+  // Hide bottom nav on specific chat pages to prevent keyboard/viewport issues
+  if (pathname?.startsWith('/messages/') && pathname !== '/messages') {
+    return null;
+  }
+
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 shadow-[0_-4px_10px_-4px_rgba(0,0,0,0.1)] lg:hidden pb-safe">
       <div className="flex items-center justify-around px-2 py-2">

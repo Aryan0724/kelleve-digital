@@ -150,9 +150,9 @@ export function Hero() {
               {/* 1. FULL CARD BACKGROUND IMAGE */}
               <div className="absolute inset-0 z-0">
                 <img
-                  src="/hero-family.png"
-                  alt="Family planning interior"
-                  className="w-full h-full object-cover object-center"
+                  src="https://images.unsplash.com/photo-1593696140826-c58b021acf8b?q=80&w=800&auto=format&fit=crop"
+                  alt="Beautiful interior space"
+                  className="w-full h-full object-cover object-right"
                 />
                 {/* 2. CREAM GRADIENT OVERLAY ON LEFT SIDE FOR HIGH-CONTRAST LETTERS - NO BLUR, RIGHT SIDE IMAGE STAYS CRISP */}
                 <div className="absolute inset-0 bg-gradient-to-r from-[#FFFDF9] via-[#FFFDF9]/90 to-transparent" />
