@@ -132,7 +132,7 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
-      alert(err.response?.data?.message || "Upload failed. Please try again.");
+      alert(err.response?.data?.message || err.message || "Upload failed. Please try again.");
       setPreview(currentCover);
     } finally {
       setUploading(false);
