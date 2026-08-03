@@ -53,11 +53,11 @@ export function Categories({ categories }: { categories?: any[] }) {
 
           <div className="flex overflow-x-auto no-scrollbar gap-3 pb-4">
             {[
-              { name: "Interior Designers", slug: "interior-designer", icon: <Sofa className="w-7 h-7" strokeWidth={1.5} /> },
-              { name: "Architects", slug: "architect", icon: <Compass className="w-7 h-7" strokeWidth={1.5} /> },
-              { name: "Builders", slug: "builder", icon: <HardHat className="w-7 h-7" strokeWidth={1.5} /> },
-              { name: "Contractors", slug: "contractor", icon: <Hammer className="w-7 h-7" strokeWidth={1.5} /> },
-              { name: "Modular Kitchen", slug: "modular-kitchen", icon: <Grid3X3 className="w-7 h-7" strokeWidth={1.5} /> }
+              { name: "Interior Designers", slug: "interior-designers", icon: <Sofa className="w-7 h-7" strokeWidth={1.5} /> },
+              { name: "Architects", slug: "architects", icon: <Compass className="w-7 h-7" strokeWidth={1.5} /> },
+              { name: "Builders", slug: "builders", icon: <HardHat className="w-7 h-7" strokeWidth={1.5} /> },
+              { name: "Contractors", slug: "civil-contractors", icon: <Hammer className="w-7 h-7" strokeWidth={1.5} /> },
+              { name: "Modular Kitchen", slug: "modular-kitchen-experts", icon: <Grid3X3 className="w-7 h-7" strokeWidth={1.5} /> }
             ].map((category, idx) => (
               <Link 
                 href={`/professionals?category=${category.slug}`}
@@ -109,11 +109,11 @@ export function Categories({ categories }: { categories?: any[] }) {
 
         <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-start gap-3 md:gap-4">
           {[
-            { name: "Interior Designers", slug: "interior-designer", icon: <Sofa className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-            { name: "Architects", slug: "architect", icon: <Compass className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-            { name: "Builders", slug: "builder", icon: <HardHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-            { name: "Contractors", slug: "contractor", icon: <Hammer className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
-            { name: "Modular Kitchen", slug: "modular-kitchen", icon: <Grid3X3 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> }
+            { name: "Interior Designers", slug: "interior-designers", icon: <Sofa className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
+            { name: "Architects", slug: "architects", icon: <Compass className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
+            { name: "Builders", slug: "builders", icon: <HardHat className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
+            { name: "Contractors", slug: "civil-contractors", icon: <Hammer className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> },
+            { name: "Modular Kitchen", slug: "modular-kitchen-experts", icon: <Grid3X3 className="w-8 h-8 text-[#E8701A]" strokeWidth={1.2} /> }
           ].map((category, idx) => (
             <Link 
               href={`/professionals?category=${category.slug}`}
