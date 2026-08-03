@@ -71,7 +71,7 @@ export default function RootLayout({
           <TopRibbonAd />
           <Navbar />
           <PopupAd />
-          <main className="flex-1 pb-16 lg:pb-0">
+          <main className="flex-1 relative pb-16 lg:pb-0">
             {children}
           </main>
           <Footer />

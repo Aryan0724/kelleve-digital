@@ -106,10 +106,18 @@ export default function ConversationPage() {
     };
   }, [token, params.id, router, mounted, _hasHydrated]);
 
-  // Auto-scroll
+  // Auto-scroll to bottom of messages
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  // Lock body scroll to prevent mobile browser layout jumps when typing
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, []);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -155,7 +163,7 @@ export default function ConversationPage() {
   const otherUser = isCustomer ? conversation.vendor : conversation.customer;
 
   return (
-    <div className="bg-slate-50 h-[calc(100vh-64px)] flex flex-col">
+    <div className="bg-slate-50 absolute top-0 bottom-16 lg:bottom-0 left-0 right-0 flex flex-col z-10">
       {/* Header */}
       <div className="bg-white border-b shrink-0">
         <div className="container mx-auto px-4 max-w-4xl h-16 flex items-center gap-4">
