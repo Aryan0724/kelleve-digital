@@ -4,6 +4,7 @@ import { Star, ShieldCheck } from "lucide-react";
 import Link from "next/link";
 import { InquiryForm } from "@/components/forms/InquiryForm";
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
   // Use passed data or empty array if not loaded yet
   const displayPros = pros && pros.length > 0 ? pros.slice(0, 4) : [];

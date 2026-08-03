@@ -18,7 +18,7 @@ const exactCategories = [
   { name: "Interior Designers", slug: "interior-designers", isSofa: true },
 ];
 
-export function Categories({ categories }: { categories?: any[] }) {
+export function Categories({ categories }: { categories?: Array<Record<string, unknown>> }) {
   return (
     <section className="w-full bg-[#f8f9fa] dark:bg-background lg:py-8 transition-colors duration-300">
       
@@ -34,7 +34,7 @@ export function Categories({ categories }: { categories?: any[] }) {
             </Link>
           </div>
 
-          <div className="grid grid-cols-3 gap-2 pb-1">
+          <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-2 px-1">
             {[
               { name: "Interior Designers", slug: "interior-designers", icon: <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 9V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2v2"/><path d="M8 12h8"/><path d="M4 11v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="M10 12v3"/><path d="M14 12v3"/><path d="M6 19v2"/><path d="M18 19v2"/></svg> },
               { name: "Architects", slug: "architects", icon: <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="m16.24 7.76-1.804 5.411a2 2 0 0 1-1.265 1.265L7.76 16.24l1.804-5.411a2 2 0 0 1 1.265-1.265z"/><circle cx="12" cy="12" r="10"/></svg> },
@@ -45,7 +45,7 @@ export function Categories({ categories }: { categories?: any[] }) {
               <Link 
                 href={`/professionals?category=${category.slug}`}
                 key={idx}
-                className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700"
+                className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] shrink-0"
               >
                 <div className="relative flex items-center justify-center w-12 h-12 mb-1">
                   <div className="absolute w-8 h-8 bg-orange-50 dark:bg-orange-900/40 rounded-full bottom-0 left-0"></div>
@@ -61,7 +61,7 @@ export function Categories({ categories }: { categories?: any[] }) {
 
             <Link 
               href="/professionals"
-              className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700"
+              className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] shrink-0"
             >
               <div className="relative flex items-center justify-center w-12 h-12 mb-1">
                 <div className="absolute w-8 h-8 bg-slate-50 dark:bg-slate-700 rounded-full bottom-0 left-0"></div>

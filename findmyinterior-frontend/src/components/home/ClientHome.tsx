@@ -20,9 +20,11 @@ import { PublicProjects } from "@/components/home/PublicProjects";
 export function ClientHome() {
   const { user } = useAuthStore();
   const [mounted, setMounted] = useState(false);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [homeData, setHomeData] = useState<any>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setMounted(true);
     api.get("/homepage").then((res) => {
       setHomeData(res.data.data);
@@ -36,15 +38,16 @@ export function ClientHome() {
   if (user && Object.keys(user).length > 0) {
     return (
       <>
-        <div className="container mx-auto px-4 mt-6">
+        <RoleBasedHomepage />
+        <div className="container mx-auto px-4 my-6">
           <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
         </div>
-        <RoleBasedHomepage />
       </>
     );
   }
 
   // Group open leads by category dynamically to create specific sections for businesses
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const groupedLeads = (homeData?.open_leads || []).reduce((acc: any, lead: any) => {
     // Some categories might have ' Designer' or ' Contractor' in them. We can just use the name directly.
     const categoryName = lead.category?.name || 'General';
@@ -57,17 +60,18 @@ export function ClientHome() {
 
   return (
     <>
-      <div className="container mx-auto px-4 mt-6">
-        <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
-      </div>
       <Hero />
       <Categories categories={homeData?.categories} />
       <TellUsBanner />
       <HowItWorksTimeline />
       <FeaturedProfessionals pros={homeData?.featured_listings} />
       <Stats stats={homeData?.stats} />
+      <div className="container mx-auto px-4 my-6">
+        <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
+      </div>
       
       {/* Dynamic Project Sections grouped by Category */}
+      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
       {Object.entries(groupedLeads).map(([categoryName, projects]: [string, any]) => (
         <PublicProjects 
           key={categoryName} 

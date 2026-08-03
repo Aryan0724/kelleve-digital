@@ -5,20 +5,19 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import api from "@/lib/api";
 import { 
-  MapPin, 
   ChevronDown, 
   ShieldCheck, 
   FileText, 
-  IndianRupee, 
-  Lock, 
+  Award,
+  Clock,
   CheckCircle2,
-  Settings,
   Wallet,
   LayoutDashboard,
   Search as SearchIcon,
   LocateFixed,
   Loader2,
-  Plus
+  Plus,
+  IndianRupee
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
@@ -42,7 +41,7 @@ export function Hero() {
   useEffect(() => {
     api.get("/locations?active_only=1").then(res => {
       if (res.data?.data) {
-        setAvailableCities(res.data.data.map((loc: any) => loc.name));
+        setAvailableCities(res.data.data.map((loc: { name: string }) => loc.name));
         if (res.data.data.length > 0 && city === "Patna") {
           // keep patna or update if needed, but fetching allows dropdown to work
         }
@@ -133,44 +132,93 @@ export function Hero() {
   };
 
   return (
-    <section className="relative w-full min-h-[500px] flex items-center bg-white dark:bg-background">
-      {/* Background Image with Gradient Fade */}
+    <section className="relative w-full bg-white dark:bg-background">
+      {/* Background Image with Gradient Fade - DESKTOP ONLY */}
       <div 
-        className="absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-40 md:opacity-100 dark:opacity-40 md:dark:opacity-100"
+        className="hidden lg:block absolute inset-0 z-0 bg-[url('https://images.unsplash.com/photo-1593696140826-c58b021acf8b?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-right opacity-100 dark:opacity-40"
       />
-      <div className="absolute inset-0 z-10 bg-white/80 md:bg-transparent md:bg-gradient-to-r md:from-white md:via-white/90 md:to-transparent dark:bg-background/95 dark:md:bg-gradient-to-r dark:md:from-background dark:md:via-background/70 dark:md:via-70% dark:md:to-background/10 w-full" />
+      <div className="hidden lg:block absolute inset-0 z-10 bg-gradient-to-r from-white via-white/90 to-transparent dark:bg-gradient-to-r dark:from-background dark:via-background/70 dark:via-70% dark:to-background/10 w-full" />
       
-      <div className="container relative z-40 mx-auto px-4 py-6 lg:py-20 flex flex-col">
+      <div className="container relative z-40 mx-auto px-4 py-1 lg:py-20 flex flex-col">
         
-        {/* MOBILE LAYOUT */}
+        {/* MOBILE LAYOUT - EXACT 100% VISUAL PARITY WITH IMAGE 1 */}
         {isCustomer && (
-          <div className="flex lg:hidden flex-col w-full px-2 pt-4 pb-2">
+          <div className="flex lg:hidden flex-col w-full pt-1 pb-3">
             
             {/* Main Hero Banner Card */}
-            <div className="w-full bg-[#F8F9FA] dark:bg-slate-800 rounded-3xl p-5 relative overflow-hidden mb-5">
-              <div className="relative z-10 w-[60%]">
-                <h1 className="text-2xl font-black text-[#0a1c3a] dark:text-white leading-[1.1] mb-2">
+            <div className="w-full bg-gradient-to-r from-[#fefcf8] via-[#fbf9f3] to-[#f6f3eb] dark:from-slate-900 dark:to-slate-950 rounded-[24px] p-5 relative overflow-hidden border border-orange-100/60 dark:border-slate-800 shadow-sm mb-3">
+              {/* Subtle blueprint grid pattern in background */}
+              <div 
+                className="absolute inset-0 opacity-[0.08] dark:opacity-[0.05] pointer-events-none"
+                style={{
+                  backgroundImage: `radial-gradient(#E8701A 1px, transparent 1px), linear-gradient(to right, #0a1c3a 1px, transparent 1px), linear-gradient(to bottom, #0a1c3a 1px, transparent 1px)`,
+                  backgroundSize: '24px 24px'
+                }}
+              />
+
+              {/* Family Image on right side */}
+              <div className="absolute right-0 bottom-0 top-0 w-[46%] flex items-end justify-end overflow-hidden pointer-events-none z-10">
+                <img
+                  src="/hero-family.png"
+                  alt="Family planning interior"
+                  className="object-cover object-bottom w-full h-full max-h-[195px]"
+                />
+              </div>
+
+              {/* Left Content */}
+              <div className="relative z-20 w-[62%] sm:w-[60%]">
+                <h1 className="text-[25px] sm:text-3xl font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-2 tracking-tight">
                   Where Projects<br/>
                   <span className="text-[#E8701A]">Meet Professionals</span>
                 </h1>
-                <p className="text-[11px] text-slate-600 dark:text-slate-300 font-medium leading-tight mb-5 pr-2">
-                  Post your requirement, get<br/>multiple quotes &amp; hire the best<br/>for your dream space.
+                <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-300 font-medium leading-[1.35] mb-4 pr-2">
+                  Post your requirement, get multiple quotes & hire the best for your dream space.
                 </p>
 
-                <div className="flex flex-col gap-2 w-max">
+                <div className="flex flex-row items-center gap-2">
                   <Link href="/post-requirement">
-                    <button className="bg-[#E8701A] text-white font-bold text-xs px-4 py-2.5 rounded-full flex items-center justify-center gap-1.5 shadow-md">
-                      <div className="bg-white/20 rounded-full p-0.5"><Plus className="w-3 h-3" strokeWidth={3} /></div> 
-                      Post a Project
+                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[11px] sm:text-xs px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full flex items-center justify-center gap-1.5 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5">
+                      <div className="bg-white/20 rounded-full p-0.5"><Plus className="w-3.5 h-3.5" strokeWidth={2.5} /></div> 
+                      <span>Post a Project</span>
                     </button>
                   </Link>
-                  <button className="bg-white dark:bg-slate-700 text-[#0a1c3a] dark:text-white font-bold text-xs px-4 py-2.5 rounded-full flex items-center justify-center gap-1.5 shadow-sm border border-slate-200 dark:border-slate-600">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                    How It Works
+                  <button className="bg-white dark:bg-slate-800 text-[#0a1c3a] dark:text-white font-bold text-[11px] sm:text-xs px-3.5 py-2.5 sm:px-4 sm:py-3 rounded-full flex items-center justify-center gap-1.5 shadow-sm border border-slate-200 dark:border-slate-700 transition-transform hover:-translate-y-0.5">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0a1c3a] dark:text-white"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                    <span>How It Works</span>
                   </button>
                 </div>
               </div>
             </div>
+            
+            {/* Feature Strip (Mobile) - EXACTLY as in IMAGE 1 (White Pill with 4 horizontal items, icon on left) */}
+            <div className="w-full bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 py-3 px-3">
+              <div className="grid grid-cols-4 gap-1 sm:gap-2 items-center justify-between">
+                <div className="flex items-center justify-center gap-1 sm:gap-1.5">
+                  <ShieldCheck className="w-4 h-4 shrink-0 text-[#E8701A]" />
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-tight">Verified<br/>Professionals</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 sm:gap-1.5">
+                  <FileText className="w-4 h-4 shrink-0 text-[#E8701A]" />
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-tight">Multiple<br/>Quotes</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 sm:gap-1.5">
+                  <Award className="w-4 h-4 shrink-0 text-[#E8701A]" />
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-tight">Best Price<br/>Guarantee</span>
+                </div>
+                <div className="flex items-center justify-center gap-1 sm:gap-1.5">
+                  <Clock className="w-4 h-4 shrink-0 text-[#E8701A]" />
+                  <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-slate-300 leading-tight">On-Time<br/>Delivery</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Pagination Dots (Mobile) */}
+            <div className="flex items-center justify-center gap-1.5 mt-3 mb-1">
+              <div className="w-4 h-1.5 bg-[#E8701A] rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+              <div className="w-1.5 h-1.5 bg-slate-200 dark:bg-slate-700 rounded-full"></div>
+            </div>
+
           </div>
         )}
 
@@ -520,7 +568,7 @@ export function Hero() {
                   
                   <Link href="/post-requirement" className="block w-full">
                     <button className="w-full bg-[#E8701A] hover:bg-[#E8701A]/90 text-white font-bold py-3.5 rounded-lg shadow-md transition mt-4">
-                      POST NOW (It's Free)
+                      POST NOW (It&apos;s Free)
                     </button>
                   </Link>
                 </div>

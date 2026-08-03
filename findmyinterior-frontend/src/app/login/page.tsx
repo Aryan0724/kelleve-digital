@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Eye, EyeOff } from "lucide-react";
@@ -20,12 +20,10 @@ export default function LoginPage() {
   const [redirectUrl, setRedirectUrl] = useState<string | null>(null);
   const router = useRouter();
 
-  import("react").then((m) => {
-    m.useEffect(() => {
-      const params = new URLSearchParams(window.location.search);
-      setRedirectUrl(params.get("redirect"));
-    }, []);
-  });
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    setRedirectUrl(params.get("redirect"));
+  }, []);
   const setAuth = useAuthStore((state) => state.setAuth);
 
   const handleLogin = async (e: React.FormEvent) => {

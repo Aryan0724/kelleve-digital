@@ -33,9 +33,10 @@ import {
   ShieldAlert,
   Moon,
   Sun,
-  X
+  X,
+  User,
+  Mic
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { SmartSearch } from "./SmartSearch";
 
@@ -48,10 +49,12 @@ export function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   // Close mobile menu on route change
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsMobileMenuOpen(false);
   }, [router]);
 
@@ -82,7 +85,7 @@ export function Navbar() {
       {/* 1. TOP DARK BAR */}
       <div className="w-full bg-[#0a1c3a] text-white/90 text-xs py-1.5 px-4 hidden md:flex justify-between items-center">
         <div>
-          Bihar's No.1 Home Improvement &amp; Interior Marketplace
+          Bihar&apos;s No.1 Home Improvement &amp; Interior Marketplace
         </div>
         <div className="flex items-center space-x-6">
           <div className="flex items-center space-x-2">
@@ -243,47 +246,42 @@ export function Navbar() {
                 </Link>
               </div>
               
-              <div className="flex items-center">
-                {isAuthenticated ? (
-                  <NotificationDropdown />
-                ) : (
-                  <button className="relative p-1.5 text-slate-700 dark:text-slate-200">
-                    <Bell className="w-6 h-6" />
-                    <span className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#E8701A] rounded-full border-2 border-white dark:border-slate-900"></span>
-                  </button>
-                )}
+              <div className="flex items-center gap-2">
+                <button className="relative p-1.5 text-slate-700 dark:text-slate-200">
+                  <Bell className="w-6 h-6" />
+                  <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-[#E8701A] text-[9px] font-bold text-white border-2 border-white dark:border-slate-900">3</span>
+                </button>
+                <Link href={user ? "/dashboard" : "/login"} className="p-1.5 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 overflow-hidden">
+                  <User className="w-5 h-5 text-slate-500 dark:text-slate-400" />
+                </Link>
               </div>
             </div>
             
             {/* Mobile Search Row */}
-            <div className="flex items-center gap-2 w-full mt-1">
+            <div className="flex items-center w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm">
               <button 
-                onClick={() => {
-                  const input = document.getElementById('mobile-search-input');
-                  if(input) input.focus();
-                }}
-                className="flex items-center justify-between gap-1 bg-white dark:bg-slate-800 px-3 py-2.5 rounded-full text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border border-slate-200 dark:border-slate-700 shadow-sm w-[100px] hover:border-[#E8701A]/50 transition-colors"
+                className="flex items-center justify-between gap-1 pl-4 pr-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border-r border-slate-200 dark:border-slate-700"
               >
                 <div className="flex items-center gap-1.5 overflow-hidden">
-                  <MapPin className="w-4 h-4 text-slate-400 shrink-0" />
-                  <span className="truncate">Patna</span>
+                  <MapPin className="w-4 h-4 text-[#E8701A] shrink-0" />
+                  <span className="truncate max-w-[70px]">Patna</span>
                 </div>
                 <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
               </button>
               
-              <div className="flex-1 relative">
-                <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <div className="flex-1 relative flex items-center">
+                <Search className="w-4 h-4 text-slate-400 ml-3 shrink-0" />
                 <input 
                   id="mobile-search-input"
                   type="text" 
                   placeholder="Search services, professionals..." 
-                  className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full py-2.5 pl-9 pr-10 text-[13px] font-medium focus:outline-none focus:ring-1 focus:ring-[#E8701A] text-slate-800 dark:text-slate-100 placeholder-slate-400 shadow-sm"
+                  className="w-full bg-transparent py-2.5 pl-2 pr-2 text-[13px] font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                 />
-                <button className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-[#E8701A]">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" x2="12" y1="19" y2="22"></line></svg>
+                <button className="p-2 text-slate-400 hover:text-[#E8701A] shrink-0 mr-2">
+                  <Mic className="w-4 h-4" />
                 </button>
               </div>
             </div>

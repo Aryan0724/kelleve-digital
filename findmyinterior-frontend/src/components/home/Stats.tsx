@@ -1,6 +1,6 @@
 import { Users, Building, Smile, MapPin, Grid, HeadphonesIcon } from "lucide-react";
 
-export function Stats({ stats }: { stats?: any }) {
+export function Stats({ stats }: { stats?: Record<string, number | string> }) {
   // Use provided stats
   const displayStats = [
     {
@@ -38,9 +38,25 @@ export function Stats({ stats }: { stats?: any }) {
   return (
     <div className="w-full bg-[#f8f9fa] dark:bg-background pt-4 pb-8 transition-colors duration-300">
       <div className="container mx-auto px-4 relative z-30 -mt-10">
-        <div className="bg-white dark:bg-slate-900 rounded-xl shadow-md border border-gray-100 dark:border-slate-800 p-6 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6 justify-items-center md:justify-items-start transition-colors duration-300">
+        {/* MOBILE VIEW: 2x2 Grid with 4 items */}
+        <div className="lg:hidden bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 p-5 grid grid-cols-2 gap-y-6 gap-x-4 justify-items-center">
+          {displayStats.slice(0, 4).map((stat, idx) => (
+            <div key={idx} className="flex flex-col items-center text-center space-y-1.5 w-full">
+              <div className="shrink-0 bg-orange-50 dark:bg-orange-950/30 p-2.5 rounded-full">
+                {stat.icon}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-lg font-extrabold text-[#0a1c3a] dark:text-white leading-none mb-1">{stat.value}</span>
+                <span className="text-[10px] font-bold text-slate-500 dark:text-slate-400 leading-tight">{stat.label}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* DESKTOP VIEW */}
+        <div className="hidden lg:grid bg-white dark:bg-slate-900 rounded-xl shadow-md border border-gray-100 dark:border-slate-800 p-6 grid-cols-6 gap-6 justify-items-start">
           {displayStats.map((stat, idx) => (
-            <div key={idx} className="flex flex-col lg:flex-row items-center lg:items-start text-center lg:text-left space-y-2 lg:space-y-0 lg:space-x-3 w-full">
+            <div key={idx} className="flex flex-row items-start text-left space-x-3 w-full">
               <div className="shrink-0">
                 {stat.icon}
               </div>
