@@ -146,13 +146,20 @@ export function Hero() {
           <div className="flex lg:hidden flex-col w-full pt-1 pb-3">
             
             {/* Main Hero Banner Card */}
-            <div className="w-full bg-gradient-to-r from-[#fefcf8] via-[#fbf9f3] to-[#f6f3eb] dark:from-slate-900 dark:to-slate-950 rounded-[24px] p-5 relative overflow-hidden border border-orange-100/60 dark:border-slate-800 shadow-sm mb-3">
-              {/* Subtle blueprint grid pattern in background */}
+            <div className="w-full bg-gradient-to-r from-[#fefcf8] via-[#fdfbf6] to-[#faf6ed] dark:from-slate-900 dark:to-slate-950 rounded-[24px] p-5 relative overflow-hidden border border-orange-100/70 dark:border-slate-800 shadow-sm mb-3">
+              {/* Smooth golden-orange radial glow behind the family */}
               <div 
-                className="absolute inset-0 opacity-[0.08] dark:opacity-[0.05] pointer-events-none"
+                className="absolute inset-0 pointer-events-none"
                 style={{
-                  backgroundImage: `radial-gradient(#E8701A 1px, transparent 1px), linear-gradient(to right, #0a1c3a 1px, transparent 1px), linear-gradient(to bottom, #0a1c3a 1px, transparent 1px)`,
-                  backgroundSize: '24px 24px'
+                  background: `radial-gradient(circle at 85% 65%, rgba(232, 112, 26, 0.18) 0%, rgba(232, 112, 26, 0.04) 50%, transparent 75%)`
+                }}
+              />
+              {/* Subtle architectural grid accent */}
+              <div 
+                className="absolute inset-0 opacity-[0.06] dark:opacity-[0.04] pointer-events-none"
+                style={{
+                  backgroundImage: `radial-gradient(#0a1c3a 1px, transparent 1px)`,
+                  backgroundSize: '18px 18px'
                 }}
               />
 
@@ -161,7 +168,7 @@ export function Hero() {
                 <img
                   src="/hero-family.png"
                   alt="Family planning interior"
-                  className="object-cover object-bottom w-full h-full max-h-[195px]"
+                  className="object-contain object-bottom w-auto h-full max-h-[185px] drop-shadow-md"
                 />
               </div>
 
