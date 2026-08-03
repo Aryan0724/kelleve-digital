@@ -182,6 +182,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             Route::get('listings', [ProfileController::class, 'listings']);
             Route::post('listings', [ProfileController::class, 'createListing']);
             Route::put('listings/{id}', [ProfileController::class, 'updateListing']);
+            Route::post('listings/{id}/cover', [ProfileController::class, 'uploadListingCover']);
             Route::post('listings/{id}/gallery', [ProfileController::class, 'addGalleryImages']);
             Route::delete('listings/{id}/gallery/{imageId}', [ProfileController::class, 'deleteGalleryImage']);
             

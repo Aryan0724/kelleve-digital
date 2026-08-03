@@ -212,6 +212,32 @@ class ProfileController extends Controller
     }
 
     /**
+     * POST /api/v1/user/listings/{id}/cover
+     * Upload and store a cover image for the listing.
+     */
+    public function uploadListingCover(Request $request, int $id): JsonResponse
+    {
+        $listing = Listing::forCurrentTenant()->where('user_id', $request->user()->id)->findOrFail($id);
+
+        $request->validate([
+            'cover_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        $file = $request->file('cover_image');
+
+        // Convert to base64 data URI — stored directly in DB, no filesystem needed.
+        $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1200, 82);
+
+        $listing->update(['cover_image' => $dataUri]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cover image updated.',
+            'cover_image' => $dataUri,
+        ]);
+    }
+
+    /**
      * POST /api/v1/user/listings/{id}/gallery
      * Adds gallery images (S3 URLs from frontend upload).
      */
