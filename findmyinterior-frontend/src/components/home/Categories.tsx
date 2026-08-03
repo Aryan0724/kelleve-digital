@@ -18,7 +18,7 @@ const exactCategories = [
   { name: "Interior Designers", slug: "interior-designers", isSofa: true },
 ];
 
-export function Categories() {
+export function Categories({ categories }: { categories?: any[] }) {
   return (
     <section className="w-full bg-[#f8f9fa] dark:bg-background lg:py-8 transition-colors duration-300">
       
