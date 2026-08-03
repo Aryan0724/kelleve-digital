@@ -95,6 +95,76 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
   );
 }
 
+// ─── Cover Image Uploader ───────────────────────────────────────────────────
+
+function CoverUploader({ currentCover, listingId }: { currentCover: string | null; listingId: string | null }) {
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(currentCover);
+  const [success, setSuccess] = useState(false);
+
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Cover image must be less than 5MB.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = (ev) => setPreview(ev.target?.result as string);
+    reader.readAsDataURL(file);
+
+    setUploading(true);
+    setSuccess(false);
+
+    try {
+      const form = new FormData();
+      form.append("cover_image", file);
+      const res = await api.post("/user/professional-cover", form);
+      setPreview(res.data.cover_image);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Upload failed. Please try again.");
+      setPreview(currentCover);
+    } finally {
+      setUploading(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  return (
+    <div className="relative group w-full h-32 md:h-48 bg-gradient-to-r from-[#0a1c3a] to-indigo-900 overflow-hidden">
+      {preview && (
+        <img src={preview} alt="Cover" className="w-full h-full object-cover text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+      )}
+      <button
+        onClick={() => fileRef.current?.click()}
+        className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 cursor-pointer"
+        disabled={uploading}
+        type="button"
+      >
+        {uploading ? (
+          <Loader2 className="w-6 h-6 text-white animate-spin" />
+        ) : (
+          <Camera className="w-6 h-6 text-white" />
+        )}
+        <span className="text-white text-xs font-semibold">
+          {uploading ? "Uploading…" : "Change Cover Image (Max 5MB)"}
+        </span>
+      </button>
+      {success && (
+        <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow flex items-center gap-1">
+          <CheckCircle2 className="w-4 h-4" /> Uploaded
+        </div>
+      )}
+      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleFileChange} />
+    </div>
+  );
+}
+
 // ─── Trust Score Badge ────────────────────────────────────────────────────────
 
 function TrustBadge({ level, score }: { level: string; score?: number }) {
@@ -199,6 +269,8 @@ export function CompleteProfileTab() {
   const [verificationData, setVerificationData] = useState<any>(null);
   const [uploadingDoc, setUploadingDoc] = useState<string | null>(null);
   const [locations, setLocations] = useState<any[]>([]);
+  const [currentCover, setCurrentCover] = useState<string | null>(null);
+  const [listingId, setListingId] = useState<string | null>(null);
 
   const role = user?.role || 'homeowner';
   const isBusiness = ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business'].includes(role);
@@ -234,6 +306,8 @@ export function CompleteProfileTab() {
       setVerificationData(verifRes.data?.data);
 
       if (data) {
+        setListingId(data.id || null);
+        setCurrentCover(data.cover_image || null);
         setFormData({
           // Base
           phone: user?.phone || data.phone || "",
@@ -401,7 +475,11 @@ export function CompleteProfileTab() {
     <div className="space-y-6 max-w-4xl mx-auto">
       {/* ─── Header card: avatar + trust ──────────────────────── */}
       <Card className="overflow-hidden">
-        <div className="h-20 bg-gradient-to-r from-[#0a1c3a] to-indigo-900" />
+        {isBusiness || isWorker ? (
+          <CoverUploader currentCover={currentCover} listingId={listingId} />
+        ) : (
+          <div className="h-20 bg-gradient-to-r from-[#0a1c3a] to-indigo-900" />
+        )}
         <CardContent className="pt-0 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12">
             <AvatarUploader currentAvatar={user?.avatar ?? null} userName={user?.name ?? ""} />
