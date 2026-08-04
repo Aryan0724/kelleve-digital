@@ -10,9 +10,12 @@ import {
   Search as SearchIcon
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { useState } from "react";
+import { HowItWorksModal } from "./HowItWorksModal";
 
 export function Hero() {
   const { user } = useAuthStore();
+  const [isHowItWorksOpen, setIsHowItWorksOpen] = useState(false);
   const isCustomer = !user || user?.role === 'customer';
   const isPro = user && ['interior_designer', 'architect', 'contractor', 'builder', 'supplier'].includes(user.role);
   const isWorker = user?.role === 'worker';
@@ -97,7 +100,11 @@ export function Hero() {
                       <span>Post a Project</span>
                     </button>
                   </Link>
-                  <button className="bg-white dark:bg-white/10 dark:text-white text-[#0a1c3a] font-bold text-[12px] md:text-sm lg:text-base px-5 py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-2 shadow-sm border border-slate-200 dark:border-white/20 transition-transform hover:-translate-y-0.5 whitespace-nowrap">
+                  <button 
+                    type="button" 
+                    onClick={() => setIsHowItWorksOpen(true)}
+                    className="bg-white dark:bg-white/10 dark:text-white text-[#0a1c3a] font-bold text-[12px] md:text-sm lg:text-base px-5 py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-2 shadow-sm border border-slate-200 dark:border-white/20 transition-transform hover:-translate-y-0.5 whitespace-nowrap"
+                  >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0a1c3a] dark:text-white md:w-5 md:h-5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
                     <span>How It Works</span>
                   </button>
@@ -138,6 +145,8 @@ export function Hero() {
         </div>
 
       </div>
+
+      <HowItWorksModal isOpen={isHowItWorksOpen} onClose={() => setIsHowItWorksOpen(false)} />
     </section>
   );
 }

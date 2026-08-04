@@ -60,7 +60,7 @@ export function ChatModal({ professionalId, professionalName, isOpen, onClose }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4 sm:p-0">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 p-4 sm:p-0">
       <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
           <h3 className="font-bold text-slate-900 dark:text-white">Chat with {professionalName}</h3>

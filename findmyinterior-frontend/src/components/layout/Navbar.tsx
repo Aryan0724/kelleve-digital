@@ -35,7 +35,6 @@ import {
   Sun,
   X,
   User,
-  Mic,
   LocateFixed,
   Loader2
 } from "lucide-react";
@@ -53,7 +52,6 @@ export function Navbar() {
   const [isLocating, setIsLocating] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
-  const [isListening, setIsListening] = useState(false);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
@@ -75,40 +73,6 @@ export function Navbar() {
     logout();
     closeMobileMenu();
     router.push("/login");
-  };
-
-  const handleVoiceSearch = () => {
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-    if (!SpeechRecognition) {
-      alert("Voice search is not supported by your browser. Please try Chrome or Edge.");
-      return;
-    }
-    
-    const recognition = new SpeechRecognition();
-    recognition.lang = 'en-IN';
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    
-    recognition.onstart = () => setIsListening(true);
-    recognition.onend = () => setIsListening(false);
-    recognition.onerror = (event: any) => {
-      setIsListening(false);
-      if (event.error === 'not-allowed') {
-        alert("Microphone access was denied. Please allow microphone permission in your browser settings.");
-      } else if (event.error === 'no-speech') {
-        // Silently handle no speech detected
-      } else {
-        console.error("Voice recognition error:", event.error);
-      }
-    };
-    recognition.onresult = (event: any) => {
-      const transcript = event.results[0][0].transcript;
-      setSearchQuery(transcript);
-      // Auto-search after voice input
-      router.push(`/search?q=${encodeURIComponent(transcript)}&location=${encodeURIComponent(selectedLocation)}`);
-    };
-    
-    recognition.start();
   };
 
   const handleLocateMe = (e: React.MouseEvent) => {
@@ -249,9 +213,6 @@ export function Navbar() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
-                  <button type="button" onClick={handleVoiceSearch} className={`p-2 mr-2 shrink-0 transition-colors ${isListening ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-[#E8701A]'}`} title={isListening ? 'Listening...' : 'Voice Search'}>
-                    <Mic className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
 
@@ -455,9 +416,6 @@ export function Navbar() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
-                  <button type="button" onClick={handleVoiceSearch} className={`p-2 shrink-0 mr-2 transition-colors ${isListening ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-[#E8701A]'}`} title={isListening ? 'Listening...' : 'Voice Search'}>
-                    <Mic className="w-4 h-4" />
-                  </button>
                 </div>
               </div>
 
