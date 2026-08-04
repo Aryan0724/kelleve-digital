@@ -118,32 +118,32 @@ export function Hero() {
       </div>
 
       {/* Floating Search Bar */}
-      <div className="absolute left-1/2 -translate-x-1/2 -bottom-6 z-30 w-[95%] lg:w-[900px]">
-        <div className="bg-white dark:bg-slate-800 p-2 rounded-[20px] shadow-[0_15px_50px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 flex flex-col lg:flex-row items-center justify-between">
+      <div className="absolute left-1/2 -translate-x-1/2 -bottom-7 z-30 w-[95%] lg:w-[900px]">
+        <div className="bg-white dark:bg-slate-800 p-2 rounded-full shadow-[0_15px_50px_rgba(0,0,0,0.12)] border border-slate-100 dark:border-slate-700 flex flex-col lg:flex-row items-center justify-between">
           
           {/* Location Segment */}
-          <div className="flex items-center gap-2 px-4 py-2 w-full lg:w-48 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 rounded-xl transition-colors">
+          <div className="flex items-center gap-2 px-5 py-2 w-full lg:w-48 cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-700 rounded-full transition-colors">
             <MapPin className="w-5 h-5 text-[#111827] dark:text-white" />
-            <span className="font-semibold text-[#111827] dark:text-white flex-1">{city}</span>
+            <span className="font-bold text-[#111827] dark:text-white flex-1 text-[15px]">{city}</span>
             <ChevronDown className="w-4 h-4 text-slate-400" />
           </div>
 
           <div className="hidden lg:block w-px h-8 bg-slate-200 dark:bg-slate-700 mx-2"></div>
 
           {/* Search Input Segment */}
-          <form onSubmit={handleSearch} className="flex-1 w-full flex items-center">
+          <form onSubmit={handleSearch} className="flex-1 w-full flex items-center pl-4 pr-1 gap-3">
+            <SearchIcon className="w-5 h-5 text-slate-400" strokeWidth={2.5} />
             <input 
               type="text" 
               placeholder="Search Architects, Builders, Interior Designers..."
-              className="w-full bg-transparent border-none outline-none text-[#111827] dark:text-white font-medium placeholder-slate-400 px-4 py-3"
+              className="w-full bg-transparent border-none outline-none text-[#111827] dark:text-white font-semibold placeholder-slate-400 py-3 text-[15px]"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
             <button 
               type="submit" 
-              className="flex items-center gap-2 bg-[#FF6B00] hover:bg-[#e66000] text-white font-bold px-6 py-3 rounded-xl transition-colors shrink-0"
+              className="flex items-center justify-center bg-[#FF6B00] hover:bg-[#e66000] text-white font-bold px-8 py-3.5 rounded-full transition-colors shrink-0 shadow-sm text-[15px]"
             >
-              <SearchIcon className="w-4 h-4" />
               Search
             </button>
           </form>
