@@ -6,23 +6,16 @@ import api from "@/lib/api";
 import { Hero } from "@/components/home/Hero";
 import { Stats } from "@/components/home/Stats";
 import { Categories } from "@/components/home/Categories";
-import { TellUsBanner } from "@/components/home/TellUsBanner";
-import { HowItWorksTimeline } from "@/components/home/HowItWorksTimeline";
-import { Hubs } from "@/components/home/Hubs";
-import { ActionBanner } from "@/components/home/ActionBanner";
-import { TrustFooter } from "@/components/home/TrustFooter";
 import { FeaturedProfessionals } from "@/components/home/FeaturedProfessionals";
-import { MobileStickyCTA } from "@/components/home/MobileStickyCTA";
-import { RoleBasedHomepage } from "@/components/home/RoleBasedHomepage";
-import { AdSlot } from "@/components/ads/AdSlot";
-import { PublicProjects } from "@/components/home/PublicProjects";
 import { FeaturedProjects } from "@/components/home/FeaturedProjects";
 import { BeforeAfterGallery } from "@/components/home/BeforeAfterGallery";
-import { WhyChooseUs } from "@/components/home/WhyChooseUs";
 import { Testimonials } from "@/components/home/Testimonials";
 import { PopularCities } from "@/components/home/PopularCities";
 import { BrandPartners } from "@/components/home/BrandPartners";
 import { FAQ } from "@/components/home/FAQ";
+import { RoleBasedHomepage } from "@/components/home/RoleBasedHomepage";
+import { TrustFooter } from "@/components/home/TrustFooter";
+import { MobileStickyCTA } from "@/components/home/MobileStickyCTA";
 
 export function ClientHome() {
   const { user } = useAuthStore();
@@ -39,79 +32,83 @@ export function ClientHome() {
   }, []);
 
   if (!mounted) {
-    return <div className="min-h-screen bg-white dark:bg-background" />; // Prevent hydration mismatch flash
+    return <div className="min-h-screen bg-white dark:bg-slate-900" />; 
   }
 
   if (user && Object.keys(user).length > 0) {
     return (
-      <>
+      <div className="bg-white dark:bg-slate-900 min-h-screen">
         <RoleBasedHomepage />
-        <div className="container mx-auto px-4 my-6">
-          <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
-        </div>
-      </>
+      </div>
     );
   }
 
   return (
-    <div className="w-full bg-white dark:bg-[#0a0a0a]">
-      {/* 2. Hero + AI Search */}
+    <div className="w-full bg-white dark:bg-slate-900 overflow-x-hidden font-sans selection:bg-[#FF6B00] selection:text-white">
+      
+      {/* 1. Hero & Search */}
       <Hero />
       
-      {/* 3. Trust Metrics */}
+      {/* 2. Trust Metrics */}
       <Stats stats={homeData?.stats} />
       
-      {/* 4. Service Categories */}
-      <div className="container mx-auto px-4 xl:px-8 mt-12 lg:mt-20 mb-8">
-        <Categories categories={homeData?.categories} />
+      {/* 3. Categories */}
+      <div className="w-full mt-16 mb-20">
+        <div className="container max-w-[1320px] mx-auto px-4">
+          <Categories categories={homeData?.categories} />
+        </div>
       </div>
 
-      {/* 5. Featured Projects */}
-      <div className="container mx-auto px-4 xl:px-8 lg:my-16">
-        <FeaturedProjects />
+      {/* 4. Featured Projects */}
+      <div className="w-full my-20">
+        <div className="container max-w-[1320px] mx-auto px-4">
+          <FeaturedProjects />
+        </div>
       </div>
 
-      {/* 6. Top Professionals */}
-      <div className="container mx-auto px-4 xl:px-8 lg:my-16">
-        <FeaturedProfessionals pros={homeData?.featured_listings} />
+      {/* 5. Top Professionals */}
+      <div className="w-full my-20">
+        <div className="container max-w-[1320px] mx-auto px-4">
+          <FeaturedProfessionals pros={homeData?.featured_listings} />
+        </div>
       </div>
 
-      {/* Ad slot gracefully inserted */}
-      <div className="container mx-auto px-4 xl:px-8 my-6 lg:my-10">
-        <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
+      {/* 6. Brand Partners */}
+      <div className="w-full my-20 py-10 bg-[#F8FAFC] dark:bg-slate-900/50 border-y border-slate-100 dark:border-slate-800">
+        <div className="container max-w-[1320px] mx-auto px-4">
+          <BrandPartners />
+        </div>
       </div>
 
       {/* 7. Before & After Gallery */}
-      <div className="container mx-auto px-4 xl:px-8 lg:my-16">
-        <BeforeAfterGallery />
+      <div className="w-full my-24">
+        <div className="container max-w-[1320px] mx-auto px-4">
+          <BeforeAfterGallery />
+        </div>
       </div>
 
-      {/* 8. Why Choose Us */}
-      <div className="container mx-auto px-4 xl:px-8">
-        <WhyChooseUs />
+      {/* 8. Testimonials */}
+      <div className="w-full my-24">
+        <div className="container max-w-[1320px] mx-auto px-4">
+          <Testimonials />
+        </div>
       </div>
 
-      {/* 9. Testimonials */}
-      <div className="container mx-auto px-4 xl:px-8 lg:my-16">
-        <Testimonials />
+      {/* 9. Popular Cities */}
+      <div className="w-full my-24">
+        <div className="container max-w-[1320px] mx-auto px-4">
+          <PopularCities />
+        </div>
       </div>
 
-      {/* 10. Popular Cities */}
-      <div className="container mx-auto px-4 xl:px-8 lg:my-16">
-        <PopularCities />
+      {/* 10. FAQ */}
+      <div className="w-full my-24">
+        <div className="container max-w-[1320px] mx-auto px-4">
+          <FAQ />
+        </div>
       </div>
 
-      {/* 11. Brand Partners */}
-      <div className="container mx-auto px-4 xl:px-8">
-        <BrandPartners />
-      </div>
-
-      {/* 12. FAQ */}
-      <div className="container mx-auto px-4 xl:px-8 lg:my-8 border-t border-slate-100 dark:border-slate-800">
-        <FAQ />
-      </div>
-
-      {/* 13. Large Footer */}
+      {/* Footer */}
       <TrustFooter />
       
       <MobileStickyCTA />

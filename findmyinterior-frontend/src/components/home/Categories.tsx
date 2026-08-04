@@ -1,64 +1,56 @@
+"use client";
+
 import Link from "next/link";
-import React from "react";
-import { Sofa, Ruler, Building2, HardHat, ChefHat, PaintRoller, Package, Hammer, LayoutGrid } from "lucide-react";
+import { 
+  ArrowRight,
+  Sofa, 
+  Ruler, 
+  HardHat, 
+  Hammer,
+  PaintBucket,
+  HammerIcon,
+  HardDrive,
+  MoreHorizontal
+} from "lucide-react";
 
-// Premium recognizable SVG icons per profession
-const customIcons: Record<string, React.ReactNode> = {
-  "interior-designers": <Sofa className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />,
-  "architects": <Ruler className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />,
-  "builders": <Building2 className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />,
-  "civil-contractors": <HardHat className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />,
-  "modular-kitchen-experts": <ChefHat className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />,
-  "painters": <PaintRoller className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />,
-  "suppliers-and-vendors": <Package className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />,
-  "skilled-workers": <Hammer className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />,
-  "default": <LayoutGrid className="w-8 h-8 lg:w-12 lg:h-12" strokeWidth={1.5} />
-};
-
-export function Categories({ categories }: { categories?: Array<Record<string, unknown>> }) {
-  const items = [
-    { name: "Interior Designers", slug: "interior-designers" },
-    { name: "Architects", slug: "architects" },
-    { name: "Builders", slug: "builders" },
-    { name: "Contractors", slug: "civil-contractors" },
-    { name: "Modular Kitchen", slug: "modular-kitchen-experts" },
-    { name: "Civil Engineers", slug: "civil-contractors" },
-    { name: "Home Renovation", slug: "builders" },
-    { name: "False Ceiling", slug: "painters" },
+export function Categories({ categories }: { categories?: any[] }) {
+  const defaultCategories = [
+    { name: "Interior Designers", icon: <Sofa className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "1200+ Professionals", href: "/professionals?search=Interior+Designer" },
+    { name: "Architects", icon: <Ruler className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "950+ Professionals", href: "/professionals?search=Architect" },
+    { name: "Builders", icon: <HardHat className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "1800+ Professionals", href: "/professionals?search=Builder" },
+    { name: "Contractors", icon: <Hammer className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "2200+ Professionals", href: "/professionals?search=Contractor" },
+    { name: "Modular Kitchen", icon: <HardDrive className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "850+ Professionals", href: "/professionals?search=Kitchen" },
+    { name: "Home Renovation", icon: <PaintBucket className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "1500+ Professionals", href: "/professionals?search=Renovation" },
+    { name: "Civil Engineers", icon: <HammerIcon className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "600+ Professionals", href: "/professionals?search=Civil" },
+    { name: "Categories", icon: <MoreHorizontal className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "View All", href: "/categories" },
   ];
 
   return (
-    <div className="w-full flex flex-col h-full bg-transparent">
-      <div className="flex justify-between items-end mb-8">
-        <div>
-          <h2 className="text-2xl lg:text-3xl font-black text-[#111827] dark:text-white tracking-tight mb-2">
-            Explore Services
-          </h2>
-          <p className="text-slate-500 dark:text-slate-400 font-medium">Find the right professional for your specific needs</p>
-        </div>
-        <Link 
-          href="/professionals" 
-          prefetch={true}
-          className="text-sm font-bold text-[#FF6B00] hover:text-[#e66000] hover:underline flex items-center gap-1 transition-colors"
-        >
-          View All <span className="text-lg leading-none">&rarr;</span>
+    <div className="w-full">
+      <div className="flex items-center justify-between mb-6 px-2">
+        <h2 className="text-2xl font-bold text-[#111827] dark:text-white">
+          Explore by Category
+        </h2>
+        <Link href="/categories" className="group flex items-center text-[#FF6B00] font-bold text-sm hover:text-[#e66000] transition-colors">
+          View All Categories
+          <ArrowRight className="w-4 h-4 ml-1 transform group-hover:translate-x-1 transition-transform" />
         </Link>
       </div>
 
-      <div className="flex overflow-x-auto lg:grid lg:grid-cols-4 gap-4 lg:gap-6 hide-scrollbar pb-4">
-        {items.map((category, idx) => (
-          <Link 
-            href={`/professionals?category=${category.slug}`}
-            prefetch={true}
-            key={idx}
-            className="flex flex-col items-center justify-center gap-4 p-6 lg:py-10 bg-white dark:bg-slate-800 rounded-2xl lg:rounded-3xl border-2 border-transparent hover:border-[#FF6B00] min-w-[120px] lg:min-w-0 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 cursor-pointer group"
-          >
-            <div className="relative flex items-center justify-center w-16 h-16 lg:w-20 lg:h-20 mb-1 text-[#111827] dark:text-white group-hover:text-[#FF6B00] bg-slate-50 dark:bg-slate-900 group-hover:bg-orange-50 dark:group-hover:bg-orange-950/30 rounded-2xl transition-all duration-300">
-              {customIcons[category.slug] || customIcons.default}
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 w-full">
+        {defaultCategories.map((cat, i) => (
+          <Link key={i} href={cat.href} className="group block w-full">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[20px] p-4 flex flex-col items-center justify-center text-center transition-all duration-300 hover:shadow-lg hover:border-[#FF6B00]">
+              <div className="mb-3">
+                {cat.icon}
+              </div>
+              <h3 className="font-bold text-[#111827] dark:text-white text-[13px] leading-tight mb-1 truncate w-full">
+                {cat.name}
+              </h3>
+              <p className="text-[10px] font-semibold text-slate-500 dark:text-slate-400">
+                {cat.sub}
+              </p>
             </div>
-            <span className="text-xs lg:text-base font-bold text-center text-[#111827] dark:text-white leading-tight">
-              {category.name}
-            </span>
           </Link>
         ))}
       </div>
