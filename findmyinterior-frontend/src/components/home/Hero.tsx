@@ -250,11 +250,11 @@ export function Hero() {
           ========================================= */}
       <section className="w-full hidden lg:flex justify-center pt-6 pb-8">
         <div className="container px-4 xl:px-8">
-          <div className="relative w-full rounded-[2rem] overflow-hidden bg-[#FFF9F3] dark:bg-slate-900 border border-[#F3EFEA] dark:border-slate-800 shadow-sm flex flex-row min-h-[550px]">
+          <div className="relative w-full rounded-[2rem] overflow-hidden bg-[#FDF8F3] dark:bg-slate-900 border border-[#F3EFEA] dark:border-slate-800 shadow-sm flex flex-row min-h-[550px]">
             
             {/* Right Background Image with smooth fade */}
-            <div className="absolute right-0 top-0 bottom-0 w-[55%] z-0">
-               <div className="absolute inset-0 bg-gradient-to-r from-[#FFF9F3] dark:from-slate-900 via-[#FFF9F3]/60 dark:via-slate-900/60 to-transparent z-10" />
+            <div className="absolute right-0 top-0 bottom-0 w-[50%] z-0">
+               <div className="absolute inset-0 bg-gradient-to-r from-[#FDF8F3] dark:from-slate-900 via-[#FDF8F3]/60 dark:via-slate-900/60 to-transparent z-10" />
                <img 
                  src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop" 
                  alt="Family in living room" 
@@ -263,11 +263,11 @@ export function Hero() {
             </div>
 
             {/* Left Content (Text) */}
-            <div className="w-[60%] xl:w-[55%] p-10 xl:p-14 flex flex-col justify-center relative z-10 h-full">
+            <div className="w-[65%] xl:w-[60%] p-10 xl:p-14 flex flex-col justify-center relative z-10 h-full">
               
               {isWorker ? (
                 <>
-                  <h1 className="text-[52px] xl:text-[64px] font-bold text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
+                  <h1 className="text-[52px] xl:text-[64px] font-black text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
                     Find Regular Work <span className="text-[#E8701A]">in Bihar</span>
                   </h1>
                   <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[90%]">
@@ -276,7 +276,7 @@ export function Hero() {
                 </>
               ) : isPro ? (
                 <>
-                  <h1 className="text-[52px] xl:text-[64px] font-bold text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
+                  <h1 className="text-[52px] xl:text-[64px] font-black text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
                     Grow Your Business <span className="text-[#E8701A]">in Bihar</span>
                   </h1>
                   <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[90%]">
@@ -285,10 +285,10 @@ export function Hero() {
                 </>
               ) : (
                 <>
-                  <h1 className="text-[52px] xl:text-[64px] font-bold text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
+                  <h1 className="text-[52px] xl:text-[64px] font-black text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
                     Where Projects <br/> Meet <span className="text-[#E8701A]">Professionals</span>
                   </h1>
-                  <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[90%]">
+                  <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[80%]">
                     Post your requirement, get multiple quotes & hire the best for your dream space.
                   </p>
                 </>
@@ -297,43 +297,43 @@ export function Hero() {
               <div className="flex flex-row items-center gap-4 mb-16">
                 {isCustomer ? (
                   <Link href="/post-requirement">
-                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 transition-all">
+                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_14px_0_rgba(232,112,26,0.39)] hover:shadow-[0_6px_20px_rgba(232,112,26,0.23)] hover:-translate-y-0.5">
                       <div className="bg-white/20 rounded-full p-1"><Plus className="w-4 h-4" strokeWidth={2.5} /></div> 
                       <span>Post a Project</span>
                     </button>
                   </Link>
                 ) : (
                   <Link href="/dashboard">
-                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 transition-all">
+                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_14px_0_rgba(232,112,26,0.39)] hover:shadow-[0_6px_20px_rgba(232,112,26,0.23)] hover:-translate-y-0.5">
                       <div className="bg-white/20 rounded-full p-1"><LayoutDashboard className="w-4 h-4" strokeWidth={2.5} /></div> 
                       <span>Go to Dashboard</span>
                     </button>
                   </Link>
                 )}
                 
-                <button className="bg-white dark:bg-slate-800 text-[#1A1A1A] dark:text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                <button className="bg-white dark:bg-slate-800 text-[#1A1A1A] dark:text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-[#1A1A1A] dark:text-white"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
                   <span>How It Works</span>
                 </button>
               </div>
               
-              {/* Feature Strip - integrated inside the box */}
-              <div className="flex flex-row items-center gap-8 mt-auto">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-6 h-6 text-[#1A1A1A] dark:text-slate-300" strokeWidth={1.5} />
-                  <span className="text-sm font-bold text-[#1A1A1A] dark:text-slate-200 leading-tight">Verified<br/>Professionals</span>
+              {/* Feature Strip - integrated inside the box with white pills */}
+              <div className="flex flex-row items-center gap-3 mt-auto flex-wrap">
+                <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2.5 shadow-sm border border-slate-100 dark:border-slate-700">
+                  <ShieldCheck className="w-5 h-5 text-[#E8701A]" strokeWidth={2} />
+                  <span className="text-xs font-bold text-[#1A1A1A] dark:text-slate-200">Verified Professionals</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <FileText className="w-6 h-6 text-[#1A1A1A] dark:text-slate-300" strokeWidth={1.5} />
-                  <span className="text-sm font-bold text-[#1A1A1A] dark:text-slate-200 leading-tight">Multiple<br/>Quotes</span>
+                <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2.5 shadow-sm border border-slate-100 dark:border-slate-700">
+                  <FileText className="w-5 h-5 text-[#E8701A]" strokeWidth={2} />
+                  <span className="text-xs font-bold text-[#1A1A1A] dark:text-slate-200">Multiple Quotes</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Award className="w-6 h-6 text-[#1A1A1A] dark:text-slate-300" strokeWidth={1.5} />
-                  <span className="text-sm font-bold text-[#1A1A1A] dark:text-slate-200 leading-tight">Best Price<br/>Guarantee</span>
+                <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2.5 shadow-sm border border-slate-100 dark:border-slate-700">
+                  <Award className="w-5 h-5 text-[#E8701A]" strokeWidth={2} />
+                  <span className="text-xs font-bold text-[#1A1A1A] dark:text-slate-200">Best Price Guarantee</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <Clock className="w-6 h-6 text-[#1A1A1A] dark:text-slate-300" strokeWidth={1.5} />
-                  <span className="text-sm font-bold text-[#1A1A1A] dark:text-slate-200 leading-tight">On-Time<br/>Delivery</span>
+                <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2.5 shadow-sm border border-slate-100 dark:border-slate-700">
+                  <Clock className="w-5 h-5 text-[#E8701A]" strokeWidth={2} />
+                  <span className="text-xs font-bold text-[#1A1A1A] dark:text-slate-200">On-Time Delivery</span>
                 </div>
               </div>
 
