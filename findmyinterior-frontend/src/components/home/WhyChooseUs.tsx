@@ -39,7 +39,7 @@ export function WhyChooseUs() {
           {reasons.map((reason, idx) => (
             <div key={idx} className="flex flex-col items-start group">
               <div className="w-16 h-16 rounded-2xl bg-orange-100 dark:bg-orange-950/40 flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-[#FF6B00] group-hover:text-white transition-all duration-300">
-                {React.cloneElement(reason.icon as React.ReactElement, { className: "w-8 h-8 text-[#FF6B00] group-hover:text-white transition-colors" })}
+                {React.cloneElement(reason.icon as React.ReactElement<any>, { className: "w-8 h-8 text-[#FF6B00] group-hover:text-white transition-colors" })}
               </div>
               <h3 className="text-xl font-bold text-[#111827] dark:text-white mb-3 leading-tight">{reason.title}</h3>
               <p className="text-slate-500 dark:text-slate-400 font-medium leading-relaxed">{reason.description}</p>
