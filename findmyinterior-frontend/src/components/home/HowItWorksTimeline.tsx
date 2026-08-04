@@ -25,7 +25,7 @@ export function HowItWorksTimeline() {
   ];
 
   return (
-    <section className="w-full bg-white dark:bg-slate-900 py-6 lg:hidden">
+    <section className="w-full bg-white dark:bg-slate-900 py-6">
       <div className="container mx-auto px-4">
         <h2 className="text-[1.15rem] font-black text-[#0a1c3a] dark:text-white mb-6">
           How It Works

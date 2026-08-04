@@ -30,8 +30,8 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
   return (
     <section className="w-full bg-[#f8f9fa] dark:bg-background lg:py-8 transition-colors duration-300">
       
-      {/* MOBILE VIEW */}
-      <div className="lg:hidden w-full bg-white dark:bg-slate-900 py-6 mt-2">
+      {/* UNIFIED VIEW */}
+      <div className="w-full bg-white dark:bg-slate-900 py-6 mt-2">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-[1.15rem] font-black text-[#0a1c3a] dark:text-white">
@@ -91,51 +91,7 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
         </div>
       </div>
 
-      {/* DESKTOP VIEW */}
-      <div className="hidden lg:block container mx-auto px-4">
-        <div className="flex justify-between items-end mb-6">
-          <h2 className="text-[1.1rem] font-bold text-[#0a1c3a] dark:text-white uppercase tracking-wide">
-            BROWSE BY SERVICES
-          </h2>
-          <Link 
-            href="/professionals" 
-            prefetch={true}
-            className="text-sm font-semibold text-[#E8701A] dark:text-orange-400 hover:underline active:scale-95 transition-all"
-          >
-            View All
-          </Link>
-        </div>
 
-        <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:flex xl:flex-wrap justify-start gap-3 md:gap-4">
-          {exactCategories.map((category, idx) => (
-            <Link 
-              href={`/professionals?category=${category.slug}`}
-              prefetch={true}
-              key={idx}
-              className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-700 active:scale-95 transition-all cursor-pointer xl:w-[calc(10%-15px)] min-w-[100px]"
-            >
-              <div className="bg-orange-50/50 dark:bg-orange-900/20 p-3 rounded-full shrink-0">
-                {customIcons[category.slug] || customIcons.default}
-              </div>
-              <span className="text-[10px] sm:text-[11px] font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
-                {category.name}
-              </span>
-            </Link>
-          ))}
-          <Link 
-            href="/professionals"
-            prefetch={true}
-            className="bg-white dark:bg-slate-900 border border-gray-100 dark:border-slate-800 rounded-xl p-4 flex flex-col items-center justify-center gap-3 hover:shadow-lg hover:border-orange-200 dark:hover:border-orange-700 active:scale-95 transition-all cursor-pointer xl:w-[calc(10%-15px)] min-w-[100px]"
-          >
-            <div className="bg-orange-50/50 dark:bg-orange-900/20 p-3 rounded-full shrink-0">
-              {customIcons.default}
-            </div>
-            <span className="text-[10px] sm:text-[11px] font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
-              View All
-            </span>
-          </Link>
-        </div>
-      </div>
     </section>
   );
 }

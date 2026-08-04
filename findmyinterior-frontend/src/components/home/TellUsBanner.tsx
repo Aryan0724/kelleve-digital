@@ -4,7 +4,7 @@ import React from "react";
 
 export function TellUsBanner() {
   return (
-    <section className="w-full bg-[#f8f9fa] dark:bg-background py-3 lg:hidden transition-colors duration-300">
+    <section className="w-full bg-[#f8f9fa] dark:bg-background py-3 transition-colors duration-300">
       <div className="container mx-auto px-4">
         <div className="bg-gradient-to-r from-[#FFF8F0] via-[#FFECD9] to-[#FFE0C4] dark:from-[#0f2142] dark:via-[#162d5a] dark:to-[#1b366b] rounded-[24px] p-5.5 sm:p-6 flex items-center justify-between shadow-md border-2 border-orange-200/80 dark:border-orange-500/40 relative overflow-hidden">
           
