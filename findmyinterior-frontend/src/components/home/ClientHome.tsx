@@ -65,7 +65,6 @@ export function ClientHome() {
       <TellUsBanner />
       <HowItWorksTimeline />
       <FeaturedProfessionals pros={homeData?.featured_listings} />
-      <Stats stats={homeData?.stats} />
       <div className="container mx-auto px-4 my-6">
         <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
       </div>

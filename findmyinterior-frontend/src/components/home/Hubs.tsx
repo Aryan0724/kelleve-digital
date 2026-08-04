@@ -119,34 +119,37 @@ export function Hubs({ homeData }: { homeData?: any }) {
   return (
     <section className="w-full bg-[#f8f9fa] dark:bg-background pb-12 transition-colors duration-300">
       <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
           {hubs.map((hub, idx) => (
-            <div key={idx} className="bg-[#f2f4f8] dark:bg-slate-800 rounded-xl overflow-hidden flex flex-col p-4 shadow-sm border border-gray-100 dark:border-slate-700 h-full">
+            <div key={idx} className="premium-card group relative rounded-2xl overflow-hidden flex flex-col p-5 h-full hover:-translate-y-2 hover:shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] dark:hover:shadow-[0_10px_40px_-15px_rgba(0,0,0,0.5)] transition-all duration-300">
+              {/* Decorative gradient top border */}
+              <div className={`absolute top-0 left-0 right-0 h-1.5 opacity-80 ${hub.buttonColor.split(' ')[0]}`} />
+              
               {/* Header */}
-              <div className="flex justify-between items-center mb-3">
-                <h3 className={`text-[10px] font-extrabold uppercase tracking-widest ${hub.titleColor}`}>
+              <div className="flex justify-between items-center mb-4 mt-1">
+                <h3 className={`text-[11px] font-extrabold uppercase tracking-widest ${hub.titleColor}`}>
                   {hub.title}
                 </h3>
-                <Link href={hub.link} className="text-[10px] font-semibold text-blue-600 hover:underline shrink-0 ml-2">
+                <Link href={hub.link} className="text-[11px] font-bold text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors shrink-0 ml-2">
                   View All
                 </Link>
               </div>
               
               {/* Content Grid */}
-              <div className="bg-white dark:bg-slate-900 rounded-lg p-3 flex-1 flex flex-row lg:flex-col xl:flex-row gap-3 border border-gray-200 dark:border-slate-700">
-                <div className="w-24 h-24 lg:w-full lg:h-32 xl:w-24 xl:h-24 shrink-0 relative rounded-md overflow-hidden bg-gray-100 dark:bg-slate-800">
+              <div className="bg-slate-50/80 dark:bg-slate-800/40 rounded-xl p-3 flex-1 flex flex-row lg:flex-col xl:flex-row gap-4 border border-slate-100/50 dark:border-slate-700/50 group-hover:bg-slate-100/80 dark:group-hover:bg-slate-800/80 transition-colors duration-300">
+                <div className="w-28 h-28 lg:w-full lg:h-36 xl:w-28 xl:h-28 shrink-0 relative rounded-lg overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
                   <Image 
                     src={hub.image} 
                     alt={hub.title} 
                     fill
-                    className="object-cover"
+                    className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
                 <div className="flex flex-col flex-1 justify-center lg:justify-start xl:justify-center">
                   {hub.content}
-                  <div className="mt-auto pt-2 lg:pt-3">
+                  <div className="mt-auto pt-3 lg:pt-4">
                     <Link href={hub.link} className="block">
-                      <button className={`w-full ${hub.buttonColor} text-white text-[10px] font-bold py-2 rounded uppercase tracking-wider transition`}>
+                      <button className={`w-full ${hub.buttonColor} text-white text-[11px] font-extrabold py-2.5 rounded-lg uppercase tracking-wider shadow-md hover:shadow-lg transform active:scale-95 transition-all duration-300`}>
                         {hub.buttonText}
                       </button>
                     </Link>
