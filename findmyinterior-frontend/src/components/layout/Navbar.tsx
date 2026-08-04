@@ -188,20 +188,19 @@ export function Navbar() {
               <img src="/logo.jpg" alt="Find My Interior" className="h-16 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
             </Link>
 
-            {/* Desktop Center Search Container */}
-            <div className="flex-1 max-w-2xl relative z-50">
-              <SmartSearch />
-            </div>
+            {/* Desktop Center Links */}
+            <nav className="flex-1 flex items-center justify-center space-x-6 text-sm font-bold text-[#1A1A1A] dark:text-white">
+              <Link href="/" className="hover:text-[#E8701A] transition-colors">Home</Link>
+              <Link href="/professionals" className="hover:text-[#E8701A] transition-colors">Professionals</Link>
+              <Link href="/projects" className="hover:text-[#E8701A] transition-colors">Projects</Link>
+              <Link href="/categories" className="hover:text-[#E8701A] transition-colors">Services</Link>
+              <Link href="/ideas" className="hover:text-[#E8701A] transition-colors">Ideas</Link>
+              <Link href="/cost-calculator" className="hover:text-[#E8701A] transition-colors">Cost Calculator</Link>
+              <Link href="/blog" className="hover:text-[#E8701A] transition-colors">Blog</Link>
+            </nav>
 
             {/* Right Action Buttons */}
-            <div className="flex items-center space-x-3">
-              <Link href="/messages" className="relative p-2 text-gray-500 hover:text-[#0a1c3a] transition-colors rounded-full hover:bg-gray-50">
-                <MessageCircle className="w-5 h-5" />
-                <span className="absolute top-1 right-1 w-2 h-2 bg-[#E8701A] rounded-full ring-2 ring-white"></span>
-              </Link>
-              
-              <NotificationDropdown />
-              
+            <div className="flex items-center space-x-4">
               {mounted && (
                 <button
                   onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
@@ -210,68 +209,33 @@ export function Navbar() {
                   {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
                 </button>
               )}
-
-              <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2"></div>
               
-              {(!_hasHydrated && !mounted) ? null : (!user || ["homeowner", "customer"].includes(user?.role || "")) ? (
-                <Link href={isAuthenticated ? "/dashboard?tab=bids_received" : "/post-requirement"}>
-                  <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                    COMPARE BIDS
-                  </button>
-                </Link>
-              ) : ["skilled_worker", "worker"].includes(user?.role || "") ? (
-                <Link href="/dashboard">
-                  <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                    SEARCH JOBS
-                  </button>
-                </Link>
-              ) : ["admin"].includes(user?.role || "") ? (
-                <Link href="/admin">
-                  <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                    ADMIN PANEL
-                  </button>
-                </Link>
+              <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-1"></div>
+
+              {(!_hasHydrated && !mounted) ? null : isAuthenticated ? (
+                <>
+                  <Link href="/messages" className="relative p-2 text-gray-500 hover:text-[#0a1c3a] dark:text-gray-400 dark:hover:text-white transition-colors rounded-full hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <MessageCircle className="w-5 h-5" />
+                    <span className="absolute top-1 right-1 w-2 h-2 bg-[#E8701A] rounded-full ring-2 ring-white"></span>
+                  </Link>
+                  <NotificationDropdown />
+                  <Link href="/dashboard/profile" className="relative p-2 text-gray-500 hover:text-[#0a1c3a] dark:text-gray-400 dark:hover:text-white transition-colors rounded-full hover:bg-gray-50 dark:hover:bg-gray-800">
+                    <User className="w-5 h-5" />
+                  </Link>
+                </>
               ) : (
-                <Link href="/dashboard">
-                  <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
-                    APPLY FOR PROJECTS
+                <Link href="/login">
+                  <button className="text-sm font-bold text-[#1A1A1A] dark:text-white hover:text-[#E8701A] dark:hover:text-[#E8701A] transition-colors px-2">
+                    Login
                   </button>
                 </Link>
               )}
-              
+
               <Link href="/post-requirement">
-                <button className="bg-gradient-to-r from-[#E8701A] to-[#f08535] hover:from-[#c25a12] hover:to-[#E8701A] text-white flex items-center px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 h-full">
-                  <ClipboardList className="w-5 h-5 mr-2.5" />
-                  <div className="flex flex-col text-left">
-                    <span className="text-sm font-bold leading-tight tracking-wide">Post Requirement</span>
-                    <span className="text-[0.65rem] leading-tight text-white/90 font-medium">Get Multiple Quotes</span>
-                  </div>
+                <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-sm px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-transform hover:-translate-y-0.5 ml-2">
+                  Post Project
                 </button>
               </Link>
-              
-              {(!_hasHydrated && !mounted) ? null : !isAuthenticated && (
-                <div className="flex items-center gap-2">
-                  <Link href="/login">
-                    <button className="text-[#0a1c3a] dark:text-white hover:text-[#E8701A] font-semibold text-sm px-4 py-2 transition-colors">
-                      Login
-                    </button>
-                  </Link>
-                  <Link href="/register">
-                    <button className="bg-[#0a1c3a] dark:bg-white dark:text-[#0a1c3a] hover:bg-[#0a1c3a]/90 text-white text-sm font-semibold px-5 py-2 rounded shadow-sm transition-all h-full flex items-center justify-center">
-                      Register
-                    </button>
-                  </Link>
-                  <Link href="/register">
-                    <button className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 text-gray-800 dark:text-gray-200 flex items-center px-4 py-2 rounded shadow-sm transition-all h-full ml-2">
-                      <Briefcase className="w-4 h-4 mr-2 text-gray-500 dark:text-gray-400" />
-                      <div className="flex flex-col text-left">
-                        <span className="text-sm font-semibold leading-tight">List Your Business</span>
-                        <span className="text-[0.65rem] leading-tight text-gray-500 dark:text-gray-400">Grow Your Business</span>
-                      </div>
-                    </button>
-                  </Link>
-                </div>
-              )}
             </div>
           </div>
           

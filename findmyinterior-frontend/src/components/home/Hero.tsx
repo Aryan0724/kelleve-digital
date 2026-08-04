@@ -250,94 +250,73 @@ export function Hero() {
           ========================================= */}
       <section className="w-full hidden lg:flex justify-center pt-6 pb-8">
         <div className="container px-4 xl:px-8">
-          <div className="relative w-full rounded-[2rem] overflow-hidden bg-[#FDF8F3] dark:bg-slate-900 border border-[#F3EFEA] dark:border-slate-800 shadow-sm flex flex-row min-h-[550px]">
+          <div className="relative w-full rounded-[2rem] overflow-hidden bg-[#F8FAFC] dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-row min-h-[650px]">
             
-            {/* Right Background Image with smooth fade */}
-            <div className="absolute right-0 top-0 bottom-0 w-[50%] z-0">
-               <div className="absolute inset-0 bg-gradient-to-r from-[#FDF8F3] dark:from-slate-900 via-[#FDF8F3]/60 dark:via-slate-900/60 to-transparent z-10" />
+            {/* Right Background Image */}
+            <div className="absolute right-0 top-0 bottom-0 w-[55%] z-0">
+               <div className="absolute inset-0 bg-gradient-to-r from-[#F8FAFC] dark:from-slate-900 via-[#F8FAFC]/40 dark:via-slate-900/40 to-transparent z-10" />
                <img 
                  src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop" 
-                 alt="Family in living room" 
+                 alt="Beautiful interior design" 
                  className="w-full h-full object-cover object-center" 
                />
             </div>
 
-            {/* Left Content (Text) */}
-            <div className="w-[65%] xl:w-[60%] p-10 xl:p-14 flex flex-col justify-center relative z-10 h-full">
+            {/* Left Content (Text & Search) */}
+            <div className="w-[60%] xl:w-[50%] p-10 xl:p-14 flex flex-col justify-center relative z-10 h-full">
               
-              {isWorker ? (
-                <>
-                  <h1 className="text-[52px] xl:text-[64px] font-black text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
-                    Find Regular Work <span className="text-[#E8701A]">in Bihar</span>
-                  </h1>
-                  <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[90%]">
-                    Connect with top contractors, builders, and homeowners instantly. Turn your skills into steady income.
-                  </p>
-                </>
-              ) : isPro ? (
-                <>
-                  <h1 className="text-[52px] xl:text-[64px] font-black text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
-                    Grow Your Business <span className="text-[#E8701A]">in Bihar</span>
-                  </h1>
-                  <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[90%]">
-                    Find high-value projects, submit winning quotes, and manage your leads effectively in one place.
-                  </p>
-                </>
-              ) : (
-                <>
-                  <h1 className="text-[52px] xl:text-[64px] font-black text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
-                    Where Projects <br/> Meet <span className="text-[#E8701A]">Professionals</span>
-                  </h1>
-                  <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[80%]">
-                    Post your requirement, get multiple quotes & hire the best for your dream space.
-                  </p>
-                </>
-              )}
+              <h1 className="text-[52px] xl:text-[64px] font-black text-[#111827] dark:text-white leading-[1.1] mb-5 tracking-tight">
+                Where Projects <br/> Meet <span className="text-[#FF6B00]">Professionals</span>
+              </h1>
+              <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-8 max-w-[90%]">
+                Post your requirement and receive quotes from verified professionals.
+              </p>
 
-              <div className="flex flex-row items-center gap-4 mb-16">
-                {isCustomer ? (
-                  <Link href="/post-requirement">
-                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_14px_0_rgba(232,112,26,0.39)] hover:shadow-[0_6px_20px_rgba(232,112,26,0.23)] hover:-translate-y-0.5">
-                      <div className="bg-white/20 rounded-full p-1"><Plus className="w-4 h-4" strokeWidth={2.5} /></div> 
-                      <span>Post a Project</span>
-                    </button>
-                  </Link>
-                ) : (
-                  <Link href="/dashboard">
-                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_14px_0_rgba(232,112,26,0.39)] hover:shadow-[0_6px_20px_rgba(232,112,26,0.23)] hover:-translate-y-0.5">
-                      <div className="bg-white/20 rounded-full p-1"><LayoutDashboard className="w-4 h-4" strokeWidth={2.5} /></div> 
-                      <span>Go to Dashboard</span>
-                    </button>
-                  </Link>
-                )}
-                
-                <button className="bg-white dark:bg-slate-800 text-[#1A1A1A] dark:text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5 text-[#1A1A1A] dark:text-white"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-                  <span>How It Works</span>
-                </button>
+              <div className="flex flex-row items-center gap-4 mb-12">
+                <Link href="/post-requirement">
+                  <button className="bg-[#FF6B00] hover:bg-[#e66000] text-white font-bold text-base px-8 py-4 rounded-xl flex items-center justify-center gap-2.5 transition-all shadow-[0_4px_14px_0_rgba(255,107,0,0.39)] hover:shadow-[0_6px_20px_rgba(255,107,0,0.23)] hover:-translate-y-0.5">
+                    <span>Post Project</span>
+                  </button>
+                </Link>
+                <Link href="/professionals">
+                  <button className="bg-white dark:bg-slate-800 text-[#111827] dark:text-white font-bold text-base px-8 py-4 rounded-xl flex items-center justify-center gap-2.5 border-2 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all shadow-sm">
+                    <span>Browse Professionals</span>
+                  </button>
+                </Link>
               </div>
               
-              {/* Feature Strip - integrated inside the box with white pills */}
-              <div className="flex flex-row items-center gap-3 mt-auto flex-wrap">
-                <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2.5 shadow-sm border border-slate-100 dark:border-slate-700">
-                  <ShieldCheck className="w-5 h-5 text-[#E8701A]" strokeWidth={2} />
-                  <span className="text-xs font-bold text-[#1A1A1A] dark:text-slate-200">Verified Professionals</span>
+              {/* AI-Powered Discovery Prompt */}
+              <div className="w-full max-w-xl bg-white dark:bg-slate-800 rounded-2xl p-2 shadow-lg border border-slate-100 dark:border-slate-700">
+                <div className="flex items-center w-full px-2">
+                  <div className="flex-1">
+                    <label className="text-xs font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider ml-2 mb-1 block">Describe your dream home...</label>
+                    <input 
+                      type="text" 
+                      placeholder="e.g. I need a modern modular kitchen under ₹3 lakh." 
+                      className="w-full bg-transparent border-none outline-none text-slate-800 dark:text-slate-200 placeholder-slate-400 font-medium text-base px-2 py-2"
+                    />
+                  </div>
+                  <button className="bg-[#111827] hover:bg-slate-800 dark:bg-slate-700 dark:hover:bg-slate-600 text-white px-6 py-3.5 rounded-xl font-bold transition-colors whitespace-nowrap h-full flex items-center gap-2">
+                    <Search className="w-4 h-4" />
+                    Find Professionals
+                  </button>
                 </div>
-                <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2.5 shadow-sm border border-slate-100 dark:border-slate-700">
-                  <FileText className="w-5 h-5 text-[#E8701A]" strokeWidth={2} />
-                  <span className="text-xs font-bold text-[#1A1A1A] dark:text-slate-200">Multiple Quotes</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2.5 shadow-sm border border-slate-100 dark:border-slate-700">
-                  <Award className="w-5 h-5 text-[#E8701A]" strokeWidth={2} />
-                  <span className="text-xs font-bold text-[#1A1A1A] dark:text-slate-200">Best Price Guarantee</span>
-                </div>
-                <div className="flex items-center gap-2 bg-white dark:bg-slate-800 rounded-full px-4 py-2.5 shadow-sm border border-slate-100 dark:border-slate-700">
-                  <Clock className="w-5 h-5 text-[#E8701A]" strokeWidth={2} />
-                  <span className="text-xs font-bold text-[#1A1A1A] dark:text-slate-200">On-Time Delivery</span>
-                </div>
+              </div>
+
+              {/* Quick Chips */}
+              <div className="flex flex-row flex-wrap items-center gap-2 mt-4">
+                <span className="text-sm font-semibold text-slate-500 mr-2">Popular:</span>
+                {['Modern Kitchen', 'False Ceiling', 'Wardrobe', 'Luxury Bedroom', 'Office Interior', 'Villa'].map((chip) => (
+                  <button key={chip} className="bg-white/80 backdrop-blur-sm dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:text-[#FF6B00] hover:border-[#FF6B00] text-xs font-bold px-3 py-1.5 rounded-full transition-colors cursor-pointer">
+                    {chip}
+                  </button>
+                ))}
               </div>
 
             </div>
+          </div>
+        </div>
+      </section>
           </div>
         </div>
       </section>

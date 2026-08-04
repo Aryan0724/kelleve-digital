@@ -1,8 +1,7 @@
 "use client";
 
-import { Star, ShieldCheck } from "lucide-react";
+import { Star, ShieldCheck, MapPin, CheckCircle, Clock } from "lucide-react";
 import Link from "next/link";
-import { InquiryForm } from "@/components/forms/InquiryForm";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
@@ -14,45 +13,85 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
   }
 
   return (
-    <div className="w-full h-full flex flex-col bg-white dark:bg-slate-900 lg:bg-transparent lg:dark:bg-transparent rounded-[24px] lg:border-0 border-slate-100 dark:border-slate-800 lg:p-0">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-lg lg:text-xl font-black text-[#1A1A1A] dark:text-white">Top Professionals Near You</h2>
-        <Link href="/professionals" className="text-sm font-bold text-[#E8701A] hover:underline flex items-center gap-1">
-          View All Professionals <span className="text-lg leading-none">&rarr;</span>
+    <div className="w-full flex flex-col h-full bg-transparent">
+      <div className="flex justify-between items-end mb-8">
+        <div>
+          <h2 className="text-2xl lg:text-3xl font-black text-[#111827] dark:text-white tracking-tight mb-2">
+            Top Professionals Near You
+          </h2>
+          <p className="text-slate-500 dark:text-slate-400 font-medium">Hire trusted experts for your next project</p>
+        </div>
+        <Link 
+          href="/professionals" 
+          className="text-sm font-bold text-[#FF6B00] hover:text-[#e66000] hover:underline flex items-center gap-1 transition-colors"
+        >
+          View All <span className="text-lg leading-none">&rarr;</span>
         </Link>
       </div>
-      <div className="flex overflow-x-auto lg:grid lg:grid-cols-4 no-scrollbar gap-4 pb-4">
+
+      <div className="flex overflow-x-auto lg:grid lg:grid-cols-4 no-scrollbar gap-6 pb-4 snap-x snap-mandatory">
         {displayPros.map((pro, i) => (
-          <div key={pro.id || i} className="flex-shrink-0 w-[240px] lg:w-full bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.1)] border border-slate-100 dark:border-slate-700 overflow-hidden group hover:shadow-md transition-shadow cursor-pointer">
-            <div className="relative h-[120px] bg-slate-200 dark:bg-slate-700">
+          <div key={pro.id || i} className="flex-shrink-0 w-[280px] lg:w-full snap-start flex flex-col bg-white dark:bg-slate-800 rounded-2xl border-2 border-transparent hover:border-[#FF6B00] dark:hover:border-[#FF6B00] shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1 overflow-hidden group">
+            
+            <div className="relative h-48 bg-slate-200 dark:bg-slate-700 w-full overflow-hidden">
               <img 
                 src={pro.cover_image || "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop"} 
                 alt={pro.title || "Professional"} 
-                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
               />
-              {/* Rating Pill */}
-              <div className="absolute top-2 left-2 bg-white dark:bg-slate-800 text-[#1A1A1A] dark:text-white text-[11px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
-                <Star className="w-3 h-3 fill-orange-400 text-orange-400" />
+              <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm text-[#111827] text-xs font-bold px-2.5 py-1 rounded-md shadow-sm">
+                ₹₹₹ Premium
+              </div>
+              <div className="absolute top-3 right-3 bg-white/90 backdrop-blur-sm text-[#111827] text-xs font-bold px-2.5 py-1 rounded-md shadow-sm flex items-center gap-1">
+                <Star className="w-3.5 h-3.5 fill-[#FF6B00] text-[#FF6B00]" />
                 {pro.rating || "4.9"}
               </div>
             </div>
-            <div className="p-4 flex flex-col gap-2">
-              <div className="flex -space-x-2 mb-1">
-                <img className="w-8 h-8 rounded-full border-2 border-white dark:border-slate-800 object-cover" src={pro.avatar || "https://i.pravatar.cc/100?img=" + (i+10)} alt="User" />
-              </div>
-              <div>
-                <h3 className="font-extrabold text-[#1A1A1A] dark:text-white text-sm truncate leading-tight">
-                  {pro.title || "Space Interior Studio"}
-                </h3>
-                <p className="text-[11px] text-slate-500 dark:text-slate-400 font-medium">
-                  {pro.category?.name || "Interior Designers"}
-                </p>
-                <div className="flex items-center gap-1 mt-1 text-[10px] text-slate-400">
-                  <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
-                  {pro.city || "Patna"}
-                  <ShieldCheck className="w-3 h-3 text-green-500 ml-auto" />
+
+            <div className="p-5 flex flex-col relative flex-1">
+              <div className="absolute -top-8 left-5">
+                <div className="relative">
+                  <img 
+                    className="w-16 h-16 rounded-xl border-4 border-white dark:border-slate-800 object-cover shadow-sm bg-white" 
+                    src={pro.avatar || "https://i.pravatar.cc/100?img=" + (i+10)} 
+                    alt="User" 
+                  />
+                  <div className="absolute -bottom-1 -right-1 bg-white rounded-full p-0.5">
+                    <CheckCircle className="w-4 h-4 text-blue-500 bg-white rounded-full" />
+                  </div>
                 </div>
               </div>
+
+              <div className="mt-8 mb-4">
+                <h3 className="font-black text-[#111827] dark:text-white text-lg truncate leading-tight group-hover:text-[#FF6B00] transition-colors">
+                  {pro.title || "Space Interior Studio"}
+                </h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 font-semibold mb-2">
+                  {pro.category?.name || "Interior Designers"}
+                </p>
+                <div className="flex flex-wrap items-center gap-3 text-xs font-semibold text-slate-600 dark:text-slate-400">
+                  <div className="flex items-center gap-1">
+                    <MapPin className="w-3.5 h-3.5" />
+                    {pro.city || "Patna"}
+                  </div>
+                  <div className="w-1 h-1 rounded-full bg-slate-300 dark:bg-slate-600"></div>
+                  <div>{pro.projects_completed || (50 + i * 15)} Projects</div>
+                </div>
+              </div>
+              
+              <div className="mt-auto pt-4 border-t border-slate-100 dark:border-slate-700 flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30 px-2.5 py-1 rounded-md text-[11px] font-bold">
+                  <Clock className="w-3.5 h-3.5" />
+                  Available Today
+                </div>
+                <Link 
+                  href={`/professionals/${pro.slug || 'slug'}`} 
+                  className="text-sm font-bold text-[#FF6B00] hover:text-[#e66000] hover:underline"
+                >
+                  View Profile
+                </Link>
+              </div>
+
             </div>
           </div>
         ))}
