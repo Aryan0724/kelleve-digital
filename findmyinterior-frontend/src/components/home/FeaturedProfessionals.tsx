@@ -63,8 +63,7 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
             ))}
           </div>
         </div>
-
-
+      </div>
     </section>
   );
 }
