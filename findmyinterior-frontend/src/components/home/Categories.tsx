@@ -18,11 +18,11 @@ export function Categories({ categories }: { categories?: any[] }) {
     { name: "Interior Designers", icon: <Sofa className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "1200+ Professionals", href: "/professionals?search=Interior+Designer" },
     { name: "Architects", icon: <Ruler className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "950+ Professionals", href: "/professionals?search=Architect" },
     { name: "Builders", icon: <HardHat className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "1800+ Professionals", href: "/professionals?search=Builder" },
-    { name: "Contractors", icon: <Hammer className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "2200+ Professionals", href: "/professionals?search=Contractor" },
+    { name: "Contractors", icon: <Hammer className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "3200+ Professionals", href: "/professionals?search=Contractor" },
     { name: "Modular Kitchen", icon: <HardDrive className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "850+ Professionals", href: "/professionals?search=Kitchen" },
     { name: "Home Renovation", icon: <PaintBucket className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "1500+ Professionals", href: "/professionals?search=Renovation" },
     { name: "Civil Engineers", icon: <HammerIcon className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "600+ Professionals", href: "/professionals?search=Civil" },
-    { name: "Categories", icon: <MoreHorizontal className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "View All", href: "/categories" },
+    { name: "••• Categories", icon: <MoreHorizontal className="w-8 h-8 text-[#111827] dark:text-white group-hover:text-[#FF6B00] transition-colors" strokeWidth={1.2} />, sub: "View All", href: "/categories" },
   ];
 
   return (
