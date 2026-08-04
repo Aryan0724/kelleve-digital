@@ -1,51 +1,29 @@
 "use client";
 
-import { Star, User, ShieldCheck, Briefcase, Building2 } from "lucide-react";
-
 export function Stats({ stats }: { stats?: any }) {
+  // Using exact text from prompt: 
+  // 4.9/5 Average Rating | 10,000+ Happy Customers | 5,000+ Verified Professionals | 25,000+ Projects Completed | 50+ Cities Covered
+  
   const statItems = [
-    {
-      icon: <Star className="w-8 h-8 text-[#FF6B00]" strokeWidth={1.5} />,
-      value: "4.9/5",
-      label: "Average Rating",
-    },
-    {
-      icon: <User className="w-8 h-8 text-[#FF6B00]" strokeWidth={1.5} />,
-      value: "10,000+",
-      label: "Happy Customers",
-    },
-    {
-      icon: <ShieldCheck className="w-8 h-8 text-[#FF6B00]" strokeWidth={1.5} />,
-      value: "5,000+",
-      label: "Verified Professionals",
-    },
-    {
-      icon: <Briefcase className="w-8 h-8 text-[#FF6B00]" strokeWidth={1.5} />,
-      value: "25,000+",
-      label: "Projects Completed",
-    },
-    {
-      icon: <Building2 className="w-8 h-8 text-[#FF6B00]" strokeWidth={1.5} />,
-      value: "50+",
-      label: "Cities Covered",
-    },
+    { value: "4.9/5", label: "Average Rating" },
+    { value: "10,000+", label: "Happy Customers" },
+    { value: "5,000+", label: "Verified Professionals" },
+    { value: "25,000+", label: "Projects Completed" },
+    { value: "50+", label: "Cities Covered" },
   ];
 
   return (
-    <div className="w-full bg-white dark:bg-slate-900 border-b border-slate-100 dark:border-slate-800 relative z-10 pt-16 pb-10">
-      <div className="container max-w-[1320px] mx-auto px-6">
-        <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-6 w-full px-4">
+    <div className="w-full bg-white dark:bg-slate-900 border-y border-slate-100 dark:border-slate-800 relative z-10 py-12 my-20">
+      <div className="container max-w-[1320px] mx-auto px-4">
+        <div className="flex flex-wrap md:flex-nowrap items-center justify-between gap-6 w-full divide-x divide-slate-100 dark:divide-slate-800">
           {statItems.map((item, i) => (
-            <div key={i} className="flex items-center gap-3 flex-1 justify-center md:justify-start">
-              <div className="shrink-0">{item.icon}</div>
-              <div className="flex flex-col">
-                <span className="text-xl font-bold text-[#111827] dark:text-white leading-tight">
-                  {item.value}
-                </span>
-                <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                  {item.label}
-                </span>
-              </div>
+            <div key={i} className={`flex flex-col items-center justify-center flex-1 ${i === 0 ? 'pl-0' : 'pl-6'}`}>
+              <span className="text-2xl lg:text-[32px] font-black text-[#111827] dark:text-white leading-tight mb-2 tracking-tight">
+                {item.value}
+              </span>
+              <span className="text-[13px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wide text-center">
+                {item.label}
+              </span>
             </div>
           ))}
         </div>
