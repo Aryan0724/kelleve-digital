@@ -248,146 +248,97 @@ export function Hero() {
       {/* =========================================
           2. DESKTOP PREMIUM HERO (visible only on lg+)
           ========================================= */}
-      <section className="relative w-full min-h-[85vh] hidden lg:flex items-center justify-center bg-slate-900 overflow-hidden pt-12 pb-16">
-        {/* Full Cinematic Background */}
-        <div className="absolute inset-0 z-0">
-          <img
-            src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=2000&auto=format&fit=crop"
-            alt="Premium Interior Desktop"
-            className="w-full h-full object-cover"
-          />
-          {/* Asymmetric Glass Overlay: Solid white/cream on the left, fading to transparent */}
-          <div className="absolute inset-0 bg-gradient-to-r from-white via-white/90 to-transparent dark:from-slate-950 dark:via-slate-950/90 dark:to-transparent" />
-          
-          {/* Accent glow on the left */}
-          <div className="absolute top-0 left-0 w-[50%] h-full bg-gradient-to-tr from-orange-500/10 to-transparent pointer-events-none" />
-        </div>
-
-        <div className="container relative z-10 mx-auto px-6 xl:px-12 h-full flex flex-row items-center w-full mt-8">
-          {/* Left Column: Command Center */}
-          <div className="w-[55%] xl:w-[50%] pr-8">
+      <section className="w-full hidden lg:flex justify-center pt-6 pb-8">
+        <div className="container px-4 xl:px-8">
+          <div className="relative w-full rounded-[2rem] overflow-hidden bg-[#FFF9F3] dark:bg-slate-900 border border-[#F3EFEA] dark:border-slate-800 shadow-sm flex flex-row min-h-[550px]">
             
-            {/* Quick Links as floating pills above headline */}
-            {isCustomer && (
-              <div className="flex flex-wrap items-center gap-3 mb-8 opacity-0 animate-fade-in-up">
-                <span className="font-bold text-xs uppercase tracking-widest text-slate-500 dark:text-slate-400 mr-2">Trending</span>
-                {["Interior Designer", "Modular Kitchen", "Architect"].map((term) => (
-                  <Link 
-                    key={term} 
-                    href={`/professionals?search=${encodeURIComponent(term)}`}
-                    className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-md text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-orange-400 hover:text-orange-600 px-4 py-1.5 rounded-full text-sm font-semibold transition-all shadow-sm hover:shadow-md cursor-pointer"
-                  >
-                    {term}
-                  </Link>
-                ))}
-              </div>
-            )}
+            {/* Right Background Image with smooth fade */}
+            <div className="absolute right-0 top-0 bottom-0 w-[55%] z-0">
+               <div className="absolute inset-0 bg-gradient-to-r from-[#FFF9F3] dark:from-slate-900 via-[#FFF9F3]/60 dark:via-slate-900/60 to-transparent z-10" />
+               <img 
+                 src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1200&auto=format&fit=crop" 
+                 alt="Family in living room" 
+                 className="w-full h-full object-cover object-center" 
+               />
+            </div>
 
-            {isWorker ? (
-              <>
-                <h1 className="text-5xl xl:text-7xl font-black text-[#0a1c3a] dark:text-white leading-[1.1] mb-6 tracking-tight opacity-0 animate-fade-in-up delay-100">
-                  Find Regular Work<br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E8701A] to-orange-400">in Bihar</span>
-                </h1>
-                <p className="text-lg xl:text-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed mb-10 pr-12 opacity-0 animate-fade-in-up delay-200">
-                  Connect with top contractors, builders, and homeowners instantly. Turn your skills into steady income.
-                </p>
-              </>
-            ) : isPro ? (
-              <>
-                <h1 className="text-5xl xl:text-7xl font-black text-[#0a1c3a] dark:text-white leading-[1.1] mb-6 tracking-tight opacity-0 animate-fade-in-up delay-100">
-                  Grow Your Business<br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E8701A] to-orange-400">in Bihar</span>
-                </h1>
-                <p className="text-lg xl:text-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed mb-10 pr-12 opacity-0 animate-fade-in-up delay-200">
-                  Find high-value projects, submit winning quotes, and manage your leads effectively in one place.
-                </p>
-              </>
-            ) : (
-              <>
-                <h1 className="text-5xl xl:text-7xl font-black text-[#0a1c3a] dark:text-white leading-[1.1] mb-6 tracking-tight opacity-0 animate-fade-in-up delay-100">
-                  Where Projects<br/>
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#E8701A] to-orange-400">Meet Professionals</span>
-                </h1>
-                <p className="text-lg xl:text-xl text-slate-600 dark:text-slate-300 font-medium leading-relaxed mb-10 pr-12 opacity-0 animate-fade-in-up delay-200">
-                  Transform your space with confidence. Post your requirement, get multiple quotes, and hire the best experts in Bihar.
-                </p>
-              </>
-            )}
-
-            <div className="flex flex-row items-center gap-5 opacity-0 animate-fade-in-up delay-300">
-              {isCustomer ? (
-                <Link href="/post-requirement">
-                  <button className="group relative bg-gradient-to-r from-[#E8701A] to-orange-500 text-white font-bold text-lg px-8 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-[0_8px_30px_rgb(232,112,26,0.3)] hover:shadow-[0_8px_30px_rgb(232,112,26,0.5)] transition-all hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
-                    <div className="relative z-10 bg-white/20 rounded-xl p-1.5"><Plus className="w-6 h-6" strokeWidth={2.5} /></div> 
-                    <span className="relative z-10">Post a Project</span>
-                  </button>
-                </Link>
+            {/* Left Content (Text) */}
+            <div className="w-[60%] xl:w-[55%] p-10 xl:p-14 flex flex-col justify-center relative z-10 h-full">
+              
+              {isWorker ? (
+                <>
+                  <h1 className="text-[52px] xl:text-[64px] font-bold text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
+                    Find Regular Work <span className="text-[#E8701A]">in Bihar</span>
+                  </h1>
+                  <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[90%]">
+                    Connect with top contractors, builders, and homeowners instantly. Turn your skills into steady income.
+                  </p>
+                </>
+              ) : isPro ? (
+                <>
+                  <h1 className="text-[52px] xl:text-[64px] font-bold text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
+                    Grow Your Business <span className="text-[#E8701A]">in Bihar</span>
+                  </h1>
+                  <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[90%]">
+                    Find high-value projects, submit winning quotes, and manage your leads effectively in one place.
+                  </p>
+                </>
               ) : (
-                <Link href="/dashboard">
-                  <button className="group relative bg-gradient-to-r from-[#E8701A] to-orange-500 text-white font-bold text-lg px-8 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-[0_8px_30px_rgb(232,112,26,0.3)] hover:shadow-[0_8px_30px_rgb(232,112,26,0.5)] transition-all hover:-translate-y-1 overflow-hidden">
-                    <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
-                    <div className="relative z-10 bg-white/20 rounded-xl p-1.5"><LayoutDashboard className="w-6 h-6" strokeWidth={2.5} /></div> 
-                    <span className="relative z-10">Go to Dashboard</span>
-                  </button>
-                </Link>
+                <>
+                  <h1 className="text-[52px] xl:text-[64px] font-bold text-[#1A1A1A] dark:text-white leading-[1.1] mb-5 tracking-tight">
+                    Where Projects <br/> Meet <span className="text-[#E8701A]">Professionals</span>
+                  </h1>
+                  <p className="text-lg text-slate-600 dark:text-slate-300 font-medium mb-10 max-w-[90%]">
+                    Post your requirement, get multiple quotes & hire the best for your dream space.
+                  </p>
+                </>
               )}
-              <button className="bg-white/80 hover:bg-white dark:bg-slate-800/80 dark:hover:bg-slate-800 backdrop-blur-md text-[#0a1c3a] dark:text-white font-bold text-lg px-8 py-4 rounded-2xl flex items-center justify-center gap-3 shadow-lg border border-slate-200/50 dark:border-slate-700/50 transition-all hover:-translate-y-1 group">
-                <div className="bg-slate-100 dark:bg-slate-700 rounded-full p-1.5 group-hover:bg-[#0a1c3a] group-hover:text-white dark:group-hover:bg-white dark:group-hover:text-slate-900 transition-colors">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="w-6 h-6 ml-0.5"><polygon points="10 8 16 12 10 16 10 8"/></svg>
+
+              <div className="flex flex-row items-center gap-4 mb-16">
+                {isCustomer ? (
+                  <Link href="/post-requirement">
+                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 transition-all">
+                      <div className="bg-white/20 rounded-full p-1"><Plus className="w-4 h-4" strokeWidth={2.5} /></div> 
+                      <span>Post a Project</span>
+                    </button>
+                  </Link>
+                ) : (
+                  <Link href="/dashboard">
+                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 transition-all">
+                      <div className="bg-white/20 rounded-full p-1"><LayoutDashboard className="w-4 h-4" strokeWidth={2.5} /></div> 
+                      <span>Go to Dashboard</span>
+                    </button>
+                  </Link>
+                )}
+                
+                <button className="bg-white dark:bg-slate-800 text-[#1A1A1A] dark:text-white font-bold text-base px-6 py-3.5 rounded-full flex items-center justify-center gap-2.5 border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-all">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" className="w-5 h-5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                  <span>How It Works</span>
+                </button>
+              </div>
+              
+              {/* Feature Strip - integrated inside the box */}
+              <div className="flex flex-row items-center gap-8 mt-auto">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-6 h-6 text-[#1A1A1A] dark:text-slate-300" strokeWidth={1.5} />
+                  <span className="text-sm font-bold text-[#1A1A1A] dark:text-slate-200 leading-tight">Verified<br/>Professionals</span>
                 </div>
-                <span>How It Works</span>
-              </button>
-            </div>
-            
-            {/* Desktop Feature Strip - Integrated organically */}
-            <div className="mt-14 pt-8 border-t border-slate-200/50 dark:border-slate-700/50 grid grid-cols-2 gap-y-6 gap-x-4 opacity-0 animate-fade-in-up delay-500">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center"><ShieldCheck className="w-5 h-5 text-[#E8701A]" /></div>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Verified Professionals</span>
+                <div className="flex items-center gap-2">
+                  <FileText className="w-6 h-6 text-[#1A1A1A] dark:text-slate-300" strokeWidth={1.5} />
+                  <span className="text-sm font-bold text-[#1A1A1A] dark:text-slate-200 leading-tight">Multiple<br/>Quotes</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Award className="w-6 h-6 text-[#1A1A1A] dark:text-slate-300" strokeWidth={1.5} />
+                  <span className="text-sm font-bold text-[#1A1A1A] dark:text-slate-200 leading-tight">Best Price<br/>Guarantee</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-6 h-6 text-[#1A1A1A] dark:text-slate-300" strokeWidth={1.5} />
+                  <span className="text-sm font-bold text-[#1A1A1A] dark:text-slate-200 leading-tight">On-Time<br/>Delivery</span>
+                </div>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center"><FileText className="w-5 h-5 text-[#E8701A]" /></div>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Multiple Quotes</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center"><Award className="w-5 h-5 text-[#E8701A]" /></div>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">Best Price Guarantee</span>
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center"><Clock className="w-5 h-5 text-[#E8701A]" /></div>
-                <span className="text-sm font-bold text-slate-800 dark:text-slate-200">On-Time Delivery</span>
-              </div>
-            </div>
 
-          </div>
-
-          {/* Right Column: Floating Visual Elements */}
-          <div className="w-[45%] xl:w-[50%] h-full relative flex items-center justify-center pointer-events-none">
-            {/* Floating Trust Badge */}
-            <div className="absolute right-[5%] top-[20%] bg-white/80 dark:bg-slate-900/80 backdrop-blur-xl border border-white/40 dark:border-slate-700/50 shadow-2xl rounded-2xl p-4 flex items-center gap-4 animate-float opacity-0 animate-fade-in-up delay-700" style={{ animationDuration: '4s' }}>
-              <div className="flex -space-x-3">
-                <img className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 object-cover" src="https://i.pravatar.cc/100?img=1" alt="User" />
-                <img className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 object-cover" src="https://i.pravatar.cc/100?img=2" alt="User" />
-                <img className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 object-cover" src="https://i.pravatar.cc/100?img=3" alt="User" />
-                <div className="w-10 h-10 rounded-full border-2 border-white dark:border-slate-800 bg-[#E8701A] flex items-center justify-center text-white text-xs font-bold">+5k</div>
-              </div>
-              <div>
-                <p className="text-sm font-black text-slate-900 dark:text-white">Trusted Community</p>
-                <p className="text-xs font-medium text-slate-600 dark:text-slate-400">Homeowners & Pros in Bihar</p>
-              </div>
-            </div>
-
-            {/* Floating Image Card */}
-            <div className="absolute left-[5%] bottom-[15%] bg-white/20 dark:bg-black/20 backdrop-blur-md p-2 rounded-2xl border border-white/30 shadow-2xl animate-float opacity-0 animate-fade-in-up delay-1000" style={{ animationDuration: '5s', animationDelay: '1s' }}>
-              <img src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=400&auto=format&fit=crop" className="w-[320px] h-[200px] object-cover rounded-xl shadow-inner" alt="Modern kitchen" />
-              <div className="absolute -bottom-4 -left-4 bg-[#0a1c3a] text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg flex items-center gap-2">
-                <CheckCircle2 className="w-4 h-4 text-green-400" /> Premium Quality
-              </div>
             </div>
           </div>
-
         </div>
       </section>
     </>

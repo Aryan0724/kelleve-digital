@@ -61,11 +61,23 @@ export function ClientHome() {
   return (
     <>
       <Hero />
-      <Categories categories={homeData?.categories} />
-      <TellUsBanner />
+      <div className="container mx-auto px-4 lg:grid lg:grid-cols-12 lg:gap-6 lg:items-stretch mt-6 lg:mt-8">
+        <div className="lg:col-span-8">
+          <Categories categories={homeData?.categories} />
+        </div>
+        <div className="lg:col-span-4 mt-6 lg:mt-0">
+          <TellUsBanner />
+        </div>
+      </div>
       <HowItWorksTimeline />
-      <FeaturedProfessionals pros={homeData?.featured_listings} />
-      <Stats stats={homeData?.stats} />
+      <div className="container mx-auto px-4 lg:grid lg:grid-cols-12 lg:gap-6 lg:items-stretch lg:my-8">
+        <div className="lg:col-span-8">
+          <FeaturedProfessionals pros={homeData?.featured_listings} />
+        </div>
+        <div className="lg:col-span-4 mt-6 lg:mt-0">
+          <Stats stats={homeData?.stats} />
+        </div>
+      </div>
       <div className="container mx-auto px-4 my-6">
         <AdSlot location="hero_banner" className="w-full h-32 md:h-48 rounded-xl" />
       </div>

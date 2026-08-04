@@ -27,73 +27,50 @@ const exactCategories = [
 ];
 
 export function Categories({ categories }: { categories?: Array<Record<string, unknown>> }) {
+  // Mobile layout uses scroll, Desktop uses grid
+  const items = [
+    { name: "Interior Designers", slug: "interior-designers" },
+    { name: "Architects", slug: "architects" },
+    { name: "Builders", slug: "builders" },
+    { name: "Contractors", slug: "civil-contractors" },
+    { name: "Modular Kitchen", slug: "modular-kitchen-experts" },
+    { name: "Civil Engineers", slug: "civil-contractors" },
+    { name: "Home Renovation", slug: "builders" },
+    { name: "False Ceiling", slug: "painters" },
+  ];
+
   return (
-    <section className="w-full bg-[#f8f9fa] dark:bg-background lg:py-8 transition-colors duration-300">
-      
-      {/* UNIFIED VIEW */}
-      <div className="w-full bg-white dark:bg-slate-900 py-6 mt-2">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-[1.15rem] font-black text-[#0a1c3a] dark:text-white">
-              Find the Right Professional
-            </h2>
-            <Link 
-              href="/professionals" 
-              prefetch={true}
-              className="text-xs font-bold text-[#E8701A] dark:text-orange-400 hover:underline active:scale-95 transition-all"
-            >
-              View All
-            </Link>
-          </div>
-
-          <div className="flex overflow-x-auto hide-scrollbar gap-3 pb-2 px-1">
-            {[
-              { name: "Interior Designers", slug: "interior-designers" },
-              { name: "Architects", slug: "architects" },
-              { name: "Builders", slug: "builders" },
-              { name: "Contractors", slug: "civil-contractors" },
-              { name: "Modular Kitchen", slug: "modular-kitchen-experts" },
-            ].map((category, idx) => (
-              <Link 
-                href={`/professionals?category=${category.slug}`}
-                prefetch={true}
-                key={idx}
-                className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] shrink-0 hover:border-orange-200 dark:hover:border-orange-700 active:scale-95 cursor-pointer transition-all duration-150"
-              >
-                <div className="relative flex items-center justify-center w-12 h-12 mb-1">
-                  <div className="absolute w-8 h-8 bg-orange-50 dark:bg-orange-900/40 rounded-full bottom-0 left-0"></div>
-                  <div className="relative z-10 text-[#0a1c3a] dark:text-white">
-                    {customIcons[category.slug] || customIcons.default}
-                  </div>
-                </div>
-                <span className="text-[10px] font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
-                  {category.name}
-                </span>
-              </Link>
-            ))}
-
-            <Link 
-              href="/professionals"
-              prefetch={true}
-              className="flex flex-col items-center justify-center gap-1.5 p-3 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] shrink-0 hover:border-orange-200 dark:hover:border-orange-700 active:scale-95 cursor-pointer transition-all duration-150"
-            >
-              <div className="relative flex items-center justify-center w-12 h-12 mb-1">
-                <div className="absolute w-8 h-8 bg-orange-50 dark:bg-orange-900/40 rounded-full bottom-0 left-0"></div>
-                <div className="relative z-10 text-[#0a1c3a] dark:text-white">
-                  {customIcons.default}
-                </div>
-              </div>
-              <span className="text-[10px] font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
-                View All
-              </span>
-            </Link>
-          </div>
-        </div>
+    <div className="w-full bg-white dark:bg-slate-900 rounded-[24px] border border-slate-100 dark:border-slate-800 shadow-sm p-4 lg:p-6 h-full flex flex-col">
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-lg lg:text-xl font-black text-[#1A1A1A] dark:text-white">
+          Find the Right Professional
+        </h2>
+        <Link 
+          href="/professionals" 
+          prefetch={true}
+          className="text-sm font-bold text-[#E8701A] hover:underline flex items-center gap-1"
+        >
+          View All Categories <span className="text-lg leading-none">&rarr;</span>
+        </Link>
       </div>
 
-
-    </section>
+      <div className="flex overflow-x-auto lg:grid lg:grid-cols-4 gap-4 hide-scrollbar pb-2">
+        {items.map((category, idx) => (
+          <Link 
+            href={`/professionals?category=${category.slug}`}
+            prefetch={true}
+            key={idx}
+            className="flex flex-col items-center justify-center gap-2 p-4 bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 min-w-[100px] lg:min-w-0 hover:border-[#E8701A] dark:hover:border-orange-500 hover:shadow-md transition-all cursor-pointer group"
+          >
+            <div className="relative flex items-center justify-center w-12 h-12 mb-1 text-[#1A1A1A] dark:text-white group-hover:text-[#E8701A] transition-colors">
+              {customIcons[category.slug] || customIcons.default}
+            </div>
+            <span className="text-[11px] lg:text-xs font-bold text-center text-[#1A1A1A] dark:text-white leading-tight">
+              {category.name}
+            </span>
+          </Link>
+        ))}
+      </div>
+    </div>
   );
 }
-
-
