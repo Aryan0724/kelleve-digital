@@ -36,6 +36,7 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
                   src={`https://images.unsplash.com/photo-${type === 'job' ? '1504307651254-35680f35eadf' : type === 'rfq' ? '1589939705384-5185137a7f0f' : '1600585154340-be6161a56a0c'}?q=80&w=600&auto=format&fit=crop`}
                   alt={project.title || "Project"}
                   fill
+                  unoptimized
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-3 right-3 bg-white dark:bg-slate-800 px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
@@ -50,6 +51,7 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
                       src={`https://ui-avatars.com/api/?name=${encodeURIComponent(project.category?.name || 'User')}&background=random`}
                       alt="Avatar"
                       fill
+                      unoptimized
                     />
                   </div>
                 </div>

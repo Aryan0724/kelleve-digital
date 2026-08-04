@@ -142,6 +142,7 @@ export function Hubs({ homeData }: { homeData?: any }) {
                     src={hub.image} 
                     alt={hub.title} 
                     fill
+                    unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>
