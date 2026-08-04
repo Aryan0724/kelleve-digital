@@ -396,11 +396,16 @@ export function CompleteProfileTab() {
       setSaving(true);
       setSaved(false);
       try {
-        // First update base user data if needed
-        if (formData.phone !== user?.phone) {
-        const userRes = await api.put("/user/profile", { phone: formData.phone, name: user?.name });
+        // Always update base user data (phone + location)
+        const userPayload: any = { 
+          phone: formData.phone, 
+          name: user?.name,
+          city: formData.city,
+          district: formData.district,
+          address: formData.address,
+        };
+        const userRes = await api.put("/user/profile", userPayload);
         if (user) updateUser(userRes.data.data);
-      }
 
       // Then update professional profile if applicable
       if (isBusiness || isWorker) {

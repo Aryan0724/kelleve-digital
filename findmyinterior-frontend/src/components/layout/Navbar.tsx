@@ -53,6 +53,7 @@ export function Navbar() {
   const [isLocating, setIsLocating] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [isListening, setIsListening] = useState(false);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
@@ -74,6 +75,40 @@ export function Navbar() {
     logout();
     closeMobileMenu();
     router.push("/login");
+  };
+
+  const handleVoiceSearch = () => {
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      alert("Voice search is not supported by your browser. Please try Chrome or Edge.");
+      return;
+    }
+    
+    const recognition = new SpeechRecognition();
+    recognition.lang = 'en-IN';
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    
+    recognition.onstart = () => setIsListening(true);
+    recognition.onend = () => setIsListening(false);
+    recognition.onerror = (event: any) => {
+      setIsListening(false);
+      if (event.error === 'not-allowed') {
+        alert("Microphone access was denied. Please allow microphone permission in your browser settings.");
+      } else if (event.error === 'no-speech') {
+        // Silently handle no speech detected
+      } else {
+        console.error("Voice recognition error:", event.error);
+      }
+    };
+    recognition.onresult = (event: any) => {
+      const transcript = event.results[0][0].transcript;
+      setSearchQuery(transcript);
+      // Auto-search after voice input
+      router.push(`/search?q=${encodeURIComponent(transcript)}&location=${encodeURIComponent(selectedLocation)}`);
+    };
+    
+    recognition.start();
   };
 
   const handleLocateMe = (e: React.MouseEvent) => {
@@ -214,7 +249,7 @@ export function Navbar() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
-                  <button type="button" onClick={() => handleSearch()} className="p-2 mr-2 text-slate-400 hover:text-[#E8701A] shrink-0 transition-colors">
+                  <button type="button" onClick={handleVoiceSearch} className={`p-2 mr-2 shrink-0 transition-colors ${isListening ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-[#E8701A]'}`} title={isListening ? 'Listening...' : 'Voice Search'}>
                     <Mic className="w-4 h-4" />
                   </button>
                 </div>
@@ -303,6 +338,7 @@ export function Navbar() {
                 </Link>
               )}
               
+              {(!user || !['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business', 'worker', 'skilled_worker'].includes(user?.role || '')) && (
               <Link href="/post-requirement">
                 <button className="bg-gradient-to-r from-[#E8701A] to-[#f08535] hover:from-[#c25a12] hover:to-[#E8701A] text-white flex items-center px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 h-full">
                   <ClipboardList className="w-5 h-5 mr-2.5" />
@@ -312,6 +348,7 @@ export function Navbar() {
                   </div>
                 </button>
               </Link>
+              )}
               
               {(!_hasHydrated && !mounted) ? null : !isAuthenticated && (
                 <div className="flex items-center gap-2">
@@ -334,6 +371,15 @@ export function Navbar() {
                       </div>
                     </button>
                   </Link>
+                  {mounted && (
+                    <button
+                      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+                      className="p-2 text-gray-500 hover:text-[#0a1c3a] dark:text-gray-400 dark:hover:text-white transition-colors rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 ml-1"
+                      title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
+                    >
+                      {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+                    </button>
+                  )}
                 </div>
               )}
             </div>
@@ -409,7 +455,7 @@ export function Navbar() {
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
-                  <button type="button" onClick={() => handleSearch()} className="p-2 text-slate-400 hover:text-[#E8701A] shrink-0 mr-2">
+                  <button type="button" onClick={handleVoiceSearch} className={`p-2 shrink-0 mr-2 transition-colors ${isListening ? 'text-red-500 animate-pulse' : 'text-slate-400 hover:text-[#E8701A]'}`} title={isListening ? 'Listening...' : 'Voice Search'}>
                     <Mic className="w-4 h-4" />
                   </button>
                 </div>
@@ -556,9 +602,11 @@ export function Navbar() {
                   <Link href="/messages" onClick={closeMobileMenu} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center gap-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <MessageSquare className="w-5 h-5 text-[#0a1c3a] dark:text-white" /> Messages
                   </Link>
+                  {!['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business', 'worker', 'skilled_worker'].includes(user?.role || '') && (
                   <Link href="/post-requirement" onClick={closeMobileMenu} className="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-lg flex items-center gap-3 font-medium hover:bg-orange-100 transition-colors">
                     <ClipboardList className="w-5 h-5" /> Post Requirement
                   </Link>
+                  )}
                   {(user?.isAdmin || user?.role === 'admin') && (
                     <Link href="/admin" onClick={closeMobileMenu} className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg flex items-center gap-3 font-medium hover:bg-red-100 transition-colors">
                       <ShieldAlert className="w-5 h-5" /> Admin Panel

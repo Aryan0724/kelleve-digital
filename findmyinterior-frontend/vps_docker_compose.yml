@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  # MySQL Database
+  db:
+    image: mysql:8.0
+    container_name: fmi_mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-findmyinterior}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD:-secret}
+      MYSQL_USER: ${DB_USERNAME:-fmi_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - fmi-network
+
+  # Laravel Backend (API)
+  backend:
+    build:
+      context: ./findmyinterior-backend
+      dockerfile: Dockerfile
+    container_name: fmi_backend
+    restart: unless-stopped
+    ports:
+      - "8000:80"
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_DATABASE: ${DB_DATABASE:-findmyinterior}
+      DB_USERNAME: ${DB_USERNAME:-fmi_user}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+    volumes:
+      - ./findmyinterior-backend:/var/www/html
+    networks:
+      - fmi-network
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./findmyinterior-frontend
+      dockerfile: Dockerfile
+    container_name: fmi_frontend
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
+    volumes:
+      - ./findmyinterior-frontend:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - fmi-network
+
+  # Redis for Queue & Cache
+  redis:
+    image: redis:alpine
+    container_name: fmi_redis
+    ports:
+      - "6379:6379"
+    networks:
+      - fmi-network
+
+volumes:
+  dbdata:
+
+networks:
+  fmi-network:
+    driver: bridge

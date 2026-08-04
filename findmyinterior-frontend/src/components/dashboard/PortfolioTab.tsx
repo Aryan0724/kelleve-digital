@@ -50,11 +50,12 @@ export function PortfolioTab() {
     }
 
     setUploading(true);
-    try {
-      const reader = new FileReader();
-      reader.onloadend = async () => {
+    
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      try {
         const base64Data = reader.result as string;
-        await api.post(`/listings/${profileId}/gallery`, {
+        await api.post(`/user/listings/${profileId}/gallery`, {
           images: [
             {
               data: base64Data,
@@ -63,14 +64,14 @@ export function PortfolioTab() {
           ]
         });
         fetchGallery();
-      };
-      reader.readAsDataURL(file);
-    } catch (err: any) {
-      console.error(err);
-      alert(err.response?.data?.message || "Failed to upload image.");
-    } finally {
-      setUploading(false);
-    }
+      } catch (err: any) {
+        console.error(err);
+        alert(err.response?.data?.message || "Failed to upload image.");
+      } finally {
+        setUploading(false);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleAddVideo = async () => {
@@ -78,7 +79,7 @@ export function PortfolioTab() {
 
     setUploading(true);
     try {
-      await api.post(`/listings/${profileId}/gallery`, {
+      await api.post(`/user/listings/${profileId}/gallery`, {
         images: [{ type: 'video', data: videoUrl, caption: videoCaption || "Video Project" }]
       });
       setShowVideoModal(false);
@@ -98,7 +99,7 @@ export function PortfolioTab() {
     if (!confirm("Are you sure you want to delete this media?")) return;
     
     try {
-      await api.delete(`/listings/${profileId}/gallery/${imageId}`);
+      await api.delete(`/user/listings/${profileId}/gallery/${imageId}`);
       fetchGallery();
     } catch (e) {
       console.error(e);

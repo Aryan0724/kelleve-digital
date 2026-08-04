@@ -63,12 +63,31 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $data = $request->validate([
-            'name'   => ['sometimes', 'required', 'string', 'max:255'],
-            'phone'  => ['sometimes', 'nullable', 'string', 'max:20'],
-            'avatar' => ['sometimes', 'nullable', 'url'],
+            'name'     => ['sometimes', 'required', 'string', 'max:255'],
+            'phone'    => ['sometimes', 'nullable', 'string', 'max:20'],
+            'avatar'   => ['sometimes', 'nullable', 'url'],
+            'city'     => ['sometimes', 'nullable', 'string', 'max:255'],
+            'district' => ['sometimes', 'nullable', 'string', 'max:255'],
+            'address'  => ['sometimes', 'nullable', 'string', 'max:1000'],
         ]);
 
-        $user->update($data);
+        // If user has a listing, update city/district/address there too
+        if (isset($data['city']) || isset($data['district']) || isset($data['address'])) {
+            $listing = Listing::forCurrentTenant()->where('user_id', $user->id)->first();
+            if ($listing) {
+                $listing->update(array_filter([
+                    'city'     => $data['city'] ?? null,
+                    'district' => $data['district'] ?? null,
+                    'address'  => $data['address'] ?? null,
+                ]));
+            }
+        }
+
+        // Only update user-level fields
+        $userFields = array_intersect_key($data, array_flip(['name', 'phone', 'avatar']));
+        if (!empty($userFields)) {
+            $user->update($userFields);
+        }
 
         return response()->json([
             'success' => true,

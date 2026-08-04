@@ -95,37 +95,27 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
 
           <div className="lg:col-span-3 space-y-6">
             {activeTab === 'dashboard' && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Active Projects</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'in_progress').length || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Open Requirements</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'open').length || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Received Bids</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.received_bids?.length || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Unread Messages</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.unread_messages || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Completed Projects</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'completed').length || 0}</div>
-                  </CardContent>
-                </Card>
+              <div className="flex flex-wrap gap-3 mb-6">
+                <div onClick={() => setActiveTab('dashboard')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Active</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'in_progress').length || 0}</div>
+                </div>
+                <div onClick={() => setActiveTab('dashboard')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Open Reqs</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'open').length || 0}</div>
+                </div>
+                <div onClick={() => setActiveTab('bids')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Bids</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.received_bids?.length || 0}</div>
+                </div>
+                <div onClick={() => setActiveTab('messages')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Messages</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.unread_messages || 0}</div>
+                </div>
+                <div onClick={() => setActiveTab('dashboard')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Completed</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'completed').length || 0}</div>
+                </div>
               </div>
             )}
 

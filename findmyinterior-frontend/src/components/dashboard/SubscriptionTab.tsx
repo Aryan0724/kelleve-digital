@@ -27,6 +27,16 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
     }
   };
 
+  const loadScript = (src: string) => {
+    return new Promise((resolve) => {
+      const script = document.createElement("script");
+      script.src = src;
+      script.onload = () => resolve(true);
+      script.onerror = () => resolve(false);
+      document.body.appendChild(script);
+    });
+  };
+
   const handleSubscribe = async (planId: number) => {
     try {
       const res = await api.post("/payments/create-order", {
@@ -37,6 +47,12 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
 
       const { order_id, amount, currency, payment_id } = res.data;
       
+      const scriptLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!scriptLoaded) {
+        alert("Razorpay SDK failed to load. Are you online?");
+        return;
+      }
+
       const options = {
         key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock", 
         amount: amount,
@@ -92,8 +108,8 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
       </Card>
 
       <div>
-        <div className="flex justify-center mb-8">
-          <div className="bg-slate-100 p-1 rounded-lg inline-flex">
+        <div className="flex justify-center mb-8 w-full">
+          <div className="bg-slate-100 p-1 rounded-lg flex flex-col sm:flex-row w-full max-w-sm sm:max-w-none sm:inline-flex gap-1">
             <button 
               className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${billingCycle === 'monthly' ? 'bg-green-600 shadow-sm text-white' : 'text-slate-500'}`}
               onClick={() => setBillingCycle('monthly')}
@@ -101,11 +117,11 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
               Monthly billing
             </button>
             <button 
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center gap-2 ${billingCycle === 'yearly' ? 'bg-blue-600 shadow-sm text-white' : 'text-slate-500'}`}
+              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${billingCycle === 'yearly' ? 'bg-blue-600 shadow-sm text-white' : 'text-slate-500'}`}
               onClick={() => setBillingCycle('yearly')}
             >
               Yearly billing
-              <span className="bg-orange-200 text-orange-800 text-[10px] px-1.5 py-0.5 rounded-full font-bold">SAVE 20%</span>
+              <span className="bg-orange-200 text-orange-800 text-[9px] px-1.5 py-0.5 rounded-full font-bold shrink-0">SAVE 20%</span>
             </button>
           </div>
         </div>

@@ -25,10 +25,11 @@ class PaymentController extends Controller
     public function createOrder(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'purpose'               => ['required', 'in:subscription,lead_unlock'],
+            'purpose'               => ['required', 'in:subscription,lead_unlock,wallet_recharge'],
             'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
             'billing_cycle'         => ['required_if:purpose,subscription', 'in:monthly,yearly'],
             'requirement_id'        => ['required_if:purpose,lead_unlock', 'exists:projects,id'],
+            'amount'                => ['required_if:purpose,wallet_recharge', 'numeric', 'min:100'],
         ]);
 
         $user = $request->user();
@@ -38,6 +39,8 @@ class PaymentController extends Controller
             $amount = $data['billing_cycle'] === 'yearly'
                 ? $plan->price_yearly
                 : $plan->price_monthly;
+        } else if ($data['purpose'] === 'wallet_recharge') {
+            $amount = $data['amount'];
         } else {
             // lead_unlock: flat ₹49 per contact
             $amount = 49.00;
@@ -181,6 +184,12 @@ class PaymentController extends Controller
             ], [
                 'payment_id' => $payment->id,
             ]);
+        } elseif ($payment->purpose === 'wallet_recharge') {
+            app(\App\Services\WalletService::class)->addFunds(
+                $payment->user,
+                $payment->amount,
+                "Wallet Recharge (Order: {$payment->razorpay_order_id})"
+            );
         }
     }
 

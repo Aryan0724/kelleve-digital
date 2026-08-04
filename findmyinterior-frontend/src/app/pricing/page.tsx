@@ -16,62 +16,76 @@ export default function PricingPage() {
           Choose a subscription plan that fits your goals. Get more visibility, direct client calls, and higher trust.
         </p>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
           
           {/* Basic Plan */}
-          <div className="bg-white rounded-2xl border shadow-sm p-8 text-left relative overflow-hidden">
-            <h3 className="text-2xl font-bold text-slate-900 mb-2">Starter</h3>
-            <p className="text-slate-500 mb-6 min-h-[48px]">Perfect for new professionals getting started.</p>
+          <div className="bg-white rounded-2xl border shadow-sm p-6 text-left relative overflow-hidden flex flex-col">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Basic</h3>
+            <p className="text-slate-500 mb-6 min-h-[40px] text-sm">Perfect for new professionals getting started.</p>
             <div className="mb-6">
-              <span className="text-4xl font-extrabold">Free</span>
+              <span className="text-3xl font-extrabold">Free</span>
             </div>
-            <Link href="/dashboard">
-              <Button variant="outline" className="w-full h-12 text-base font-semibold mb-8">Current Plan</Button>
+            <Link href="/dashboard" className="mt-auto">
+              <Button variant="outline" className="w-full h-10 text-sm font-semibold mb-6">Current Plan</Button>
             </Link>
-            <ul className="space-y-4">
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-slate-300 shrink-0" /><span className="text-slate-600">Basic Profile Listing</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-slate-300 shrink-0" /><span className="text-slate-600">Pay-per-lead unlocks</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-slate-300 shrink-0" /><span className="text-slate-600">Standard Support</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-slate-300 shrink-0" /><span className="text-slate-600">Up to 3 Portfolio Images</span></li>
+            <ul className="space-y-3 mt-auto">
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" /><span className="text-slate-600">1 Active Listing</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" /><span className="text-slate-600">Up to 5 Gallery Images</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-slate-300 shrink-0 mt-0.5" /><span className="text-slate-600">Contact Inquiry Form</span></li>
+            </ul>
+          </div>
+
+          {/* Professional Plan */}
+          <div className="bg-white rounded-2xl border shadow-sm p-6 text-left relative overflow-hidden flex flex-col">
+            <h3 className="text-xl font-bold text-slate-900 mb-2">Professional</h3>
+            <p className="text-slate-500 mb-6 min-h-[40px] text-sm">Great for establishing your presence.</p>
+            <div className="mb-6">
+              <span className="text-3xl font-extrabold text-slate-900">₹999</span><span className="text-slate-500">/mo</span>
+            </div>
+            <Link href="/dashboard" className="mt-auto">
+              <Button variant="outline" className="w-full h-10 text-sm font-semibold mb-6">Upgrade</Button>
+            </Link>
+            <ul className="space-y-3 mt-auto">
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" /><span className="text-slate-600">3 Active Listings</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" /><span className="text-slate-600">Priority in Search</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-blue-500 shrink-0 mt-0.5" /><span className="text-slate-600">Verified Badge</span></li>
             </ul>
           </div>
 
           {/* Premium Plan */}
-          <div className="bg-[#0b1b36] rounded-2xl border shadow-xl p-8 text-left relative overflow-hidden transform md:-translate-y-4">
-            <div className="absolute top-0 right-0 bg-[#ff6b00] text-white text-xs font-bold px-3 py-1 rounded-bl-lg">RECOMMENDED</div>
-            <h3 className="text-2xl font-bold text-white mb-2 flex items-center gap-2"><Star className="w-6 h-6 text-[#ff6b00] fill-[#ff6b00]" /> Premium</h3>
-            <p className="text-slate-300 mb-6 min-h-[48px]">For growing businesses that want more leads.</p>
+          <div className="bg-[#0b1b36] rounded-2xl border shadow-xl p-6 text-left relative overflow-hidden flex flex-col transform md:-translate-y-2">
+            <div className="absolute top-0 right-0 bg-[#ff6b00] text-white text-[10px] font-bold px-2 py-1 rounded-bl-lg">RECOMMENDED</div>
+            <h3 className="text-xl font-bold text-white mb-2 flex items-center gap-2"><Star className="w-5 h-5 text-[#ff6b00] fill-[#ff6b00]" /> Premium</h3>
+            <p className="text-slate-300 mb-6 min-h-[40px] text-sm">For growing businesses that want more leads.</p>
             <div className="mb-6">
-              <span className="text-4xl font-extrabold text-white">₹1,999</span><span className="text-slate-400">/month</span>
+              <span className="text-3xl font-extrabold text-white">₹4,999</span><span className="text-slate-400">/mo</span>
             </div>
-            <Link href="/dashboard">
-              <Button className="w-full h-12 text-base font-semibold mb-8 bg-[#ff6b00] hover:bg-[#ea580c] border-none text-white shadow-lg">Upgrade to Premium</Button>
+            <Link href="/dashboard" className="mt-auto">
+              <Button className="w-full h-10 text-sm font-semibold mb-6 bg-[#ff6b00] hover:bg-[#ea580c] border-none text-white shadow-lg">Upgrade to Premium</Button>
             </Link>
-            <ul className="space-y-4 text-slate-200">
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>Verified Badge on Profile</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>Rank higher in search results</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>20% Discount on Lead Unlocks</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>Unlimited Portfolio Images</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-[#ff6b00] shrink-0" /><span>Priority Support</span></li>
+            <ul className="space-y-3 mt-auto text-slate-200">
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-[#ff6b00] shrink-0 mt-0.5" /><span>10 Active Listings</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-[#ff6b00] shrink-0 mt-0.5" /><span>Featured Placement</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-[#ff6b00] shrink-0 mt-0.5" /><span>Unlimited Gallery Images</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-[#ff6b00] shrink-0 mt-0.5" /><span>WhatsApp + Email Alerts</span></li>
             </ul>
           </div>
 
           {/* Elite Plan */}
-          <div className="bg-white rounded-2xl border shadow-sm p-8 text-left relative overflow-hidden">
-            <h3 className="text-2xl font-bold text-slate-900 mb-2 flex items-center gap-2"><Zap className="w-6 h-6 text-yellow-500 fill-yellow-500" /> Elite</h3>
-            <p className="text-slate-500 mb-6 min-h-[48px]">Maximum visibility and unlimited access.</p>
+          <div className="bg-white rounded-2xl border shadow-sm p-6 text-left relative overflow-hidden flex flex-col">
+            <h3 className="text-xl font-bold text-slate-900 mb-2 flex items-center gap-2"><Zap className="w-5 h-5 text-yellow-500 fill-yellow-500" /> Elite</h3>
+            <p className="text-slate-500 mb-6 min-h-[40px] text-sm">Maximum visibility and unlimited access.</p>
             <div className="mb-6">
-              <span className="text-4xl font-extrabold">₹4,999</span><span className="text-slate-500">/month</span>
+              <span className="text-3xl font-extrabold">₹14,999</span><span className="text-slate-500">/mo</span>
             </div>
-            <Link href="/dashboard">
-              <Button variant="outline" className="w-full h-12 text-base font-semibold mb-8 border-[#0b1b36] text-[#0b1b36] hover:bg-[#0b1b36] hover:text-white">Contact Sales</Button>
+            <Link href="/dashboard" className="mt-auto">
+              <Button variant="outline" className="w-full h-10 text-sm font-semibold mb-6 border-[#0b1b36] text-[#0b1b36] hover:bg-[#0b1b36] hover:text-white">Contact Sales</Button>
             </Link>
-            <ul className="space-y-4">
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600 font-semibold">Top 3 Ranking Guarantee</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">Dedicated Account Manager</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">50% Discount on Lead Unlocks</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">Featured in Weekly Newsletter</span></li>
-              <li className="flex gap-3"><CheckCircle2 className="w-5 h-5 text-green-500 shrink-0" /><span className="text-slate-600">Custom SEO Profile Link</span></li>
+            <ul className="space-y-3 mt-auto">
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0 mt-0.5" /><span className="text-slate-600">Unlimited Active Listings</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0 mt-0.5" /><span className="text-slate-600">Dedicated Account Manager</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0 mt-0.5" /><span className="text-slate-600">50% Discount on Lead Unlocks</span></li>
+              <li className="flex gap-2 text-sm"><CheckCircle2 className="w-4 h-4 text-green-500 shrink-0 mt-0.5" /><span className="text-slate-600">Featured in Weekly Newsletter</span></li>
             </ul>
           </div>
 

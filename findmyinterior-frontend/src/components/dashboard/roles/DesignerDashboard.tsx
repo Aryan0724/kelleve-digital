@@ -120,31 +120,23 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
           <div className="lg:col-span-3 space-y-6">
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Profile Views</div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.total_views || 0}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Phone Clicks</div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.phone_clicks || 0}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">WhatsApp Clicks</div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.whatsapp_clicks || 0}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Website Clicks</div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.website_clicks || 0}</div>
-                </CardContent>
-              </Card>
+            <div className="flex flex-wrap gap-3">
+              <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Profile Views</div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{data?.total_views || 0}</div>
+              </div>
+              <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Phone Clicks</div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{data?.phone_clicks || 0}</div>
+              </div>
+              <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">WA Clicks</div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{data?.whatsapp_clicks || 0}</div>
+              </div>
+              <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Web Clicks</div>
+                <div className="text-xl font-bold text-slate-900 dark:text-white">{data?.website_clicks || 0}</div>
+              </div>
             </div>
             
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
