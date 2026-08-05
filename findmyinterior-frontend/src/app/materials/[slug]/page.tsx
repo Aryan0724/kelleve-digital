@@ -5,6 +5,8 @@ import { MapPin, Star, ShieldCheck, Box, Package, Truck, Info, Store } from "luc
 import { notFound } from "next/navigation";
 import { getServerApiUrl } from "@/lib/serverApi";
 
+export const dynamic = 'force-dynamic';
+
 async function getSupplier(slug: string) {
   try {
     const res = await fetch(`${getServerApiUrl()}/suppliers/${slug}`, {

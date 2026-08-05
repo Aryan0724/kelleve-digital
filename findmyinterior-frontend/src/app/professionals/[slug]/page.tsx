@@ -11,6 +11,8 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getServerApiUrl } from "@/lib/serverApi";
 
+export const dynamic = 'force-dynamic';
+
 async function getProfessional(slug: string) {
   try {
     const res = await fetch(`${getServerApiUrl()}/listings/${slug}`, {

@@ -68,8 +68,13 @@ export function Navbar() {
         setShowMobileLocationDropdown(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside, { capture: true });
+    document.addEventListener("touchstart", handleClickOutside, { capture: true });
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside, { capture: true });
+      document.removeEventListener("touchstart", handleClickOutside, { capture: true });
+    };
   }, []);
 
   // Close mobile menu on route change

@@ -176,6 +176,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::put('profile', [ProfileController::class, 'update']);
         Route::post('avatar', [ProfileController::class, 'uploadAvatar']);
         Route::put('change-password', [ProfileController::class, 'changePassword']);
+        Route::post('/verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
+        Route::delete('/verification/document/{id}', [\App\Http\Controllers\Api\V1\VerificationController::class, 'destroy']);
         
         // Listing management for businesses
         Route::middleware('role:business,builder,supplier,worker,skilled_worker,interior_designer,interior_company,contractor,architect,material_supplier')->group(function () {

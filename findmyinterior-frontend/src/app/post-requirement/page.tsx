@@ -132,6 +132,17 @@ function PostRequirementContent() {
       }
     }).catch(console.error);
 
+    if (!editId) {
+      const draft = localStorage.getItem("postRequirementDraft");
+      if (draft) {
+        try {
+          const parsed = JSON.parse(draft);
+          if (parsed.formData) setFormData(parsed.formData);
+          if (parsed.selectedType) setSelectedType(parsed.selectedType);
+        } catch (e) {}
+      }
+    }
+
     if (editId) {
       setLoading(true);
       let fetchEndpoint = `/projects/${editId}`;
@@ -230,6 +241,15 @@ function PostRequirementContent() {
       });
     }
   }, [editId, editType]);
+
+  useEffect(() => {
+    if (mounted && !editId) {
+      localStorage.setItem("postRequirementDraft", JSON.stringify({
+        formData,
+        selectedType
+      }));
+    }
+  }, [formData, selectedType, mounted, editId]);
 
   const handleNext = () => {
     if (!selectedType) {
@@ -369,6 +389,7 @@ function PostRequirementContent() {
       
       setLoading(false);
       setSuccess(true);
+      if (!editId) localStorage.removeItem("postRequirementDraft");
       router.refresh();
       setTimeout(() => router.push('/dashboard'), 100);
 

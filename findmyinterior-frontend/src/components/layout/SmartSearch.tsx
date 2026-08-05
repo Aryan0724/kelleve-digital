@@ -90,8 +90,13 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
         setShowLocationDropdown(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside, { capture: true });
+    document.addEventListener("touchstart", handleClickOutside, { capture: true });
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside, { capture: true });
+      document.removeEventListener("touchstart", handleClickOutside, { capture: true });
+    };
   }, []);
 
   const handleSearch = (e?: React.FormEvent, term?: string, href?: string) => {

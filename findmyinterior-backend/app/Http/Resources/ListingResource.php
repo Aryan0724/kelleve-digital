@@ -59,6 +59,11 @@ class ListingResource extends JsonResource
             ),
             'website'          => $this->website,
             'gallery'          => ListingGalleryResource::collection($this->whenLoaded('gallery')),
+            'gallery_count'    => $this->gallery_count ?? 0,
+            'services'         => $this->services ?? [],
+            'products'         => $this->products ?? [],
+            'achievements'     => $this->achievements ?? [],
+            'availability'     => $this->availability,
             'reviews'          => ReviewResource::collection($this->whenLoaded('approvedReviews')),
             'created_at'       => $this->created_at?->toDateString(),
         ];

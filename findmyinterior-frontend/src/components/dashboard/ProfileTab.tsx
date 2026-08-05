@@ -116,7 +116,7 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
         disabled={uploading}
       >
         <Upload className="w-3 h-3" />
-        {uploading ? "Uploading..." : "Upload Photo"}
+        {uploading ? "Uploading..." : (preview ? "Change Photo" : "Upload Photo")}
       </button>
       <p className="text-xs text-slate-400">JPG, PNG or WebP · Max 4MB</p>
     </div>

@@ -15,6 +15,45 @@ import {
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
+const resizeImage = (file: File, maxWidth = 1920, maxHeight = 1080): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }));
+          } else {
+            resolve(file); // fallback to original
+          }
+        }, "image/jpeg", 0.85);
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+};
+
 // ─── Avatar Uploader ─────────────────────────────────────────────────────────
 
 function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | null; userName: string }) {
@@ -25,12 +64,11 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
   const [success, setSuccess] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 4 * 1024 * 1024) {
-      alert("Photo must be less than 4MB.");
-      return;
+    if (file.size > 1.5 * 1024 * 1024) {
+      file = await resizeImage(file, 800, 800);
     }
 
     const reader = new FileReader();
@@ -71,8 +109,9 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
           )}
         </div>
         <button
+          type="button"
           onClick={() => fileRef.current?.click()}
-          className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 cursor-pointer"
+          className="absolute inset-0 z-20 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 cursor-pointer"
           disabled={uploading}
         >
           {uploading ? (
@@ -83,6 +122,15 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
           <span className="text-white text-[10px] font-medium">
             {uploading ? "Uploading…" : "Change"}
           </span>
+        </button>
+        {/* Persistent edit button for mobile/desktop */}
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="absolute z-20 bottom-0 right-0 w-8 h-8 rounded-full bg-white text-slate-700 border border-slate-200 shadow-md flex items-center justify-center hover:bg-slate-50 transition-colors cursor-pointer"
+          disabled={uploading}
+        >
+          <Camera className="w-4 h-4" />
         </button>
         {success && (
           <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-green-500 flex items-center justify-center shadow">
@@ -104,12 +152,11 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
   const [success, setSuccess] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Cover image must be less than 5MB.");
-      return;
+    if (file.size > 1.5 * 1024 * 1024) {
+      file = await resizeImage(file, 1920, 1080);
     }
 
     const reader = new FileReader();
@@ -159,6 +206,16 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
         <span className="text-white text-xs font-semibold">
           {uploading ? "Uploading…" : "Change Cover Image (Max 5MB)"}
         </span>
+      </button>
+      
+      {/* Persistent edit button for cover image on mobile/desktop */}
+      <button
+        onClick={() => fileRef.current?.click()}
+        className="absolute bottom-4 right-4 bg-white/90 hover:bg-white text-slate-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5 transition-colors"
+        disabled={uploading}
+        type="button"
+      >
+        <Camera className="w-4 h-4" /> Change Cover
       </button>
       {success && (
         <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow flex items-center gap-1">
@@ -313,7 +370,7 @@ export function CompleteProfileTab() {
       if (data) {
         setListingId(data.id || null);
         setCurrentCover(data.cover_image || null);
-        setFormData({
+        let newFormData = {
           // Base
           phone: user?.phone || data.phone || "",
           city: data.city || "",
@@ -352,7 +409,16 @@ export function CompleteProfileTab() {
           instagram: data.social_links?.instagram || "",
           linkedin: data.social_links?.linkedin || "",
           youtube: data.social_links?.youtube || "",
-        });
+        };
+        
+        try {
+          const draft = localStorage.getItem('profileDraft');
+          if (draft) {
+            newFormData = { ...newFormData, ...JSON.parse(draft) };
+          }
+        } catch(e) {}
+        
+        setFormData(newFormData);
       } else {
         setFormData({ 
           phone: user?.phone || "",
@@ -385,7 +451,11 @@ export function CompleteProfileTab() {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const updated = { ...formData, [e.target.name]: e.target.value };
+    setFormData(updated);
+    try {
+      localStorage.setItem('profileDraft', JSON.stringify(updated));
+    } catch(err) {}
   };
 
     const handleSave = async () => {
@@ -418,8 +488,8 @@ export function CompleteProfileTab() {
         const payload = {
           ...formData,
           name: user?.name || "Professional",
-          services: formData.services ? formData.services.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
-          achievements: formData.achievements ? formData.achievements.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+          services: typeof formData.services === 'string' ? formData.services.split(',').map((s: string) => s.trim()) : formData.services,
+          achievements: typeof formData.achievements === 'string' ? formData.achievements.split(',').map((s: string) => s.trim()) : formData.achievements,
           languages: formData.languages ? formData.languages.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
           social_links: {
             facebook: formData.facebook,
@@ -436,6 +506,9 @@ export function CompleteProfileTab() {
       
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      try {
+        localStorage.removeItem('profileDraft');
+      } catch(e) {}
       fetchData();
     } catch (e: any) {
       if (e.response?.data?.errors) {
@@ -472,6 +545,17 @@ export function CompleteProfileTab() {
     } finally {
       setUploadingDoc(null);
       if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleDocDelete = async (docId: number) => {
+    if (!confirm("Are you sure you want to remove this document?")) return;
+    try {
+      await api.delete(`/verification/document/${docId}`);
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      alert("Failed to delete document");
     }
   };
 
@@ -778,18 +862,32 @@ export function CompleteProfileTab() {
                               <CheckCircle2 className="h-4 w-4 mr-1" /> Document Verified
                             </div>
                           ) : (
-                            <div className="relative">
-                              <input
-                                type="file" accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={(e) => handleDocUpload(e, doc.id)}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                                disabled={uploadingDoc === doc.id || currentDoc?.status === 'pending'}
-                              />
-                              <Button variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
-                                className={`w-full ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
-                                disabled={uploadingDoc === doc.id || currentDoc?.status === 'pending'}>
-                                {uploadingDoc === doc.id ? "Uploading..." : currentDoc?.status === 'pending' ? "Pending Review" : <><UploadCloud className="h-4 w-4 mr-2" /> Upload</>}
-                              </Button>
+                            <div className="relative flex gap-2">
+                              <div className="relative flex-1">
+                                <input
+                                  type="file" accept=".pdf,.jpg,.jpeg,.png"
+                                  onChange={(e) => handleDocUpload(e, doc.id)}
+                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                                  disabled={uploadingDoc === doc.id || currentDoc?.status === 'pending'}
+                                />
+                                <Button variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
+                                  className={`w-full ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
+                                  disabled={uploadingDoc === doc.id || currentDoc?.status === 'pending'}>
+                                  {uploadingDoc === doc.id ? "Uploading..." : currentDoc?.status === 'pending' ? "Pending Review" : <><UploadCloud className="h-4 w-4 mr-2" /> Upload</>}
+                                </Button>
+                              </div>
+                              {(currentDoc?.status === 'pending' || currentDoc?.status === 'rejected') && (
+                                <Button 
+                                  variant="outline" 
+                                  size="icon" 
+                                  onClick={() => handleDocDelete(currentDoc.id)}
+                                  disabled={uploadingDoc === doc.id}
+                                  className="text-red-500 border-red-200 hover:bg-red-50 shrink-0"
+                                  title="Remove Document"
+                                >
+                                  <XCircle className="h-4 w-4 mr-1" /> Undo
+                                </Button>
+                              )}
                             </div>
                           )}
                         </div>

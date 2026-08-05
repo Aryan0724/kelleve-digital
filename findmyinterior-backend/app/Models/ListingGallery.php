@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ListingGallery extends Model
 {
-    protected $fillable = ['listing_id', 'image_url', 'caption', 'sort_order'];
+    protected $fillable = ['listing_id', 'image_url', 'caption', 'sort_order', 'type', 'video_url'];
 
     public function listing(): BelongsTo
     {

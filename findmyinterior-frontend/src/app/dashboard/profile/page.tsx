@@ -97,6 +97,15 @@ export default function ProfilePage() {
             email: user.email || ""
           }));
         }
+
+        // Restore draft if it exists
+        const savedDraft = localStorage.getItem("profile_draft");
+        if (savedDraft) {
+          try {
+            const parsed = JSON.parse(savedDraft);
+            setFormData(prev => ({ ...prev, ...parsed }));
+          } catch (e) {}
+        }
       } catch (err) {
         console.error("Error fetching profile data", err);
       } finally {
@@ -106,6 +115,13 @@ export default function ProfilePage() {
 
     fetchData();
   }, [token, router, user, mounted, _hasHydrated]);
+
+  // Save to draft on change
+  useEffect(() => {
+    if (!loading && mounted) {
+      localStorage.setItem("profile_draft", JSON.stringify(formData));
+    }
+  }, [formData, loading, mounted]);
 
   const handleSaveListing = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,6 +141,7 @@ export default function ProfilePage() {
         setListing(res.data.data);
         alert("Business profile created successfully!");
       }
+      localStorage.removeItem("profile_draft");
     } catch (err: any) {
       alert(err.response?.data?.message || "Failed to save profile");
     } finally {

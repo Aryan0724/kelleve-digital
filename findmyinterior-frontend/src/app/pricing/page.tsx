@@ -62,10 +62,10 @@ export default function PricingPage() {
             <p className="text-slate-500 mb-6 min-h-[40px] text-sm">Best for Small Businesses</p>
             
             <div className="mb-6 flex flex-col">
-              <span className="text-sm font-bold text-slate-400 line-through">₹9,999 /year</span>
+              <span className="text-sm font-bold text-slate-400 line-through">₹999 /mo</span>
               <div>
-                <span className="text-4xl font-extrabold text-slate-900">₹4,999</span>
-                <span className="text-slate-500 font-medium"> /year</span>
+                <span className="text-4xl font-extrabold text-slate-900">₹999</span>
+                <span className="text-slate-500 font-medium"> /mo</span>
               </div>
             </div>
             
@@ -104,10 +104,10 @@ export default function PricingPage() {
             <p className="text-slate-300 mb-6 min-h-[40px] text-sm">Best Value for Growing Businesses</p>
             
             <div className="mb-6 flex flex-col">
-              <span className="text-sm font-bold text-slate-400 line-through">₹23,999 /year</span>
+              <span className="text-sm font-bold text-slate-400 line-through">₹3,999 /mo</span>
               <div>
-                <span className="text-4xl font-extrabold text-white">₹11,999</span>
-                <span className="text-slate-400 font-medium"> /year</span>
+                <span className="text-4xl font-extrabold text-white">₹1,999</span>
+                <span className="text-slate-400 font-medium"> /mo</span>
               </div>
             </div>
             
@@ -140,10 +140,10 @@ export default function PricingPage() {
             <p className="text-slate-500 mb-6 min-h-[40px] text-sm">For Established & Large Brands</p>
             
             <div className="mb-6 flex flex-col">
-              <span className="text-sm font-bold text-slate-400 line-through">₹49,999 /year</span>
+              <span className="text-sm font-bold text-slate-400 line-through">₹5,999 /mo</span>
               <div>
-                <span className="text-4xl font-extrabold text-slate-900">₹24,999</span>
-                <span className="text-slate-500 font-medium"> /year</span>
+                <span className="text-4xl font-extrabold text-slate-900">₹2,999</span>
+                <span className="text-slate-500 font-medium"> /mo</span>
               </div>
             </div>
             

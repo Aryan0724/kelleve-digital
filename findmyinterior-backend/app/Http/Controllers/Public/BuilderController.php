@@ -33,6 +33,7 @@ class BuilderController extends Controller
             ->orderByDesc('is_verified')
             ->orderByDesc('is_featured')
             ->orderByDesc('avg_rating')
+            ->orderByDesc('id')
             ->paginate($request->get('per_page', 12));
 
         return response()->json([
@@ -56,6 +57,10 @@ class BuilderController extends Controller
             ->where('slug', $slug)
             ->with(['projects.images', 'possessionProjects.images', 'approvedReviews.reviewer'])
             ->firstOrFail();
+
+        if ($builder->user_id !== $request->user()?->id) {
+            $builder->increment('views_count');
+        }
 
         return response()->json([
             'success' => true,

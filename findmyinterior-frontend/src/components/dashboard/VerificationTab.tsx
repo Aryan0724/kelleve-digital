@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ShieldAlert, ShieldCheck, UploadCloud, XCircle, AlertCircle, ArrowRight, Lock, Check } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { Undo2 } from "lucide-react";
 
 const getRequiredDocsForRole = (role: string) => {
   switch (role) {
@@ -135,6 +136,16 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
     } finally {
       setUploading(null);
       if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleDeleteDoc = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this document?")) return;
+    try {
+      await api.delete(`/verification/document/${id}`);
+      fetchStatus();
+    } catch (err: any) {
+      alert("Failed to delete document");
     }
   };
 
@@ -269,27 +280,34 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
                             <CheckCircle2 className="h-4 w-4 mr-1" /> Document Verified
                           </div>
                         ) : (
-                          <div className="relative">
-                            <input
-                              type="file"
-                              accept=".pdf,.jpg,.jpeg,.png"
-                              onChange={(e) => handleFileUpload(e, doc.id)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                              disabled={uploading === doc.id || currentDoc?.status === 'pending'}
-                            />
-                            <Button 
-                              variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
-                              className={`w-full ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
-                              disabled={uploading === doc.id || currentDoc?.status === 'pending'}
-                            >
-                              {uploading === doc.id ? (
-                                "Uploading..."
-                              ) : currentDoc?.status === 'pending' ? (
-                                "Pending Admin Review"
-                              ) : (
-                                <><UploadCloud className="h-4 w-4 mr-2" /> {currentDoc?.status === 'rejected' ? 'Re-upload Document' : 'Upload File'}</>
-                              )}
-                            </Button>
+                          <div className="relative flex gap-2">
+                            <div className="relative flex-1">
+                              <input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={(e) => handleFileUpload(e, doc.id)}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                                disabled={uploading === doc.id || currentDoc?.status === 'pending'}
+                              />
+                              <Button 
+                                variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
+                                className={`w-full ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
+                                disabled={uploading === doc.id || currentDoc?.status === 'pending'}
+                              >
+                                {uploading === doc.id ? (
+                                  "Uploading..."
+                                ) : currentDoc?.status === 'pending' ? (
+                                  "Pending Admin Review"
+                                ) : (
+                                  <><UploadCloud className="h-4 w-4 mr-2" /> {currentDoc?.status === 'rejected' ? 'Re-upload Document' : 'Upload File'}</>
+                                )}
+                              </Button>
+                            </div>
+                            {currentDoc && (currentDoc.status === 'pending' || currentDoc.status === 'rejected') && (
+                               <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-slate-100 px-3 z-20 shrink-0" onClick={() => handleDeleteDoc(currentDoc.id)} title="Undo Upload">
+                                 <Undo2 className="h-4 w-4 mr-1" /> Undo
+                               </Button>
+                            )}
                           </div>
                         )}
                       </div>

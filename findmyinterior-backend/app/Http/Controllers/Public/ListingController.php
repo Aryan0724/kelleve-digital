@@ -18,7 +18,7 @@ class ListingController extends Controller
     {
         $query = Listing::forCurrentTenant()->active()
             ->with(['category', 'user'])
-            ->withCount(['approvedReviews as review_count']);
+            ->withCount(['approvedReviews as review_count', 'gallery as gallery_count']);
 
         // Filters
         if ($request->filled('category')) {
@@ -64,6 +64,29 @@ class ListingController extends Controller
         if ($request->filled('experience')) {
             $query->where('listings.years_experience', '>=', (int) $request->experience);
         }
+        if ($request->filled('years_min')) {
+            $query->where('listings.years_experience', '>=', (int) $request->years_min);
+        }
+        if ($request->filled('years_max')) {
+            $query->where('listings.years_experience', '<=', (int) $request->years_max);
+        }
+        if ($request->boolean('delivery_available')) {
+            $query->where(function ($q) {
+                $q->whereRaw('LOWER(services) LIKE ?', ['%delivery%'])
+                  ->orWhereRaw('LOWER(availability) LIKE ?', ['%delivery%']);
+            });
+        }
+        if ($request->filled('material_type')) {
+            $mtVal = strtolower(trim($request->material_type));
+            $query->whereRaw('LOWER(products) LIKE ?', ["%{$mtVal}%"]);
+        }
+        if ($request->filled('business_type')) {
+            $btVal = strtolower(trim($request->business_type));
+            $query->where(function ($q) use ($btVal) {
+                $q->whereRaw('LOWER(services) LIKE ?', ["%{$btVal}%"])
+                  ->orWhereHas('category', fn($cq) => $cq->whereRaw('LOWER(name) LIKE ?', ["%{$btVal}%"]));
+            });
+        }
 
         // Join users table to sort by trust metrics
         $query->join('users', 'users.id', '=', 'listings.user_id')
@@ -72,9 +95,9 @@ class ListingController extends Controller
 
         // Sorting
         match ($request->get('sort', 'featured')) {
-            'rating'  => $query->orderByDesc('listings.avg_rating'),
-            'newest'  => $query->orderByDesc('listings.created_at'),
-            'popular' => $query->orderByDesc('listings.views_count'),
+            'rating'  => $query->orderByDesc('listings.avg_rating')->orderByDesc('listings.id'),
+            'newest'  => $query->orderByDesc('listings.created_at')->orderByDesc('listings.id'),
+            'popular' => $query->orderByDesc('listings.views_count')->orderByDesc('listings.id'),
             default   => $query
                 ->orderByRaw('CASE WHEN listings.sponsored_until > CURRENT_TIMESTAMP THEN 1 ELSE 0 END DESC')
                 ->orderByDesc('listings.sponsored_rank')
@@ -92,7 +115,8 @@ class ListingController extends Controller
                 ")
                 ->orderByDesc('users.trust_score')
                 ->orderByDesc('users.profile_completion_score')
-                ->orderByDesc('listings.avg_rating'),
+                ->orderByDesc('listings.avg_rating')
+                ->orderByDesc('listings.id'),
         };
 
         $listings = $query->paginate($request->get('per_page', 12));

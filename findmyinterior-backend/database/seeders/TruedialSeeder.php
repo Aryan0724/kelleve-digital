@@ -259,11 +259,13 @@ class TruedialSeeder extends Seeder
 
             // Seed Reviews for Listing
             Review::firstOrCreate([
-                'reviewer_id' => $customer->id,
+                'user_id' => $customer->id,
                 'listing_id' => $listing->id,
             ], [
                 'tenant_id' => $tenantId,
                 'reviewed_user_id' => $vendorUser->id,
+                'reviewable_type' => \App\Models\Listing::class,
+                'reviewable_id' => $listing->id,
                 'rating' => 5,
                 'title' => 'Outstanding Service!',
                 'body' => 'Extremely professional team, high quality work, and great communication.',

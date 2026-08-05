@@ -6,6 +6,8 @@ import { MapPin, Star, ShieldCheck, Briefcase, IndianRupee, Clock, CheckCircle2 
 import { notFound } from "next/navigation";
 import { getServerApiUrl } from "@/lib/serverApi";
 
+export const dynamic = 'force-dynamic';
+
 async function getWorker(slug: string) {
   try {
     const res = await fetch(`${getServerApiUrl()}/workers/${slug}`, {

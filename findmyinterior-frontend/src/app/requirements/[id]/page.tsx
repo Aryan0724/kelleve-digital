@@ -108,9 +108,9 @@ export default function RequirementDetail() {
       const res = await api.get(getEndpoint(params.id as string));
       setRequirement(res.data.data);
     } catch (err: any) {
-      if (err.response?.status === 402 || err.response?.data?.message?.includes('balance')) {
-        alert("Insufficient wallet balance. Please recharge your wallet.");
-        router.push("/dashboard/wallet/recharge");
+      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
+        alert("Insufficient wallet balance. Redirecting to wallet recharge...");
+        router.push("/dashboard?tab=wallet");
       } else {
         alert(err.response?.data?.message || "Failed to unlock contact.");
       }
@@ -274,6 +274,9 @@ export default function RequirementDetail() {
                 }
                 if (requirement.image) {
                   displayImages.push(requirement.image);
+                }
+                if (displayImages.length === 0) {
+                  displayImages.push("https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500&q=80");
                 }
 
                 return (
@@ -507,7 +510,12 @@ export default function RequirementDetail() {
                           <div className="text-sm text-slate-600 font-medium">{requirement.email || "No email provided"}</div>
                         </>
                       ) : (
-                        <div className="text-sm text-slate-600 font-medium mb-2">Phone number hidden. Message to discuss further.</div>
+                        <div className="text-center mb-2">
+                          <div className="text-2xl font-black text-slate-900 tracking-wider mb-1 opacity-70">
+                            {requirement.phone ? `${requirement.phone.substring(0, 4)}XXXXXX` : "9999XXXXXX"}
+                          </div>
+                          <div className="text-sm text-slate-600 font-medium">Phone number hidden. Message to discuss further.</div>
+                        </div>
                       )}
                       <div className="mt-3 text-xs font-bold text-green-700 bg-green-100 py-1.5 rounded flex items-center justify-center gap-1">
                         <CheckCircle className="w-4 h-4" /> {isUnlocked || user?.role === 'admin' ? "Contact Unlocked" : "Messaging Unlocked"}
@@ -532,9 +540,14 @@ export default function RequirementDetail() {
                     </div>
                   ) : (
                     <>
-                      <div className="mt-4 mb-2 flex items-baseline">
-                        <span className="text-4xl font-black text-[#16a34a]">{displayUnlockPrice}</span>
-                        {!isWorker && <span className="text-slate-600 font-bold ml-1">/unlock</span>}
+                      <div className="mt-4 mb-4 flex flex-col items-center">
+                        <div className="text-3xl font-black text-slate-900 tracking-wider mb-3 opacity-60">
+                          {requirement.phone ? `${requirement.phone.substring(0, 4)}XXXXXX` : "9999XXXXXX"}
+                        </div>
+                        <div className="flex items-baseline">
+                          <span className="text-4xl font-black text-[#16a34a]">{displayUnlockPrice}</span>
+                          {!isWorker && <span className="text-slate-600 font-bold ml-1">/unlock</span>}
+                        </div>
                       </div>
                       
                       <p className="text-sm text-slate-700 mb-5 leading-relaxed">

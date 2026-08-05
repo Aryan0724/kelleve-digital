@@ -249,7 +249,7 @@ class PaymentController extends Controller
             if ($plan->is_featured_listing) {
                 $updateData['is_featured'] = true;
             }
-            if ($plan->price_yearly > 0) {
+            if ($plan->price_yearly > 0 || $plan->price_monthly > 0) {
                 $updateData['is_verified'] = true;
             }
 

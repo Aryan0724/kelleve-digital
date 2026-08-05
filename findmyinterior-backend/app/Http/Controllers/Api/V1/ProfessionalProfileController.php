@@ -111,7 +111,7 @@ class ProfessionalProfileController extends Controller
             $data = $request->validate([
                 'title'            => ['required', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
-                'description'      => ['required', 'string'],
+                'description'      => ['required', 'string', 'max:5000'],
                 'phone'            => ['nullable', 'string', 'max:20'],
                 'city'             => ['required', 'string', 'max:100'],
                 'district'         => ['required', 'string', 'max:100'],
@@ -238,6 +238,20 @@ class ProfessionalProfileController extends Controller
             }
             $profile->save();
             $type = 'builder';
+
+            // Sync to Listing for search visibility
+            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listing->title = $data['company_name'] ?? $user->name;
+            $listing->description = $data['tagline'] ?? '';
+            $listing->phone = $data['phone'] ?? null;
+            $listing->city = $data['city'] ?? null;
+            $listing->district = $data['district'] ?? null;
+            $listing->status = 'active';
+            if (!$listing->exists) {
+                $listing->slug = $profile->slug;
+            }
+            $listing->save();
+
         } else {
             return response()->json([
                 'success' => false,

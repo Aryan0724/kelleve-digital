@@ -101,8 +101,24 @@ class VerificationController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Document uploaded successfully and is pending verification.',
+            'message' => 'Document uploaded successfully',
             'data' => $document
+        ]);
+    }
+
+    public function destroy(Request $request, $id)
+    {
+        $user = $request->user();
+        $document = UserDocument::where('user_id', $user->id)->findOrFail($id);
+        
+        $document->delete();
+        
+        // Recalculate score
+        $this->trustScoreService->recalculateForUser($user);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Document deleted successfully'
         ]);
     }
 }

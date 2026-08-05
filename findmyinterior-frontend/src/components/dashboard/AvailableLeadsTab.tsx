@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { MapPin, Search } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 function locationName(value: any) {
   return typeof value === "string" ? value : value?.name || "Location not set";
@@ -15,6 +16,7 @@ function locationName(value: any) {
 
 export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
   const { user } = useAuthStore();
+  const router = useRouter();
   const [unlockingId, setUnlockingId] = useState<number | null>(null);
 
   const requirements = leads || [];
@@ -25,11 +27,15 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
       await api.post(`/requirements/${id}/unlock${typeStr}`);
       alert("Contact unlocked successfully! Check your Unlocked Leads tab.");
-      // Refresh to update wallet balance if needed
-      window.location.reload();
+      router.push(`/requirements/${id}${typeStr}`);
     } catch (err: any) {
       console.error(err);
-      alert(err.response?.data?.message || "Failed to unlock contact. Check your wallet balance.");
+      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
+        alert("Insufficient wallet balance. Redirecting to wallet recharge...");
+        router.push("/dashboard?tab=wallet");
+      } else {
+        alert(err.response?.data?.message || "Failed to unlock contact.");
+      }
     } finally {
       setUnlockingId(null);
     }
@@ -100,7 +106,7 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
                       >
                         {unlockingId === req.id 
                           ? "Unlocking..." 
-                          : `Unlock (${(user?.role === 'worker' || user?.role === 'skilled_worker' || user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker')) ? 'Free' : '₹' + (req.unlock_price || 49)})`}
+                          : `Unlock (${(user?.role === 'worker' || user?.role === 'skilled_worker' || user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker') || user?.subscription?.plan?.can_see_all_leads) ? 'Free' : '₹' + (req.unlock_price || 49)})`}
                       </Button>
                     </div>
                   )}
