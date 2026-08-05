@@ -69,7 +69,7 @@ export default function PricingPage() {
               </div>
             </div>
             
-            <Link href="/dashboard" className="mt-auto">
+            <Link href="/dashboard?tab=subscription" className="mt-auto">
               <Button variant="outline" className="w-full h-10 text-sm font-semibold mb-6 border-blue-600 text-blue-600 hover:bg-blue-50">Choose Plan</Button>
             </Link>
             
@@ -111,7 +111,7 @@ export default function PricingPage() {
               </div>
             </div>
             
-            <Link href="/dashboard" className="mt-auto">
+            <Link href="/dashboard?tab=subscription" className="mt-auto">
               <Button className="w-full h-10 text-sm font-semibold mb-6 bg-[#ff6b00] hover:bg-[#ea580c] border-none text-white shadow-lg">Choose Plan</Button>
             </Link>
             

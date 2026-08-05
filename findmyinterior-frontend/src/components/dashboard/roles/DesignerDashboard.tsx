@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,7 +25,15 @@ import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
 export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("available_leads");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || "available_leads");
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
   const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = async () => {
@@ -84,9 +92,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                       <div className="text-xs text-orange-600 dark:text-orange-500 font-medium">Subscription</div>
                       <div className="font-bold text-slate-900 dark:text-white">{data?.user?.subscription || "Free Plan"}</div>
                     </div>
-                    <Link href="/pricing">
-                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-slate-700">Upgrade</Button>
-                    </Link>
+                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-slate-700" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
                   </div>
                   
                   <div className="w-full bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50 rounded-lg p-3 text-left flex justify-between items-center">

@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -23,7 +23,15 @@ import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("available_leads");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || "available_leads");
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
 
   const handleLogout = async () => {
     await handleLogoutAction();
@@ -79,9 +87,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
                       <div className="text-xs text-orange-600 font-medium">Subscription</div>
                       <div className="font-bold text-slate-900">{data?.user?.subscription || "Free Plan"}</div>
                     </div>
-                    <Link href="/pricing">
-                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200">Upgrade</Button>
-                    </Link>
+                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
                   </div>
                   
                   <div className="w-full bg-green-50 border border-green-100 rounded-lg p-3 text-left flex justify-between items-center">
