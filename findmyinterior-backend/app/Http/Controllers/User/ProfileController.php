@@ -298,6 +298,24 @@ class ProfileController extends Controller
     }
 
     /**
+     * PUT /api/v1/user/listings/{id}/gallery/{imageId}
+     */
+    public function updateGalleryImage(Request $request, int $id, int $imageId): JsonResponse
+    {
+        $request->validate([
+            'caption' => 'nullable|string|max:255'
+        ]);
+
+        $listing = Listing::forCurrentTenant()->where('user_id', $request->user()->id)->findOrFail($id);
+        $image = ListingGallery::where('listing_id', $listing->id)->findOrFail($imageId);
+        
+        $image->caption = $request->caption;
+        $image->save();
+
+        return response()->json(['success' => true, 'message' => 'Image updated.']);
+    }
+
+    /**
      * DELETE /api/v1/user/listings/{id}/gallery/{imageId}
      */
     public function deleteGalleryImage(Request $request, int $id, int $imageId): JsonResponse

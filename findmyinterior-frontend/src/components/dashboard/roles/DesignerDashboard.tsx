@@ -147,6 +147,41 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
+            {/* Profile Viewers Section - shown on dashboard overview */}
+            {activeTab === 'available_leads' && data?.recent_visitors && data.recent_visitors.length > 0 && (
+              <Card className="dark:bg-slate-900 dark:border-slate-800">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2 dark:text-white">
+                    <Search className="w-4 h-4 text-orange-500" />
+                    Recent Profile Visitors
+                    <span className="ml-auto text-xs text-slate-400 font-normal">Last 10 logged-in views</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {data.recent_visitors.map((visitor: any, idx: number) => (
+                      <div key={idx} className="flex items-center gap-3 py-2 border-b dark:border-slate-800 last:border-0">
+                        <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center text-slate-500 font-bold flex-shrink-0">
+                          {visitor.avatar ? (
+                            <img src={visitor.avatar} alt={visitor.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <span>{visitor.name?.charAt(0) || '?'}</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-sm text-slate-800 dark:text-white truncate">{visitor.name}</div>
+                          <div className="text-xs text-slate-400 capitalize">{visitor.role?.replace('_', ' ')}</div>
+                        </div>
+                        <div className="text-xs text-slate-400 text-right flex-shrink-0">
+                          {visitor.viewed_at ? new Date(visitor.viewed_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Recently'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
             {activeTab === 'unlocked_leads' && (
               <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />
             )}

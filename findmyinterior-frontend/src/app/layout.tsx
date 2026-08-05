@@ -8,6 +8,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { PopupAd } from "@/components/ads/PopupAd";
 import { TopRibbonAd } from "@/components/ads/TopRibbonAd";
+import Script from "next/script";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -68,6 +69,24 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <Script
+            id="organization-schema"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "Organization",
+                "name": "FindMyInterior",
+                "url": "https://findmyinterior.com",
+                "logo": "https://findmyinterior.com/logo.png",
+                "sameAs": [
+                  "https://www.facebook.com/findmyinterior",
+                  "https://www.instagram.com/findmyinterior",
+                  "https://www.linkedin.com/company/findmyinterior"
+                ]
+              })
+            }}
+          />
           <TopRibbonAd />
           <Navbar />
           <PopupAd />

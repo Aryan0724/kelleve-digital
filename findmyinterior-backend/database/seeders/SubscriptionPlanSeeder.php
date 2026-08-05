@@ -99,7 +99,7 @@ class SubscriptionPlanSeeder extends Seeder
             [
                 'name'                   => 'Premium',
                 'slug'                   => 'premium',
-                'price_monthly'          => 3999.00,
+                'price_monthly'          => 2999.00,
                 'price_yearly'           => 24999.00, // Price in the image is 24,999/year
                 'features'               => [
                     '1 Business Listing',

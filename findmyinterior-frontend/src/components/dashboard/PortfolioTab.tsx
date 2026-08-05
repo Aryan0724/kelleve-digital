@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Paintbrush, Loader2, UploadCloud, X, PlusCircle, Video, Image as ImageIcon, Trash2, CheckCircle2 } from "lucide-react";
+import { Paintbrush, Loader2, UploadCloud, X, PlusCircle, Video, Image as ImageIcon, Trash2, CheckCircle2, Pencil } from "lucide-react";
 import { Input } from "@/components/ui/input";
 
 export function PortfolioTab() {
@@ -17,6 +17,10 @@ export function PortfolioTab() {
   const [showVideoModal, setShowVideoModal] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [videoCaption, setVideoCaption] = useState("");
+
+  // Edit Modal State
+  const [editingImage, setEditingImage] = useState<any>(null);
+  const [editCaption, setEditCaption] = useState("");
 
   const fetchGallery = async () => {
     try {
@@ -104,6 +108,24 @@ export function PortfolioTab() {
     } catch (e) {
       console.error(e);
       alert("Failed to delete image.");
+    }
+  };
+
+  const handleUpdateCaption = async () => {
+    if (!profileId || !editingImage) return;
+    setUploading(true);
+    try {
+      await api.put(`/user/listings/${profileId}/gallery/${editingImage.id}`, {
+        caption: editCaption
+      });
+      setEditingImage(null);
+      setEditCaption("");
+      fetchGallery();
+    } catch (e) {
+      console.error(e);
+      alert("Failed to update caption.");
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -207,6 +229,31 @@ export function PortfolioTab() {
         </div>
       )}
 
+      {/* Edit Modal */}
+      {editingImage && (
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4 backdrop-blur-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl p-6 max-w-md w-full animate-in zoom-in-95 duration-200">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">Edit Caption</h3>
+            <div className="space-y-4 mb-6">
+              <div>
+                <label className="text-sm font-medium text-slate-700 dark:text-slate-300 mb-1 block">Caption</label>
+                <Input 
+                  placeholder="e.g. Modern Kitchen Reno" 
+                  value={editCaption}
+                  onChange={(e) => setEditCaption(e.target.value)}
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 justify-end">
+              <Button variant="ghost" onClick={() => setEditingImage(null)}>Cancel</Button>
+              <Button onClick={handleUpdateCaption} disabled={uploading}>
+                {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : "Save Changes"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Grid */}
       {images.length === 0 ? (
         <div className="text-center py-20 px-4 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-2xl bg-slate-50/50 dark:bg-slate-900/20">
@@ -253,7 +300,18 @@ export function PortfolioTab() {
               )}
               
               {/* Overlay Actions */}
-              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center backdrop-blur-[2px]">
+              <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-[2px]">
+                <Button 
+                  variant="secondary" 
+                  size="icon" 
+                  className="rounded-full w-10 h-10 shadow-xl scale-90 group-hover:scale-100 transition-transform bg-white/90 hover:bg-white text-slate-700" 
+                  onClick={() => {
+                    setEditingImage(img);
+                    setEditCaption(img.caption || "");
+                  }}
+                >
+                  <Pencil className="w-4 h-4" />
+                </Button>
                 <Button 
                   variant="destructive" 
                   size="icon" 

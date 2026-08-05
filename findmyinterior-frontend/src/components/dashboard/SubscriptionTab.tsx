@@ -132,6 +132,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
           const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase() || (currentPlan === '' && plan.slug === 'starter');
           const isMostPopular = plan.slug === 'business';
           const price = plan.price_yearly;
+          const monthlyPrice = plan.price_monthly;
           
           let strikePrice = null;
           if (plan.slug === 'professional') strikePrice = "₹9,999";
@@ -160,6 +161,9 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
                   ₹{price}
                 </CardTitle>
                 <p className="text-sm text-slate-500 mt-1 font-medium">/ year</p>
+                {monthlyPrice > 0 && (
+                  <p className="text-xs text-slate-400 mt-0.5">₹{monthlyPrice} / month</p>
+                )}
               </CardHeader>
               
               <CardContent className="flex-1">

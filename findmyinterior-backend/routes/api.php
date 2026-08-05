@@ -184,6 +184,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             Route::put('listings/{id}', [ProfileController::class, 'updateListing']);
             Route::post('listings/{id}/cover', [ProfileController::class, 'uploadListingCover']);
             Route::post('listings/{id}/gallery', [ProfileController::class, 'addGalleryImages']);
+            Route::put('listings/{id}/gallery/{imageId}', [ProfileController::class, 'updateGalleryImage']);
             Route::delete('listings/{id}/gallery/{imageId}', [ProfileController::class, 'deleteGalleryImage']);
             
             // Unified Role-based Professional Profile

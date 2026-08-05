@@ -212,8 +212,29 @@ class DashboardController extends Controller
                     $data['phone_clicks']    = $user->listings()->sum('phone_clicks');
                     $data['whatsapp_clicks'] = $user->listings()->sum('whatsapp_clicks');
                     $data['website_clicks']  = $user->listings()->sum('website_clicks');
+                    
+                    // Recent profile viewers (logged-in users only)
+                    $listingIds = $user->listings()->pluck('id');
+                    $data['recent_visitors'] = \Illuminate\Support\Facades\DB::table('analytics_events')
+                        ->join('users', 'users.id', '=', 'analytics_events.user_id')
+                        ->where('analytics_events.event_type', 'view')
+                        ->where('analytics_events.entity_type', 'listing')
+                        ->whereIn('analytics_events.entity_id', $listingIds)
+                        ->whereNotNull('analytics_events.user_id')
+                        ->where('analytics_events.user_id', '!=', $user->id)
+                        ->select(
+                            'users.id',
+                            'users.name',
+                            'users.avatar',
+                            'users.role',
+                            'analytics_events.created_at as viewed_at'
+                        )
+                        ->orderByDesc('analytics_events.created_at')
+                        ->limit(10)
+                        ->get();
                 } else {
                     $data['total_views']     = $entity?->views_count ?? 0;
+                    $data['recent_visitors'] = [];
                 }
 
                 $data['recent_inquiries'] = $entity?->inquiries()

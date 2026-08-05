@@ -351,6 +351,7 @@ export function CompleteProfileTab() {
           facebook: data.social_links?.facebook || "",
           instagram: data.social_links?.instagram || "",
           linkedin: data.social_links?.linkedin || "",
+          youtube: data.social_links?.youtube || "",
         });
       } else {
         setFormData({ 
@@ -359,7 +360,7 @@ export function CompleteProfileTab() {
           title: "", company_name: "", tagline: "", description: "", website: "", years_experience: "", team_size: "",
           gst_number: "", pan_number: "",
           skill: "", experience_years: "", daily_rate: "", bio: "", total_projects: "",
-          services: "", achievements: "", availability: "", response_time: "", languages: "", facebook: "", instagram: "", linkedin: ""
+          services: "", achievements: "", availability: "", response_time: "", languages: "", facebook: "", instagram: "", linkedin: "", youtube: ""
         });
       }
     } catch (e) {
@@ -369,8 +370,13 @@ export function CompleteProfileTab() {
     }
   };
 
+  const initializedRef = useRef(false);
+
   useEffect(() => { 
-    fetchData(); 
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      fetchData();
+    }
     api.get("/locations?active_only=1").then(res => {
       if(res.data?.data) {
         setLocations(res.data.data);
@@ -419,6 +425,7 @@ export function CompleteProfileTab() {
             facebook: formData.facebook,
             instagram: formData.instagram,
             linkedin: formData.linkedin,
+            youtube: formData.youtube,
           }
         };
         await api.put(`/user/professional-profile`, payload);
@@ -499,7 +506,7 @@ export function CompleteProfileTab() {
               <TrustBadge level={user?.verification_level ?? "basic"} score={user?.trust_score} />
               {(isBusiness || isWorker) && (
                 <div className="mt-3">
-                  <Button variant="outline" size="sm" onClick={() => window.open(`/professionals/${user?.id}`, '_blank')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                  <Button variant="outline" size="sm" onClick={() => window.open(`/professionals/${user?.id}?t=${Date.now()}`, '_blank')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
                     <Globe className="w-4 h-4 mr-2" /> View Public Listing
                   </Button>
                 </div>
@@ -695,7 +702,7 @@ export function CompleteProfileTab() {
                     </Field>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-4 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 bg-slate-50 p-4 rounded-lg">
                     <Field label="Facebook Link" icon={Globe}>
                       <Input name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/..." />
                     </Field>
@@ -704,6 +711,9 @@ export function CompleteProfileTab() {
                     </Field>
                     <Field label="LinkedIn Link" icon={Globe}>
                       <Input name="linkedin" value={formData.linkedin} onChange={handleChange} placeholder="https://linkedin.com/..." />
+                    </Field>
+                    <Field label="YouTube Channel Link" icon={Globe}>
+                      <Input name="youtube" value={formData.youtube} onChange={handleChange} placeholder="https://youtube.com/@yourchannel" />
                     </Field>
                   </div>
                 </div>

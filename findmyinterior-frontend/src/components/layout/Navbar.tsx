@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
@@ -52,9 +52,25 @@ export function Navbar() {
   const [isLocating, setIsLocating] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const desktopLocationRef = useRef<HTMLDivElement>(null);
+  const mobileLocationRef = useRef<HTMLDivElement>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as Node;
+      const clickedDesktop = desktopLocationRef.current && desktopLocationRef.current.contains(target);
+      const clickedMobile = mobileLocationRef.current && mobileLocationRef.current.contains(target);
+      
+      if (!clickedDesktop && !clickedMobile) {
+        setShowMobileLocationDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -188,7 +204,7 @@ export function Navbar() {
             </Link>
 
             {/* Desktop Center Search Container */}
-            <div className="flex-1 max-w-2xl relative z-50 flex justify-center">
+            <div className="flex-1 max-w-2xl relative z-50 flex justify-center" ref={desktopLocationRef}>
               <div className="flex items-center w-full max-w-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm hover:shadow-md transition-shadow">
                 <button 
                   type="button"
@@ -391,7 +407,7 @@ export function Navbar() {
             </div>
             
             {/* Mobile Search Row */}
-            <div className="relative">
+            <div className="relative" ref={mobileLocationRef}>
               <div className="flex items-center w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm">
                 <button 
                   type="button"

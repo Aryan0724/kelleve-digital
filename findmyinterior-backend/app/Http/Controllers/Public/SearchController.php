@@ -41,6 +41,7 @@ class SearchController extends Controller
                     ->search($term)
                     ->with(['category'])
                     ->orderByDesc('is_verified')
+                    ->distinct()
                     ->take(8)
                     ->get()
             );

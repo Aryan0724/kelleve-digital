@@ -67,7 +67,8 @@ class ListingController extends Controller
 
         // Join users table to sort by trust metrics
         $query->join('users', 'users.id', '=', 'listings.user_id')
-              ->select('listings.*');
+              ->select('listings.*')
+              ->distinct();
 
         // Sorting
         match ($request->get('sort', 'featured')) {
