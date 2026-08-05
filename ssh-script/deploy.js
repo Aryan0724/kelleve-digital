@@ -29,17 +29,7 @@ conn.on('ready', async () => {
     console.log('Pulling latest code...');
     await runCommand('cd /var/www/find-my-interior && git pull origin main');
     
-    console.log('Running migrate:fresh --seed...');
-    await runCommand('cd /var/www/find-my-interior && docker exec fmi_backend php artisan migrate:fresh --seed --force');
-    
-    console.log('Running MockUserSeeder...');
-    await runCommand('cd /var/www/find-my-interior && docker exec fmi_backend php artisan db:seed --class=MockUserSeeder --force');
-    
-    // Optional: rebuild frontend if necessary, but usually just pulling is enough if running Next.js in dev mode or using a restart.
-    console.log('Restarting frontend container (if any)...');
-    await runCommand('cd /var/www/find-my-interior && docker restart fmi_frontend || true');
-    
-    console.log('Deployment complete!');
+    console.log('Done!');
   } catch (err) {
     console.error('Error: ', err);
   } finally {
