@@ -51,7 +51,7 @@ class ReviewController extends Controller
             'rating'           => $data['rating'],
             'title'            => $data['title'] ?? null,
             'body'             => $body,
-            'is_approved'      => true, // Auto-approve for verified project requirements
+            'status'           => 'approved', // Auto-approve for verified project requirements
         ]);
 
         $prof = \App\Models\User::find($data['professional_id']);

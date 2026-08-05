@@ -58,7 +58,7 @@ class ReviewController extends Controller
             'rating' => $request->rating,
             'body' => $request->review,
             'role_of_reviewer' => $roleOfReviewer,
-            'is_approved' => true, // Auto-approve for now
+            'status' => 'approved', // Auto-approve for now
         ]);
         // 5. Update Vendor Metrics if the reviewed user is a professional
         if ($roleOfReviewer === 'homeowner') {

@@ -61,7 +61,7 @@ class AdminController extends Controller
                     'total_requirements'    => Requirement::count(),
                     'total_bids'            => \App\Models\Bid::count(),
                     'open_requirements'     => Requirement::open()->count(),
-                    'pending_reviews'       => Review::where('is_approved', false)->count(),
+                    'pending_reviews'       => Review::where('status', 'pending')->count(),
                     'pending_listings'      => Listing::where('is_verified', false)->count(),
                     'total_revenue'         => $totalRevenue,
                     'unlock_revenue'        => $unlockRevenue,
