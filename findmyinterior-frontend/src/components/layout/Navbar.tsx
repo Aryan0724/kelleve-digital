@@ -218,8 +218,10 @@ export function Navbar() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </button>
                 
-                <div className="flex-1 relative flex items-center">
-                  <Search className="w-4 h-4 text-slate-400 ml-4 shrink-0" />
+                <form onSubmit={handleSearch} className="flex-1 relative flex items-center">
+                  <button type="submit" aria-label="Search" className="ml-4 shrink-0 focus:outline-none">
+                    <Search className="w-4 h-4 text-slate-400 hover:text-[#E8701A] transition-colors" />
+                  </button>
                   <input 
                     id="desktop-search-input"
                     type="text" 
@@ -227,9 +229,8 @@ export function Navbar() {
                     className="w-full bg-transparent py-2.5 pl-3 pr-4 text-sm font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
-                </div>
+                </form>
               </div>
 
               {/* Desktop Location Dropdown */}
@@ -421,8 +422,10 @@ export function Navbar() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </button>
                 
-                <div className="flex-1 relative flex items-center">
-                  <Search className="w-4 h-4 text-slate-400 ml-3 shrink-0" />
+                <form onSubmit={handleSearch} className="flex-1 relative flex items-center">
+                  <button type="submit" aria-label="Search" className="ml-3 shrink-0 focus:outline-none">
+                    <Search className="w-4 h-4 text-slate-400 hover:text-[#E8701A] transition-colors" />
+                  </button>
                   <input 
                     id="mobile-search-input"
                     type="text" 
@@ -430,9 +433,8 @@ export function Navbar() {
                     className="w-full bg-transparent py-2.5 pl-2 pr-2 text-[13px] font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   />
-                </div>
+                </form>
               </div>
 
               {showMobileLocationDropdown && (
