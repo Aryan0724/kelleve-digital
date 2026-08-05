@@ -5,12 +5,11 @@ import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Wallet, Crown } from "lucide-react";
+import { CheckCircle, Crown, Star } from "lucide-react";
 
 export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [billingCycle, setBillingCycle] = useState<"monthly" | "yearly">("yearly");
 
   useEffect(() => {
     fetchPlans();
@@ -42,7 +41,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
       const res = await api.post("/payments/create-order", {
         purpose: "subscription",
         subscription_plan_id: planId,
-        billing_cycle: billingCycle,
+        billing_cycle: "yearly",
       });
 
       const { order_id, amount, currency, payment_id } = res.data;
@@ -89,82 +88,83 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
 
   return (
     <div className="space-y-6">
-      <Card className="bg-gradient-to-r from-slate-900 to-indigo-900 text-white border-0">
+      <Card className="bg-gradient-to-r from-[#0b1b36] to-slate-800 text-white border-0">
         <CardContent className="p-8 flex flex-col md:flex-row items-center justify-between gap-6">
           <div className="flex items-center gap-4">
             <div className="h-16 w-16 bg-white/10 rounded-full flex items-center justify-center">
-              <Crown className="h-8 w-8 text-yellow-400" />
+              <Crown className="h-8 w-8 text-orange-500" />
             </div>
             <div>
-              <h3 className="text-sm font-medium text-indigo-200">Current Plan</h3>
-              <div className="text-2xl font-bold">{currentPlan || "Basic (Free)"}</div>
+              <h3 className="text-sm font-medium text-slate-300">Current Plan</h3>
+              <div className="text-2xl font-bold uppercase">{currentPlan || "Starter"}</div>
             </div>
           </div>
           <div className="bg-white/10 px-4 py-2 rounded-lg text-center backdrop-blur-sm">
-            <div className="text-sm text-indigo-200">Billing Cycle</div>
-            <div className="font-semibold">{currentPlan !== "Basic (Free)" ? billingCycle : "-"}</div>
+            <div className="text-sm text-slate-300">Billing Cycle</div>
+            <div className="font-semibold">{currentPlan?.toLowerCase() !== "starter" && currentPlan ? "Yearly" : "-"}</div>
           </div>
         </CardContent>
       </Card>
 
-      <div>
-        <div className="flex justify-center mb-8 w-full">
-          <div className="bg-slate-100 p-1 rounded-lg flex flex-col sm:flex-row w-full max-w-sm sm:max-w-none sm:inline-flex gap-1">
-            <button 
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${billingCycle === 'monthly' ? 'bg-green-600 shadow-sm text-white' : 'text-slate-500'}`}
-              onClick={() => setBillingCycle('monthly')}
-            >
-              Monthly billing
-            </button>
-            <button 
-              className={`px-4 py-2 rounded-md text-sm font-medium transition-colors flex items-center justify-center gap-2 ${billingCycle === 'yearly' ? 'bg-blue-600 shadow-sm text-white' : 'text-slate-500'}`}
-              onClick={() => setBillingCycle('yearly')}
-            >
-              Yearly billing
-              <span className="bg-orange-200 text-orange-800 text-[9px] px-1.5 py-0.5 rounded-full font-bold shrink-0">SAVE 20%</span>
-            </button>
-          </div>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {plans.map(plan => {
-            const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase();
-            const price = billingCycle === 'yearly' ? plan.price_yearly : plan.price_monthly;
-            
-            return (
-              <Card key={plan.id} className={`flex flex-col relative overflow-hidden transition-all ${isCurrent ? 'ring-2 ring-orange-500 scale-105 shadow-lg' : 'hover:shadow-md border'}`}>
-                {isCurrent && <div className="absolute top-0 inset-x-0 h-1 bg-orange-500"></div>}
-                <CardHeader className="text-center pb-4">
-                  <Badge variant="outline" className="mx-auto mb-2 capitalize">{plan.name}</Badge>
-                  <CardTitle className="text-4xl font-bold">
-                    ₹{price}
-                  </CardTitle>
-                  <p className="text-sm text-slate-500">per {billingCycle === 'yearly' ? 'year' : 'month'}</p>
-                </CardHeader>
-                <CardContent className="flex-1">
-                  <ul className="space-y-3">
-                    {(plan.features || []).map((f: string, i: number) => (
-                      <li key={i} className="flex text-sm text-slate-700">
-                        <CheckCircle className="h-4 w-4 text-green-500 mr-2 shrink-0 mt-0.5" />
-                        <span>{f}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </CardContent>
-                <CardFooter>
-                  <Button 
-                    className="w-full" 
-                    variant={isCurrent ? "outline" : "default"} 
-                    disabled={isCurrent}
-                    onClick={() => handleSubscribe(plan.id)}
-                  >
-                    {isCurrent ? 'Current Plan' : 'Upgrade Now'}
-                  </Button>
-                </CardFooter>
-              </Card>
-            );
-          })}
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+        {plans.map(plan => {
+          const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase() || (currentPlan === '' && plan.slug === 'starter');
+          const isMostPopular = plan.slug === 'business';
+          const price = plan.price_yearly;
+          
+          let strikePrice = null;
+          if (plan.slug === 'professional') strikePrice = "₹9,999";
+          if (plan.slug === 'business') strikePrice = "₹23,999";
+          if (plan.slug === 'premium') strikePrice = "₹49,999";
+          
+          return (
+            <Card key={plan.id} className={`flex flex-col relative overflow-hidden transition-all ${isCurrent ? 'ring-2 ring-orange-500 scale-105 shadow-lg z-10' : 'hover:shadow-md border'} ${isMostPopular && !isCurrent ? 'border-orange-500 shadow-md md:-translate-y-2' : ''}`}>
+              {isMostPopular && (
+                <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg tracking-wider">
+                  MOST POPULAR
+                </div>
+              )}
+              {isCurrent && <div className="absolute top-0 inset-x-0 h-1 bg-orange-500"></div>}
+              
+              <CardHeader className="text-center pb-4 mt-2">
+                <Badge variant="outline" className={`mx-auto mb-2 capitalize ${isMostPopular ? 'border-orange-500 text-orange-600' : ''}`}>
+                  {plan.name}
+                </Badge>
+                
+                {strikePrice && (
+                  <div className="text-sm font-bold text-slate-400 line-through">{strikePrice} /yr</div>
+                )}
+                
+                <CardTitle className={`text-4xl font-extrabold ${isMostPopular ? 'text-orange-500' : 'text-slate-900'}`}>
+                  ₹{price}
+                </CardTitle>
+                <p className="text-sm text-slate-500 mt-1 font-medium">/ year</p>
+              </CardHeader>
+              
+              <CardContent className="flex-1">
+                <ul className="space-y-3">
+                  {(plan.features || []).map((f: string, i: number) => (
+                    <li key={i} className="flex text-sm text-slate-600 items-start">
+                      <CheckCircle className={`h-4 w-4 mr-2 shrink-0 mt-0.5 ${isMostPopular ? 'text-orange-500' : 'text-slate-400'}`} />
+                      <span>{f}</span>
+                    </li>
+                  ))}
+                </ul>
+              </CardContent>
+              
+              <CardFooter className="mt-auto">
+                <Button 
+                  className={`w-full ${isMostPopular && !isCurrent ? 'bg-orange-500 hover:bg-orange-600 text-white border-none' : ''}`} 
+                  variant={isCurrent ? "outline" : (isMostPopular ? "default" : "outline")}
+                  disabled={isCurrent}
+                  onClick={() => handleSubscribe(plan.id)}
+                >
+                  {isCurrent ? 'Current Plan' : 'Choose Plan'}
+                </Button>
+              </CardFooter>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );

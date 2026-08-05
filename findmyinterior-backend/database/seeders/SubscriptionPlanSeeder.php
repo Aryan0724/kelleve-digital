@@ -11,18 +11,26 @@ class SubscriptionPlanSeeder extends Seeder
     {
         $plans = [
             [
-                'name'                   => 'Basic',
-                'slug'                   => 'basic',
+                'name'                   => 'Starter',
+                'slug'                   => 'starter',
                 'price_monthly'          => 0.00,
                 'price_yearly'           => 0.00,
                 'features'               => [
-                    '1 Active Listing',
-                    'Up to 5 Gallery Images',
-                    'Contact Inquiry Form',
-                    'Basic Profile Page',
+                    '1 Business Listing',
+                    'Business Profile',
+                    '10 Project Photos',
+                    '2 Project Videos',
+                    'Portfolio Showcase',
+                    'Contact Form',
+                    'Google Map Location',
+                    'Customer Reviews',
+                    '3 Service Categories',
+                    'Working Hours',
+                    'Mobile-Friendly Profile',
+                    'Basic Search Visibility'
                 ],
                 'max_listings'           => 1,
-                'max_gallery_images'     => 5,
+                'max_gallery_images'     => 10,
                 'lead_unlocks_per_month' => 0,
                 'can_see_all_leads'      => false,
                 'is_featured_listing'    => false,
@@ -32,41 +40,87 @@ class SubscriptionPlanSeeder extends Seeder
                 'name'                   => 'Professional',
                 'slug'                   => 'professional',
                 'price_monthly'          => 999.00,
-                'price_yearly'           => 9990.00,
+                'price_yearly'           => 4999.00, // Price in the image is 4,999/year
                 'features'               => [
-                    '3 Active Listings',
-                    'Up to 20 Gallery Images per Listing',
-                    'Priority in Search Results',
-                    'Verified Badge',
-                    'View All Project Requirements',
-                    'Inquiry Notifications (Email)',
-                    'WhatsApp Inquiry Alerts',
+                    '1 Business Listing',
+                    '100 Project Photos',
+                    '10 Project Videos',
+                    'Verified Business Badge',
+                    'WhatsApp Chat',
+                    'Click-to-Call',
+                    'Website & Social Links',
+                    'Higher Search Ranking',
+                    'Instant Lead Alerts',
+                    'Unlimited Portfolio',
+                    'Unlimited Service Areas',
+                    'Quote Request Button',
+                    'Performance Insights',
+                    'Before & After Gallery',
+                    'Fast Response Badge',
+                    'Customer Trust Score'
                 ],
-                'max_listings'           => 3,
-                'max_gallery_images'     => 20,
+                'max_listings'           => 1, // Features say "1 Business Listing"
+                'max_gallery_images'     => 100,
+                'lead_unlocks_per_month' => 0, // Unlocks might be sold separately
+                'can_see_all_leads'      => true, // Higher tier features
+                'is_featured_listing'    => false,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'Business',
+                'slug'                   => 'business',
+                'price_monthly'          => 1999.00,
+                'price_yearly'           => 11999.00, // Price in the image is 11,999/year
+                'features'               => [
+                    '1 Business Listing',
+                    'Unlimited Photos & Videos',
+                    'Homepage Spotlight (Monthly)',
+                    'Top Search Placement',
+                    'Unlimited Lead Access',
+                    'Lead Manager (CRM)',
+                    'Team Member Profiles',
+                    'AI Business Profile',
+                    'AI SEO Optimization',
+                    'Download Leads (Excel)',
+                    'Performance Reports',
+                    'Promotional Banner',
+                    'Google Review Sync',
+                    'Multiple Contact Numbers',
+                    'Instant Lead Alerts',
+                    'Verified Business Certificate'
+                ],
+                'max_listings'           => 1, // Features say "1 Business Listing"
+                'max_gallery_images'     => 9999, // Essentially unlimited
                 'lead_unlocks_per_month' => 0,
                 'can_see_all_leads'      => true,
-                'is_featured_listing'    => false,
+                'is_featured_listing'    => true, // Homepage spotlight
                 'is_active'              => true,
             ],
             [
                 'name'                   => 'Premium',
                 'slug'                   => 'premium',
-                'price_monthly'          => 2499.00,
-                'price_yearly'           => 24990.00,
+                'price_monthly'          => 3999.00,
+                'price_yearly'           => 24999.00, // Price in the image is 24,999/year
                 'features'               => [
-                    '10 Active Listings',
-                    'Unlimited Gallery Images',
-                    'Featured Placement on Homepage',
-                    'Top of Search Results',
+                    '1 Business Listing',
+                    'Top Search Priority',
                     'Gold Verified Badge',
-                    'View All Project Requirements',
-                    'Priority Inquiry Routing',
-                    'WhatsApp + Email Alerts',
-                    'Dedicated Account Support',
+                    'Premium Profile Design',
+                    'AI Lead Matching',
+                    'Online Appointment Booking',
+                    'WhatsApp Business Integration',
+                    'Auto Lead Reply',
+                    'Monthly SEO Boost',
+                    'Advanced Analytics',
+                    'Business Growth Reports',
+                    'Cost Estimator',
+                    '3D Business Showcase',
+                    'Premium Advertisement Banner',
+                    'Priority Support',
+                    'Early Access to New Features'
                 ],
-                'max_listings'           => 10,
-                'max_gallery_images'     => 999,
+                'max_listings'           => 1,
+                'max_gallery_images'     => 9999,
                 'lead_unlocks_per_month' => 0,
                 'can_see_all_leads'      => true,
                 'is_featured_listing'    => true,
@@ -75,7 +129,7 @@ class SubscriptionPlanSeeder extends Seeder
         ];
 
         foreach ($plans as $plan) {
-            SubscriptionPlan::firstOrCreate(
+            SubscriptionPlan::updateOrCreate(
                 ['slug' => $plan['slug']],
                 $plan
             );
