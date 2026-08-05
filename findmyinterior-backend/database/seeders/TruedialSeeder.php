@@ -258,19 +258,24 @@ class TruedialSeeder extends Seeder
             ]);
 
             // Seed Reviews for Listing
-            Review::firstOrCreate([
-                'user_id' => $customer->id,
-                'listing_id' => $listing->id,
-            ], [
+            $reviewData = [
                 'tenant_id' => $tenantId,
                 'reviewed_user_id' => $vendorUser->id,
-                'reviewable_type' => \App\Models\Listing::class,
-                'reviewable_id' => $listing->id,
                 'rating' => 5,
                 'title' => 'Outstanding Service!',
                 'body' => 'Extremely professional team, high quality work, and great communication.',
                 'status' => 'approved',
-            ]);
+            ];
+            
+            if (\Illuminate\Support\Facades\DB::connection()->getDriverName() === 'sqlite') {
+                $reviewData['reviewable_type'] = \App\Models\Listing::class;
+                $reviewData['reviewable_id'] = $listing->id;
+            }
+
+            Review::firstOrCreate([
+                'user_id' => $customer->id,
+                'listing_id' => $listing->id,
+            ], $reviewData);
         }
 
         // Seed Sample Conversation and Real-time Messages for TrueDial Mobile
