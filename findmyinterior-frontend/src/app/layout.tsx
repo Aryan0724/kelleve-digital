@@ -15,11 +15,22 @@ const inter = Inter({ subsets: ["latin"] });
 export const metadata: Metadata = {
   metadataBase: new URL('https://findmyinterior.com'),
   title: {
-    default: "FindMyInterior | Bihar's Home Improvement & Construction Marketplace",
+    default: "Best Interior Designers & Contractors in Patna | FindMyInterior",
     template: "%s | FindMyInterior",
   },
-  description: "Connect with verified interior designers, builders, suppliers, and skilled workers in Bihar. Find professionals or list your business today.",
-  keywords: ["Interior Designers in Patna", "Builders in Bihar", "Home Improvement", "Construction Marketplace", "FindMyInterior"],
+  description: "Find the Best Interior Designer, Civil Contractor, and Home Renovation Services in Patna, Bihar. Connect with top interior design companies, modular kitchen designers, and verified builders for residential and commercial projects.",
+  keywords: [
+    "Interior Designer Near Me", "Best Interior Designer", "Interior Designers in Patna", 
+    "Home Interior Design", "Interior Design Company", "Interior Decoration Services", 
+    "Interior Contractor", "Home Renovation Services", "Home Improvement Services", 
+    "Residential Interior Designer", "Commercial Interior Designer", "Modular Kitchen Designer", 
+    "False Ceiling Contractor", "Wardrobe Designer", "Office Interior Designer",
+    "Civil Contractor Near Me", "Building Contractor", "House Construction Contractor", 
+    "Renovation Contractor", "Turnkey Interior Contractor", "Painting Contractor", 
+    "Plumbing Contractor", "Electrical Contractor", "Builders in Patna", 
+    "Real Estate Developers", "Apartment Projects", "Villa Builders", "Residential Builder",
+    "FindMyInterior", "Bihar"
+  ],
   authors: [{ name: "FindMyInterior" }],
   creator: "FindMyInterior",
   openGraph: {

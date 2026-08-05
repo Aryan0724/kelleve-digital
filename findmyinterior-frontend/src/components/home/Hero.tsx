@@ -102,6 +102,12 @@ export function Hero() {
                   Where Projects<br/>
                   <span className="text-[#E8701A]">Meet Professionals</span>
                 </h1>
+                
+                {/* SEO Keywords - Visually Hidden */}
+                <h2 className="sr-only">
+                  Find the Best Interior Designer Near Me, Interior Designers in Patna, Home Interior Design Company, Civil Contractor, Modular Kitchen Designer, and Builders in Patna, Bihar.
+                </h2>
+
                 <p className="text-[12px] md:text-base lg:text-lg text-slate-700 dark:text-gray-300 font-semibold leading-[1.4] mb-6 pr-2 md:pr-10 max-w-lg">
                   Post your requirement, get multiple quotes & hire the best for your dream space.
                 </p>
