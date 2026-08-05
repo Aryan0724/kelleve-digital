@@ -301,6 +301,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     // ─── Payments (Protected) ─────────────────────────────────────────────
     Route::middleware('auth:sanctum')->prefix('payments')->group(function () {
         Route::post('create-order', [PaymentController::class, 'createOrder']);
+        Route::post('pay-with-wallet', [PaymentController::class, 'payWithWallet']);
         Route::post('verify', [PaymentController::class, 'verify']);
         Route::get('history', [PaymentController::class, 'history']);
     });

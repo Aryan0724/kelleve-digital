@@ -36,8 +36,29 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
     });
   };
 
-  const handleSubscribe = async (planId: number) => {
+  const handleSubscribe = async (planId: number, planName: string, price: number) => {
     try {
+      const useWallet = window.confirm(`Would you like to pay ₹${price} for the ${planName} plan using your Wallet Balance?\n\nClick OK to use your Wallet, or Cancel to use Razorpay (Cards/UPI/Netbanking).`);
+
+      if (useWallet) {
+        try {
+          const res = await api.post("/payments/pay-with-wallet", {
+            purpose: "subscription",
+            subscription_plan_id: planId,
+            billing_cycle: "yearly",
+          });
+          
+          if (res.data.success) {
+            alert("Subscription successful using Wallet Balance!");
+            window.location.reload();
+          }
+        } catch (e: any) {
+          alert(e.response?.data?.message || "Wallet payment failed. Please ensure you have sufficient balance.");
+        }
+        return; // Don't proceed to Razorpay if they attempted wallet (even if it failed, they should explicitly choose Razorpay next time)
+      }
+
+      // Proceed with Razorpay
       const res = await api.post("/payments/create-order", {
         purpose: "subscription",
         subscription_plan_id: planId,
@@ -57,7 +78,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
         amount: amount,
         currency: currency,
         name: "Find My Interior",
-        description: "Subscription Upgrade",
+        description: `Upgrade to ${planName}`,
         order_id: order_id,
         handler: async function (response: any) {
           try {
@@ -157,7 +178,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
                   className={`w-full ${isMostPopular && !isCurrent ? 'bg-orange-500 hover:bg-orange-600 text-white border-none' : ''}`} 
                   variant={isCurrent ? "outline" : (isMostPopular ? "default" : "outline")}
                   disabled={isCurrent}
-                  onClick={() => handleSubscribe(plan.id)}
+                  onClick={() => handleSubscribe(plan.id, plan.name, price)}
                 >
                   {isCurrent ? 'Current Plan' : 'Choose Plan'}
                 </Button>

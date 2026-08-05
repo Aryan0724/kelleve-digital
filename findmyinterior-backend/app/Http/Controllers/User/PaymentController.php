@@ -81,6 +81,79 @@ class PaymentController extends Controller
     }
 
     /**
+     * POST /api/v1/payments/pay-with-wallet
+     * Pays for a subscription directly using the user's wallet balance.
+     */
+    public function payWithWallet(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'purpose'               => ['required', 'in:subscription'],
+            'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
+            'billing_cycle'         => ['required_if:purpose,subscription', 'in:monthly,yearly'],
+        ]);
+
+        $user = $request->user();
+
+        if ($data['purpose'] === 'subscription') {
+            $plan = SubscriptionPlan::findOrFail($data['subscription_plan_id']);
+            $amount = $data['billing_cycle'] === 'yearly'
+                ? $plan->price_yearly
+                : $plan->price_monthly;
+        } else {
+            return response()->json(['success' => false, 'message' => 'Invalid purpose for wallet payment.'], 400);
+        }
+
+        $walletService = app(\App\Services\WalletService::class);
+        $balance = $walletService->getBalance($user);
+
+        if ($balance < $amount) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient wallet balance. You need ₹' . $amount . ' but you have ₹' . $balance,
+                'required' => $amount,
+                'balance' => $balance
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // 1. Deduct from wallet
+            $walletService->deduct($user, $amount, "Subscription Upgrade: {$plan->name}");
+
+            // 2. Create a mock payment record for tracking
+            $payment = Payment::create([
+                'user_id'          => $user->id,
+                'razorpay_order_id' => 'wallet_txn_' . uniqid(),
+                'amount'           => $amount,
+                'currency'         => 'INR',
+                'purpose'          => $data['purpose'],
+                'status'           => 'success',
+                'meta'             => $data,
+                'razorpay_payment_id' => 'paid_via_wallet',
+                'razorpay_signature'  => 'valid_wallet_txn',
+            ]);
+
+            // 3. Fulfill the payment (Creates subscription)
+            $this->fulfillPayment($payment);
+
+            DB::commit();
+
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Successfully subscribed using wallet balance!',
+                'data'     => new PaymentResource($payment->fresh()),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Wallet payment failed for user {$user->id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction failed. Please try again or contact support.',
+            ], 500);
+        }
+    }
+
+    /**
      * POST /api/v1/payments/verify
      * Verifies Razorpay signature and fulfills the purchase.
      */
