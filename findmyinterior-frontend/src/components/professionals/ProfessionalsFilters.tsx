@@ -15,7 +15,7 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
   const [locationInput, setLocationInput] = useState(searchParams.get("city") || "");
   
   const createQueryString = useCallback(
-    (updates: Record<string, string>) => {
+    (updates: Record<string, string | null>) => {
       const params = new URLSearchParams(searchParams.toString());
       for (const [name, value] of Object.entries(updates)) {
         if (value) {
@@ -29,7 +29,7 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
     [searchParams]
   );
 
-  const applyFilters = (updates: Record<string, string>) => {
+  const applyFilters = (updates: Record<string, string | null>) => {
     router.push("?" + createQueryString(updates));
   };
 

@@ -26,7 +26,24 @@ export default function ProfilePage() {
   const [listing, setListing] = useState<any>(null);
   const [galleryImages, setGalleryImages] = useState<any[]>([]);
   
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<{
+    category_id: string;
+    title: string;
+    tagline: string;
+    description: string;
+    cover_image: string;
+    phone: string;
+    whatsapp: string;
+    email: string;
+    website: string;
+    city: string;
+    district: string;
+    address: string;
+    years_experience: string;
+    team_size: string;
+    services: string[];
+    keywords: string[];
+  }>({
     category_id: "",
     title: "",
     tagline: "",
@@ -40,7 +57,9 @@ export default function ProfilePage() {
     district: "",
     address: "",
     years_experience: "",
-    team_size: ""
+    team_size: "",
+    services: [],
+    keywords: []
   });
 
   const [newImage, setNewImage] = useState({ url: "", caption: "" });
@@ -86,7 +105,9 @@ export default function ProfilePage() {
             district: mainListing.district || "",
             address: mainListing.address || "",
             years_experience: mainListing.years_experience?.toString() || "",
-            team_size: mainListing.team_size?.toString() || ""
+            team_size: mainListing.team_size?.toString() || "",
+            services: mainListing.services || [],
+            keywords: mainListing.keywords || []
           });
         } else if (user) {
           // prefill from user
@@ -335,6 +356,17 @@ export default function ProfilePage() {
                   <div className="space-y-2">
                     <Label>District</Label>
                     <Input required value={formData.district} onChange={e => setFormData({...formData, district: e.target.value})} placeholder="e.g. Patna" />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <Label>Services Offered (Comma Separated)</Label>
+                    <Input value={(formData.services || []).join(", ")} onChange={e => setFormData({...formData, services: e.target.value.split(",").map(s => s.trim()).filter(Boolean)})} placeholder="e.g. 2D Design, 3D Design, Modular Kitchen" />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>SEO Keywords (Comma Separated)</Label>
+                    <Input value={(formData.keywords || []).join(", ")} onChange={e => setFormData({...formData, keywords: e.target.value.split(",").map(s => s.trim()).filter(Boolean)})} placeholder="e.g. Interior Company, Interior Contractor" />
                   </div>
                 </div>
 

@@ -50,6 +50,16 @@ class ListingController extends Controller
         if ($request->filled('search')) {
             $query->search($request->search);
         }
+        if ($request->filled('services')) {
+            $services = array_filter(array_map('trim', explode(',', strtolower($request->services))));
+            if (!empty($services)) {
+                $query->where(function ($q) use ($services) {
+                    foreach ($services as $service) {
+                        $q->orWhereRaw('LOWER(services) LIKE ?', ["%{$service}%"]);
+                    }
+                });
+            }
+        }
         // 'name' param - search by company/person name specifically
         if ($request->filled('name')) {
             $nameVal = strtolower(trim($request->name));

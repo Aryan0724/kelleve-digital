@@ -26,7 +26,8 @@ const runCommand = (cmd) => {
 conn.on('ready', async () => {
   console.log('Connected to VPS...');
   try {
-    console.log('Fetching Dashboard Data...');
+    console.log('Deploying and Fetching Dashboard Data...');
+    await runCommand('cd /var/www/find-my-interior && git pull origin main');
     const phpCode = "echo json_encode(app()->make('App\\\\Http\\\\Controllers\\\\Admin\\\\AdminController')->dashboard()->getData(true));";
     await runCommand(`docker exec fmi_backend php artisan tinker --execute="${phpCode}"`);
     

@@ -59,7 +59,7 @@ export function Navbar() {
   useEffect(() => setMounted(true), []);
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: Event) => {
       const target = event.target as Node;
       const clickedDesktop = desktopLocationRef.current && desktopLocationRef.current.contains(target);
       const clickedMobile = mobileLocationRef.current && mobileLocationRef.current.contains(target);

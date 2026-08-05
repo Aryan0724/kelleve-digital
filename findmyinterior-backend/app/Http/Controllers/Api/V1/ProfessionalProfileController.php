@@ -123,6 +123,7 @@ class ProfessionalProfileController extends Controller
                 'pan_number'       => ['nullable', 'string', 'max:50'],
                 'category_id'      => ['nullable', 'exists:categories,id'],
                 'services'         => ['nullable', 'array'],
+                'keywords'         => ['nullable', 'array'],
                 'achievements'     => ['nullable', 'array'],
                 'availability'     => ['nullable', 'string', 'max:255'],
                 'response_time'    => ['nullable', 'string', 'max:255'],
