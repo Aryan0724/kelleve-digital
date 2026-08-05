@@ -240,14 +240,27 @@ class PaymentController extends Controller
 
             // Sync is_premium flag to the entity for directory queries
             $user = $payment->user;
+            
+            $updateData = [
+                'is_premium' => true,
+            ];
+            
+            // Sync is_featured and is_verified flags based on subscription plan promises
+            if ($plan->is_featured_listing) {
+                $updateData['is_featured'] = true;
+            }
+            if ($plan->price_yearly > 0) {
+                $updateData['is_verified'] = true;
+            }
+
             if ($user->hasRole('builder') && $user->builder) {
-                $user->builder->update(['is_premium' => true]);
+                $user->builder->update($updateData);
             } elseif ($user->hasRole('supplier') && $user->supplier) {
-                $user->supplier->update(['is_premium' => true]);
+                $user->supplier->update($updateData);
             } elseif ($user->hasRole('worker') && $user->worker) {
-                $user->worker->update(['is_premium' => true]);
+                $user->worker->update($updateData);
             } elseif ($user->hasRole('business') && $user->listing) {
-                $user->listing->update(['is_premium' => true]);
+                $user->listing->update($updateData);
             }
 
         } elseif ($payment->purpose === 'lead_unlock') {

@@ -52,6 +52,11 @@ class UnlockService
             $fee = 0;
         }
 
+        // Premium subscribers (Business/Premium plans) get unlimited leads for free
+        if ($vendor->hasPremiumSubscription()) {
+            $fee = 0;
+        }
+
         return DB::transaction(function () use ($vendor, $requirement, $requirementType, $fee) {
             // 3. Deduct from wallet if fee is greater than 0
             if ($fee > 0) {
