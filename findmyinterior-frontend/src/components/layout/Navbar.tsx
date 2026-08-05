@@ -197,7 +197,7 @@ export function Navbar() {
       <header className="w-full premium-glass sticky top-0 z-50 py-3 px-4 transition-all duration-300">
         <div className="container mx-auto flex flex-col gap-3">
           {/* Desktop Layout (Hidden on Mobile) */}
-          <div className="hidden lg:flex items-center justify-between gap-4 w-full">
+          <div className="hidden xl:flex items-center justify-between gap-4 w-full">
             {/* Logo */}
             <Link href="/" className="flex items-center flex-shrink-0 group py-2">
               <img src="/logo.jpg" alt="Find My Interior" className="h-16 md:h-24 w-auto transform transition-transform group-hover:scale-105 duration-300 dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
@@ -363,7 +363,7 @@ export function Navbar() {
           </div>
           
           {/* Mobile Layout (Visible only on mobile) */}
-          <div className="flex lg:hidden flex-col gap-3 w-full pb-1">
+          <div className="flex xl:hidden flex-col gap-3 w-full pb-1">
             {/* Mobile Top Row: Menu, Logo, Bell */}
             <div className="flex items-center justify-between w-full">
               <div className="flex items-center gap-3">
