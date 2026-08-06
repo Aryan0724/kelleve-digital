@@ -1,14 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { 
   ShieldCheck, 
   FileText, 
   Award,
   Clock,
   Plus,
-  Search as SearchIcon
+  Search as SearchIcon,
 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useState } from "react";
@@ -18,16 +17,8 @@ export function Hero() {
   const { user } = useAuthStore();
   const [isHowItWorksOpenState, setIsHowItWorksOpen] = useState(false);
   const isHowItWorksOpen = isHowItWorksOpenState;
-  const router = useRouter();
-  const [searchQuery, setSearchQuery] = useState("");
 
-  const handleSearch = () => {
-    if (searchQuery.trim()) {
-      router.push(`/professionals?search=${encodeURIComponent(searchQuery.trim())}`);
-    } else {
-      router.push("/professionals");
-    }
-  };
+
 
   const isCustomer = !user || user?.role === 'customer';
   const isPro = user && ['interior_designer', 'architect', 'contractor', 'builder', 'supplier'].includes(user.role);
@@ -112,25 +103,7 @@ export function Hero() {
                   Post your requirement, get multiple quotes & hire the best for your dream space.
                 </p>
 
-                <div className="w-full max-w-lg mb-6 flex items-center bg-white dark:bg-slate-800 rounded-full shadow-lg border border-slate-200 dark:border-slate-700 overflow-hidden focus-within:ring-2 focus-within:ring-[#E8701A] transition-shadow">
-                  <div className="flex-1 flex items-center pl-4 py-2">
-                    <SearchIcon className="w-5 h-5 text-slate-400 shrink-0" />
-                    <input 
-                      type="text" 
-                      placeholder="Search for interior designers, contractors..."
-                      className="w-full bg-transparent px-3 py-2 text-sm md:text-base outline-none text-slate-800 dark:text-white placeholder-slate-400"
-                      value={searchQuery}
-                      onChange={(e) => setSearchQuery(e.target.value)}
-                      onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-                    />
-                  </div>
-                  <button 
-                    onClick={handleSearch}
-                    className="bg-[#0a1c3a] hover:bg-[#1a2c4a] text-white px-5 py-3 md:px-6 md:py-4 text-sm md:text-base font-bold transition-colors"
-                  >
-                    Search
-                  </button>
-                </div>
+
 
                 <div className="flex flex-row flex-wrap items-center gap-3">
                   <Link href="/post-requirement">

@@ -255,9 +255,9 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
             )}
         </div>
 
-        <button type="submit" className="flex items-center px-2 sm:px-4 border-l border-transparent min-w-[48px] sm:min-w-[120px] cursor-pointer bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white rounded-lg py-2 transition-all duration-300 transform shadow-sm hover:shadow-md">
-          <div className="flex items-center justify-center w-full">
-            <Search className="w-4 h-4 sm:mr-2" />
+        <button type="submit" className="flex items-center px-3 sm:px-4 border-l border-transparent min-w-[48px] sm:min-w-[120px] cursor-pointer bg-gradient-to-r from-[#E8701A] to-[#c25a12] sm:from-[#0a1c3a] sm:to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white rounded-lg py-2 transition-all duration-300 shadow-sm hover:shadow-md">
+          <div className="flex items-center justify-center w-full gap-1.5">
+            <Search className="w-4 h-4 shrink-0" />
             <span className="hidden sm:inline text-sm font-bold tracking-wide">SEARCH</span>
           </div>
         </button>
