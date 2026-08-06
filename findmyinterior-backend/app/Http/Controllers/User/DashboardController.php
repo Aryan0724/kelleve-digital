@@ -226,7 +226,7 @@ class DashboardController extends Controller
                             'users.id',
                             'users.name',
                             'users.avatar',
-                            'users.role',
+                            
                             'analytics_events.created_at as viewed_at'
                         )
                         ->orderByDesc('analytics_events.created_at')
