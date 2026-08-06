@@ -105,19 +105,19 @@ export function Hero() {
 
 
 
-                <div className="flex flex-row flex-wrap items-center gap-3">
+                <div className="flex flex-row flex-nowrap items-center gap-2 sm:gap-3">
                   <Link href="/post-requirement">
-                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[12px] md:text-sm lg:text-base px-4 py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-2 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap">
-                      <div className="bg-white/20 rounded-full p-1 md:p-1.5"><Plus className="w-4 h-4 md:w-5 md:h-5" strokeWidth={2.5} /></div> 
+                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[11px] sm:text-[12px] md:text-sm lg:text-base px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0">
+                      <div className="bg-white/20 rounded-full p-1 md:p-1.5"><Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={2.5} /></div> 
                       <span>Post a Project</span>
                     </button>
                   </Link>
                   <button 
                     type="button" 
                     onClick={() => setIsHowItWorksOpen(true)}
-                    className="bg-white dark:bg-white/10 dark:text-white text-[#0a1c3a] font-bold text-[12px] md:text-sm lg:text-base px-5 py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-2 shadow-sm border border-slate-200 dark:border-white/20 transition-transform hover:-translate-y-0.5 whitespace-nowrap"
+                    className="bg-white dark:bg-white/10 dark:text-white text-[#0a1c3a] font-bold text-[11px] sm:text-[12px] md:text-sm lg:text-base px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm border border-slate-200 dark:border-white/20 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0a1c3a] dark:text-white md:w-5 md:h-5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0a1c3a] dark:text-white w-4 h-4 md:w-5 md:h-5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
                     <span>How It Works</span>
                   </button>
                 </div>

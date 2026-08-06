@@ -223,18 +223,19 @@ export function Navbar() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </button>
                 
-                <form onSubmit={handleSearch} className="flex-1 relative flex items-center">
-                  <button type="submit" aria-label="Search" className="ml-4 shrink-0 focus:outline-none">
-                    <Search className="w-4 h-4 text-slate-400 hover:text-[#E8701A] transition-colors" />
-                  </button>
+                <form onSubmit={handleSearch} className="flex-1 relative flex items-center pr-1">
                   <input 
                     id="desktop-search-input"
                     type="text" 
                     placeholder="Search services, professionals..." 
-                    className="w-full bg-transparent py-2.5 pl-3 pr-4 text-sm font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                    className="w-full bg-transparent py-2.5 pl-4 pr-3 text-sm font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
+                  <button type="submit" aria-label="Search" className="bg-[#E8701A] hover:bg-[#d66314] text-white px-4 py-2 text-xs font-bold rounded-full transition-colors flex items-center gap-1.5 shrink-0">
+                    <Search className="w-3.5 h-3.5" />
+                    <span>Search</span>
+                  </button>
                 </form>
               </div>
 
@@ -427,18 +428,18 @@ export function Navbar() {
                   <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
                 </button>
                 
-                <form onSubmit={handleSearch} className="flex-1 relative flex items-center">
-                  <button type="submit" aria-label="Search" className="ml-3 shrink-0 focus:outline-none">
-                    <Search className="w-4 h-4 text-slate-400 hover:text-[#E8701A] transition-colors" />
-                  </button>
+                <form onSubmit={handleSearch} className="flex-1 relative flex items-center pr-1 py-1">
                   <input 
                     id="mobile-search-input"
                     type="text" 
                     placeholder="Search services, professionals..." 
-                    className="w-full bg-transparent py-2.5 pl-2 pr-2 text-[13px] font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
+                    className="w-full bg-transparent py-1.5 pl-3 pr-2 text-[13px] font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
+                  <button type="submit" aria-label="Search" className="bg-[#E8701A] hover:bg-[#d66314] text-white p-1.5 rounded-full transition-colors flex items-center justify-center shrink-0">
+                    <Search className="w-4 h-4" />
+                  </button>
                 </form>
               </div>
 
