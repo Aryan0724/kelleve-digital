@@ -309,13 +309,13 @@ class DashboardController extends Controller
                     $query = \App\Models\Requirement::where('status', 'open');
                     
                     if (in_array('interior_designer', $userRoles) || in_array('interior_company', $userRoles)) {
-                        $query->whereIn('requirement_type', ['INTERIOR_DESIGN', 'FURNITURE', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                        $query->whereIn('requirement_type', ['INTERIOR_DESIGN', 'Interior Design', 'FURNITURE', 'Furniture', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
                     } elseif (in_array('architect', $userRoles)) {
-                        $query->whereIn('requirement_type', ['ARCHITECTURE', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                        $query->whereIn('requirement_type', ['ARCHITECTURE', 'Architecture', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
                     } elseif (in_array('contractor', $userRoles)) {
-                        $query->whereIn('requirement_type', ['CONSTRUCTION', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                        $query->whereIn('requirement_type', ['CONSTRUCTION', 'Construction', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
                     } elseif (in_array('builder', $userRoles)) {
-                        $query->whereIn('requirement_type', ['BUILDER_PROJECT', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                        $query->whereIn('requirement_type', ['BUILDER_PROJECT', 'Builder Project', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
                     }
 
                     if ($recommendedIds->isEmpty()) {

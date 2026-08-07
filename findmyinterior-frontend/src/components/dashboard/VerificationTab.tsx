@@ -128,7 +128,9 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
     formData.append("document_type", docType);
 
     try {
-      await api.post("/verification/upload", formData);
+      await api.post("/verification/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       alert("Document uploaded successfully and is pending review.");
       fetchStatus();
     } catch (err: any) {

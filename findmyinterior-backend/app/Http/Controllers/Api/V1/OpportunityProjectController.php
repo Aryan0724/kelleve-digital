@@ -106,7 +106,7 @@ class OpportunityProjectController extends Controller
         $isCreator = $requirement->user_id === $user->id;
         $isAdmin   = in_array('admin', $userRoles);
 
-        if (!$isCreator && !$isAdmin) {
+        if (!$isAdmin) {
             $requirement->increment('views_count');
             $requirement->views_count = $requirement->views_count + 1;
         }

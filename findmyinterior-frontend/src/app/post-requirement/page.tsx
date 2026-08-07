@@ -896,7 +896,7 @@ function PostRequirementContent() {
               </div>
 
               {/* Image Upload for all types except those that don't need it */}
-              {!['furniture', 'materials', 'builder_project'].includes(selectedType) && (
+              {!['furniture', 'materials', 'builder_project', 'workers', 'worker-jobs'].includes(selectedType) && (
                 <div className="space-y-2 mt-6 p-4 border rounded-lg bg-slate-50">
                   <Label htmlFor="image" className="font-semibold text-slate-700 block mb-1">Add a Photo (Optional)</Label>
                   <span className="text-sm text-slate-500 block mb-2">Upload a photo to give professionals a better idea of what you need.</span>

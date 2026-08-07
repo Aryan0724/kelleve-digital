@@ -69,18 +69,25 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 dark:ring-orange-900/30 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 dark:text-slate-500 shadow">
-                  <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                  {user?.avatar && (
-                    <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+              <Card className="overflow-hidden">
+                <div className="h-32 w-full bg-gradient-to-r from-orange-400 to-[#E8701A] relative">
+                  {user?.cover_image && (
+                    <img src={user.cover_image} alt="Cover" className="w-full h-full object-cover" />
                   )}
+                  <div className="absolute inset-0 bg-black/10"></div>
                 </div>
-                <h3 className="font-bold text-lg">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="secondary">Homeowner</Badge>
-              </CardContent>
-            </Card>
+                <CardContent className="p-6 flex flex-col items-center text-center -mt-16 relative z-10">
+                  <div className="h-24 w-24 relative rounded-full overflow-hidden ring-4 ring-white dark:ring-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-3xl font-bold text-slate-400 dark:text-slate-500 shadow-md">
+                    <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
+                    {user?.avatar && (
+                      <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                    )}
+                  </div>
+                  <h3 className="font-bold text-xl">{user?.name}</h3>
+                  <Badge className="mt-2 capitalize mb-2 bg-orange-100 text-orange-700 hover:bg-orange-200 border-0" variant="secondary">Homeowner</Badge>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">Managing projects and seeking professionals.</p>
+                </CardContent>
+              </Card>
 
             <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
@@ -89,7 +96,6 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Quotes")}
                 {renderSidebarButton("shortlisted", <Star className="h-5 w-5" />, "Shortlisted Professionals")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
                 {renderSidebarButton("profile", <User className="h-5 w-5" />, "Profile")}
                 {renderSidebarButton("settings", <User className="h-5 w-5" />, "Settings")}
               </div>
