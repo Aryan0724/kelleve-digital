@@ -77,7 +77,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
         alert("Unable to retrieve your location. Please check browser permissions.");
         setIsLocating(false);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
   };
 
@@ -129,15 +129,21 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
 
   const getSuggestions = (query: string) => {
     const q = debouncedQuery.toLowerCase();
-    if (!q) return [];
     
     let newSuggestions: any[] = [];
     
-    // Basic match for services
-    const matchedServices = [
-      "Interior Designer", "Modular Kitchen", "False Ceiling", 
-      "Painter", "Carpenter", "Architect", "Plumber", "Electrician", "Contractor"
-    ].filter(s => s.toLowerCase().includes(q)).slice(0, 3);
+    // Default recommendations if no query
+    let matchedServices = [];
+    
+    if (!q) {
+      matchedServices = ["Interior Designer", "Modular Kitchen", "Painter", "Carpenter", "Architect"];
+    } else {
+      // Basic match for services
+      matchedServices = [
+        "Interior Designer", "Modular Kitchen", "False Ceiling", 
+        "Painter", "Carpenter", "Architect", "Plumber", "Electrician", "Contractor"
+      ].filter(s => s.toLowerCase().includes(q)).slice(0, 3);
+    }
     
     newSuggestions = matchedServices.map(s => ({
       type: "service",
@@ -255,8 +261,8 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
             )}
         </div>
 
-        <button type="submit" className="flex items-center px-3 sm:px-4 border-l border-transparent min-w-[48px] sm:min-w-[120px] cursor-pointer bg-gradient-to-r from-[#E8701A] to-[#c25a12] sm:from-[#0a1c3a] sm:to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white rounded-lg py-2 transition-all duration-300 shadow-sm hover:shadow-md">
-          <div className="flex items-center justify-center w-full gap-1.5">
+        <button type="submit" className="flex items-center justify-center px-4 min-w-[48px] sm:min-w-[120px] cursor-pointer bg-gradient-to-r from-[#E8701A] to-[#c25a12] hover:from-[#c25a12] hover:to-[#E8701A] text-white rounded-lg py-2.5 transition-all duration-300 shadow-sm hover:shadow-md ml-1">
+          <div className="flex items-center justify-center gap-2">
             <Search className="w-4 h-4 shrink-0" />
             <span className="hidden sm:inline text-sm font-bold tracking-wide">SEARCH</span>
           </div>

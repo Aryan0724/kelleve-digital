@@ -128,7 +128,7 @@ export function Navbar() {
         alert("Unable to retrieve your location. Please check browser permissions.");
         setIsLocating(false);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
   };
 
@@ -355,15 +355,6 @@ export function Navbar() {
                       </div>
                     </button>
                   </Link>
-                  {mounted && (
-                    <button
-                      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-                      className="p-2 text-gray-500 hover:text-[#0a1c3a] dark:text-gray-400 dark:hover:text-white transition-colors rounded-full hover:bg-gray-50 dark:hover:bg-gray-800 ml-1"
-                      title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
-                    >
-                      {theme === "dark" ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
-                    </button>
-                  )}
                 </div>
               )}
             </div>

@@ -63,7 +63,9 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           </div>
           <div className="flex items-center gap-2 md:gap-4">
             <VentureSwitcher />
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400 hidden md:block">DESIGNER</span>
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-400 hidden md:block uppercase">
+              {user?.role?.replace(/_/g, ' ') || 'DESIGNER'}
+            </span>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 px-2 md:px-4">
               <LogOut className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">Logout</span>
             </Button>
@@ -84,7 +86,9 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                   )}
                 </div>
                 <h3 className="font-bold text-lg dark:text-white">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="default">Interior Designer</Badge>
+                <Badge className="mt-2 capitalize mb-4" variant="default">
+                  {user?.role?.replace(/_/g, ' ') || "Interior Designer"}
+                </Badge>
                 
                 <div className="w-full space-y-2 mt-2">
                   <div className="w-full bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 rounded-lg p-3 text-left flex justify-between items-center">
