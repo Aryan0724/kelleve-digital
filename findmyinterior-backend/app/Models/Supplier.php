@@ -62,7 +62,7 @@ class Supplier extends Model
 
     public function approvedReviews(): HasMany
     {
-        return $this->hasMany(Review::class, 'reviewed_user_id', 'user_id')->where('is_approved', true);
+        return $this->hasMany(Review::class, 'reviewed_user_id', 'user_id')->where('status', 'approved');
     }
 
     public function inquiries(): MorphMany

@@ -36,7 +36,7 @@ class SearchController extends Controller
 
         if (in_array($type, ['all', 'listings'])) {
             $results['listings'] = ListingResource::collection(
-                Listing::forCurrentTenant()
+                Listing::active()
                     ->active()
                     ->search($term)
                     ->with(['category'])

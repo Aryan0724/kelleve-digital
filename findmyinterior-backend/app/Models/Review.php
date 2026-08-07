@@ -24,6 +24,8 @@ class Review extends Model
         'role_of_reviewer',
         'status',
         'user_id',
+        'reviewable_type',
+        'reviewable_id',
     ];
 
     protected $casts = [];

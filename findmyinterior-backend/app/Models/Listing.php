@@ -124,7 +124,7 @@ class Listing extends Model
 
     public function scopeVerified($query)
     {
-        return $query->where('is_verified', true);
+        return $query->where('listings.is_verified', true);
     }
 
     public function scopeByCategory($query, int $categoryId)
@@ -176,7 +176,16 @@ class Listing extends Model
 
     public function incrementViews(): void
     {
-        $this->increment('views_count');
+        $ip = request()->ip();
+        if ($ip) {
+            $cacheKey = "listing_view_{$this->id}_{$ip}";
+            if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                $this->increment('views_count');
+                \Illuminate\Support\Facades\Cache::put($cacheKey, true, now()->addHours(12));
+            }
+        } else {
+            $this->increment('views_count');
+        }
     }
 
     public function recalculateRating(): void

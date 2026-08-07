@@ -16,7 +16,7 @@ class ListingController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = Listing::forCurrentTenant()->active()
+        $query = Listing::active()
             ->with(['category', 'user'])
             ->withCount(['approvedReviews as review_count', 'gallery as gallery_count']);
 
@@ -33,7 +33,7 @@ class ListingController extends Controller
             $query->whereRaw('LOWER(district) LIKE ?', ["%{$distVal}%"]);
         }
         if ($request->boolean('verified')) {
-            $query->verified();
+            $query->where('listings.is_verified', true);
         }
         if ($request->boolean('featured')) {
             $query->featured();
@@ -99,8 +99,9 @@ class ListingController extends Controller
         }
 
         // Join users table to sort by trust metrics
+        // Note: we must select listings.* ONLY to avoid column ambiguity (both tables have is_verified, status, etc.)
         $query->join('users', 'users.id', '=', 'listings.user_id')
-              ->select('listings.*');
+              ->select('listings.*', 'users.trust_score as user_trust_score', 'users.profile_completion_score as user_profile_score', 'users.verification_level as user_verification_level');
 
         // Sorting
         match ($request->get('sort', 'featured')) {
@@ -114,7 +115,7 @@ class ListingController extends Controller
                 ->orderByDesc('listings.is_verified')
                 ->orderByDesc('listings.is_premium')
                 ->orderByRaw("
-                    CASE users.verification_level
+                    CASE user_verification_level
                         WHEN 'elite_professional' THEN 4
                         WHEN 'trusted_professional' THEN 3
                         WHEN 'verified_business' THEN 2
@@ -122,8 +123,8 @@ class ListingController extends Controller
                         ELSE 0
                     END DESC
                 ")
-                ->orderByDesc('users.trust_score')
-                ->orderByDesc('users.profile_completion_score')
+                ->orderByDesc('user_trust_score')
+                ->orderByDesc('user_profile_score')
                 ->orderByDesc('listings.avg_rating')
                 ->orderByDesc('listings.id'),
         };
@@ -147,7 +148,7 @@ class ListingController extends Controller
      */
     public function show(Request $request, string $slug): JsonResponse
     {
-        $query = Listing::forCurrentTenant()->active()
+        $query = Listing::active()
             ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user']);
 
         if (is_numeric($slug)) {
@@ -251,7 +252,7 @@ class ListingController extends Controller
             'type' => ['required', 'in:phone,whatsapp,website']
         ]);
 
-        $listing = Listing::forCurrentTenant()->findOrFail($id);
+        $listing = Listing::findOrFail($id);
         $field = $data['type'] . '_clicks';
         $listing->increment($field);
 

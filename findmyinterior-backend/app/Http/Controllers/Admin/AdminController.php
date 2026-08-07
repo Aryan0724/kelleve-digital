@@ -220,7 +220,7 @@ class AdminController extends Controller
      */
     public function pendingReviews(): JsonResponse
     {
-        $reviews = Review::where('is_approved', false)
+        $reviews = Review::where('status', 'pending')
             ->with(['reviewer:id,name', 'reviewedUser:id,name', 'project:id,title'])
             ->latest()
             ->get();
