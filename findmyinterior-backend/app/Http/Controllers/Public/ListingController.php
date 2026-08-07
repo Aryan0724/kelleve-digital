@@ -129,7 +129,10 @@ class ListingController extends Controller
                 ->orderByDesc('listings.id'),
         };
 
-        $listings = $query->paginate($request->get('per_page', 12));
+        $cacheKey = 'listings_index_' . md5(json_encode($request->all()));
+        $listings = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($query, $request) {
+            return $query->paginate($request->get('per_page', 12));
+        });
 
         return response()->json([
             'success' => true,

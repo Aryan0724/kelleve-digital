@@ -30,18 +30,7 @@ use App\Http\Controllers\Api\V1\Admin\RevenueController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// E2E Testing DB Reset — ONLY available in explicit testing environment
-// DISABLED in production: never expose this endpoint outside of CI/CD pipelines
-if (app()->environment('local', 'testing')) {
-    Route::post('/e2e/reset', function () {
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
-            '--seeder' => 'E2ESeeder',
-            '--force'  => true,
-        ]);
-        return response()->json(['message' => 'Database wiped and reseeded for E2E']);
-    });
-}
-
+// E2E Reset removed for security
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -64,39 +53,6 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             'version' => '1.0.0',
             'environment' => app()->environment()
         ]);
-    });
-
-    // ONE-TIME admin credential reset — secured by secret key
-    // REMOVE AFTER USE
-    Route::get('/system/admin-reset', function (\Illuminate\Http\Request $req) {
-        if ($req->query('key') !== 'fmi_reset_2025_xK9mP') {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        $admin = \App\Models\User::whereHas('roles', function($q) {
-            $q->where('slug', 'admin');
-        })->first();
-        if (!$admin) {
-            return response()->json(['error' => 'No admin user found', 'users' => \App\Models\User::select(['id','email'])->limit(5)->get()], 404);
-        }
-        $admin->password = \Illuminate\Support\Facades\Hash::make('Admin@123!');
-        $admin->is_active = true;
-        $admin->save();
-        return response()->json([
-            'success'  => true,
-            'message'  => 'Admin password reset',
-            'email'    => $admin->email,
-            'new_pass' => 'Admin@123!',
-        ]);
-    });
-
-    Route::get('/debug-logs', function (\Illuminate\Http\Request $request) {
-        if ($request->query('key') !== 'aryan123') return response('Unauthorized', 401);
-        $logPath = storage_path('logs/laravel.log');
-        if (!file_exists($logPath)) return response('No log file', 404);
-        
-        $lines = file($logPath);
-        $lastLines = array_slice($lines, -200); // get last 200 lines
-        return response(implode("", $lastLines))->header('Content-Type', 'text/plain');
     });
 
     // ─── Auth ─────────────────────────────────────────────────────────────
@@ -151,6 +107,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
     // Public inquiry submission
     Route::post('inquiries', [InquiryController::class, 'store']);
+    Route::get('health', \App\Http\Controllers\HealthCheckController::class);
     Route::post('contact', [\App\Http\Controllers\Public\ContactController::class, 'store']);
     
     // Opportunity Backend Configuration
@@ -399,6 +356,9 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         // Blogs
         Route::get('blogs', [AdminController::class, 'blogs']);
+        
+        // System Health Dashboard
+        Route::get('system-health', [\App\Http\Controllers\Admin\SystemHealthController::class, 'index']);
     });
 });
 

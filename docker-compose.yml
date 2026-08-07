@@ -38,6 +38,8 @@ services:
       QUEUE_CONNECTION: redis
     volumes:
       - ./findmyinterior-backend:/var/www/html
+      - storage_data:/var/www/html/storage/app/public
+      - backups_data:/var/www/backups
     networks:
       - fmi-network
 
@@ -70,6 +72,8 @@ services:
 
 volumes:
   dbdata:
+  storage_data:
+  backups_data:
 
 networks:
   fmi-network:

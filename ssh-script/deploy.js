@@ -38,8 +38,8 @@ conn.on('ready', async () => {
     conn.end();
   }
 }).connect({
-  host: '187.127.164.142',
+  host: process.env.SSH_HOST || '187.127.164.142',
   port: 22,
-  username: 'root',
-  password: 'Truedial@1111'
+  username: process.env.SSH_USER || 'root',
+  password: process.env.SSH_PASSWORD
 });

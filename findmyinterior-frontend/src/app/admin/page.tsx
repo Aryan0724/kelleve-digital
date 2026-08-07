@@ -19,6 +19,7 @@ import { ContactMessagesPanel } from "@/components/admin/ContactMessagesPanel";
 import { SubscriptionAdminPanel } from "@/components/admin/SubscriptionAdminPanel";
 import { AdvertisementsAdminPanel } from "@/components/admin/AdvertisementsAdminPanel";
 import { InquiriesAdminPanel } from "@/components/admin/InquiriesAdminPanel";
+import SystemHealthPanel from "@/components/admin/SystemHealthPanel";
 import {
   CheckCircle,
   ClipboardList,
@@ -31,10 +32,11 @@ import {
   XCircle,
 } from "lucide-react";
 
-type AdminTab = "overview" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages" | "advertisements";
+type AdminTab = "overview" | "system-health" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages" | "advertisements";
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: "overview", label: "Overview" },
+  { id: "system-health", label: "System Health" },
   { id: "database", label: "Database Explorer" },
   { id: "verifications", label: "Verifications" },
   { id: "users", label: "Users" },
@@ -237,6 +239,8 @@ export default function AdminDashboard() {
             </button>
           ))}
         </div>
+
+        {activeTab === "system-health" && <SystemHealthPanel />}
 
         {activeTab === "overview" && (
           <div className="space-y-8">
