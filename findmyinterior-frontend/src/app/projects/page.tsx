@@ -207,7 +207,7 @@ export default function ProjectsPage() {
                 <div className="w-8 h-8 rounded-full border border-slate-200 flex items-center justify-center bg-white mb-2">
                   <Lock className="w-4 h-4 text-slate-700" />
                 </div>
-                <span className="text-[10px] font-bold text-slate-600 leading-tight">Place Bid<br/>or Unlock</span>
+                <span className="text-[10px] font-bold text-slate-600 leading-tight">Apply<br/>or Unlock</span>
               </div>
 
               <div className="flex flex-col items-center flex-1 z-10 bg-white">
@@ -376,7 +376,7 @@ export default function ProjectsPage() {
                     <>
                       <Link href={`/requirements/${req.id}?type=${reqType}`} className="w-full">
                         <Button className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white h-9 rounded-md shadow-sm font-bold text-xs flex items-center justify-center gap-2">
-                          <Briefcase className="w-3.5 h-3.5" /> {isJob ? "Apply for Job" : "Place Bid"}
+                          <Briefcase className="w-3.5 h-3.5" /> {isJob ? "Apply for Job" : "Apply Now"}
                         </Button>
                       </Link>
                       <Button 

@@ -81,7 +81,9 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
     try {
       const form = new FormData();
       form.append("avatar", file);
-      const res = await api.post("/user/avatar", form);
+      const res = await api.post("/user/avatar", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       if (user) updateUser({ ...user, avatar: res.data.avatar });
       setPreview(res.data.avatar);
       setSuccess(true);
@@ -175,7 +177,9 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
         endpoint = `/user/listings/${listingId}/cover`;
       }
       
-      const res = await api.post(endpoint, form);
+      const res = await api.post(endpoint, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       setPreview(res.data.cover_image);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -576,7 +580,9 @@ export function CompleteProfileTab() {
     form.append("document_type", docType);
 
     try {
-      await api.post("/verification/upload", form);
+      await api.post("/verification/upload", form, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       alert("Document uploaded successfully and is pending review.");
       fetchData();
     } catch (err: any) {

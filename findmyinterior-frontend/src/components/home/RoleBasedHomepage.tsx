@@ -186,7 +186,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-rose-900 to-red-800",
     ctas: [
       { label: "Browse Jobs", href: "/jobs", primary: true },
-      { label: "My Dashboard", href: "/dashboard" },
+      { label: "Update Availability", href: "/dashboard?tab=profile" },
     ],
     quickCards: [
       { label: "Nearby Jobs", key: "recommended_leads_count", icon: Search, href: "/jobs" },
@@ -204,7 +204,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-rose-900 to-red-800",
     ctas: [
       { label: "Browse Jobs", href: "/jobs", primary: true },
-      { label: "My Dashboard", href: "/dashboard" },
+      { label: "Update Availability", href: "/dashboard?tab=profile" },
     ],
     quickCards: [
       { label: "Nearby Jobs", key: "recommended_leads_count", icon: Search, href: "/jobs" },

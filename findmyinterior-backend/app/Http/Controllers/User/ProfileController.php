@@ -89,7 +89,7 @@ class ProfileController extends Controller
         $data = $request->validate([
             'name'     => ['sometimes', 'required', 'string', 'max:255'],
             'phone'    => ['sometimes', 'nullable', 'string', 'max:20'],
-            'avatar'   => ['sometimes', 'nullable', 'url'],
+            'avatar'   => ['sometimes', 'nullable', 'string'],
             'city'     => ['sometimes', 'nullable', 'string', 'max:255'],
             'district' => ['sometimes', 'nullable', 'string', 'max:255'],
             'address'  => ['sometimes', 'nullable', 'string', 'max:1000'],

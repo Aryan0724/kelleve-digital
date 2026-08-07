@@ -777,7 +777,7 @@ export default function RequirementDetail() {
                             onClick={() => setShowBidForm(true)}
                             className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
                           >
-                            <Upload className="w-4 h-4" /> {reqType === 'job' ? 'APPLY FOR JOB' : 'PLACE BID NOW'}
+                            <Upload className="w-4 h-4" /> {reqType === 'job' ? 'APPLY FOR JOB' : 'APPLY NOW'}
                           </Button>
                         </>
                       )}

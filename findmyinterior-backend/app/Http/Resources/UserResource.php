@@ -15,7 +15,7 @@ class UserResource extends JsonResource
             'email'              => $this->email,
             'phone'              => $this->phone,
             'role'               => $this->isAdmin() ? 'admin' : ($this->roles->first()?->slug ?? 'customer'),
-            'professional_type'  => $this->roles->first()?->slug ?? 'customer',
+            'professional_type'  => $this->professional_type ?? ($this->roles->first()?->slug ?? 'customer'),
             'roles'              => $this->roles->pluck('slug'),
             'isAdmin'            => $this->isAdmin(),
             'avatar'             => $this->avatar,
