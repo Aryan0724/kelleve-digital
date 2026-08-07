@@ -92,7 +92,9 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
       <CardContent>
         {unlockedContacts && unlockedContacts.length > 0 ? (
           <div className="space-y-4">
-            {unlockedContacts.map((unlock: any) => (
+            {unlockedContacts.map((unlock: any) => {
+              const isJob = unlock.requirement_type === 'App\\Models\\WorkerJob';
+              return (
               <div key={unlock.id} className="p-4 border rounded-lg bg-white shadow-sm">
                 <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
                   <div className="flex-1">
@@ -215,7 +217,8 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-16 px-4 border border-dashed rounded-xl bg-slate-50">
