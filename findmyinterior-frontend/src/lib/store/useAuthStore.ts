@@ -14,6 +14,10 @@ type User = {
   trust_score?: number;
   profile_completion_score?: number;
   isAdmin?: boolean;
+  city?: string | null;
+  district?: string | null;
+  address?: string | null;
+  cover_image?: string | null;
 };
 
 interface AuthState {

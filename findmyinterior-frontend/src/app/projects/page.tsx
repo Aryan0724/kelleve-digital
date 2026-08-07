@@ -272,6 +272,7 @@ export default function ProjectsPage() {
               <div key={req.id} className="bg-white rounded-xl shadow-sm border border-slate-200 flex flex-col xl:flex-row overflow-hidden hover:shadow-md transition-shadow">
                 
                 {/* Left Image Gallery Area */}
+                {!isJob && (
                 <div className="w-full xl:w-[280px] shrink-0 p-3 flex gap-1 h-[200px] xl:h-[190px]">
                   {/* Main large image */}
                   <div className={`flex-[3] ${imgs.length > 1 ? 'rounded-l-lg' : 'rounded-lg'} overflow-hidden relative bg-slate-100`}>
@@ -304,6 +305,7 @@ export default function ProjectsPage() {
                   </div>
                   )}
                 </div>
+                )}
 
                 {/* Center Content Area */}
                 <div className="flex-1 p-5 border-b xl:border-b-0 xl:border-r border-slate-100 flex flex-col justify-between">
@@ -374,7 +376,7 @@ export default function ProjectsPage() {
                     <>
                       <Link href={`/requirements/${req.id}?type=${reqType}`} className="w-full">
                         <Button className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white h-9 rounded-md shadow-sm font-bold text-xs flex items-center justify-center gap-2">
-                          <Briefcase className="w-3.5 h-3.5" /> Place Bid
+                          <Briefcase className="w-3.5 h-3.5" /> {isJob ? "Apply for Job" : "Place Bid"}
                         </Button>
                       </Link>
                       <Button 

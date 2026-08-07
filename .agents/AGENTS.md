@@ -18,3 +18,6 @@ When working inside the `truedial-frontend` directory, you MUST strictly adhere 
 
 ## 4. Git Protocol
 - When asked to push code, ensure the commit message accurately reflects the UI/UX or architectural changes made.
+ 
+## 5. Destructive Database Commands
+- **NEVER** run \php artisan migrate:fresh\, \migrate:refresh\, or \db:wipe\ without asking for the user's explicit, written permission first. Data loss must be avoided at all costs.

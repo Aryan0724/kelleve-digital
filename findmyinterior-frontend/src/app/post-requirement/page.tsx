@@ -81,6 +81,7 @@ function PostRequirementContent() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const [selectedType, setSelectedType] = useState<string>("");
   const [locations, setLocations] = useState<any[]>([]);
@@ -240,8 +241,51 @@ function PostRequirementContent() {
         setLoading(false);
       });
     }
-  }, [editId, editType]);
+  }, [editId, editType, token, router]);
 
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+          );
+          const data = await res.json();
+          const city = data.address.city || data.address.town || data.address.village || data.address.county || "";
+          const district = data.address.state_district || data.address.county || "";
+          const formattedAddress = data.display_name || "";
+          
+          setFormData((prev: any) => ({
+            ...prev,
+            city,
+            district,
+            project_location: formattedAddress,
+          }));
+        } catch (e) {
+          alert("Failed to detect location.");
+        } finally {
+          setLocationLoading(false);
+        }
+      },
+      () => {
+        alert("Permission denied or location unavailable.");
+        setLocationLoading(false);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
+
+  const handleBack = () => {
+    setStep(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Save to draft automatically
   useEffect(() => {
     if (mounted && !editId) {
       localStorage.setItem("postRequirementDraft", JSON.stringify({
@@ -261,9 +305,7 @@ function PostRequirementContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBack = () => {
-    setStep(1);
-  };
+
 
   const handleSubmit = async () => {
     if (!mounted) return;
@@ -413,7 +455,9 @@ function PostRequirementContent() {
     <div className="container mx-auto px-4 py-12 flex justify-center items-center">
       <Card className="w-full max-w-2xl">
         <CardHeader>
-          <CardTitle className="text-2xl font-bold">Smart Opportunity Creation</CardTitle>
+          <CardTitle className="text-2xl font-bold">
+            {step === 1 ? 'Post a New Requirement' : `Post ${OPPORTUNITY_TYPES.find(o => o.id === selectedType)?.label || 'Requirement'}`}
+          </CardTitle>
           <CardDescription>
             Step {step} of 2 - {step === 1 ? 'What do you need?' : 'Details'}
           </CardDescription>
@@ -501,7 +545,20 @@ function PostRequirementContent() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="style">Style Preferences <span className="text-red-500 ml-1">*</span></Label>
-                    <Input id="style" placeholder="e.g. Modern, Minimalist, Traditional" value={formData.style_preferences} onChange={(e) => setFormData({...formData, style_preferences: e.target.value})} />
+                    <Select onValueChange={(val: any) => setFormData({...formData, style_preferences: val})}>
+                      <SelectTrigger><SelectValue placeholder="e.g. Modern, Minimalist, Traditional" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Modern">Modern</SelectItem>
+                        <SelectItem value="Minimalist">Minimalist</SelectItem>
+                        <SelectItem value="Traditional">Traditional</SelectItem>
+                        <SelectItem value="Industrial">Industrial</SelectItem>
+                        <SelectItem value="Contemporary">Contemporary</SelectItem>
+                        <SelectItem value="Scandinavian">Scandinavian</SelectItem>
+                        <SelectItem value="Bohemian">Bohemian</SelectItem>
+                        <SelectItem value="Rustic">Rustic</SelectItem>
+                        <SelectItem value="Other">Other / Not Sure</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </>
               )}
@@ -715,17 +772,23 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="duration">Estimated Duration <span className="text-red-500 ml-1">*</span></Label>
-                    <Select onValueChange={(val: any) => setFormData({...formData, duration: val})}>
-                        <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1 - 3 Days">1 - 3 Days</SelectItem>
-                          <SelectItem value="1 Week">1 Week</SelectItem>
-                          <SelectItem value="2 - 3 Weeks">2 - 3 Weeks</SelectItem>
-                          <SelectItem value="1 Month+">1 Month+</SelectItem>
-                        </SelectContent>
-                    </Select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="duration">Estimated Duration <span className="text-red-500 ml-1">*</span></Label>
+                      <Select onValueChange={(val: any) => setFormData({...formData, duration: val})}>
+                          <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1 - 3 Days">1 - 3 Days</SelectItem>
+                            <SelectItem value="1 Week">1 Week</SelectItem>
+                            <SelectItem value="2 - 3 Weeks">2 - 3 Weeks</SelectItem>
+                            <SelectItem value="1 Month+">1 Month+</SelectItem>
+                          </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="budget">Daily Rate Expected (₹) <span className="text-red-500 ml-1">*</span></Label>
+                      <Input type="number" placeholder="e.g. 500" value={formData.budget} onChange={(e) => setFormData({...formData, budget: e.target.value})} />
+                    </div>
                   </div>
                 </>
               )}
@@ -750,7 +813,18 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="project_location">Location Details <span className="text-red-500 ml-1">*</span></Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="project_location">Location Details <span className="text-red-500 ml-1">*</span></Label>
+                        <button
+                          type="button"
+                          onClick={detectLocation}
+                          disabled={locationLoading}
+                          className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                        >
+                          {locationLoading ? <span className="animate-spin mr-1">⌛</span> : null}
+                          Use Current
+                        </button>
+                      </div>
                       <Input id="project_location" placeholder="e.g. Main Road, Block B" value={formData.project_location} onChange={(e) => setFormData({...formData, project_location: e.target.value})} />
                     </div>
                   </div>
@@ -791,7 +865,18 @@ function PostRequirementContent() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">City <span className="text-red-500 ml-1">*</span></Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="city">City <span className="text-red-500 ml-1">*</span></Label>
+                    <button
+                      type="button"
+                      onClick={detectLocation}
+                      disabled={locationLoading}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                    >
+                      {locationLoading ? <span className="animate-spin mr-1">⌛</span> : null}
+                      Use Current
+                    </button>
+                  </div>
                   <Select required value={formData.city} onValueChange={(val) => setFormData({...formData, city: val || ""})}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select City" />
@@ -810,21 +895,23 @@ function PostRequirementContent() {
                 </div>
               </div>
 
-              {/* Image Upload for all types */}
-              <div className="space-y-2 mt-6 p-4 border rounded-lg bg-slate-50">
-                <Label htmlFor="image" className="font-semibold text-slate-700 block mb-1">Add a Photo (Optional)</Label>
-                <span className="text-sm text-slate-500 block mb-2">Upload a photo to give professionals a better idea of what you need.</span>
-                <Input 
-                  id="image" 
-                  type="file" 
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files.length > 0) {
-                      setImageFile(e.target.files[0]);
-                    }
-                  }} 
-                />
-              </div>
+              {/* Image Upload for all types except those that don't need it */}
+              {!['furniture', 'materials', 'builder_project'].includes(selectedType) && (
+                <div className="space-y-2 mt-6 p-4 border rounded-lg bg-slate-50">
+                  <Label htmlFor="image" className="font-semibold text-slate-700 block mb-1">Add a Photo (Optional)</Label>
+                  <span className="text-sm text-slate-500 block mb-2">Upload a photo to give professionals a better idea of what you need.</span>
+                  <Input 
+                    id="image" 
+                    type="file" 
+                    accept="image/*"
+                    onChange={(e) => {
+                      if (e.target.files && e.target.files.length > 0) {
+                        setImageFile(e.target.files[0]);
+                      }
+                    }} 
+                  />
+                </div>
+              )}
             </div>
           )}
 

@@ -14,6 +14,8 @@ import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import Link from "next/link";
 
+import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
+
 export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -83,7 +85,8 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
             <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
                 {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
-                {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Bids")}
+                {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
+                {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Quotes")}
                 {renderSidebarButton("shortlisted", <Star className="h-5 w-5" />, "Shortlisted Professionals")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
@@ -94,6 +97,11 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
           </div>
 
           <div className="lg:col-span-3 space-y-6">
+            
+            {activeTab === 'bookmarks' && (
+              <SavedBookmarksTab />
+            )}
+            
             {activeTab === 'dashboard' && (
               <div className="flex flex-wrap gap-3 mb-6">
                 <div onClick={() => setActiveTab('dashboard')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
@@ -236,7 +244,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
             {activeTab === 'bids' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-slate-900">Received Bids</h2>
+                  <h2 className="text-xl font-bold text-slate-900">Received Quotes</h2>
                   <span className="text-sm text-slate-500">{data?.received_bids?.length || 0} total</span>
                 </div>
                 {data?.received_bids && data.received_bids.length > 0 ? (
@@ -309,7 +317,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                           {/* Stats row */}
                           <div className="mt-4 flex flex-wrap gap-4 pt-4 border-t">
                             <div className="text-center">
-                              <div className="text-xs text-slate-500 mb-0.5">Bid Amount</div>
+                              <div className="text-xs text-slate-500 mb-0.5">{bid.requirement_type === 'Skilled Labour Job' ? 'Expected Rate' : 'Bid Amount'}</div>
                               <div className="text-lg font-bold text-orange-600">₹{Number(bid.amount || 0).toLocaleString('en-IN')}</div>
                             </div>
                             {bid.timeline_days && (
@@ -383,8 +391,8 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 ) : (
                   <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
                     <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No Bids Yet</h3>
-                    <p className="text-slate-500 text-sm">When professionals apply for your jobs, their bids will appear here.</p>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">No Quotes or Applications Yet</h3>
+                    <p className="text-slate-500 text-sm">When professionals apply for your jobs or submit quotes, they will appear here.</p>
                   </div>
                 )}
               </div>

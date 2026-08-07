@@ -22,7 +22,7 @@ const exactCategories = [
   { name: "Builders", slug: "builders" },
   { name: "Modular Kitchen", slug: "modular-kitchen-experts" },
   { name: "Painters", slug: "painters" },
-  { name: "Suppliers & Vendors", slug: "suppliers-and-vendors" },
+  { name: "Suppliers & Vendors", slug: "suppliers-vendors" },
   { name: "Skilled Workers", slug: "skilled-workers" },
 ];
 

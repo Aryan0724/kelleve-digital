@@ -175,9 +175,14 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('profile', [ProfileController::class, 'show']);
         Route::put('profile', [ProfileController::class, 'update']);
         Route::post('avatar', [ProfileController::class, 'uploadAvatar']);
+        Route::post('cover', [ProfileController::class, 'uploadCover']);
         Route::put('change-password', [ProfileController::class, 'changePassword']);
+        
+        // Bookmarks
+        Route::get('bookmarks', [\App\Http\Controllers\Api\V1\BookmarkController::class, 'index']);
+        Route::post('bookmarks/toggle', [\App\Http\Controllers\Api\V1\BookmarkController::class, 'toggle']);
+        
         Route::post('/verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
-        Route::delete('/verification/document/{id}', [\App\Http\Controllers\Api\V1\VerificationController::class, 'destroy']);
         
         // Listing management for businesses
         Route::middleware('role:business,builder,supplier,worker,skilled_worker,interior_designer,interior_company,contractor,architect,material_supplier')->group(function () {
@@ -299,6 +304,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         // Verification & Trust
         Route::get('/verification/status', [\App\Http\Controllers\Api\V1\VerificationController::class, 'status']);
         Route::post('/verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
+        Route::delete('/verification/document/{id}', [\App\Http\Controllers\Api\V1\VerificationController::class, 'destroy']);
     });
 
     // ─── Payments (Protected) ─────────────────────────────────────────────

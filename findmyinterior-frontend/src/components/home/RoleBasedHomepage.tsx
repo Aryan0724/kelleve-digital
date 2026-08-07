@@ -186,7 +186,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-rose-900 to-red-800",
     ctas: [
       { label: "Browse Jobs", href: "/jobs", primary: true },
-      { label: "Update Availability", href: "/dashboard" },
+      { label: "My Dashboard", href: "/dashboard" },
     ],
     quickCards: [
       { label: "Nearby Jobs", key: "recommended_leads_count", icon: Search, href: "/jobs" },
@@ -204,7 +204,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-rose-900 to-red-800",
     ctas: [
       { label: "Browse Jobs", href: "/jobs", primary: true },
-      { label: "Update Availability", href: "/dashboard" },
+      { label: "My Dashboard", href: "/dashboard" },
     ],
     quickCards: [
       { label: "Nearby Jobs", key: "recommended_leads_count", icon: Search, href: "/jobs" },
@@ -453,7 +453,7 @@ export function RoleBasedHomepage() {
           </div>
 
           {/* Right: verification nudge */}
-          {!["site_verified", "verified_business", "trusted_professional", "elite_professional"].includes(
+          {user?.role !== "homeowner" && !["site_verified", "verified_business", "trusted_professional", "elite_professional"].includes(
             (user as any).verification_level ?? ""
           ) && (
             <div className="hidden md:flex flex-col bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 max-w-xs gap-3">
@@ -464,7 +464,7 @@ export function RoleBasedHomepage() {
               <p className="text-xs text-white/70">
                 Verified profiles appear first in search results and display a trust badge that converts more clients.
               </p>
-              <Link href="/dashboard">
+              <Link href="/dashboard?tab=verification">
                 <button className="w-full bg-yellow-400 hover:bg-yellow-300 text-yellow-900 text-xs font-bold py-2 rounded-lg transition">
                   Apply for Verification →
                 </button>

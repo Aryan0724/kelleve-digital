@@ -32,6 +32,10 @@ class User extends Authenticatable
         'is_verified_business',
         'daily_notification_limit',
         'primary_role_id',
+        'city',
+        'district',
+        'address',
+        'cover_image',
     ];
 
     protected $hidden = [
@@ -134,6 +138,11 @@ class User extends Authenticatable
     public function subscriptions(): HasMany
     {
         return $this->hasMany(UserSubscription::class);
+    }
+
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
     }
 
     public function activeSubscription(): HasOne

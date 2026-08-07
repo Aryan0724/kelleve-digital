@@ -210,70 +210,7 @@ export function Navbar() {
 
             {/* Desktop Center Search Container */}
             <div className="flex-1 max-w-2xl relative z-50 flex justify-center" ref={desktopLocationRef}>
-              <div className="flex items-center w-full max-w-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm hover:shadow-md transition-shadow">
-                <button 
-                  type="button"
-                  onClick={() => setShowMobileLocationDropdown(!showMobileLocationDropdown)}
-                  className="flex items-center justify-between gap-2 pl-5 pr-4 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border-r border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors rounded-l-full"
-                >
-                  <div className="flex items-center gap-1.5 overflow-hidden">
-                    <MapPin className="w-4 h-4 text-[#E8701A] shrink-0" />
-                    <span className="truncate max-w-[100px]">{selectedLocation}</span>
-                  </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                </button>
-                
-                <form onSubmit={handleSearch} className="flex-1 relative flex items-center pr-1">
-                  <input 
-                    id="desktop-search-input"
-                    type="text" 
-                    placeholder="Search services, professionals..." 
-                    className="w-full bg-transparent py-2.5 pl-4 pr-3 text-sm font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <button type="submit" aria-label="Search" className="bg-[#E8701A] hover:bg-[#d66314] text-white px-4 py-2 text-xs font-bold rounded-full transition-colors flex items-center gap-1.5 shrink-0">
-                    <Search className="w-3.5 h-3.5" />
-                    <span>Search</span>
-                  </button>
-                </form>
-              </div>
-
-              {/* Desktop Location Dropdown */}
-              {showMobileLocationDropdown && (
-                <div className="absolute top-14 left-0 w-64 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-3 animate-in fade-in zoom-in-95 duration-150">
-                  <button
-                    type="button"
-                    onClick={handleLocateMe}
-                    disabled={isLocating}
-                    className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-orange-50 dark:bg-orange-950/40 text-[#E8701A] hover:bg-orange-100 dark:hover:bg-orange-900/60 rounded-xl text-xs font-bold transition-colors mb-2"
-                  >
-                    {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LocateFixed className="w-3.5 h-3.5" />}
-                    <span>Detect Current Location</span>
-                  </button>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">Select City in Bihar</div>
-                  <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
-                    {["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Purnia", "All Bihar"].map((city) => (
-                      <button
-                        key={city}
-                        type="button"
-                        onClick={() => {
-                          setSelectedLocation(city);
-                          setShowMobileLocationDropdown(false);
-                        }}
-                        className={`text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-between ${
-                          selectedLocation === city
-                            ? "bg-[#0a1c3a] text-white dark:bg-white dark:text-[#0a1c3a]"
-                            : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
-                        }`}
-                      >
-                        <span>{city}</span>
-                        {selectedLocation === city && <div className="w-1.5 h-1.5 rounded-full bg-[#E8701A]" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+              <SmartSearch />
             </div>
 
             {/* Right Action Buttons */}
@@ -405,70 +342,10 @@ export function Navbar() {
             </div>
             
             {/* Mobile Search Row */}
-            <div className="relative" ref={mobileLocationRef}>
-              <div className="flex items-center w-full mt-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm">
-                <button 
-                  type="button"
-                  onClick={() => setShowMobileLocationDropdown(!showMobileLocationDropdown)}
-                  className="flex items-center justify-between gap-1 pl-4 pr-3 py-2.5 text-sm font-semibold text-slate-700 dark:text-slate-200 shrink-0 border-r border-slate-200 dark:border-slate-700 active:bg-slate-50 dark:active:bg-slate-700 transition-colors"
-                >
-                  <div className="flex items-center gap-1.5 overflow-hidden">
-                    <MapPin className="w-4 h-4 text-[#E8701A] shrink-0" />
-                    <span className="truncate max-w-[70px]">{selectedLocation}</span>
-                  </div>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                </button>
-                
-                <form onSubmit={handleSearch} className="flex-1 relative flex items-center pr-1 py-1">
-                  <input 
-                    id="mobile-search-input"
-                    type="text" 
-                    placeholder="Search services, professionals..." 
-                    className="w-full bg-transparent py-1.5 pl-3 pr-2 text-[13px] font-medium focus:outline-none text-slate-800 dark:text-slate-100 placeholder-slate-400"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                  />
-                  <button type="submit" aria-label="Search" className="bg-[#E8701A] hover:bg-[#d66314] text-white p-1.5 rounded-full transition-colors flex items-center justify-center shrink-0">
-                    <Search className="w-4 h-4" />
-                  </button>
-                </form>
-              </div>
-
-              {showMobileLocationDropdown && (
-                <div className="absolute top-12 left-0 right-0 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-3 animate-in fade-in zoom-in-95 duration-150">
-                  <button
-                    type="button"
-                    onClick={handleLocateMe}
-                    disabled={isLocating}
-                    className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-orange-50 dark:bg-orange-950/40 text-[#E8701A] hover:bg-orange-100 dark:hover:bg-orange-900/60 rounded-xl text-xs font-bold transition-colors mb-2"
-                  >
-                    {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LocateFixed className="w-3.5 h-3.5" />}
-                    <span>Detect Current Location</span>
-                  </button>
-                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">Select City in Bihar</div>
-                  <div className="grid grid-cols-2 gap-1.5 max-h-48 overflow-y-auto">
-                    {["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Purnia", "All Bihar"].map((city) => (
-                      <button
-                        key={city}
-                        type="button"
-                        onClick={() => {
-                          setSelectedLocation(city);
-                          setShowMobileLocationDropdown(false);
-                        }}
-                        className={`text-left px-3 py-2 rounded-xl text-xs font-semibold transition-colors flex items-center justify-between ${
-                          selectedLocation === city
-                            ? "bg-[#0a1c3a] text-white dark:bg-white dark:text-[#0a1c3a]"
-                            : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
-                        }`}
-                      >
-                        <span>{city}</span>
-                        {selectedLocation === city && <div className="w-1.5 h-1.5 rounded-full bg-[#E8701A]" />}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
+            <div className="mt-2" ref={mobileLocationRef}>
+              <SmartSearch compact={true} />
             </div>
+
           </div>
         </div>
       </header>

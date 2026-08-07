@@ -21,6 +21,7 @@ import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirements
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
+import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
 
 export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -64,7 +65,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           <div className="flex items-center gap-2 md:gap-4">
             <VentureSwitcher />
             <span className="text-sm font-medium text-slate-600 dark:text-slate-400 hidden md:block uppercase">
-              {user?.role?.replace(/_/g, ' ') || 'DESIGNER'}
+              {user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || 'DESIGNER'}
             </span>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 px-2 md:px-4">
               <LogOut className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">Logout</span>
@@ -87,7 +88,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 </div>
                 <h3 className="font-bold text-lg dark:text-white">{user?.name}</h3>
                 <Badge className="mt-2 capitalize mb-4" variant="default">
-                  {user?.role?.replace(/_/g, ' ') || "Interior Designer"}
+                  {user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || "Interior Designer"}
                 </Badge>
                 
                 <div className="w-full space-y-2 mt-2">
@@ -119,6 +120,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
+                {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
                 {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
@@ -129,6 +131,10 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           </div>
 
           <div className="lg:col-span-3 space-y-6">
+
+            {activeTab === 'bookmarks' && (
+              <SavedBookmarksTab />
+            )}
 
             <div className="flex flex-wrap gap-3">
               <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">

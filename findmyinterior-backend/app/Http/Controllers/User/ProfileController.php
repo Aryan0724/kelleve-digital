@@ -56,6 +56,30 @@ class ProfileController extends Controller
     }
 
     /**
+     * POST /api/v1/user/cover
+     * Upload and store a cover picture for the user.
+     */
+    public function uploadCover(Request $request): JsonResponse
+    {
+        $request->validate([
+            'cover_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+        ]);
+
+        $user = $request->user();
+        $file = $request->file('cover_image');
+
+        $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1920, 80);
+
+        $user->update(['cover_image' => $dataUri]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cover image updated.',
+            'cover_image' => $dataUri,
+        ]);
+    }
+
+    /**
      * PUT /api/v1/user/profile
      */
     public function update(Request $request): JsonResponse
@@ -84,7 +108,7 @@ class ProfileController extends Controller
         }
 
         // Only update user-level fields
-        $userFields = array_intersect_key($data, array_flip(['name', 'phone', 'avatar']));
+        $userFields = array_intersect_key($data, array_flip(['name', 'phone', 'avatar', 'city', 'district', 'address']));
         if (!empty($userFields)) {
             $user->update($userFields);
         }
@@ -267,9 +291,17 @@ class ProfileController extends Controller
         // Check gallery image limit
         $maxImages = $request->user()->activeSubscription?->plan?->max_gallery_images ?? 5;
         $currentCount = ListingGallery::where('listing_id', $listing->id)->count();
+        $allowed = $maxImages - $currentCount;
+
+        if ($allowed <= 0) {
+            return response()->json([
+                'success' => false,
+                'message' => "You have reached your gallery limit ($maxImages). Please upgrade your plan."
+            ], 403);
+        }
 
         $request->validate([
-            'images'      => ['required', 'array', 'max:' . ($maxImages - $currentCount)],
+            'images'      => ['required', 'array', 'max:' . $allowed],
             'images.*.data'     => ['required', 'string'],
             'images.*.caption' => ['nullable', 'string', 'max:255'],
             'images.*.type' => ['nullable', 'string', 'in:image,video'],

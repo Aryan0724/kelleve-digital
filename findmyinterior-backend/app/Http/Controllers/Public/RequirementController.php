@@ -63,8 +63,9 @@ class RequirementController extends Controller
         $isAdmin = $user && $user->roles()->where('slug', 'admin')->exists();
 
         if (!$isCreator && !$isAdmin) {
-            $ip = $request->ip();
-            $cacheKey = "req_view_{$requirement->id}_{$ip}";
+            $identifier = $user ? "user_{$user->id}" : "ip_" . $request->ip();
+            $cacheKey = "req_view_{$requirement->id}_{$identifier}";
+            
             if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
                 $requirement->views_count = ($requirement->views_count ?? 0) + 1;
                 $requirement->timestamps = false;

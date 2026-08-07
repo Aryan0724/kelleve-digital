@@ -9,6 +9,8 @@ import { ThemeProvider } from "@/components/ThemeProvider";
 import { PopupAd } from "@/components/ads/PopupAd";
 import { TopRibbonAd } from "@/components/ads/TopRibbonAd";
 import Script from "next/script";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -106,6 +108,7 @@ export default function RootLayout({
           </main>
           <Footer />
           <MobileBottomNav />
+          <ToastContainer position="bottom-right" />
         </ThemeProvider>
       </body>
     </html>

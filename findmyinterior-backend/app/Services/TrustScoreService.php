@@ -117,6 +117,11 @@ class TrustScoreService
 
     private function determineVerificationLevel(User $user): string
     {
+        $minimumLevel = 'unverified';
+        if ($user->is_verified_business && in_array($user->verification_level, ['business_verified', 'site_verified'])) {
+            $minimumLevel = 'business_verified';
+        }
+
         // Default level
         $level = 'unverified';
 
@@ -173,6 +178,10 @@ class TrustScoreService
             if ($profile && $reviewCount >= 5 && $avgRating >= 4.0) {
                 $level = 'site_verified'; // Cap at site_verified since DB doesn't support elite_professional
             }
+        }
+
+        if ($minimumLevel === 'business_verified' && in_array($level, ['unverified', 'mobile_verified', 'basic_member'])) {
+            $level = $user->verification_level;
         }
 
         return $level;

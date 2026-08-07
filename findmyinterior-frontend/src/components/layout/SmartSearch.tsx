@@ -222,7 +222,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
         </div>
 
         {/* Search Input */}
-        <div ref={containerRef} className="flex-1 px-4 relative">
+        <div ref={containerRef} className={`flex-1 relative ${compact ? 'px-2' : 'px-4'}`}>
             <input 
               type="text" 
               value={searchQuery}
@@ -233,13 +233,13 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
               onFocus={() => {
                 if (searchQuery.trim()) setShowSuggestions(true);
               }}
-              placeholder="Search services, professionals, projects, suppliers..." 
-              className="w-full bg-transparent text-sm font-medium outline-none text-gray-800 dark:text-white placeholder:text-gray-400 placeholder:font-normal"
+              placeholder={compact ? "Search..." : "Search services, professionals, projects, suppliers..."} 
+              className={`w-full bg-transparent font-medium outline-none text-gray-800 dark:text-white placeholder:text-gray-400 placeholder:font-normal ${compact ? 'text-[13px] py-1.5' : 'text-sm py-2'}`}
             />
 
             {/* Dropdown Suggestions */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 w-[calc(100%+2rem)] sm:w-full min-w-[300px] mt-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div className="absolute top-full left-0 w-[calc(100%+2rem)] sm:w-full min-w-[260px] mt-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
                 <ul className="py-2">
                   {suggestions.map((suggestion, idx) => (
                     <li key={idx}>
@@ -261,10 +261,10 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
             )}
         </div>
 
-        <button type="submit" className="flex items-center justify-center px-4 min-w-[48px] sm:min-w-[120px] cursor-pointer bg-gradient-to-r from-[#E8701A] to-[#c25a12] hover:from-[#c25a12] hover:to-[#E8701A] text-white rounded-lg py-2.5 transition-all duration-300 shadow-sm hover:shadow-md ml-1">
+        <button type="submit" className={`flex items-center justify-center cursor-pointer bg-gradient-to-r from-[#E8701A] to-[#c25a12] hover:from-[#c25a12] hover:to-[#E8701A] text-white transition-all duration-300 shadow-sm hover:shadow-md ${compact ? 'w-8 h-8 rounded-full' : 'px-4 min-w-[48px] sm:min-w-[120px] rounded-lg py-2.5 ml-2 mr-1'}`}>
           <div className="flex items-center justify-center gap-2">
             <Search className="w-4 h-4 shrink-0" />
-            <span className="hidden sm:inline text-sm font-bold tracking-wide">SEARCH</span>
+            {!compact && <span className="hidden sm:inline text-sm font-bold tracking-wide">SEARCH</span>}
           </div>
         </button>
       </form>

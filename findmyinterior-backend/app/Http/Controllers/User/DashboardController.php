@@ -304,15 +304,25 @@ class DashboardController extends Controller
                         ->take(10)
                         ->pluck('requirement_id');
 
+                    $query = \App\Models\Requirement::where('status', 'open');
+                    
+                    if (in_array('interior_designer', $userRoles) || in_array('interior_company', $userRoles)) {
+                        $query->whereIn('requirement_type', ['INTERIOR_DESIGN', 'FURNITURE', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                    } elseif (in_array('architect', $userRoles)) {
+                        $query->whereIn('requirement_type', ['ARCHITECTURE', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                    } elseif (in_array('contractor', $userRoles)) {
+                        $query->whereIn('requirement_type', ['CONSTRUCTION', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                    } elseif (in_array('builder', $userRoles)) {
+                        $query->whereIn('requirement_type', ['BUILDER_PROJECT', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                    }
+
                     if ($recommendedIds->isEmpty()) {
-                        $data['recommended_leads'] = \App\Models\Requirement::where('status', 'open')
-                            ->latest()
-                            ->take(10)
-                            ->get();
+                        $data['recommended_leads'] = (clone $query)->latest()->take(10)->get();
                     } else {
-                        $data['recommended_leads'] = \App\Models\Requirement::whereIn('id', $recommendedIds)
-                            ->where('status', 'open')
-                            ->get();
+                        $data['recommended_leads'] = (clone $query)->whereIn('id', $recommendedIds)->get();
+                        if ($data['recommended_leads']->isEmpty()) {
+                            $data['recommended_leads'] = (clone $query)->latest()->take(10)->get();
+                        }
                     }
                 }
             }

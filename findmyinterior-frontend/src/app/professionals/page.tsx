@@ -10,6 +10,7 @@ import { ProfessionalsFilters } from "@/components/professionals/ProfessionalsFi
 import { ProfessionalsPagination } from "@/components/professionals/ProfessionalsPagination";
 import { ProfessionalTypeSwitcher } from "@/components/professionals/ProfessionalTypeSwitcher";
 import { AdSlot } from "@/components/ads/AdSlot";
+import { BookmarkButton } from "@/components/common/BookmarkButton";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -176,9 +177,9 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                             <h3 className="font-bold text-xl text-slate-900 group-hover:text-orange-600 transition-colors">
                               {listing.title}
                             </h3>
-                            <button className="text-slate-300 hover:text-red-500 transition-colors">
-                              <Heart className="w-5 h-5" />
-                            </button>
+                            <div className="z-10" onClick={(e) => e.preventDefault()}>
+                              <BookmarkButton id={listing.id} type="Listing" />
+                            </div>
                           </div>
                           
                           <div className="flex items-center gap-2 mb-3">

@@ -13,6 +13,7 @@ import { AdvancedBidForm } from "@/components/bids/AdvancedBidForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BidComparisonMatrix } from "@/components/bids/BidComparisonMatrix";
+import { BookmarkButton } from "@/components/common/BookmarkButton";
 
 export default function RequirementDetail() {
   const params = useParams();
@@ -161,6 +162,7 @@ export default function RequirementDetail() {
               <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
                 {requirement.title}
                 <ShieldCheck className="w-6 h-6 text-[#ff6b00]" fill="#ff6b00" stroke="white" />
+                <BookmarkButton id={requirement.id} type={reqType === 'Project' ? 'Project' : 'Requirement'} className="ml-2" />
                 {isOwner && requirement.status === 'open' && (
                   <Button 
                     size="sm" 
@@ -267,7 +269,7 @@ export default function RequirementDetail() {
             {/* Left Column (Images & Details) */}
             <div className="lg:col-span-2 space-y-6">
               
-              {(() => {
+              {reqType !== 'job' && (() => {
                 const displayImages = [];
                 if (requirement.images && requirement.images.length > 0) {
                   displayImages.push(...requirement.images.map((img: any) => img.image_url || img));
@@ -775,7 +777,7 @@ export default function RequirementDetail() {
                             onClick={() => setShowBidForm(true)}
                             className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
                           >
-                            <Upload className="w-4 h-4" /> PLACE BID NOW
+                            <Upload className="w-4 h-4" /> {reqType === 'job' ? 'APPLY FOR JOB' : 'PLACE BID NOW'}
                           </Button>
                         </>
                       )}

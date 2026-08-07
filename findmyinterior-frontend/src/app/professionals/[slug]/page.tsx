@@ -53,6 +53,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+import { BookmarkButton } from "@/components/common/BookmarkButton";
+
 export default async function ProfessionalProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const listing = await getProfessional(slug);
@@ -83,6 +85,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>
+                      <BookmarkButton id={listing.id} type="Listing" />
                       {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 ml-2" title="Elite Professional">Elite</Badge>}
                       {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 ml-2" title="Trusted Professional">Trusted</Badge>}
                       {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business" className="flex-shrink-0 ml-2"><ShieldCheck className="h-8 w-8 text-green-500" /></span>}

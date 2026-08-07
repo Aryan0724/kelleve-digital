@@ -170,11 +170,12 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
       const form = new FormData();
       form.append("cover_image", file);
       
-      if (!listingId) {
-        throw new Error("Listing ID not found. Please save your profile first.");
+      let endpoint = `/user/cover`;
+      if (listingId) {
+        endpoint = `/user/listings/${listingId}/cover`;
       }
       
-      const res = await api.post(`/user/listings/${listingId}/cover`, form);
+      const res = await api.post(endpoint, form);
       setPreview(res.data.cover_image);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
@@ -333,6 +334,7 @@ export function CompleteProfileTab() {
   const [locations, setLocations] = useState<any[]>([]);
   const [currentCover, setCurrentCover] = useState<string | null>(null);
   const [listingId, setListingId] = useState<string | null>(null);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const role = user?.role || 'homeowner';
   const isBusiness = ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business'].includes(role);
@@ -422,7 +424,7 @@ export function CompleteProfileTab() {
       } else {
         setFormData({ 
           phone: user?.phone || "",
-          city: "", district: "", address: "",
+          city: user?.city || "", district: user?.district || "", address: user?.address || "",
           title: "", company_name: "", tagline: "", description: "", website: "", years_experience: "", team_size: "",
           gst_number: "", pan_number: "",
           skill: "", experience_years: "", daily_rate: "", bio: "", total_projects: "",
@@ -434,6 +436,43 @@ export function CompleteProfileTab() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+          );
+          const data = await res.json();
+          const city = data.address.city || data.address.town || data.address.village || data.address.county || "";
+          const district = data.address.state_district || data.address.county || "";
+          const formattedAddress = data.display_name || "";
+          
+          setFormData((prev: any) => ({
+            ...prev,
+            city,
+            district,
+            address: formattedAddress,
+          }));
+        } catch (e) {
+          alert("Failed to detect location.");
+        } finally {
+          setLocationLoading(false);
+        }
+      },
+      () => {
+        alert("Permission denied or location unavailable.");
+        setLocationLoading(false);
+      },
+      { enableHighAccuracy: true }
+    );
   };
 
   const initializedRef = useRef(false);
@@ -475,7 +514,7 @@ export function CompleteProfileTab() {
         // Always update base user data (phone + location)
         const userPayload: any = { 
           phone: formData.phone, 
-          name: user?.name,
+          name: formData.name || user?.name,
           city: formData.city,
           district: formData.district,
           address: formData.address,
@@ -579,7 +618,7 @@ export function CompleteProfileTab() {
         {isBusiness || isWorker ? (
           <CoverUploader currentCover={currentCover} listingId={listingId} />
         ) : (
-          <div className="h-20 bg-gradient-to-r from-[#0a1c3a] to-indigo-900" />
+          <CoverUploader currentCover={user?.cover_image ?? null} listingId={null} />
         )}
         <CardContent className="pt-0 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12">
@@ -630,16 +669,27 @@ export function CompleteProfileTab() {
               
               {/* Homeowner / General Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Field label="Full Name (View Only)" icon={User}>
-                  <Input value={user?.name} disabled className="bg-slate-50" />
+                <Field label="Full Name" icon={User}>
+                  <Input name="name" value={formData.name ?? user?.name ?? ''} onChange={handleChange} placeholder="e.g. John Doe" />
                 </Field>
                 <Field label="Phone Number" icon={Phone}>
                   <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="e.g. 9876543210" />
                 </Field>
                 <div>
-                  <Label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" /> City *
-                  </Label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <Label className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400" /> City *
+                    </Label>
+                    <button
+                      type="button"
+                      onClick={detectLocation}
+                      disabled={locationLoading}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                    >
+                      {locationLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
+                      Use Current
+                    </button>
+                  </div>
                   <Select required value={formData.city} onValueChange={(val) => setFormData({ ...formData, city: val || "" })}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select City" />

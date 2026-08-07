@@ -3,13 +3,24 @@
 import { Phone, Mail, Globe, MessageCircle, MapPin } from "lucide-react";
 import api from "@/lib/api";
 
+import { useState } from "react";
+import { UnlockContactModal } from "./UnlockContactModal";
+
 export function ContactButtons({ listing }: { listing: any }) {
+  const [showUnlock, setShowUnlock] = useState(false);
+
   const handleTrackClick = async (type: string) => {
     try {
       await api.post(`/listings/${listing.id}/click`, { type });
     } catch (e) {
       console.error("Failed to track click", e);
     }
+  };
+
+  const handleWhatsAppUnlockSuccess = () => {
+    handleTrackClick("whatsapp");
+    const number = listing.phone.replace(/\D/g, "");
+    window.open(`https://wa.me/91${number}?text=Hi, I found your profile on FindMyInterior and would like to enquire about your services.`, "_blank");
   };
 
   const hasPhone = !!listing.phone;
@@ -47,11 +58,7 @@ export function ContactButtons({ listing }: { listing: any }) {
       {hasPhone && (
         <div
           className="flex items-center p-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/30 rounded-lg cursor-pointer transition-colors"
-          onClick={() => {
-            handleTrackClick("whatsapp");
-            const number = listing.phone.replace(/\D/g, "");
-            window.open(`https://wa.me/91${number}?text=Hi, I found your profile on FindMyInterior and would like to enquire about your services.`, "_blank");
-          }}
+          onClick={() => setShowUnlock(true)}
         >
           <MessageCircle className="h-5 w-5 mr-3 text-[#25D366] flex-shrink-0" />
           <div>
@@ -59,6 +66,16 @@ export function ContactButtons({ listing }: { listing: any }) {
             <div className="text-[#128C7E] font-semibold">Chat on WhatsApp</div>
           </div>
         </div>
+      )}
+
+      {/* Unlock Contact Modal */}
+      {showUnlock && (
+        <UnlockContactModal 
+          isOpen={showUnlock}
+          onClose={() => setShowUnlock(false)}
+          listing={listing}
+          onUnlockSuccess={handleWhatsAppUnlockSuccess}
+        />
       )}
 
       {/* Email */}
