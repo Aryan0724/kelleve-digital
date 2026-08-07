@@ -54,33 +54,37 @@ class OpportunityProjectController extends Controller
             }
         }
 
-        $requirement = Requirement::create([
-            'user_id'          => $user->id,
-            'category_id'      => 1, // Default; no category picker in wizard yet
-            'title'            => $validated['title'],
-            'description'      => $validated['description'],
-            'city'             => $validated['city'],
-            'district'         => $validated['district'],
-            'project_type'     => $validated['project_category'] ?? 'general',
-            'name'             => $user->name,
-            'phone'            => $user->phone ?? '0000000000',
-            'email'            => $user->email,
-            'opportunity_type' => $validated['opportunity_type'],
-            'requirement_type' => $validated['requirement_type'],
-            'project_category' => $validated['project_category'] ?? null,
-            'budget_min'       => $budgetMin,
-            'budget_max'       => $budgetMax,
-            'creator_role'     => $creatorRole,
-            'target_roles'     => $oppType ? $oppType->target_roles : ['interior_designer', 'contractor', 'builder'],
-            'status'           => 'open',
-        ]);
+        $requirement = \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $user, $budgetMin, $budgetMax, $creatorRole, $oppType, $request) {
+            $req = Requirement::create([
+                'user_id'          => $user->id,
+                'category_id'      => 1, // Default; no category picker in wizard yet
+                'title'            => $validated['title'],
+                'description'      => $validated['description'],
+                'city'             => $validated['city'],
+                'district'         => $validated['district'],
+                'project_type'     => $validated['project_category'] ?? 'general',
+                'name'             => $user->name,
+                'phone'            => $user->phone ?? '0000000000',
+                'email'            => $user->email,
+                'opportunity_type' => $validated['opportunity_type'],
+                'requirement_type' => $validated['requirement_type'],
+                'project_category' => $validated['project_category'] ?? null,
+                'budget_min'       => $budgetMin,
+                'budget_max'       => $budgetMax,
+                'creator_role'     => $creatorRole,
+                'target_roles'     => $oppType ? $oppType->target_roles : ['interior_designer', 'contractor', 'builder'],
+                'status'           => 'open',
+            ]);
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
-            $requirement->image = $dataUri;
-            $requirement->save();
-        }
+            if ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
+                $req->image = $dataUri;
+                $req->save();
+            }
+
+            return $req;
+        });
 
         return $this->success($requirement, 'Requirement created successfully', 201);
     }

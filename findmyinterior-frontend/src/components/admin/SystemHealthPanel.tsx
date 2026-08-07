@@ -37,6 +37,11 @@ interface HealthData {
       debug_mode: boolean;
       memory_usage: string;
     };
+    deployment?: {
+      last_deploy: string;
+      status: string;
+      version: string;
+    };
     timestamp: string;
   };
 }
@@ -211,6 +216,12 @@ export default function SystemHealthPanel() {
             <p>PHP Version: {health.data.system.php_version}</p>
             <p>Laravel Version: {health.data.system.laravel_version}</p>
             <p>Memory Usage: {health.data.system.memory_usage}</p>
+            {health.data.deployment && (
+              <>
+                <p>Deploy Version: <span className="font-mono text-xs bg-slate-100 px-1 rounded">{health.data.deployment.version || 'Unknown'}</span></p>
+                {health.data.deployment.last_deploy && <p>Last Deploy: {new Date(health.data.deployment.last_deploy).toLocaleString()}</p>}
+              </>
+            )}
             <p className={health.data.system.debug_mode ? 'text-amber-600 font-medium' : ''}>
               Debug Mode: {health.data.system.debug_mode ? 'Enabled (Warning)' : 'Disabled (Safe)'}
             </p>

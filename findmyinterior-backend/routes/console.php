@@ -9,6 +9,8 @@ Artisan::command('inspire', function () {
 
 \Illuminate\Support\Facades\Schedule::command('subscriptions:downgrade')->daily();
 
+\Illuminate\Support\Facades\Schedule::command('system:health-check')->everyFiveMinutes();
+
 // TrueDial Analytics
 \Illuminate\Support\Facades\Schedule::job(new \App\Modules\Truedial\Jobs\AggregateAnalyticsHourly())->hourly();
 \Illuminate\Support\Facades\Schedule::job(new \App\Modules\Truedial\Jobs\ReconcileAnalyticsDaily())->dailyAt('00:05');

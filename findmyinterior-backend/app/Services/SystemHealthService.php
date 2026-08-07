@@ -17,6 +17,7 @@ class SystemHealthService
             'cache' => $this->checkCache(),
             'queue' => $this->checkQueue(),
             'storage' => $this->checkStorage(),
+            'deployment' => $this->getDeploymentStatus(),
             'system' => [
                 'php_version' => PHP_VERSION,
                 'laravel_version' => app()->version(),
@@ -26,6 +27,15 @@ class SystemHealthService
             ],
             'timestamp' => now()->toIso8601String(),
         ];
+    }
+
+    private function getDeploymentStatus(): array
+    {
+        $statusFile = storage_path('app/public/deploy_status.json');
+        if (file_exists($statusFile)) {
+            return json_decode(file_get_contents($statusFile), true) ?? ['status' => 'unknown'];
+        }
+        return ['status' => 'unknown'];
     }
 
     private function checkDatabase(): array

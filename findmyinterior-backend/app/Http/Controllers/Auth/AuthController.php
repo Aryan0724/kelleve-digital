@@ -125,41 +125,45 @@ class AuthController extends Controller
         $broadRole    = self::mapTypeToBroadRole($specificType);
 
         try {
-            $user = User::create([
-                'name'              => $data['name'],
-                'email'             => $data['email'],
-                'phone'             => $data['phone'],
-                'password'          => Hash::make($data['password']),
-                'is_active'         => true,
-                // Store the specific type for display/search (e.g. "modular_kitchen_designer")
-                'professional_type' => $data['professional_type'] ?? $specificType,
-            ]);
-            Log::info("AuthController::register - user created, id={$user->id}, type={$specificType}, broad_role={$broadRole}");
+            $user = \Illuminate\Support\Facades\DB::transaction(function () use ($data, $specificType, $broadRole) {
+                $user = User::create([
+                    'name'              => $data['name'],
+                    'email'             => $data['email'],
+                    'phone'             => $data['phone'],
+                    'password'          => Hash::make($data['password']),
+                    'is_active'         => true,
+                    // Store the specific type for display/search (e.g. "modular_kitchen_designer")
+                    'professional_type' => $data['professional_type'] ?? $specificType,
+                ]);
+                Log::info("AuthController::register - user created, id={$user->id}, type={$specificType}, broad_role={$broadRole}");
 
-            // Attach the broad role (only 5 exist in DB)
-            $role = \App\Models\Role::where('slug', $broadRole)->first();
-            if ($role) {
-                $user->roles()->attach($role->id);
-            } else {
-                // Fallback: try to find any valid role
-                $fallback = \App\Models\Role::where('slug', 'interior_designer')
-                    ->orWhere('slug', 'business')
-                    ->first();
-                if ($fallback) {
-                    $user->roles()->attach($fallback->id);
+                // Attach the broad role (only 5 exist in DB)
+                $role = \App\Models\Role::where('slug', $broadRole)->first();
+                if ($role) {
+                    $user->roles()->attach($role->id);
+                } else {
+                    // Fallback: try to find any valid role
+                    $fallback = \App\Models\Role::where('slug', 'interior_designer')
+                        ->orWhere('slug', 'business')
+                        ->first();
+                    if ($fallback) {
+                        $user->roles()->attach($fallback->id);
+                    }
+                    Log::warning("AuthController::register - broad role '{$broadRole}' not found, used fallback");
                 }
-                Log::warning("AuthController::register - broad role '{$broadRole}' not found, used fallback");
-            }
-            Log::info("AuthController::register - role attached");
+                Log::info("AuthController::register - role attached");
 
-            // Auto-create wallet
-            \Illuminate\Support\Facades\DB::table('wallets')->insertOrIgnore([
-                'user_id'    => $user->id,
-                'balance'    => 0.00,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
-            Log::info("AuthController::register - wallet created");
+                // Auto-create wallet
+                \Illuminate\Support\Facades\DB::table('wallets')->insertOrIgnore([
+                    'user_id'    => $user->id,
+                    'balance'    => 0.00,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+                Log::info("AuthController::register - wallet created");
+
+                return $user;
+            });
 
             $token = $user->createToken('api-token')->plainTextToken;
             Log::info("AuthController::register - token created");
