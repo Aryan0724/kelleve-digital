@@ -33,25 +33,29 @@ class ProfileController extends Controller
      */
     public function uploadAvatar(Request $request): JsonResponse
     {
-        $request->validate([
-            'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:4096'],
-        ]);
-
         $user = $request->user();
-        $file = $request->file('avatar');
 
-        // Convert to base64 data URI — stored directly in DB, no filesystem needed.
-        // Works on Render, Vercel, any ephemeral host.
-        $dataUri = \App\Helpers\ImageHelper::toBase64($file, 600, 82);
+        if ($request->hasFile('avatar')) {
+            $request->validate([
+                'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            ]);
+            $file = $request->file('avatar');
+            $url = \App\Helpers\ImageHelper::toStoragePath($file, 'avatars');
+        } elseif ($request->filled('avatar')) {
+            $url = $request->input('avatar');
+        } else {
+            return response()->json(['success' => false, 'message' => 'No avatar image provided.'], 422);
+        }
 
-        $user->update(['avatar' => $dataUri]);
+        $user->update(['avatar' => $url]);
 
         app(TrustScoreService::class)->recalculateForUser($user);
 
         return response()->json([
             'success' => true,
             'message' => 'Avatar updated.',
-            'avatar'  => $dataUri,
+            'avatar'  => $url,
+            'data'    => new UserResource($user->fresh()),
         ]);
     }
 
@@ -61,21 +65,28 @@ class ProfileController extends Controller
      */
     public function uploadCover(Request $request): JsonResponse
     {
-        $request->validate([
-            'cover_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
-        ]);
-
         $user = $request->user();
-        $file = $request->file('cover_image');
+        $file = $request->file('cover_image') ?? $request->file('cover');
 
-        $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1920, 80);
+        if ($file) {
+            $request->validate([
+                'cover_image' => ['sometimes', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+                'cover'       => ['sometimes', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
+            ]);
+            $url = \App\Helpers\ImageHelper::toStoragePath($file, 'covers');
+        } elseif ($request->filled('cover_image') || $request->filled('cover')) {
+            $url = $request->input('cover_image') ?? $request->input('cover');
+        } else {
+            return response()->json(['success' => false, 'message' => 'No cover image file provided.'], 422);
+        }
 
-        $user->update(['cover_image' => $dataUri]);
+        $user->update(['cover_image' => $url]);
 
         return response()->json([
             'success' => true,
             'message' => 'Cover image updated.',
-            'cover_image' => $dataUri,
+            'cover_image' => $url,
+            'data'        => new UserResource($user->fresh()),
         ]);
     }
 

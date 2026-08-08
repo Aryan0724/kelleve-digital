@@ -123,6 +123,85 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
   );
 }
 
+// ─── Cover Banner Uploader ───────────────────────────────────────────────────
+
+function CoverBanner({ currentCover }: { currentCover: string | null }) {
+  const { user, updateUser } = useAuthStore();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(currentCover);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    setPreview(currentCover);
+  }, [currentCover]);
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("Cover image must be smaller than 10MB");
+      return;
+    }
+
+    setUploading(true);
+    setSuccess(false);
+
+    try {
+      const form = new FormData();
+      form.append("cover_image", file);
+      const res = await api.post("/user/cover", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const newCover = res.data.cover_image || res.data.data?.cover_image;
+      if (user && newCover) updateUser({ ...user, cover_image: newCover });
+      setPreview(newCover);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.response?.data?.message || err.message || "Upload failed. Please try again.");
+      setPreview(currentCover);
+    } finally {
+      setUploading(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  return (
+    <div className="h-32 sm:h-40 w-full bg-gradient-to-r from-orange-500 to-amber-600 relative group overflow-hidden">
+      {preview ? (
+        <img src={preview} alt="Cover" className="w-full h-full object-cover" />
+      ) : null}
+      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors" />
+      
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={handleCoverUpload}
+      />
+
+      <button
+        onClick={() => fileRef.current?.click()}
+        disabled={uploading}
+        className="absolute top-3 right-3 px-3 py-1.5 bg-black/50 hover:bg-black/75 text-white rounded-lg transition-all text-xs font-medium flex items-center gap-1.5 shadow-md backdrop-blur-sm z-10"
+        title="Change Background Image"
+      >
+        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+        <span>{uploading ? "Uploading..." : "Change Cover"}</span>
+      </button>
+
+      {success && (
+        <div className="absolute bottom-3 right-3 px-3 py-1 bg-green-600 text-white rounded-full text-xs font-medium flex items-center gap-1 shadow-md z-10">
+          <CheckCircle2 className="w-3.5 h-3.5" /> Cover Saved
+        </div>
+      )}
+    </div>
+  );
+}
+
 // ─── Trust Score Badge ────────────────────────────────────────────────────────
 
 function TrustBadge({ level, score }: { level: string; score?: number }) {
@@ -279,7 +358,7 @@ export function ProfileTab() {
 
       {/* ─── Header card: avatar + trust ──────────────────────── */}
       <Card className="overflow-hidden">
-        <div className="h-20 bg-gradient-to-r from-[#0a1c3a] to-indigo-900" />
+        <CoverBanner currentCover={user?.cover_image ?? null} />
         <CardContent className="pt-0 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12">
             <AvatarUploader currentAvatar={user?.avatar ?? null} userName={user?.name ?? ""} />
