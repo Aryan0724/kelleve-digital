@@ -60,11 +60,3 @@ jobs:
 
             echo "=== Deploy complete! ==="
 
-      - name: Purge Cloudflare Cache
-        if: ${{ secrets.CF_ZONE_ID != '' && secrets.CF_API_TOKEN != '' }}
-        run: |
-          echo "Purging Cloudflare cache for zone ${{ secrets.CF_ZONE_ID }}..."
-          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
-            -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
-            -H "Content-Type: application/json" \
-            --data '{"purge_everything":true}' | python3 -c "import sys,json; r=json.load(sys.stdin); print('✅ Cache purged' if r.get('success') else '❌ Purge failed: ' + str(r))"
