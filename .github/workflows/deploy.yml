@@ -40,11 +40,20 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
-            echo "=== Clearing host Laravel cache files ==="
-            rm -f findmyinterior-backend/bootstrap/cache/*.php || true
+            echo "=== Free disk space ==="
+            df -h /
+            docker system df
+
+            echo "=== Stop old containers ==="
+            docker-compose down || docker compose down || true
+
+            echo "=== Prune dangling images to free space ==="
+            docker image prune -f || true
 
             echo "=== Rebuilding frontend with no cache ==="
-            docker-compose build --no-cache frontend || docker compose build --no-cache frontend
+            docker-compose build --no-cache --progress=plain frontend 2>&1 | tail -50 || docker compose build --no-cache --progress=plain frontend 2>&1 | tail -50
+
+            echo "=== Build exit code: $? ==="
 
             echo "=== Starting all containers ==="
             docker-compose up -d || docker compose up -d
