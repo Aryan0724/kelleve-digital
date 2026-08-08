@@ -263,12 +263,7 @@ class ProfessionalProfileController extends Controller
             $listing->save();
 
         } else {
-            return response()->json([
-                'success' => true,
-                'message' => 'Profile updated successfully.',
-                'type'    => 'none',
-                'data'    => null,
-            ]);
+            $type = 'none';
         }
 
         // Recalculate trust score after profile update
