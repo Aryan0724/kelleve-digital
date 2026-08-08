@@ -53,11 +53,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
-    volumes:
-      - ./findmyinterior-frontend:/app
-      - /app/node_modules
-      - /app/.next
+      NEXT_PUBLIC_API_URL: https://findmyinterior.com/api/v1
     networks:
       - fmi-network
 

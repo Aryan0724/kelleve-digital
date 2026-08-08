@@ -52,10 +52,6 @@ services:
       - "3000:3000"
     environment:
       NEXT_PUBLIC_API_URL: https://findmyinterior.com/api/v1
-    volumes:
-      - ./findmyinterior-frontend:/app
-      - /app/node_modules
-      - /app/.next
     networks:
       - fmi-network
 
