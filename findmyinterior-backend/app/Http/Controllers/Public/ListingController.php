@@ -26,11 +26,11 @@ class ListingController extends Controller
         }
         if ($request->filled('city')) {
             $cityVal = strtolower(trim($request->city));
-            $query->whereRaw('LOWER(city) LIKE ?', ["%{$cityVal}%"]);
+            $query->whereRaw('LOWER(listings.city) LIKE ?', ["%{$cityVal}%"]);
         }
         if ($request->filled('district')) {
             $distVal = strtolower(trim($request->district));
-            $query->whereRaw('LOWER(district) LIKE ?', ["%{$distVal}%"]);
+            $query->whereRaw('LOWER(listings.district) LIKE ?', ["%{$distVal}%"]);
         }
         if ($request->boolean('verified')) {
             $query->where('listings.is_verified', true);
@@ -42,9 +42,9 @@ class ListingController extends Controller
             $ptVal = strtolower(trim($request->professional_type));
             // Match by professional_type on user or in title/description
             $query->where(function ($q) use ($ptVal) {
-                $q->whereHas('user', fn($uq) => $uq->whereRaw('LOWER(professional_type) LIKE ?', ["%{$ptVal}%"]))
-                  ->orWhereRaw('LOWER(title) LIKE ?', ["%{$ptVal}%"])
-                  ->orWhereRaw('LOWER(description) LIKE ?', ["%{$ptVal}%"]);
+                $q->whereHas('user', fn($uq) => $uq->whereRaw('LOWER(users.professional_type) LIKE ?', ["%{$ptVal}%"]))
+                  ->orWhereRaw('LOWER(listings.title) LIKE ?', ["%{$ptVal}%"])
+                  ->orWhereRaw('LOWER(listings.description) LIKE ?', ["%{$ptVal}%"]);
             });
         }
         if ($request->filled('search')) {
@@ -55,7 +55,7 @@ class ListingController extends Controller
             if (!empty($services)) {
                 $query->where(function ($q) use ($services) {
                     foreach ($services as $service) {
-                        $q->orWhereRaw('LOWER(services) LIKE ?', ["%{$service}%"]);
+                        $q->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$service}%"]);
                     }
                 });
             }
@@ -63,13 +63,13 @@ class ListingController extends Controller
         // 'name' param - search by company/person name specifically
         if ($request->filled('name')) {
             $nameVal = strtolower(trim($request->name));
-            $query->whereRaw('LOWER(title) LIKE ?', ["%{$nameVal}%"]);
+            $query->whereRaw('LOWER(listings.title) LIKE ?', ["%{$nameVal}%"]);
         }
         if ($request->filled('min_rating')) {
-            $query->where('avg_rating', '>=', $request->min_rating);
+            $query->where('listings.avg_rating', '>=', $request->min_rating);
         }
         if ($request->filled('budget') && $request->budget !== 'All Budget') {
-            $query->where('budget_tier', $request->budget);
+            $query->where('listings.budget_tier', $request->budget);
         }
         if ($request->filled('experience')) {
             $query->where('listings.years_experience', '>=', (int) $request->experience);
@@ -82,19 +82,19 @@ class ListingController extends Controller
         }
         if ($request->boolean('delivery_available')) {
             $query->where(function ($q) {
-                $q->whereRaw('LOWER(services) LIKE ?', ['%delivery%'])
-                  ->orWhereRaw('LOWER(availability) LIKE ?', ['%delivery%']);
+                $q->whereRaw('LOWER(listings.services) LIKE ?', ['%delivery%'])
+                  ->orWhereRaw('LOWER(listings.availability) LIKE ?', ['%delivery%']);
             });
         }
         if ($request->filled('material_type')) {
             $mtVal = strtolower(trim($request->material_type));
-            $query->whereRaw('LOWER(products) LIKE ?', ["%{$mtVal}%"]);
+            $query->whereRaw('LOWER(listings.products) LIKE ?', ["%{$mtVal}%"]);
         }
         if ($request->filled('business_type')) {
             $btVal = strtolower(trim($request->business_type));
             $query->where(function ($q) use ($btVal) {
-                $q->whereRaw('LOWER(services) LIKE ?', ["%{$btVal}%"])
-                  ->orWhereHas('category', fn($cq) => $cq->whereRaw('LOWER(name) LIKE ?', ["%{$btVal}%"]));
+                $q->whereRaw('LOWER(listings.services) LIKE ?', ["%{$btVal}%"])
+                  ->orWhereHas('category', fn($cq) => $cq->whereRaw('LOWER(categories.name) LIKE ?', ["%{$btVal}%"]));
             });
         }
 

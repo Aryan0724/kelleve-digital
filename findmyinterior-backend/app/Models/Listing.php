@@ -109,17 +109,17 @@ class Listing extends Model
 
     public function scopeActive($query)
     {
-        return $query->where('status', 'active');
+        return $query->where('listings.status', 'active');
     }
 
     public function scopeFeatured($query)
     {
-        return $query->where('is_featured', true);
+        return $query->where('listings.is_featured', true);
     }
 
     public function scopePremium($query)
     {
-        return $query->where('is_premium', true);
+        return $query->where('listings.is_premium', true);
     }
 
     public function scopeVerified($query)
@@ -129,17 +129,17 @@ class Listing extends Model
 
     public function scopeByCategory($query, int $categoryId)
     {
-        return $query->where('category_id', $categoryId);
+        return $query->where('listings.category_id', $categoryId);
     }
 
     public function scopeByCity($query, string $city)
     {
-        return $query->where('city', $city);
+        return $query->where('listings.city', $city);
     }
 
     public function scopeByDistrict($query, string $district)
     {
-        return $query->where('district', $district);
+        return $query->where('listings.district', $district);
     }
 
     public function scopeSearch($query, string $term)
@@ -155,17 +155,17 @@ class Listing extends Model
             foreach ($words as $word) {
                 $singularWord = rtrim($word, 's');
                 $q->orWhere(function ($subQ) use ($word, $singularWord) {
-                    $subQ->whereRaw('LOWER(title) LIKE ?', ["%{$word}%"])
-                         ->orWhereRaw('LOWER(title) LIKE ?', ["%{$singularWord}%"])
-                         ->orWhereRaw('LOWER(description) LIKE ?', ["%{$word}%"])
-                         ->orWhereRaw('LOWER(description) LIKE ?', ["%{$singularWord}%"])
-                         ->orWhereRaw('LOWER(services) LIKE ?', ["%{$word}%"])
-                         ->orWhereRaw('LOWER(services) LIKE ?', ["%{$singularWord}%"])
-                         ->orWhereRaw('LOWER(keywords) LIKE ?', ["%{$word}%"])
-                         ->orWhereRaw('LOWER(keywords) LIKE ?', ["%{$singularWord}%"])
+                    $subQ->whereRaw('LOWER(listings.title) LIKE ?', ["%{$word}%"])
+                         ->orWhereRaw('LOWER(listings.title) LIKE ?', ["%{$singularWord}%"])
+                         ->orWhereRaw('LOWER(listings.description) LIKE ?', ["%{$word}%"])
+                         ->orWhereRaw('LOWER(listings.description) LIKE ?', ["%{$singularWord}%"])
+                         ->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$word}%"])
+                         ->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$singularWord}%"])
+                         ->orWhereRaw('LOWER(listings.keywords) LIKE ?', ["%{$word}%"])
+                         ->orWhereRaw('LOWER(listings.keywords) LIKE ?', ["%{$singularWord}%"])
                          ->orWhereHas('category', function ($catQ) use ($word, $singularWord) {
-                             $catQ->whereRaw('LOWER(name) LIKE ?', ["%{$word}%"])
-                                  ->orWhereRaw('LOWER(name) LIKE ?', ["%{$singularWord}%"]);
+                             $catQ->whereRaw('LOWER(categories.name) LIKE ?', ["%{$word}%"])
+                                  ->orWhereRaw('LOWER(categories.name) LIKE ?', ["%{$singularWord}%"]);
                          });
                 });
             }
