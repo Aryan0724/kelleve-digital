@@ -18,10 +18,12 @@ class Blog extends Model
         'category',
         'status',
         'published_at',
+        'target_audience',
     ];
 
     protected $casts = [
         'published_at' => 'datetime',
+        'target_audience' => 'array',
     ];
 
     // ─── Relationships ────────────────────────────────────────────────────────

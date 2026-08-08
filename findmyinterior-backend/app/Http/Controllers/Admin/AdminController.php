@@ -265,6 +265,8 @@ class AdminController extends Controller
             'status'      => ['in:draft,published'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['string', 'max:100'],
+            'target_audience'   => ['nullable', 'array'],
+            'target_audience.*' => ['string'],
         ]);
 
         $blog = Blog::create([
@@ -277,6 +279,7 @@ class AdminController extends Controller
             'category'     => $data['category'] ?? 'General',
             'status'       => $data['status'] ?? 'draft',
             'published_at' => ($data['status'] ?? 'draft') === 'published' ? now() : null,
+            'target_audience' => $data['target_audience'] ?? null,
         ]);
 
         if (!empty($data['tags'])) {
@@ -304,6 +307,8 @@ class AdminController extends Controller
             'status'      => ['in:draft,published'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['string', 'max:100'],
+            'target_audience'   => ['nullable', 'array'],
+            'target_audience.*' => ['string'],
         ]);
 
         if (isset($data['title'])) {
