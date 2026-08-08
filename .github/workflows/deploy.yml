@@ -33,8 +33,10 @@ jobs:
             echo "=== Rebuilding and updating Docker containers ==="
             docker compose up -d --build
 
+            echo "=== Waiting for containers to start ==="
+            sleep 25
+
             echo "=== Clearing Laravel caches inside container ==="
-            sleep 5
             docker exec fmi_backend php artisan route:clear || true
             docker exec fmi_backend php artisan config:clear || true
             docker exec fmi_backend php artisan cache:clear || true
