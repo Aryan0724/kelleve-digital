@@ -29,14 +29,15 @@ async function getProfessionals(searchParams: any) {
       }
     }
     const params = new URLSearchParams(cleanParams).toString();
-    const res = await fetch(`${getServerApiUrl()}/listings?${params}`, {
+    const apiUrl = `${getServerApiUrl()}/listings?${params}`;
+    const res = await fetch(apiUrl, {
       cache: 'no-store'
     });
-    if (!res.ok) throw new Error('Failed to fetch');
+    if (!res.ok) throw new Error(`Failed to fetch from ${apiUrl} - Status: ${res.status} ${res.statusText}`);
     return await res.json();
   } catch (error: any) {
     console.error("Fetch Error in ProfessionalsPage:", error);
-    return { data: [], meta: { current_page: 1, last_page: 1, total: 0, per_page: 12 }, error: error.message };
+    return { data: [], meta: { current_page: 1, last_page: 1, total: 0, per_page: 12 }, error: error.message || String(error) };
   }
 }
 
