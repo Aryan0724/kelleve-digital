@@ -50,7 +50,7 @@ jobs:
             echo "=== Pruning unused Docker images to free space ==="
             docker image prune -f || true
 
-            echo "=== Building frontend (CACHE_BUST invalidates npm run build layer) ==="
+            echo "=== Building all services (CACHE_BUST invalidates frontend npm run build layer) ==="
             CACHE_BUST=$(date +%s)
             
             # Use docker compose (V2) or docker-compose (V1)
@@ -60,7 +60,7 @@ jobs:
               DOCKER_CMD="docker compose"
             fi
             
-            $DOCKER_CMD build --build-arg CACHE_BUST=$CACHE_BUST frontend > build.log 2>&1
+            $DOCKER_CMD build --build-arg CACHE_BUST=$CACHE_BUST > build.log 2>&1
             BUILD_EXIT=$?
             cp build.log findmyinterior-backend/public/build-log.txt || true
             
