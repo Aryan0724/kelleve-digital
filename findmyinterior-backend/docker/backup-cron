@@ -1,2 +1,1 @@
-# Run backups daily at 2:00 AM
-0 2 * * * root /bin/bash /var/www/html/docker/backup.sh >> /var/log/backup.log 2>&1
+0 2 * * * /bin/sh /var/www/html/docker/backup.sh >> /var/log/backup.log 2>&1

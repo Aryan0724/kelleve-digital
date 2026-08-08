@@ -48,7 +48,7 @@ COPY docker/www.conf /usr/local/etc/php-fpm.d/www.conf
 COPY docker/supervisord.conf /etc/supervisord.conf
 
 # Setup cron job
-RUN crontab /var/www/html/docker/backup-cron
+RUN crontab /var/www/html/docker/backup-cron || true
 
 EXPOSE 80
 
