@@ -65,7 +65,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           <div className="flex items-center gap-2 md:gap-4">
             <VentureSwitcher />
             <span className="text-sm font-medium text-slate-600 dark:text-slate-400 hidden md:block uppercase">
-              {user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || 'DESIGNER'}
+              {(user?.professional_type || user?.role || 'PROFESSIONAL').replace(/_/g, ' ')}
             </span>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 px-2 md:px-4">
               <LogOut className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">Logout</span>
@@ -87,9 +87,16 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                   )}
                 </div>
                 <h3 className="font-bold text-lg dark:text-white">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="default">
-                  {user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || "Interior Designer"}
-                </Badge>
+                <div className="flex flex-col items-center gap-1 mt-2 mb-4">
+                  <Badge className="capitalize" variant="default">
+                    {user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || "Professional"}
+                  </Badge>
+                  {((user as any)?.is_verified || data?.user?.is_verified) && (
+                    <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1 text-xs">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Verified Professional
+                    </Badge>
+                  )}
+                </div>
                 
                 <div className="w-full space-y-2 mt-2">
                   <div className="w-full bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 rounded-lg p-3 text-left flex justify-between items-center">

@@ -97,16 +97,19 @@ export function SettingsAdminPanel() {
   const handleSave = async () => {
     setSaving(true);
     try {
-      // Map back to array for API
       const payload = Object.keys(settings).map(key => ({
         key,
         value: settings[key]
       }));
 
-      await api.put("/admin/settings", { settings: payload });
+      try {
+        await api.put("/admin/settings", { settings: payload });
+      } catch (err) {
+        await api.post("/admin/settings", { settings: payload });
+      }
       alert("Settings saved successfully.");
-    } catch (e) {
-      alert("Failed to save settings.");
+    } catch (e: any) {
+      alert(e.response?.data?.message || "Failed to save settings.");
     } finally {
       setSaving(false);
     }

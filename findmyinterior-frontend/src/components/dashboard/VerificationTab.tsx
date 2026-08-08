@@ -167,7 +167,16 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
     return status === 'pending' || status === 'approved';
   });
 
-  const isVerifiedBusiness = data?.verification_level === 'verified_business' || data?.verification_level === 'trusted_professional' || data?.verification_level === 'elite_professional';
+  const isVerifiedBusiness = Boolean(
+    (user as any)?.is_verified ||
+    data?.user?.is_verified ||
+    data?.is_verified ||
+    data?.status === 'approved' ||
+    data?.verification_status === 'approved' ||
+    data?.verification_level === 'verified_business' ||
+    data?.verification_level === 'trusted_professional' ||
+    data?.verification_level === 'elite_professional'
+  );
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">

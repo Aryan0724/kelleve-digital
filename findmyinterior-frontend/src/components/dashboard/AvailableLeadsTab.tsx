@@ -54,6 +54,7 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
               const isRFQ = oppType === "RFQ";
               const isJob = oppType === "JOB";
               const isBuilder = oppType === "BUILDER_PROJECT";
+              const isWorkerJob = isJob || req.category?.slug === 'workers' || req.opportunity_type === 'WORKER_JOB';
 
               return (
                 <div key={req.id} className={`p-4 border-l-4 rounded-lg bg-white dark:bg-slate-900/50 shadow-sm flex flex-col md:flex-row justify-between md:items-start gap-4 ${isRFQ ? 'border-l-blue-500' : isJob ? 'border-l-green-500' : isBuilder ? 'border-l-purple-500' : 'border-l-orange-500'} border-y border-r border-y-slate-200 border-r-slate-200 dark:border-y-slate-800 dark:border-r-slate-800`}>
@@ -106,7 +107,20 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
                       >
                         {unlockingId === req.id 
                           ? "Unlocking..." 
-                          : `Unlock (${(user?.role === 'worker' || user?.role === 'skilled_worker' || user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker') || user?.subscription?.plan?.can_see_all_leads) ? 'Free' : '₹' + (req.unlock_price || 49)})`}
+                          : isWorkerJob 
+                            ? "Apply / Express Interest" 
+                            : `Unlock (${(user?.role === 'worker' || user?.role === 'skilled_worker' || user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker') || user?.subscription?.plan?.can_see_all_leads) ? 'Free' : '₹' + (req.unlock_price || 49)})`}
+                      </Button>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          if (confirm("You must unlock this contact first to open WhatsApp. Unlock now?")) {
+                            handleUnlock(req.id, isRFQ ? 'rfq' : isJob ? 'job' : '');
+                          }
+                        }}
+                        className="w-full text-emerald-600 border-emerald-200 hover:bg-emerald-50 dark:hover:bg-emerald-950/30 text-xs font-semibold"
+                      >
+                        WhatsApp Contact
                       </Button>
                     </div>
                   )}
