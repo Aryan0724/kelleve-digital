@@ -99,12 +99,7 @@ class ApiExceptionHandler
             'url' => $request->fullUrl(),
         ]);
 
-        $message = 'Something went wrong. Our team has been notified.';
-        
-        // In local/development, we might still want to see the error
-        if (config('app.debug')) {
-            $message = $exception->getMessage();
-        }
+        $message = $exception->getMessage() ?: 'Something went wrong. Our team has been notified.';
 
         return response()->json([
             'success' => false,
