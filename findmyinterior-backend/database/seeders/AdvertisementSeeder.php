@@ -9,8 +9,11 @@ class AdvertisementSeeder extends Seeder
 {
     public function run(): void
     {
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
         Advertisement::truncate();
-
+        \App\Models\AdvertisementStat::truncate();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+        
         $ads = [
             [
                 'title' => 'Sponsored: Buy Bulk Plywood at 20% Off',
