@@ -50,7 +50,7 @@ class VerificationController extends Controller
     public function upload(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'document_type' => 'required|string|in:gst_certificate,pan_card,owner_photo,business_logo,business_image,office_image,portfolio_document,trade_license,aadhaar,work_history',
+            'document_type' => 'required|string|in:gst_certificate,pan_card,owner_photo,business_logo,business_image,office_image,portfolio_document,trade_license,aadhaar,work_history,business_registration,warehouse_image,self_photo,skill_photo',
             'file' => 'required|file|mimes:jpeg,png,jpg,pdf|max:10240', // 10MB max
         ]);
 

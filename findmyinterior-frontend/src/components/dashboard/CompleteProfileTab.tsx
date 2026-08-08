@@ -10,10 +10,54 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Camera, CheckCircle2, Loader2, ShieldCheck, Star, Upload,
-  User, Building2, MapPin, Phone, Globe, Briefcase, Users, Hash, Check, Lock, AlertCircle, XCircle, ShieldAlert, UploadCloud, ArrowRight, UserCircle2
+  User, Building2, MapPin, Phone, Globe, Briefcase, Users, Hash, Check, Lock, AlertCircle, XCircle, ShieldAlert, UploadCloud, ArrowRight, UserCircle2, ChevronRight, Info, FileText, PlayCircle, Settings2, Mail
 } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+
+const SERVICE_OPTIONS = [
+  "Modular Kitchen", "False Ceiling", "Wardrobes", "Plumbing", 
+  "Electrical", "Flooring", "Painting", "Civil Work", 
+  "Furniture", "Turnkey Projects", "3D Rendering", "Space Planning",
+  "Commercial Design", "Residential Design", "Renovation", "Landscaping", "Vastu Consultation",
+  "Carpentry", "Masonry", "HVAC"
+];
+
+const LANGUAGE_OPTIONS = [
+  "Hindi", "English", "Marathi", "Gujarati", "Bengali", 
+  "Tamil", "Telugu", "Kannada", "Malayalam", "Punjabi", 
+  "Odia", "Bhojpuri", "Urdu", "Maithili", "Assamese"
+];
+
+function MultiSelectCheckboxes({ options, selectedString, onChange, name }: { options: string[], selectedString: string, onChange: (name: string, val: string) => void, name: string }) {
+  const selected = selectedString ? selectedString.split(',').map(s => s.trim()).filter(Boolean) : [];
+  
+  const handleToggle = (opt: string, checked: boolean) => {
+    let newSelected;
+    if (checked) {
+      newSelected = [...selected, opt];
+    } else {
+      newSelected = selected.filter(s => s !== opt);
+    }
+    onChange(name, newSelected.join(', '));
+  };
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 bg-white border border-slate-200 rounded-md">
+      {options.map(opt => (
+        <label key={opt} className="flex items-center space-x-2 text-sm text-slate-700 cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={selected.includes(opt)}
+            onChange={(e) => handleToggle(opt, e.target.checked)}
+            className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 h-4 w-4"
+          />
+          <span>{opt}</span>
+        </label>
+      ))}
+    </div>
+  );
+}
 
 const resizeImage = (file: File, maxWidth = 1920, maxHeight = 1080): Promise<File> => {
   return new Promise((resolve, reject) => {
@@ -812,9 +856,16 @@ export function CompleteProfileTab() {
                   <h4 className="text-sm font-bold text-slate-900 mb-2">Advanced Details</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Field label="Services Offered (comma separated)" icon={Briefcase}>
-                      <Input name="services" value={formData.services} onChange={handleChange} placeholder="e.g. Modular Kitchen, False Ceiling" />
-                    </Field>
+                    <div className="col-span-1 md:col-span-2">
+                      <Label className="text-sm font-bold text-slate-900 mb-1 block">Services Offered</Label>
+                      <MultiSelectCheckboxes 
+                        name="services" 
+                        options={SERVICE_OPTIONS} 
+                        selectedString={formData.services || ""} 
+                        onChange={(n, v) => setFormData((p: any) => ({...p, [n]: v}))} 
+                      />
+                      <div className="mt-2 text-xs text-slate-500">Selected: {formData.services || "None"}</div>
+                    </div>
                     <Field label="Key Achievements (comma separated)" icon={Star}>
                       <Input name="achievements" value={formData.achievements} onChange={handleChange} placeholder="e.g. 50+ Projects Completed, Award Winning" />
                     </Field>
@@ -837,9 +888,16 @@ export function CompleteProfileTab() {
                       </select>
                     </Field>
                     
-                    <Field label="Languages Spoken (comma separated)" icon={Globe}>
-                      <Input name="languages" value={formData.languages} onChange={handleChange} placeholder="e.g. English, Hindi, Marathi" />
-                    </Field>
+                    <div className="col-span-1 md:col-span-2 mt-4">
+                      <Label className="text-sm font-bold text-slate-900 mb-1 block">Languages Spoken</Label>
+                      <MultiSelectCheckboxes 
+                        name="languages" 
+                        options={LANGUAGE_OPTIONS} 
+                        selectedString={formData.languages || ""} 
+                        onChange={(n, v) => setFormData((p: any) => ({...p, [n]: v}))} 
+                      />
+                      <div className="mt-2 text-xs text-slate-500">Selected: {formData.languages || "None"}</div>
+                    </div>
                   </div>
                   
                   <div className="grid grid-cols-1 md:grid-cols-4 gap-6 bg-slate-50 p-4 rounded-lg">
