@@ -178,7 +178,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                             <h3 className="font-bold text-xl text-slate-900 group-hover:text-orange-600 transition-colors">
                               {listing.title}
                             </h3>
-                            <div className="z-10" onClick={(e) => e.preventDefault()}>
+                            <div className="z-10">
                               <BookmarkButton id={listing.id} type="Listing" />
                             </div>
                           </div>
