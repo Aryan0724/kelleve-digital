@@ -26,15 +26,18 @@ jobs:
             echo "=== Navigating to project directory ==="
             cd /var/www/find-my-interior
 
-            echo "=== Pulling latest code from GitHub ==="
-            git fetch origin
+            echo "=== Force pulling latest code from GitHub ==="
+            git fetch --all
             git reset --hard origin/main
+            git clean -fd
 
-            echo "=== Rebuilding and updating Docker containers (zero-downtime) ==="
-            docker compose up -d --build
+            echo "=== Rebuilding Docker containers (--no-cache) ==="
+            docker compose down
+            docker compose build --no-cache
+            docker compose up -d
 
-            echo "=== Restarting backend to flush OPcache memory & clearing caches ==="
-            docker compose restart backend
+            echo "=== Clearing Laravel caches inside container ==="
+            sleep 5
             docker exec fmi_backend php artisan route:clear || true
             docker exec fmi_backend php artisan config:clear || true
             docker exec fmi_backend php artisan cache:clear || true
