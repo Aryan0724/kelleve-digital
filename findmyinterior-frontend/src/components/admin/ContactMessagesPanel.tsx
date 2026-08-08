@@ -75,18 +75,24 @@ export function ContactMessagesPanel() {
               </TableHeader>
               <TableBody>
                 {messages.map((msg) => (
-                  <TableRow key={msg.id} className={msg.status === 'new' ? 'bg-orange-50/50' : ''}>
-                    <TableCell className="whitespace-nowrap">{new Date(msg.created_at).toLocaleDateString()}</TableCell>
-                    <TableCell className="font-medium whitespace-nowrap">{msg.name}</TableCell>
-                    <TableCell className="max-w-[200px] truncate">
-                      <div className="text-sm truncate" title={msg.email}>{msg.email}</div>
+                  <TableRow 
+                    key={msg.id} 
+                    className={`cursor-pointer hover:bg-slate-100/80 transition-colors ${msg.status === 'new' ? 'bg-orange-50/50' : ''}`}
+                    onClick={() => handleViewMessage(msg)}
+                  >
+                    <TableCell className="whitespace-nowrap align-top">{new Date(msg.created_at).toLocaleDateString()}</TableCell>
+                    <TableCell className="font-medium whitespace-nowrap align-top">{msg.name}</TableCell>
+                    <TableCell className="max-w-[200px] align-top">
+                      <div className="text-sm font-medium text-slate-800 break-all">{msg.email}</div>
                       <div className="text-xs text-slate-500 whitespace-nowrap">{msg.phone}</div>
                     </TableCell>
-                    <TableCell className="font-semibold max-w-[200px] truncate" title={msg.subject}>{msg.subject || "-"}</TableCell>
-                    <TableCell className="max-w-md">
-                      <div className="text-sm text-slate-600 line-clamp-1" title={msg.message}>{msg.message}</div>
+                    <TableCell className="font-semibold max-w-[200px] align-top">{msg.subject || "-"}</TableCell>
+                    <TableCell className="min-w-[300px] max-w-lg align-top">
+                      <div className="text-sm text-slate-700 whitespace-pre-wrap break-words leading-relaxed p-2 bg-slate-50 dark:bg-slate-800 rounded border border-slate-200 dark:border-slate-700 max-h-48 overflow-y-auto">
+                        {msg.message}
+                      </div>
                     </TableCell>
-                  <TableCell>
+                    <TableCell className="align-top" onClick={(e) => e.stopPropagation()}>
                     <Select value={msg.status} onValueChange={(val) => handleStatusChange(msg.id, val)}>
                       <SelectTrigger className={`h-8 text-xs ${msg.status === 'new' ? 'bg-orange-100 text-orange-800' : msg.status === 'read' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'}`}>
                         <SelectValue placeholder="Status" />

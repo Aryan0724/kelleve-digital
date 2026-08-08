@@ -121,7 +121,6 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
                 {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
-                {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}

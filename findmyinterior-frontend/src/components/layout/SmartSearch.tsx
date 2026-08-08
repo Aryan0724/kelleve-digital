@@ -128,30 +128,40 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   };
 
   const getSuggestions = (query: string) => {
-    const q = debouncedQuery.toLowerCase();
+    const q = query.trim().toLowerCase();
     
-    let newSuggestions: any[] = [];
+    const ALL_SERVICES = [
+      "Interior Designer",
+      "Interior Company",
+      "Interior Decorator",
+      "Architect",
+      "Building Contractor",
+      "Civil Contractor",
+      "Skilled Workers",
+      "Modular Kitchen",
+      "False Ceiling Contractor",
+      "Furniture Supplier",
+      "Material Supplier",
+      "Painter",
+      "Plumber",
+      "Electrician",
+      "Carpenter"
+    ];
     
-    // Default recommendations if no query
-    let matchedServices = [];
+    let matchedServices: string[] = [];
     
     if (!q) {
-      matchedServices = ["Interior Designer", "Modular Kitchen", "Painter", "Carpenter", "Architect"];
+      matchedServices = ["Interior Designer", "Architect", "Modular Kitchen", "Building Contractor", "Skilled Workers"];
     } else {
-      // Basic match for services
-      matchedServices = [
-        "Interior Designer", "Modular Kitchen", "False Ceiling", 
-        "Painter", "Carpenter", "Architect", "Plumber", "Electrician", "Contractor"
-      ].filter(s => s.toLowerCase().includes(q)).slice(0, 3);
+      matchedServices = ALL_SERVICES.filter(s => s.toLowerCase().includes(q)).slice(0, 5);
     }
     
-    newSuggestions = matchedServices.map(s => ({
+    const newSuggestions: any[] = matchedServices.map(s => ({
       type: "service",
       text: s,
       href: `/professionals?search=${encodeURIComponent(s)}`
     }));
 
-    // Combine with locations
     if (matchedServices.length > 0 && selectedLocation) {
       newSuggestions.push({
         type: "service_in_city",
@@ -230,9 +240,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
                 setSearchQuery(e.target.value);
                 setShowSuggestions(true);
               }}
-              onFocus={() => {
-                if (searchQuery.trim()) setShowSuggestions(true);
-              }}
+              onFocus={() => setShowSuggestions(true)}
               placeholder={compact ? "Search..." : "Search services, professionals, projects, suppliers..."} 
               className={`w-full bg-transparent font-medium outline-none text-gray-800 dark:text-white placeholder:text-gray-400 placeholder:font-normal ${compact ? 'text-[13px] py-1.5' : 'text-sm py-2'}`}
             />
