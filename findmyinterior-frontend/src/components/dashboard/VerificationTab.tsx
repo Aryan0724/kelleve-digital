@@ -54,6 +54,12 @@ const getRequiredDocsForRole = (role: string) => {
         { id: "self_photo", label: "Self Photograph" },
         { id: "skill_photo", label: "Skill Photograph" },
       ];
+    case 'customer':
+    case 'homeowner':
+      return [
+        { id: "aadhaar", label: "Aadhaar Card" },
+        { id: "pan_card", label: "PAN Card" },
+      ];
     default:
       return [
         { id: "gst_certificate", label: "GST Certificate" },
@@ -73,6 +79,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
   const [uploading, setUploading] = useState<string | null>(null);
   const { user } = useAuthStore();
   const currentRole = user?.role || 'homeowner';
+  const isHomeowner = ['customer', 'homeowner'].includes(currentRole);
   const isBusiness = ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business'].includes(currentRole);
   const isWorker = ['worker', 'skilled_worker'].includes(currentRole);
 
@@ -151,32 +158,29 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
     }
   };
 
-  if (loading) return <div className="py-10 text-center text-slate-500">Loading Application Status...</div>;
+  const requiredDocs = getRequiredDocsForRole(currentRole);
+  const userDocs = data?.documents || [];
 
-  const docs = data?.documents || [];
-  const getDocStatus = (type: string) => docs.find((d: any) => d.document_type === type);
+  const getDocStatus = (docType: string) => {
+    return userDocs.find((d: any) => d.document_type === docType);
+  };
 
-  // Profile Validation Check
-  const completionPercentage = profileCompletion;
-  const isProfileComplete = completionPercentage >= 50;
-
-  const role = user?.role || 'homeowner';
-  const requiredDocs = getRequiredDocsForRole(role);
+  const isProfileComplete = profileCompletion >= 50;
   const requiredDocsSubmitted = requiredDocs.every(doc => {
     const status = getDocStatus(doc.id)?.status;
-    return status === 'pending' || status === 'approved';
+    return status === "approved" || status === "pending";
   });
 
-  const isVerifiedBusiness = Boolean(
-    (user as any)?.is_verified ||
-    data?.user?.is_verified ||
-    data?.is_verified ||
-    data?.status === 'approved' ||
+  const isVerifiedBusiness =
     data?.verification_status === 'approved' ||
     data?.verification_level === 'verified_business' ||
     data?.verification_level === 'trusted_professional' ||
-    data?.verification_level === 'elite_professional'
-  );
+    data?.verification_level === 'elite_professional' ||
+    data?.verification_level === 'verified';
+
+  const completionPercentage = profileCompletion;
+
+  if (loading) return <div className="py-10 text-center text-slate-500">Loading Application Status...</div>;
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -185,11 +189,14 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
       <div className="text-center bg-gradient-to-br from-[#0a1c3a] to-indigo-900 rounded-xl p-8 text-white shadow-lg">
         <ShieldCheck className="w-16 h-16 mx-auto mb-4 text-green-400" />
         <h2 className="text-3xl font-bold mb-2">
-          {isBusiness ? "Formal Business Verification" : "Professional Verification"}
+          {isHomeowner ? "Homeowner Identity Verification" : isBusiness ? "Formal Business Verification" : "Professional Verification"}
         </h2>
         <p className="text-indigo-100 max-w-xl mx-auto">
-          Applying for verification is the best way to build trust with customers. 
-          {isBusiness ? " Verified businesses" : " Verified professionals"} rank higher in search results and receive a dedicated badge.
+          {isHomeowner
+            ? "Upload your Aadhaar Card and PAN Card for identity verification to build trust with professionals and get quick responses to your requirements."
+            : isBusiness
+            ? "Applying for verification is the best way to build trust with customers. Verified businesses rank higher in search results and receive a dedicated badge."
+            : "Applying for verification is the best way to build trust with customers."}
         </p>
         
         <div className="mt-6 flex justify-center gap-4">

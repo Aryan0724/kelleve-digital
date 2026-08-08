@@ -131,6 +131,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 {renderSidebarButton("shortlisted", <Star className="h-5 w-5" />, "Shortlisted Professionals")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("profile", <User className="h-5 w-5" />, "Profile")}
+                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Identity Verification")}
                 {renderSidebarButton("settings", <User className="h-5 w-5" />, "Settings")}
               </div>
             </div>
@@ -503,6 +504,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
               </Card>
             )}
 
+            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'profile' && <CompleteProfileTab />}
             {activeTab === 'settings' && <SettingsTab />}
           </div>
