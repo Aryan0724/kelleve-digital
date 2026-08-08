@@ -52,4 +52,4 @@ RUN crontab /var/www/html/docker/backup-cron || true
 
 EXPOSE 80
 
-CMD ["sh", "-c", "php artisan route:clear || true; php artisan config:clear || true; php artisan cache:clear || true; php artisan storage:link --force 2>/dev/null || true; php artisan migrate --force || true; /usr/bin/supervisord -c /etc/supervisord.conf"]
+CMD ["sh", "-c", "sleep 3; php artisan route:clear || true; php artisan config:clear || true; php artisan cache:clear || true; php artisan storage:link --force 2>/dev/null || true; (php artisan migrate --force || true); /usr/bin/supervisord -c /etc/supervisord.conf"]
