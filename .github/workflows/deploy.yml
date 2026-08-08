@@ -23,6 +23,16 @@ jobs:
           timeout: 600s
           script: |
             export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
+            echo "=== Ensuring /docker/find-my-interior links to /var/www/find-my-interior ==="
+            if [ -d "/docker/find-my-interior" ] && [ ! -L "/docker/find-my-interior" ]; then
+              rsync -a /docker/find-my-interior/ /var/www/find-my-interior/ 2>/dev/null || cp -rn /docker/find-my-interior/* /var/www/find-my-interior/ 2>/dev/null || true
+              rm -rf /docker/find-my-interior
+              ln -s /var/www/find-my-interior /docker/find-my-interior
+            elif [ ! -e "/docker/find-my-interior" ]; then
+              mkdir -p /docker
+              ln -s /var/www/find-my-interior /docker/find-my-interior
+            fi
+
             echo "=== Navigating to project directory ==="
             cd /var/www/find-my-interior
 
