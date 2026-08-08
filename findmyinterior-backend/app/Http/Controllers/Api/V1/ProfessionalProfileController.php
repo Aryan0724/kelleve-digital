@@ -72,29 +72,38 @@ class ProfessionalProfileController extends Controller
      */
     public function show(Request $request): JsonResponse
     {
-        $user = $request->user();
-        $role = $user->role;
+        try {
+            $user = $request->user();
+            $role = $user->role ?? 'customer';
 
-        $profile = null;
-        $type = $this->getProfileType($role);
+            $profile = null;
+            $type = $this->getProfileType($role);
 
-        if ($type === 'listing') {
-            $profile = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
-        } elseif ($type === 'worker') {
-            $profile = Worker::where('user_id', $user->id)->with(['reviews'])->first();
-        } elseif ($type === 'supplier') {
-            $profile = Supplier::where('user_id', $user->id)->with(['reviews', 'catalog'])->first();
-        } elseif ($type === 'builder') {
-            $profile = Builder::where('user_id', $user->id)->with(['reviews', 'projects'])->first();
-        } else {
-            $type = 'none'; // Homeowner, Customer, Admin
+            if ($type === 'listing') {
+                $profile = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
+            } elseif ($type === 'worker') {
+                $profile = Worker::where('user_id', $user->id)->first();
+            } elseif ($type === 'supplier') {
+                $profile = Supplier::where('user_id', $user->id)->first();
+            } elseif ($type === 'builder') {
+                $profile = Builder::where('user_id', $user->id)->first();
+            } else {
+                $type = 'none'; // Homeowner, Customer, Admin
+            }
+
+            return response()->json([
+                'success' => true,
+                'type'    => $type,
+                'data'    => $profile
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => true,
+                'type'    => 'none',
+                'data'    => null,
+                'error'   => $e->getMessage()
+            ]);
         }
-
-        return response()->json([
-            'success' => true,
-            'type'    => $type,
-            'data'    => $profile
-        ]);
     }
 
     /**
