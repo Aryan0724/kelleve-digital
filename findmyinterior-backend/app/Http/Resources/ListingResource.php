@@ -70,7 +70,10 @@ class ListingResource extends JsonResource
             'services'         => $this->services ?? [],
             'products'         => $this->products ?? [],
             'achievements'     => $this->achievements ?? [],
+            'languages'        => $this->languages ?? [],
+            'social_links'     => $this->social_links ?? [],
             'availability'     => $this->availability,
+            'response_time'    => $this->response_time,
             'reviews'          => ReviewResource::collection($this->whenLoaded('approvedReviews')),
             'created_at'       => $this->created_at?->toDateString(),
         ];

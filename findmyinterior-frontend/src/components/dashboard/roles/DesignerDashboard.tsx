@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star, TrendingUp } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
@@ -142,24 +142,34 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
               <SavedBookmarksTab />
             )}
 
-            <div className="flex flex-wrap gap-3">
-              <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
-                <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Profile Views</div>
-                <div className="text-xl font-bold text-slate-900 dark:text-white">{data?.total_views || 0}</div>
-              </div>
-              <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
-                <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Phone Clicks</div>
-                <div className="text-xl font-bold text-slate-900 dark:text-white">{data?.phone_clicks || 0}</div>
-              </div>
-              <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
-                <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">WA Clicks</div>
-                <div className="text-xl font-bold text-slate-900 dark:text-white">{data?.whatsapp_clicks || 0}</div>
-              </div>
-              <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
-                <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Web Clicks</div>
-                <div className="text-xl font-bold text-slate-900 dark:text-white">{data?.website_clicks || 0}</div>
-              </div>
-            </div>
+            <Card className="dark:bg-slate-900 dark:border-slate-800 mb-6">
+              <CardHeader className="pb-3 border-b dark:border-slate-800 mb-4">
+                <CardTitle className="text-lg flex items-center gap-2 dark:text-white">
+                  <TrendingUp className="w-5 h-5 text-indigo-500" />
+                  Performance Insights
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-4">
+                  <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-indigo-50/50 dark:bg-slate-800/50 border border-indigo-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors">
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">Profile Views</div>
+                    <div className="text-3xl font-bold text-indigo-700 dark:text-indigo-400">{data?.total_views || 0}</div>
+                  </div>
+                  <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-green-50/50 dark:bg-slate-800/50 border border-green-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-green-50 dark:hover:bg-slate-800 transition-colors">
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">Phone Clicks</div>
+                    <div className="text-3xl font-bold text-green-700 dark:text-green-400">{data?.phone_clicks || 0}</div>
+                  </div>
+                  <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-emerald-50/50 dark:bg-slate-800/50 border border-emerald-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors">
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">WA Clicks</div>
+                    <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-400">{data?.whatsapp_clicks || 0}</div>
+                  </div>
+                  <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">Web Clicks</div>
+                    <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">{data?.website_clicks || 0}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             

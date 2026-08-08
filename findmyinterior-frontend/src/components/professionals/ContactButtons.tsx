@@ -131,6 +131,25 @@ export function ContactButtons({ listing }: { listing: any }) {
         </div>
       )}
 
+      {/* Social Links */}
+      {listing.social_links && Object.keys(listing.social_links).length > 0 && (
+        <div className="flex gap-2 pt-2">
+          {Object.entries(listing.social_links).map(([platform, url]) => (
+            url && typeof url === 'string' && (
+              <a 
+                key={platform} 
+                href={url.startsWith('http') ? url : `https://${url}`}
+                target="_blank" 
+                rel="noreferrer"
+                className="flex-1 bg-slate-100 hover:bg-slate-200 text-slate-600 text-center py-2 rounded-lg text-sm font-medium transition-colors capitalize border border-slate-200"
+              >
+                {platform}
+              </a>
+            )
+          ))}
+        </div>
+      )}
+
       {/* Fallback if no contact info at all */}
       {!hasPhone && !hasEmail && !hasWebsite && (
         <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-center">

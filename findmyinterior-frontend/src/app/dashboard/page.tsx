@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
@@ -88,18 +88,24 @@ export default function UserDashboard() {
 
   const dashType = getDashboardType(user.role);
 
-  switch (dashType) {
-    case 'customer':
-      return <HomeownerDashboard data={data} fetchDashboard={fetchDashboard} />;
-    case 'worker':
-      return <WorkerDashboard data={data} fetchDashboard={fetchDashboard} />;
-    case 'supplier':
-      return <SupplierDashboard data={data} fetchDashboard={fetchDashboard} />;
-    case 'builder':
-      return <BuilderDashboard data={data} fetchDashboard={fetchDashboard} />;
-    case 'designer':
-    default:
-      return <DesignerDashboard data={data} fetchDashboard={fetchDashboard} />;
-  }
+  return (
+    <Suspense fallback={<div className="p-20 text-center">Loading dashboard modules...</div>}>
+      {(() => {
+        switch (dashType) {
+          case 'customer':
+            return <HomeownerDashboard data={data} fetchDashboard={fetchDashboard} />;
+          case 'worker':
+            return <WorkerDashboard data={data} fetchDashboard={fetchDashboard} />;
+          case 'supplier':
+            return <SupplierDashboard data={data} fetchDashboard={fetchDashboard} />;
+          case 'builder':
+            return <BuilderDashboard data={data} fetchDashboard={fetchDashboard} />;
+          case 'designer':
+            return <DesignerDashboard data={data} fetchDashboard={fetchDashboard} />;
+          default:
+            return <div className="p-10 text-center">Unknown Role Dashboard</div>;
+        }
+      })()}
+    </Suspense>
+  );
 }
-

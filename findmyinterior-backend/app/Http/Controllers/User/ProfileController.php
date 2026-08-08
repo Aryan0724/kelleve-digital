@@ -334,6 +334,7 @@ class ProfileController extends Controller
             'images.*.data'     => ['required', 'string'],
             'images.*.caption' => ['nullable', 'string', 'max:255'],
             'images.*.type' => ['nullable', 'string', 'in:image,video'],
+            'images.*.is_before_after' => ['nullable', 'boolean'],
         ]);
 
         foreach ($request->images as $index => $image) {
@@ -346,6 +347,7 @@ class ProfileController extends Controller
                 'image_url'  => $type === 'image' ? $dataUrl : null,
                 'video_url'  => $type === 'video' ? $dataUrl : null,
                 'caption'    => $image['caption'] ?? null,
+                'is_before_after' => $image['is_before_after'] ?? false,
                 'sort_order' => $currentCount + $index,
             ]);
         }
@@ -364,13 +366,17 @@ class ProfileController extends Controller
     public function updateGalleryImage(Request $request, int $id, int $imageId): JsonResponse
     {
         $request->validate([
-            'caption' => 'nullable|string|max:255'
+            'caption' => 'nullable|string|max:255',
+            'is_before_after' => 'nullable|boolean'
         ]);
 
         $listing = Listing::where('user_id', $request->user()->id)->findOrFail($id);
         $image = ListingGallery::where('listing_id', $listing->id)->findOrFail($imageId);
         
         $image->caption = $request->caption;
+        if ($request->has('is_before_after')) {
+            $image->is_before_after = $request->is_before_after;
+        }
         $image->save();
 
         return response()->json(['success' => true, 'message' => 'Image updated.']);
