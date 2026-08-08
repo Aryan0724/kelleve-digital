@@ -40,6 +40,7 @@ export function InquiryForm({ type, id, title, buttonText = "Contact Now" }: { t
 
   return (
     <Dialog>
+      {/* @ts-expect-error asChild is not in types but works with some UI variants */}
       <DialogTrigger asChild>
         <Button size="lg" className="w-full bg-orange-600 hover:bg-orange-700">
           {buttonText}
