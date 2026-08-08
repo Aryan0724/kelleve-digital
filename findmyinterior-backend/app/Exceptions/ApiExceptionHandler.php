@@ -82,7 +82,7 @@ class ApiExceptionHandler
 
             return response()->json([
                 'success' => false,
-                'message' => 'A database error occurred. Our team has been notified.',
+                'message' => 'Database Error: ' . $exception->getMessage(),
             ], 500);
         }
 
