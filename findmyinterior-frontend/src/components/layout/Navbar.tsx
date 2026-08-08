@@ -233,7 +233,7 @@ export function Navbar() {
 
               <div className="w-px h-6 bg-gray-200 dark:bg-gray-700 mx-2"></div>
               
-              {(!_hasHydrated && !mounted) ? null : (!user || ["homeowner", "customer"].includes(user?.role || "")) ? (
+              {(!_hasHydrated && !mounted) ? null : (user && ["homeowner", "customer"].includes(user?.role || "")) ? (
                 <Link href={isAuthenticated ? "/dashboard?tab=bids_received" : "/post-requirement"}>
                   <button className="bg-white dark:bg-slate-800 border-2 border-[#0a1c3a] dark:border-slate-600 text-[#0a1c3a] dark:text-white hover:bg-[#0a1c3a] hover:text-white dark:hover:bg-slate-700 text-sm font-bold px-5 py-2.5 rounded-lg shadow-sm transition-all h-full flex items-center justify-center whitespace-nowrap">
                     COMPARE BIDS

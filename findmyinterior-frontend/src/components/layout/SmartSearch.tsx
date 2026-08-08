@@ -232,7 +232,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
         </div>
 
         {/* Search Input */}
-        <div ref={containerRef} className={`flex-1 relative ${compact ? 'px-2' : 'px-4'}`}>
+        <div ref={containerRef} className={`flex-1 relative min-w-[150px] ${compact ? 'px-2' : 'px-4'}`}>
             <input 
               type="text" 
               value={searchQuery}
