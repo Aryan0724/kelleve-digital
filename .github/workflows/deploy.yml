@@ -22,7 +22,6 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 600s
           script: |
-            set -e
             export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
 
             echo "=== Ensuring /docker/find-my-interior links to /var/www/find-my-interior ==="
