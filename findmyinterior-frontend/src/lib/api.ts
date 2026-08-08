@@ -1,9 +1,19 @@
 import axios from 'axios';
 import { useAuthStore } from './store/useAuthStore';
 
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost')) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/api/v1`;
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+};
+
 const api = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1',
-  timeout: 120000, // 2 minutes to accommodate Render free tier cold starts
+  baseURL: getBaseUrl(),
+  timeout: 120000, // 2 minutes to accommodate cold starts
   headers: {
     'Accept': 'application/json',
   },

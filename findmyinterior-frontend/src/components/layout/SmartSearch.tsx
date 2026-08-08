@@ -245,9 +245,8 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
               className={`w-full bg-transparent font-medium outline-none text-gray-800 dark:text-white placeholder:text-gray-400 placeholder:font-normal ${compact ? 'text-[13px] py-1.5' : 'text-sm py-2'}`}
             />
 
-            {/* Dropdown Suggestions */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 w-[calc(100%+2rem)] sm:w-full min-w-[260px] mt-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div className="absolute top-full left-0 right-0 w-full min-w-[320px] mt-3 bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-[9999]">
                 <ul className="py-2">
                   {suggestions.map((suggestion, idx) => (
                     <li key={idx}>
