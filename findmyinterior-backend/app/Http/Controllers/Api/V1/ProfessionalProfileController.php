@@ -255,9 +255,11 @@ class ProfessionalProfileController extends Controller
 
         } else {
             return response()->json([
-                'success' => false,
-                'message' => 'Role not supported for professional profile.'
-            ], 403);
+                'success' => true,
+                'message' => 'Profile updated successfully.',
+                'type'    => 'none',
+                'data'    => null,
+            ]);
         }
 
         // Recalculate trust score after profile update

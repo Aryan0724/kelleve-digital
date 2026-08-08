@@ -141,20 +141,18 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         Route::post('/verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
         
-        // Listing management for businesses
-        Route::middleware('role:business,builder,supplier,worker,skilled_worker,interior_designer,interior_company,contractor,architect,material_supplier')->group(function () {
-            Route::get('listings', [ProfileController::class, 'listings']);
-            Route::post('listings', [ProfileController::class, 'createListing']);
-            Route::put('listings/{id}', [ProfileController::class, 'updateListing']);
-            Route::post('listings/{id}/cover', [ProfileController::class, 'uploadListingCover']);
-            Route::post('listings/{id}/gallery', [ProfileController::class, 'addGalleryImages']);
-            Route::put('listings/{id}/gallery/{imageId}', [ProfileController::class, 'updateGalleryImage']);
-            Route::delete('listings/{id}/gallery/{imageId}', [ProfileController::class, 'deleteGalleryImage']);
-            
-            // Unified Role-based Professional Profile
-            Route::get('professional-profile', [\App\Http\Controllers\Api\V1\ProfessionalProfileController::class, 'show']);
-            Route::put('professional-profile', [\App\Http\Controllers\Api\V1\ProfessionalProfileController::class, 'update']);
-        });
+        // Listing & Professional Profile management
+        Route::get('listings', [ProfileController::class, 'listings']);
+        Route::post('listings', [ProfileController::class, 'createListing']);
+        Route::put('listings/{id}', [ProfileController::class, 'updateListing']);
+        Route::post('listings/{id}/cover', [ProfileController::class, 'uploadListingCover']);
+        Route::post('listings/{id}/gallery', [ProfileController::class, 'addGalleryImages']);
+        Route::put('listings/{id}/gallery/{imageId}', [ProfileController::class, 'updateGalleryImage']);
+        Route::delete('listings/{id}/gallery/{imageId}', [ProfileController::class, 'deleteGalleryImage']);
+        
+        // Unified Role-based Professional Profile
+        Route::get('professional-profile', [\App\Http\Controllers\Api\V1\ProfessionalProfileController::class, 'show']);
+        Route::put('professional-profile', [\App\Http\Controllers\Api\V1\ProfessionalProfileController::class, 'update']);
 
         // Reviews
         Route::post('reviews', [ReviewController::class, 'store']);
