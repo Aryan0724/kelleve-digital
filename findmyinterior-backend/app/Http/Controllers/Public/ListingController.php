@@ -129,10 +129,9 @@ class ListingController extends Controller
                 ->orderByDesc('listings.id'),
         };
 
-        $cacheKey = 'listings_index_' . md5(json_encode($request->all()));
-        $listings = \Illuminate\Support\Facades\Cache::remember($cacheKey, 300, function () use ($query, $request) {
-            return $query->paginate($request->get('per_page', 12));
-        });
+        // Avoid caching the entire LengthAwarePaginator object as it can cause serialization issues
+        // especially during deployments or when the container environment changes.
+        $listings = $query->paginate($request->get('per_page', 12));
 
         return response()->json([
             'success' => true,

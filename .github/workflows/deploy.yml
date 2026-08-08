@@ -62,6 +62,14 @@ jobs:
             
             $DOCKER_CMD build --build-arg CACHE_BUST=$CACHE_BUST > build.log 2>&1
             BUILD_EXIT=$?
+            
+            echo "=== Starting all containers ==="
+            $DOCKER_CMD up -d
+            
+            echo "=== RUNNING INTERNAL CURL DIAGNOSTIC ===" >> build.log
+            docker exec fmi_backend curl -s "http://localhost:80/api/v1/listings?search=Interior+Designer" >> build.log
+            echo -e "\n=== END DIAGNOSTIC ===" >> build.log
+            
             cp build.log findmyinterior-backend/public/build-log.txt || true
             
             echo "Build exit code: $BUILD_EXIT"

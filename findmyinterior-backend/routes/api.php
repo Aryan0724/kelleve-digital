@@ -55,6 +55,25 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         ]);
     });
 
+    Route::get('/debug-internal', function (\Illuminate\Http\Request $request) {
+        $url = 'http://127.0.0.1:80/api/v1/listings?search=Interior+Designer';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Host: backend']);
+        $response = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
+
+        return response()->json([
+            'url' => $url,
+            'status' => $status,
+            'response' => $response,
+            'curl_error' => $error
+        ]);
+    });
+
     // ─── Auth ─────────────────────────────────────────────────────────────
     Route::prefix('auth')->middleware('throttle:auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
