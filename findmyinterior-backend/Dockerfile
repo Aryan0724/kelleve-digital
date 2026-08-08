@@ -52,4 +52,4 @@ RUN crontab /var/www/html/docker/backup-cron
 
 EXPOSE 80
 
-CMD ["sh", "-c", "php artisan storage:link --force 2>/dev/null || true && php artisan migrate --force && /usr/bin/supervisord -c /etc/supervisord.conf"]
+CMD ["sh", "-c", "php artisan storage:link --force 2>/dev/null || true; php artisan migrate --force || true; /usr/bin/supervisord -c /etc/supervisord.conf"]

@@ -11,28 +11,35 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('listings', function (Blueprint $table) {
-            $table->index('user_id');
-            $table->index('category_id');
-            $table->index('status');
-            $table->index('city');
-        });
+        if (Schema::hasTable('listings')) {
+            Schema::table('listings', function (Blueprint $table) {
+                try { $table->index('user_id'); } catch (\Throwable $e) {}
+                try { $table->index('category_id'); } catch (\Throwable $e) {}
+                try { $table->index('status'); } catch (\Throwable $e) {}
+                try { $table->index('city'); } catch (\Throwable $e) {}
+            });
+        }
 
-        Schema::table('requirements', function (Blueprint $table) {
-            $table->index('user_id');
-            $table->index('status');
-        });
+        if (Schema::hasTable('projects')) {
+            Schema::table('projects', function (Blueprint $table) {
+                try { $table->index('user_id'); } catch (\Throwable $e) {}
+                try { $table->index('status'); } catch (\Throwable $e) {}
+            });
+        }
 
-        Schema::table('bids', function (Blueprint $table) {
-            $table->index('requirement_id');
-            $table->index('user_id');
-            $table->index('status');
-        });
+        if (Schema::hasTable('bids')) {
+            Schema::table('bids', function (Blueprint $table) {
+                try { $table->index('user_id'); } catch (\Throwable $e) {}
+                try { $table->index('status'); } catch (\Throwable $e) {}
+            });
+        }
 
-        Schema::table('reviews', function (Blueprint $table) {
-            $table->index('user_id');
-            $table->index('reviewer_id');
-        });
+        if (Schema::hasTable('reviews')) {
+            Schema::table('reviews', function (Blueprint $table) {
+                try { $table->index('user_id'); } catch (\Throwable $e) {}
+                try { $table->index('reviewer_id'); } catch (\Throwable $e) {}
+            });
+        }
     }
 
     /**
