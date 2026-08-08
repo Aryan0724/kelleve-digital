@@ -60,11 +60,14 @@ jobs:
               DOCKER_CMD="docker compose"
             fi
             
-            $DOCKER_CMD build --build-arg CACHE_BUST=$CACHE_BUST frontend
+            $DOCKER_CMD build --build-arg CACHE_BUST=$CACHE_BUST frontend > build.log 2>&1
             BUILD_EXIT=$?
+            cp build.log findmyinterior-backend/public/build-log.txt || true
+            
             echo "Build exit code: $BUILD_EXIT"
             if [ $BUILD_EXIT -ne 0 ]; then
               echo "ERROR: Frontend build failed!"
+              tail -n 50 build.log
               exit 1
             fi
 
