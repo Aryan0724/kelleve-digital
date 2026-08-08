@@ -1,4 +1,4 @@
-name: Deploy FindMyInterior
+name: Deploy to Production VPS
 
 on:
   push:
@@ -6,67 +6,39 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  deploy:
+    name: SSH Deploy to Hostinger VPS
     runs-on: ubuntu-latest
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          node-version: '20'
-
-      - name: Build Frontend (Check)
-        working-directory: ./findmyinterior-frontend
-        run: |
-          npm ci
-          npm run build
-
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 600s
           script: |
+            set -e
+            echo "=== Navigating to project directory ==="
             cd /var/www/find-my-interior
-            git pull origin main
 
-            # Backend
-            cd /var/www/find-my-interior/findmyinterior-backend
-            composer install --no-dev --optimize-autoloader
-            
-            # Use safe migrate if script exists, else fallback to standard
-            if [ -f "../scripts/safe-migrate.sh" ]; then
-                bash ../scripts/safe-migrate.sh
-            else
-                php artisan migrate --force
-            fi
-            
-            php artisan config:cache
-            php artisan route:cache
-            php artisan storage:link || true
-            
-            # Restart backend container to pick up changes
-            cd /var/www/find-my-interior
-            docker compose restart backend queue-worker || true
+            echo "=== Pulling latest code from GitHub ==="
+            git fetch origin
+            git reset --hard origin/main
 
-            # Frontend
-            cd /var/www/find-my-interior/findmyinterior-frontend
-            npm install
-            npm run build
-            
-            # Restart frontend
-            cd /var/www/find-my-interior
-            docker compose restart frontend || true
-            
-            # Post deploy script for deployment status
-            if [ -f "./docker/post-deploy.sh" ]; then
-                bash ./docker/post-deploy.sh
-            fi
+            echo "=== Rebuilding Docker containers (no cache) ==="
+            docker compose down
+            docker compose build --no-cache --build-arg NEXT_PUBLIC_API_URL=https://findmyinterior.com/api/v1
+            docker compose up -d
 
-      - name: Verify Health
-        run: |
-          sleep 10
-          curl -s --fail https://findmyinterior.com/api/v1/health || exit 1
-          curl -s --fail https://findmyinterior.com/ || exit 1
+            echo "=== Waiting for containers to start ==="
+            sleep 10
+
+            echo "=== Container Status ==="
+            docker compose ps
+
+            echo "=== Deploy complete! ==="
