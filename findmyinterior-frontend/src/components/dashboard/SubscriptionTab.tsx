@@ -26,83 +26,8 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
     }
   };
 
-  const loadScript = (src: string) => {
-    return new Promise((resolve) => {
-      const script = document.createElement("script");
-      script.src = src;
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
   const handleSubscribe = async (planId: number, planName: string, price: number) => {
-    try {
-      const useWallet = window.confirm(`Would you like to pay ₹${price} for the ${planName} plan using your Wallet Balance?\n\nClick OK to use your Wallet, or Cancel to use Razorpay (Cards/UPI/Netbanking).`);
-
-      if (useWallet) {
-        try {
-          const res = await api.post("/payments/pay-with-wallet", {
-            purpose: "subscription",
-            subscription_plan_id: planId,
-            billing_cycle: "yearly",
-          });
-          
-          if (res.data.success) {
-            alert("Subscription successful using Wallet Balance!");
-            window.location.reload();
-          }
-        } catch (e: any) {
-          alert(e.response?.data?.message || "Wallet payment failed. Please ensure you have sufficient balance.");
-        }
-        return; // Don't proceed to Razorpay if they attempted wallet (even if it failed, they should explicitly choose Razorpay next time)
-      }
-
-      // Proceed with Razorpay
-      const res = await api.post("/payments/create-order", {
-        purpose: "subscription",
-        subscription_plan_id: planId,
-        billing_cycle: "yearly",
-      });
-
-      const { order_id, amount, currency, payment_id } = res.data;
-      
-      const scriptLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
-      if (!scriptLoaded) {
-        alert("Razorpay SDK failed to load. Are you online?");
-        return;
-      }
-
-      const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_test_mock", 
-        amount: amount,
-        currency: currency,
-        name: "Find My Interior",
-        description: `Upgrade to ${planName}`,
-        order_id: order_id,
-        handler: async function (response: any) {
-          try {
-            await api.post("/payments/verify", {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-            alert("Subscription successful!");
-            window.location.reload();
-          } catch (e: any) {
-            alert(e.response?.data?.message || "Payment verification failed.");
-          }
-        },
-        theme: {
-          color: "#ea580c"
-        }
-      };
-      
-      const rzp = new (window as any).Razorpay(options);
-      rzp.open();
-    } catch (e: any) {
-      alert(e.response?.data?.message || "Failed to initialize payment");
-    }
+    alert(`${planName} plan (₹${price}/yr) — Payments coming soon! Contact us at support@findmyinterior.com to upgrade.`);
   };
 
   if (loading) return <div className="p-12 text-center text-slate-500">Loading plans...</div>;
