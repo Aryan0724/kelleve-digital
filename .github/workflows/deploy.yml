@@ -52,7 +52,15 @@ jobs:
 
             echo "=== Building frontend (CACHE_BUST invalidates npm run build layer) ==="
             CACHE_BUST=$(date +%s)
-            docker-compose build --build-arg CACHE_BUST=$CACHE_BUST frontend
+            
+            # Use docker compose (V2) or docker-compose (V1)
+            if command -v docker-compose &> /dev/null; then
+              DOCKER_CMD="docker-compose"
+            else
+              DOCKER_CMD="docker compose"
+            fi
+            
+            $DOCKER_CMD build --build-arg CACHE_BUST=$CACHE_BUST frontend
             BUILD_EXIT=$?
             echo "Build exit code: $BUILD_EXIT"
             if [ $BUILD_EXIT -ne 0 ]; then
@@ -61,7 +69,7 @@ jobs:
             fi
 
             echo "=== Starting all containers ==="
-            docker-compose up -d
+            $DOCKER_CMD up -d
 
             echo "=== Waiting for backend to start ==="
             sleep 15
