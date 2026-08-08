@@ -43,9 +43,11 @@ jobs:
             echo "=== Clearing host Laravel cache files ==="
             rm -f findmyinterior-backend/bootstrap/cache/*.php || true
 
-            echo "=== Rebuilding Docker containers ==="
-            export BUILD_TIME=$(date +%s)
-            docker-compose up -d --build || docker compose up -d --build
+            echo "=== Rebuilding frontend (no cache) ==="
+            docker-compose build --no-cache frontend || docker compose build --no-cache frontend
+
+            echo "=== Starting all containers ==="
+            docker-compose up -d || docker compose up -d
 
             echo "=== Clearing Laravel caches ==="
             sleep 15
