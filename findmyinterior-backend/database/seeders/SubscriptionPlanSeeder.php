@@ -65,7 +65,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_listings'           => 1, // Features say "1 Business Listing"
                 'max_gallery_images'     => 100,
                 'lead_unlocks_per_month' => 0, // Unlocks might be sold separately
-                'can_see_all_leads'      => true, // Higher tier features
+                'can_see_all_leads'      => false, 
                 'can_add_website'        => true,
                 'can_add_whatsapp'       => true,
                 'is_gold_verified'       => false,

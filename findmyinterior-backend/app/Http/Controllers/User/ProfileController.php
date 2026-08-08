@@ -215,6 +215,14 @@ class ProfileController extends Controller
             'pan_number'       => ['nullable', 'string', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
         ]);
 
+        $plan = $user->activeSubscription?->plan;
+        if (!$plan || !$plan->can_add_website) {
+            unset($data['website']);
+        }
+        if (!$plan || !$plan->can_add_whatsapp) {
+            unset($data['whatsapp']);
+        }
+
         $listing = Listing::create([
             ...$data,
             'tenant_id' => app(\App\Core\Tenancy\TenantContext::class)->getTenantId(),
@@ -255,6 +263,16 @@ class ProfileController extends Controller
             'gst_number'       => ['sometimes', 'nullable', 'string', 'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i'],
             'pan_number'       => ['sometimes', 'nullable', 'string', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
         ]);
+
+        $plan = $request->user()->activeSubscription?->plan;
+        if (!$plan || !$plan->can_add_website) {
+            unset($data['website']);
+            $data['website'] = null; // force null if they previously had it but downgraded
+        }
+        if (!$plan || !$plan->can_add_whatsapp) {
+            unset($data['whatsapp']);
+            $data['whatsapp'] = null;
+        }
 
         $listing->update($data);
 

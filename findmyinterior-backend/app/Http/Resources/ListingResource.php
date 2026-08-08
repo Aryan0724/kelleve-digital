@@ -9,6 +9,12 @@ class ListingResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $ownerUser = $this->relationLoaded('user') ? $this->user : \App\Models\User::find($this->user_id);
+        $ownerPlan = $ownerUser?->activeSubscription?->plan;
+        
+        $canHaveWebsite = $ownerPlan?->can_add_website ?? false;
+        $canHaveWhatsapp = $ownerPlan?->can_add_whatsapp ?? false;
+
         return [
             'id'               => $this->id,
             'title'            => $this->title,
@@ -28,6 +34,7 @@ class ListingResource extends JsonResource
             'is_verified'      => (bool) $this->is_verified,
             'is_featured'      => (bool) $this->is_featured,
             'is_premium'       => (bool) $this->is_premium,
+            'is_gold_verified' => (bool) ($ownerPlan?->is_gold_verified ?? false),
             'is_sponsored'     => $this->sponsored_until && $this->sponsored_until->isFuture(),
             'is_top_rated'     => $this->avg_rating >= 4.5 && $this->review_count >= 5,
             'status'           => $this->status,
@@ -50,14 +57,14 @@ class ListingResource extends JsonResource
                 $this->phone
             ),
             'whatsapp'         => $this->when(
-                $this->shouldShowContact($request),
+                $canHaveWhatsapp && $this->shouldShowContact($request),
                 $this->whatsapp
             ),
             'email'            => $this->when(
                 $this->shouldShowContact($request),
                 $this->email
             ),
-            'website'          => $this->website,
+            'website'          => $canHaveWebsite ? $this->website : null,
             'gallery'          => ListingGalleryResource::collection($this->whenLoaded('gallery')),
             'gallery_count'    => $this->gallery_count ?? 0,
             'services'         => $this->services ?? [],
