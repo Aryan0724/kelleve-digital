@@ -31,7 +31,7 @@ jobs:
             git reset --hard origin/main
 
             echo "=== Rebuilding and updating Docker containers ==="
-            docker compose up -d --build
+            docker compose up -d --build --remove-orphans || docker-compose up -d --build --remove-orphans
 
             echo "=== Waiting for containers to start ==="
             sleep 25
