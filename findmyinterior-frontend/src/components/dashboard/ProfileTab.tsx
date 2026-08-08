@@ -165,7 +165,7 @@ function Field({ label, icon: Icon, children }: { label: string; icon: any; chil
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function ProfileTab() {
-  const { user } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
   const [listing, setListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -233,11 +233,24 @@ export function ProfileTab() {
     setSaving(true);
     setSaved(false);
     try {
+      const userRes = await api.put("/user/profile", {
+        name: formData.title || user?.name,
+        phone: formData.phone,
+        city: formData.city,
+        district: formData.district,
+        address: formData.address,
+      });
+
+      if (userRes.data?.data && user) {
+        updateUser({ ...user, ...userRes.data.data });
+      }
+
       if (listing) {
         await api.put(`/user/listings/${listing.id}`, formData);
-      } else {
+      } else if (['business', 'builder', 'supplier', 'worker', 'skilled_worker', 'interior_designer', 'interior_company', 'contractor', 'architect', 'material_supplier'].includes(user?.role || '')) {
         await api.post(`/user/listings`, formData);
       }
+
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
       fetchData();

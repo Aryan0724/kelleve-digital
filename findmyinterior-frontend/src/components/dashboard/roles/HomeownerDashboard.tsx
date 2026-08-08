@@ -1,13 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User, ShieldCheck, Camera, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
+import api from "@/lib/api";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
@@ -19,7 +20,30 @@ import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
 export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, logout } = useAuthStore();
+  const { user, logout, updateUser } = useAuthStore();
+  const coverFileRef = useRef<HTMLInputElement>(null);
+  const [uploadingCover, setUploadingCover] = useState(false);
+
+  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const form = new FormData();
+      form.append("cover_image", file);
+      const res = await api.post("/user/cover", form);
+      if (user && res.data.cover_image) {
+        updateUser({ ...user, cover_image: res.data.cover_image });
+      }
+      fetchDashboard();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Failed to upload cover image.");
+    } finally {
+      setUploadingCover(false);
+      if (e.target) e.target.value = "";
+    }
+  };
   
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabParam || "dashboard");
@@ -70,11 +94,21 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
           
           <div className="lg:col-span-1 space-y-4">
               <Card className="overflow-hidden">
-                <div className="h-32 w-full bg-gradient-to-r from-orange-400 to-[#E8701A] relative">
+                <div className="h-32 w-full bg-gradient-to-r from-orange-400 to-[#E8701A] relative group">
                   {user?.cover_image && (
                     <img src={user.cover_image} alt="Cover" className="w-full h-full object-cover" />
                   )}
                   <div className="absolute inset-0 bg-black/10"></div>
+                  <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
+                  <button
+                    onClick={() => coverFileRef.current?.click()}
+                    className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all shadow-md z-20 flex items-center gap-1 text-xs"
+                    disabled={uploadingCover}
+                    title="Upload Background Image"
+                  >
+                    {uploadingCover ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+                    <span className="hidden sm:inline text-[11px] font-medium">{uploadingCover ? "Uploading..." : "Cover"}</span>
+                  </button>
                 </div>
                 <CardContent className="p-6 flex flex-col items-center text-center -mt-16 relative z-10">
                   <div className="h-24 w-24 relative rounded-full overflow-hidden ring-4 ring-white dark:ring-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-3xl font-bold text-slate-400 dark:text-slate-500 shadow-md">
