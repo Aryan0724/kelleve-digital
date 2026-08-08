@@ -5,13 +5,11 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User, ShieldCheck, Camera, Loader2 } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User, Camera, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import api from "@/lib/api";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
-import { VerificationTab } from "@/components/dashboard/VerificationTab";
-import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import Link from "next/link";
@@ -132,14 +130,12 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 {renderSidebarButton("shortlisted", <Star className="h-5 w-5" />, "Shortlisted Professionals")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("profile", <User className="h-5 w-5" />, "Profile")}
-                {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Identity Verification")}
                 {renderSidebarButton("settings", <User className="h-5 w-5" />, "Settings")}
               </div>
             </div>
           </div>
 
           <div className="lg:col-span-3 space-y-6">
-            <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} />
             
             {activeTab === 'bookmarks' && (
               <SavedBookmarksTab />
@@ -506,7 +502,6 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
               </Card>
             )}
 
-            {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'profile' && <CompleteProfileTab />}
             {activeTab === 'settings' && <SettingsTab />}
           </div>
