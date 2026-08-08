@@ -43,7 +43,7 @@ jobs:
             echo "=== Clearing host Laravel cache files ==="
             rm -f findmyinterior-backend/bootstrap/cache/*.php || true
 
-            echo "=== Rebuilding frontend (no cache) ==="
+            echo "=== Rebuilding frontend with no cache ==="
             docker-compose build --no-cache frontend || docker compose build --no-cache frontend
 
             echo "=== Starting all containers ==="
@@ -55,10 +55,16 @@ jobs:
             docker exec fmi_backend php artisan config:clear || true
             docker exec fmi_backend php artisan cache:clear || true
 
-            echo "=== Waiting for containers to start ==="
-            sleep 5
-
             echo "=== Container Status ==="
             docker compose ps
 
             echo "=== Deploy complete! ==="
+
+      - name: Purge Cloudflare Cache
+        if: ${{ secrets.CF_ZONE_ID != '' && secrets.CF_API_TOKEN != '' }}
+        run: |
+          echo "Purging Cloudflare cache for zone ${{ secrets.CF_ZONE_ID }}..."
+          curl -s -X POST "https://api.cloudflare.com/client/v4/zones/${{ secrets.CF_ZONE_ID }}/purge_cache" \
+            -H "Authorization: Bearer ${{ secrets.CF_API_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            --data '{"purge_everything":true}' | python3 -c "import sys,json; r=json.load(sys.stdin); print('✅ Cache purged' if r.get('success') else '❌ Purge failed: ' + str(r))"
