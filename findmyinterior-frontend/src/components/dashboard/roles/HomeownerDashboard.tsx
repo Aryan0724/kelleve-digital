@@ -11,6 +11,7 @@ import { handleLogoutAction } from "@/lib/auth";
 import api from "@/lib/api";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import Link from "next/link";
@@ -138,6 +139,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
           </div>
 
           <div className="lg:col-span-3 space-y-6">
+            <UnverifiedBanner onVerifyClick={() => setActiveTab('verification')} />
             
             {activeTab === 'bookmarks' && (
               <SavedBookmarksTab />

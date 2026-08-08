@@ -13,6 +13,9 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL=https://findmyinterior.com/api/v1
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
+ARG BUILD_TIME=unknown
+ENV BUILD_TIME=$BUILD_TIME
+
 # Build the Next.js application
 RUN npm run build
 
