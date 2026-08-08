@@ -11,11 +11,11 @@ interface ContactProfessionalButtonProps {
 }
 
 export function ContactProfessionalButton({ slug }: ContactProfessionalButtonProps) {
-  const { isAuthenticated } = useAuthStore();
+  const { token } = useAuthStore();
   const router = useRouter();
 
   const handleContactClick = () => {
-    if (!isAuthenticated) {
+    if (!token) {
       toast.info("Please login to view contact details");
       router.push(`/login?redirect=/professionals/${slug}`);
       return;
