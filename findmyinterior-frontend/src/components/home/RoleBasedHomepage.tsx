@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  MapPin, Briefcase, ShieldCheck, Wallet, ChevronRight,
+  MapPin, Briefcase, Wallet, ChevronRight,
   FileText, Search, HardHat, Truck, Building, Paintbrush,
   ArrowRight, Star, IndianRupee, Clock, Users, TrendingUp,
   MessageSquare, PenTool, Home, LayoutDashboard, ClipboardList
@@ -452,25 +452,6 @@ export function RoleBasedHomepage() {
             </div>
           </div>
 
-          {/* Right: verification nudge */}
-          {user?.role !== "homeowner" && !["site_verified", "verified_business", "trusted_professional", "elite_professional"].includes(
-            (user as any).verification_level ?? ""
-          ) && (
-            <div className="hidden md:flex flex-col bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 max-w-xs gap-3">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-yellow-300" />
-                <span className="text-sm font-bold text-white">Get Verified & Rank Higher</span>
-              </div>
-              <p className="text-xs text-white/70">
-                Verified profiles appear first in search results and display a trust badge that converts more clients.
-              </p>
-              <Link href="/dashboard?tab=verification">
-                <button className="w-full bg-yellow-400 hover:bg-yellow-300 text-yellow-900 text-xs font-bold py-2 rounded-lg transition">
-                  Apply for Verification →
-                </button>
-              </Link>
-            </div>
-          )}
         </div>
       </div>
 
