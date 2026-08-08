@@ -357,10 +357,12 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         // System Health Dashboard
         Route::get('system-health', [\App\Http\Controllers\Admin\SystemHealthController::class, 'index']);
-    });
+Route::get('clear-cache', function () {
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    return response()->json(['success' => true, 'message' => 'Route, config, and application cache cleared successfully.']);
 });
-
-
 
 // -------------------------------------------------------------
 // TRUEDIAL MULTI-TENANT ROUTES
