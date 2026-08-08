@@ -13,8 +13,10 @@ COPY . .
 ARG NEXT_PUBLIC_API_URL=https://findmyinterior.com/api/v1
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
-# Build the Next.js application
-RUN npm run build
+# CACHE_BUST: changes each deploy to force npm run build to re-run.
+# npm install layer above stays cached (fast). Only the build step re-runs.
+ARG CACHE_BUST=1
+RUN echo "Build: $CACHE_BUST" && npm run build
 
 # Expose the port the app runs on
 EXPOSE 3000

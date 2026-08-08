@@ -49,6 +49,7 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: https://findmyinterior.com/api/v1
+        CACHE_BUST: ${CACHE_BUST:-1}
     container_name: fmi_frontend
     restart: unless-stopped
     ports:

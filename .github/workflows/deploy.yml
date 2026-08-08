@@ -22,7 +22,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           timeout: 600s
           script: |
+            set -e
             export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
+
             echo "=== Ensuring /docker/find-my-interior links to /var/www/find-my-interior ==="
             if [ -d "/docker/find-my-interior" ] && [ ! -L "/docker/find-my-interior" ]; then
               rsync -a /docker/find-my-interior/ /var/www/find-my-interior/ 2>/dev/null || cp -rn /docker/find-my-interior/* /var/www/find-my-interior/ 2>/dev/null || true
@@ -40,26 +42,32 @@ jobs:
             git fetch origin
             git reset --hard origin/main
 
-            echo "=== Free disk space ==="
-            df -h /
-            docker system df
+            echo "=== Clearing Laravel cache files ==="
+            rm -f findmyinterior-backend/bootstrap/cache/*.php || true
 
-            echo "=== Stop old containers ==="
-            docker-compose down || docker compose down || true
+            echo "=== Disk usage before build ==="
+            df -h / | tail -1
 
-            echo "=== Prune dangling images to free space ==="
+            echo "=== Pruning unused Docker images to free space ==="
             docker image prune -f || true
 
-            echo "=== Rebuilding frontend with no cache ==="
-            docker-compose build --no-cache --progress=plain frontend 2>&1 | tail -50 || docker compose build --no-cache --progress=plain frontend 2>&1 | tail -50
-
-            echo "=== Build exit code: $? ==="
+            echo "=== Building frontend (CACHE_BUST invalidates npm run build layer) ==="
+            CACHE_BUST=$(date +%s)
+            docker-compose build --build-arg CACHE_BUST=$CACHE_BUST frontend
+            BUILD_EXIT=$?
+            echo "Build exit code: $BUILD_EXIT"
+            if [ $BUILD_EXIT -ne 0 ]; then
+              echo "ERROR: Frontend build failed!"
+              exit 1
+            fi
 
             echo "=== Starting all containers ==="
-            docker-compose up -d || docker compose up -d
+            docker-compose up -d
+
+            echo "=== Waiting for backend to start ==="
+            sleep 15
 
             echo "=== Clearing Laravel caches ==="
-            sleep 15
             docker exec fmi_backend php artisan route:clear || true
             docker exec fmi_backend php artisan config:clear || true
             docker exec fmi_backend php artisan cache:clear || true
@@ -68,4 +76,3 @@ jobs:
             docker compose ps
 
             echo "=== Deploy complete! ==="
-
