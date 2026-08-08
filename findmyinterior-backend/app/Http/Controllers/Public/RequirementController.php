@@ -23,6 +23,13 @@ class RequirementController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Requirement::open()
+            ->where(function($q) {
+                $q->whereNull('opportunity_type')
+                  ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
+            })
+            ->whereDoesntHave('category', function($q) {
+                $q->where('slug', 'workers');
+            })
             ->with(['category', 'images'])
             ->withCount('bids')
             ->latest();

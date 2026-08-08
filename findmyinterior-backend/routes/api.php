@@ -357,6 +357,9 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         // System Health Dashboard
         Route::get('system-health', [\App\Http\Controllers\Admin\SystemHealthController::class, 'index']);
+    });
+});
+
 Route::get('clear-cache', function () {
     if (function_exists('opcache_reset')) {
         @opcache_reset();

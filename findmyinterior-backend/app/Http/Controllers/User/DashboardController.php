@@ -306,7 +306,14 @@ class DashboardController extends Controller
                         ->take(10)
                         ->pluck('requirement_id');
 
-                    $query = \App\Models\Requirement::where('status', 'open');
+                    $query = \App\Models\Requirement::where('status', 'open')
+                        ->where(function($q) {
+                            $q->whereNull('opportunity_type')
+                              ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
+                        })
+                        ->whereDoesntHave('category', function($q) {
+                            $q->where('slug', 'workers');
+                        });
                     
                     if (in_array('interior_designer', $userRoles) || in_array('interior_company', $userRoles)) {
                         $query->whereIn('requirement_type', ['INTERIOR_DESIGN', 'Interior Design', 'FURNITURE', 'Furniture', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);

@@ -14,7 +14,17 @@ class OpportunityProjectController extends Controller
 
     public function index()
     {
-        return $this->success(Requirement::latest()->get());
+        $projects = Requirement::where(function($q) {
+                $q->whereNull('opportunity_type')
+                  ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
+            })
+            ->whereDoesntHave('category', function($q) {
+                $q->where('slug', 'workers');
+            })
+            ->latest()
+            ->get();
+            
+        return $this->success($projects);
     }
 
     public function store(Request $request)
