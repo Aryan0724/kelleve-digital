@@ -89,6 +89,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                       {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 ml-2" title="Elite Professional">Elite</Badge>}
                       {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 ml-2" title="Trusted Professional">Trusted</Badge>}
                       {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business" className="flex-shrink-0 ml-2"><ShieldCheck className="h-8 w-8 text-green-500" /></span>}
+                      {listing.is_premium && <Badge className="bg-orange-500 hover:bg-orange-600 ml-2" title="Premium Professional">Premium</Badge>}
                     </div>
                     {listing.user?.name && (
                       <p className="text-lg text-slate-700 font-medium mb-2">{listing.user.name}</p>

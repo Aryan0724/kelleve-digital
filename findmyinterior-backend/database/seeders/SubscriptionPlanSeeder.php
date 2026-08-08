@@ -33,6 +33,9 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_gallery_images'     => 10,
                 'lead_unlocks_per_month' => 0,
                 'can_see_all_leads'      => false,
+                'can_add_website'        => false,
+                'can_add_whatsapp'       => false,
+                'is_gold_verified'       => false,
                 'is_featured_listing'    => false,
                 'is_active'              => true,
             ],
@@ -63,6 +66,9 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_gallery_images'     => 100,
                 'lead_unlocks_per_month' => 0, // Unlocks might be sold separately
                 'can_see_all_leads'      => true, // Higher tier features
+                'can_add_website'        => true,
+                'can_add_whatsapp'       => true,
+                'is_gold_verified'       => false,
                 'is_featured_listing'    => false,
                 'is_active'              => true,
             ],
@@ -93,6 +99,9 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_gallery_images'     => 9999, // Essentially unlimited
                 'lead_unlocks_per_month' => 0,
                 'can_see_all_leads'      => true,
+                'can_add_website'        => true,
+                'can_add_whatsapp'       => true,
+                'is_gold_verified'       => false,
                 'is_featured_listing'    => true, // Homepage spotlight
                 'is_active'              => true,
             ],
@@ -123,6 +132,9 @@ class SubscriptionPlanSeeder extends Seeder
                 'max_gallery_images'     => 9999,
                 'lead_unlocks_per_month' => 0,
                 'can_see_all_leads'      => true,
+                'can_add_website'        => true,
+                'can_add_whatsapp'       => true,
+                'is_gold_verified'       => true,
                 'is_featured_listing'    => true,
                 'is_active'              => true,
             ],

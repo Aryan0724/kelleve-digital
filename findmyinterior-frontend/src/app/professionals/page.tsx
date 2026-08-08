@@ -164,6 +164,9 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                         {(listing.is_verified || listing.verification_level === 'verified_business') && (
                           <Badge className="absolute top-3 left-3 bg-green-600 hover:bg-green-700 text-white border-0">Verified</Badge>
                         )}
+                        {listing.is_premium && (
+                          <Badge className="absolute top-10 left-3 bg-orange-500 hover:bg-orange-600 text-white border-0">Premium</Badge>
+                        )}
                         {(listing.gallery_count > 0 || listing.gallery?.length > 0) && (
                           <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded flex items-center gap-1">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>

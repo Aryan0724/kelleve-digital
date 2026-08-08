@@ -5,9 +5,24 @@ import api from "@/lib/api";
 
 import { useState } from "react";
 import { UnlockContactModal } from "./UnlockContactModal";
+import { useAuthStore } from "@/lib/store/useAuthStore";
+import { useRouter, usePathname } from "next/navigation";
+import { toast } from "react-toastify";
 
 export function ContactButtons({ listing }: { listing: any }) {
   const [showUnlock, setShowUnlock] = useState(false);
+  const { token } = useAuthStore();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const handleContactAction = (action: () => void) => {
+    if (!token) {
+      toast.info("Please login to view contact details");
+      router.push(`/login?redirect=${pathname}`);
+      return;
+    }
+    action();
+  };
 
   const handleTrackClick = async (type: string) => {
     try {
@@ -41,8 +56,10 @@ export function ContactButtons({ listing }: { listing: any }) {
         }`}
         onClick={() => {
           if (!hasPhone) return;
-          handleTrackClick("phone");
-          window.location.href = `tel:${listing.phone}`;
+          handleContactAction(() => {
+            handleTrackClick("phone");
+            window.location.href = `tel:${listing.phone}`;
+          });
         }}
       >
         <Phone className={`h-5 w-5 mr-3 flex-shrink-0 ${hasPhone ? "text-green-600" : "text-slate-400"}`} />
@@ -54,30 +71,6 @@ export function ContactButtons({ listing }: { listing: any }) {
         </div>
       </div>
 
-      {/* WhatsApp — shown only if phone available */}
-      {hasPhone && (
-        <div
-          className="flex items-center p-3 bg-[#25D366]/10 hover:bg-[#25D366]/20 border border-[#25D366]/30 rounded-lg cursor-pointer transition-colors"
-          onClick={() => setShowUnlock(true)}
-        >
-          <MessageCircle className="h-5 w-5 mr-3 text-[#25D366] flex-shrink-0" />
-          <div>
-            <div className="text-xs text-slate-500 font-medium">WhatsApp</div>
-            <div className="text-[#128C7E] font-semibold">Chat on WhatsApp</div>
-          </div>
-        </div>
-      )}
-
-      {/* Unlock Contact Modal */}
-      {showUnlock && (
-        <UnlockContactModal 
-          isOpen={showUnlock}
-          onClose={() => setShowUnlock(false)}
-          listing={listing}
-          onUnlockSuccess={handleWhatsAppUnlockSuccess}
-        />
-      )}
-
       {/* Email */}
       <div
         className={`flex items-center p-3 rounded-lg transition-colors ${
@@ -87,7 +80,9 @@ export function ContactButtons({ listing }: { listing: any }) {
         }`}
         onClick={() => {
           if (!hasEmail) return;
-          window.location.href = `mailto:${listing.email}`;
+          handleContactAction(() => {
+            window.location.href = `mailto:${listing.email}`;
+          });
         }}
       >
         <Mail className={`h-5 w-5 mr-3 flex-shrink-0 ${hasEmail ? "text-blue-600" : "text-slate-400"}`} />
@@ -104,9 +99,11 @@ export function ContactButtons({ listing }: { listing: any }) {
         <div
           className="flex items-center p-3 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg cursor-pointer transition-colors"
           onClick={() => {
+          handleContactAction(() => {
             const query = encodeURIComponent(`${listing.title} ${listing.city || ""} ${listing.address || ""}`);
             window.open(`https://www.google.com/maps/search/${query}`, "_blank");
-          }}
+          });
+        }}
         >
           <MapPin className="h-5 w-5 mr-3 text-orange-600 flex-shrink-0" />
           <div>
@@ -123,9 +120,11 @@ export function ContactButtons({ listing }: { listing: any }) {
         <div
           className="flex items-center p-3 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg cursor-pointer transition-colors"
           onClick={() => {
+          handleContactAction(() => {
             handleTrackClick("website");
             window.open(listing.website, "_blank");
-          }}
+          });
+        }}
         >
           <Globe className="h-5 w-5 mr-3 text-slate-600 flex-shrink-0" />
           <div className="text-blue-600 font-semibold">Visit Website</div>

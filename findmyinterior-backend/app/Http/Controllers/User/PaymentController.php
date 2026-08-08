@@ -263,6 +263,12 @@ class PaymentController extends Controller
                 $user->listing->update($updateData);
             }
 
+            // Send notification
+            $user->notify(new \App\Notifications\SystemNotification(
+                "Your {$plan->name} subscription is now active! Enjoy your premium benefits.",
+                'subscription_success',
+                'high'
+            ));
         } elseif ($payment->purpose === 'lead_unlock') {
             ContactUnlock::firstOrCreate([
                 'user_id'        => $payment->user_id,
