@@ -165,7 +165,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
     return userDocs.find((d: any) => d.document_type === docType);
   };
 
-  const isProfileComplete = profileCompletion >= 50;
+  const isProfileComplete = isHomeowner || profileCompletion >= 50;
   const requiredDocsSubmitted = requiredDocs.every(doc => {
     const status = getDocStatus(doc.id)?.status;
     return status === "approved" || status === "pending";
@@ -226,7 +226,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
                 <span>Profile Completion ({Math.round(completionPercentage)}%)</span>
                 {isProfileComplete && <Badge className="bg-green-500">Completed</Badge>}
               </CardTitle>
-              <CardDescription>We need basic details about your business before you can apply.</CardDescription>
+              <CardDescription>{isHomeowner ? "Basic account profile is ready for verification." : "We need basic details about your business before you can apply."}</CardDescription>
             </CardHeader>
             <CardContent>
               {!isProfileComplete ? (
@@ -243,7 +243,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
                 </div>
               ) : (
                 <div className="text-green-700 flex items-center font-medium bg-green-50 p-3 rounded-lg border border-green-100">
-                  <CheckCircle2 className="w-5 h-5 mr-2" /> Your core business profile is ready.
+                  <CheckCircle2 className="w-5 h-5 mr-2" /> {isHomeowner ? "Your homeowner account is ready for identity verification." : "Your core business profile is ready."}
                 </div>
               )}
             </CardContent>
@@ -257,8 +257,8 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
           </div>
           <Card className={!isProfileComplete ? "opacity-50 pointer-events-none" : requiredDocsSubmitted ? "border-green-100 bg-green-50/30" : "border-indigo-200 shadow-md"}>
             <CardHeader className="pb-3">
-              <CardTitle className="text-xl">Submit Official Documents</CardTitle>
-              <CardDescription>Upload the following documents for our admin team to review.</CardDescription>
+              <CardTitle className="text-xl">{isHomeowner ? "Submit Identity Documents (Aadhaar & PAN Card)" : "Submit Official Documents"}</CardTitle>
+              <CardDescription>{isHomeowner ? "Upload your Aadhaar Card and PAN Card to apply for homeowner identity verification." : "Upload the following documents for our admin team to review."}</CardDescription>
             </CardHeader>
             <CardContent>
               
@@ -335,47 +335,49 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
               </div>
 
               {/* Optional Trusted Docs */}
-              <div className="mt-6 pt-6 border-t border-dashed border-slate-200">
-                <h4 className="font-semibold text-slate-800 mb-2">Optional: Become a Trusted Professional</h4>
-                <p className="text-sm text-slate-500 mb-4">Upload your portfolio to unlock the Trusted badge and rank even higher.</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {OPTIONAL_DOCS.map(doc => {
-                    const currentDoc = getDocStatus(doc.id);
-                    return (
-                      <div key={doc.id} className="border rounded-lg p-4 flex flex-col justify-between bg-slate-50">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h4 className="font-semibold text-slate-900">{doc.label}</h4>
-                            <Badge variant="outline" className="text-xs mt-1 bg-white">Optional</Badge>
+              {!isHomeowner && (
+                <div className="mt-6 pt-6 border-t border-dashed border-slate-200">
+                  <h4 className="font-semibold text-slate-800 mb-2">Optional: Become a Trusted Professional</h4>
+                  <p className="text-sm text-slate-500 mb-4">Upload your portfolio to unlock the Trusted badge and rank even higher.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {OPTIONAL_DOCS.map(doc => {
+                      const currentDoc = getDocStatus(doc.id);
+                      return (
+                        <div key={doc.id} className="border rounded-lg p-4 flex flex-col justify-between bg-slate-50">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h4 className="font-semibold text-slate-900">{doc.label}</h4>
+                              <Badge variant="outline" className="text-xs mt-1 bg-white">Optional</Badge>
+                            </div>
+                            {currentDoc?.status === "approved" && <CheckCircle2 className="h-6 w-6 text-blue-500" />}
+                            {currentDoc?.status === "pending" && <AlertCircle className="h-6 w-6 text-yellow-500" />}
                           </div>
-                          {currentDoc?.status === "approved" && <CheckCircle2 className="h-6 w-6 text-blue-500" />}
-                          {currentDoc?.status === "pending" && <AlertCircle className="h-6 w-6 text-yellow-500" />}
+                          <div className="mt-auto">
+                            {currentDoc?.status === "approved" ? (
+                              <div className="text-sm text-blue-600 font-medium flex items-center">
+                                <CheckCircle2 className="h-4 w-4 mr-1" /> Verified
+                              </div>
+                            ) : (
+                              <div className="relative">
+                                <input
+                                  type="file"
+                                  accept=".pdf,.jpg,.jpeg,.png"
+                                  onChange={(e) => handleFileUpload(e, doc.id)}
+                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                                  disabled={uploading === doc.id || currentDoc?.status === 'pending'}
+                                />
+                                <Button variant="outline" className="w-full bg-white" disabled={uploading === doc.id || currentDoc?.status === 'pending'}>
+                                  {currentDoc?.status === 'pending' ? "Pending Review" : "Upload Portfolio"}
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="mt-auto">
-                          {currentDoc?.status === "approved" ? (
-                            <div className="text-sm text-blue-600 font-medium flex items-center">
-                              <CheckCircle2 className="h-4 w-4 mr-1" /> Verified
-                            </div>
-                          ) : (
-                            <div className="relative">
-                              <input
-                                type="file"
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={(e) => handleFileUpload(e, doc.id)}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                                disabled={uploading === doc.id || currentDoc?.status === 'pending'}
-                              />
-                              <Button variant="outline" className="w-full bg-white" disabled={uploading === doc.id || currentDoc?.status === 'pending'}>
-                                {currentDoc?.status === 'pending' ? "Pending Review" : "Upload Portfolio"}
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>
