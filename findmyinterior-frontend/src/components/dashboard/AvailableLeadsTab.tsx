@@ -55,6 +55,7 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
               const isRFQ = oppType === "RFQ";
               const isJob = oppType === "JOB";
               const isBuilder = oppType === "BUILDER_PROJECT";
+              const isWorkerJob = isJob || req.category?.slug === 'workers' || req.opportunity_type === 'WORKER_JOB';
 
               return (
                 <div key={req.id} className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full relative overflow-hidden">
