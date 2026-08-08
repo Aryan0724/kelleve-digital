@@ -9,6 +9,10 @@ RUN npm install
 # Copy the rest of the application
 COPY . .
 
+# Set build-time environment variables for Next.js
+ARG NEXT_PUBLIC_API_URL=https://findmyinterior.com/api/v1
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+
 # Build the Next.js application
 RUN npm run build
 

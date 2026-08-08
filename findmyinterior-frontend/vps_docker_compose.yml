@@ -46,6 +46,8 @@ services:
     build:
       context: ./findmyinterior-frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://findmyinterior.com/api/v1
     container_name: fmi_frontend
     restart: unless-stopped
     ports:

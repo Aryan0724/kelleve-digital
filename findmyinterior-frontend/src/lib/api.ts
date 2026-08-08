@@ -20,9 +20,13 @@ const api = axios.create({
   withCredentials: false,
 });
 
-// Request Interceptor: Attach token from Zustand store for client-side requests
+// Request Interceptor: Attach token & dynamically enforce client origin for browser requests
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
+    // Direct browser requests to the current domain origin so API calls never fail with localhost/cors errors
+    if (!config.baseURL || config.baseURL.includes('localhost')) {
+      config.baseURL = `${window.location.origin}/api/v1`;
+    }
     const token = useAuthStore.getState().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
