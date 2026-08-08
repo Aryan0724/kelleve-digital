@@ -127,7 +127,8 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
                     )}
                   </div>
                 </div>
-              );
+              </div>
+            );
             })}
           </div>
         ) : (
