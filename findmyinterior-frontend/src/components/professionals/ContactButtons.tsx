@@ -134,7 +134,7 @@ export function ContactButtons({ listing }: { listing: any }) {
       {/* Social Links */}
       {listing.social_links && Object.keys(listing.social_links).length > 0 && (
         <div className="flex gap-2 pt-2">
-          {Object.entries(listing.social_links).map(([platform, url]) => (
+          {Object.entries(listing.social_links as Record<string, string>).map(([platform, url]) => (
             url && typeof url === 'string' && (
               <a 
                 key={platform} 
