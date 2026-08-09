@@ -55,6 +55,13 @@ class ApiExceptionHandler
             ], 429);
         }
 
+        if ($exception instanceof \Illuminate\Database\UniqueConstraintViolationException) {
+            return response()->json([
+                'success' => false,
+                'message' => 'This entry already exists.',
+            ], 409);
+        }
+
         if ($exception instanceof QueryException) {
             $errorCode = $exception->errorInfo[1] ?? null;
 
@@ -80,9 +87,11 @@ class ApiExceptionHandler
                 'url' => $request->fullUrl(),
             ]);
 
+            $message = config('app.debug') ? 'Database Error: ' . $exception->getMessage() : 'An unexpected database error occurred.';
+
             return response()->json([
                 'success' => false,
-                'message' => 'Database Error: ' . $exception->getMessage(),
+                'message' => $message,
             ], 500);
         }
 
@@ -99,7 +108,7 @@ class ApiExceptionHandler
             'url' => $request->fullUrl(),
         ]);
 
-        $message = $exception->getMessage() ?: 'Something went wrong. Our team has been notified.';
+        $message = config('app.debug') ? $exception->getMessage() : 'Something went wrong. Our team has been notified.';
 
         return response()->json([
             'success' => false,
