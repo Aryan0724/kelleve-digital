@@ -87,10 +87,6 @@ class Requirement extends Model
         return $this->belongsTo(District::class);
     }
 
-    public function images(): HasMany
-    {
-        return $this->hasMany(RequirementImage::class);
-    }
 
     public function contactUnlocks(): HasMany
     {
