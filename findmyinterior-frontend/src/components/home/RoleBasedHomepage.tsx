@@ -407,7 +407,7 @@ function QuickStats({ stats, config }: { stats: any; config: any }) {
   if (!config.quickCards || config.quickCards.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-12 -mt-8 relative z-20 px-0 sm:px-4">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-10 -mt-12 relative z-20 px-0 sm:px-4">
       {config.quickCards.map((s: any, i: number) => {
         const Icon = s.icon;
         const val = stats[s.key] ?? 0;
@@ -507,22 +507,22 @@ export function RoleBasedHomepage() {
         <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
 
-        <div className="container mx-auto px-4 pt-12 pb-24 md:pt-16 md:pb-28 flex flex-col lg:flex-row items-center justify-between gap-10 relative z-10">
+        <div className="container mx-auto px-4 pt-8 pb-16 md:pt-10 md:pb-20 flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
           <div className="flex-1 w-full max-w-2xl">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/10 shadow-inner">
-                <Icon className="w-5 h-5 text-white" />
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/10 shadow-inner">
+                <Icon className="w-4 h-4 text-white" />
               </div>
               <span className="text-white/80 text-sm font-semibold tracking-wide uppercase">
                 {effectiveRole?.replace(/_/g, " ")} Workspace
               </span>
             </div>
-            <h2 className="text-3xl md:text-5xl font-extrabold leading-tight mb-4 tracking-tight">
+            <h2 className="text-2xl md:text-4xl font-extrabold leading-tight mb-3 tracking-tight">
               {config.greeting === "Welcome back"
                 ? `Welcome back, ${firstName}! 👋`
                 : config.greeting}
             </h2>
-            <p className="text-white/80 text-base md:text-lg max-w-xl leading-relaxed mb-8">{config.tagline}</p>
+            <p className="text-white/80 text-sm md:text-base max-w-xl leading-relaxed mb-6">{config.tagline}</p>
             <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-4 w-full">
               {config.ctas.map((cta: any, idx: number) => (
                 <Link key={cta.label} href={cta.href} className="w-full sm:w-auto">
@@ -542,45 +542,45 @@ export function RoleBasedHomepage() {
           
           {/* Rich Right-Side Widget to fill empty space */}
           <div className="hidden lg:block w-full max-w-sm">
-            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 shadow-2xl relative overflow-hidden group">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 shadow-2xl relative overflow-hidden group">
               <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500 opacity-20 blur-2xl rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700"></div>
               
-              <div className="flex justify-between items-center mb-6 relative z-10">
-                <h3 className="text-white font-bold text-lg">Market Pulse</h3>
+              <div className="flex justify-between items-center mb-4 relative z-10">
+                <h3 className="text-white font-bold text-base">Market Pulse</h3>
                 <span className="flex h-3 w-3 relative">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </span>
               </div>
               
-              <div className="space-y-4 relative z-10">
-                <div className="bg-black/20 rounded-xl p-4 border border-white/5 flex items-center gap-4 hover:bg-black/30 transition-colors cursor-default">
-                  <div className="w-10 h-10 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-300">
-                    <Users className="w-5 h-5" />
+              <div className="space-y-3 relative z-10">
+                <div className="bg-black/20 rounded-xl p-3 border border-white/5 flex items-center gap-3 hover:bg-black/30 transition-colors cursor-default">
+                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-300">
+                    <Users className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-white/60 text-xs font-medium mb-1">Active Professionals</div>
-                    <div className="text-white font-bold text-lg">2,450+</div>
+                    <div className="text-white/60 text-[10px] font-medium mb-0.5">Active Professionals</div>
+                    <div className="text-white font-bold text-base">2,450+</div>
                   </div>
                 </div>
                 
-                <div className="bg-black/20 rounded-xl p-4 border border-white/5 flex items-center gap-4 hover:bg-black/30 transition-colors cursor-default">
-                  <div className="w-10 h-10 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-300">
-                    <Search className="w-5 h-5" />
+                <div className="bg-black/20 rounded-xl p-3 border border-white/5 flex items-center gap-3 hover:bg-black/30 transition-colors cursor-default">
+                  <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-300">
+                    <Search className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-white/60 text-xs font-medium mb-1">Open Projects Today</div>
-                    <div className="text-white font-bold text-lg">142</div>
+                    <div className="text-white/60 text-[10px] font-medium mb-0.5">Open Projects Today</div>
+                    <div className="text-white font-bold text-base">142</div>
                   </div>
                 </div>
                 
-                <div className="bg-black/20 rounded-xl p-4 border border-white/5 flex items-center gap-4 hover:bg-black/30 transition-colors cursor-default">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-300">
-                    <TrendingUp className="w-5 h-5" />
+                <div className="bg-black/20 rounded-xl p-3 border border-white/5 flex items-center gap-3 hover:bg-black/30 transition-colors cursor-default">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-300">
+                    <TrendingUp className="w-4 h-4" />
                   </div>
                   <div>
-                    <div className="text-white/60 text-xs font-medium mb-1">Avg. Project Value</div>
-                    <div className="text-white font-bold text-lg">₹4.5L</div>
+                    <div className="text-white/60 text-[10px] font-medium mb-0.5">Avg. Project Value</div>
+                    <div className="text-white font-bold text-base">₹4.5L</div>
                   </div>
                 </div>
               </div>
