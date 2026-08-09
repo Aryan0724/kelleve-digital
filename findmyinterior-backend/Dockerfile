@@ -15,7 +15,11 @@ RUN apk add --no-cache \
     gzip
 
 # Install PHP extensions
-RUN docker-php-ext-install pdo_mysql pdo_pgsql gd xml
+RUN apk add --no-cache pcre-dev $PHPIZE_DEPS \
+    && pecl install redis \
+    && docker-php-ext-enable redis \
+    && docker-php-ext-install pdo_mysql pdo_pgsql gd xml \
+    && apk del pcre-dev $PHPIZE_DEPS
 
 # Increase PHP upload limits & memory
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini" && \
