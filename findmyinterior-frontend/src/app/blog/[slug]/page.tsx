@@ -107,7 +107,7 @@ export default async function BlogPostPage({
           let toc: { id: string, title: string, level: number }[] = [];
           let content = blog.content ?? "";
           
-          content = content.replace(/<h([23])([^>]*)>(.*?)<\/h\1>/gi, (match, level, attrs, innerText) => {
+          content = content.replace(/<h([23])([^>]*)>(.*?)<\/h\1>/gi, (match: string, level: string, attrs: string, innerText: string) => {
             const title = innerText.replace(/<[^>]+>/g, '').trim();
             const id = title.toLowerCase().replace(/[\s\W-]+/g, '-');
             toc.push({ id, title, level: parseInt(level) });
