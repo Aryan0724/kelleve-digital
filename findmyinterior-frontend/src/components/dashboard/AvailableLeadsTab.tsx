@@ -141,7 +141,7 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
           </div>
         )}
         <div className="mt-8">
-          <EducationalBlogsFeed role={user?.role || "designer"} />
+          <EducationalBlogsFeed role={user?.role || "interior_designer"} />
         </div>
       </CardContent>
     </Card>

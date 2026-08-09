@@ -120,7 +120,7 @@ export function CMSAdminPanel() {
               <div className="flex-1 border rounded-md p-2 flex flex-col gap-1 min-w-[200px] text-sm">
                 <span className="text-xs text-slate-500 font-medium">Target Audience</span>
                 <div className="flex flex-wrap gap-2">
-                  {['designer', 'homeowner', 'contractor', 'worker', 'skilled_worker', 'supplier'].map(role => (
+                  {['interior_designer', 'interior_company', 'contractor', 'architect', 'builder', 'supplier', 'material_supplier', 'worker', 'skilled_worker', 'homeowner', 'customer', 'business'].map(role => (
                     <label key={role} className="flex items-center gap-1 cursor-pointer">
                       <input 
                         type="checkbox" 
@@ -134,7 +134,7 @@ export function CMSAdminPanel() {
                           }
                         }}
                       />
-                      <span className="capitalize">{role.replace('_', ' ')}</span>
+                      <span className="capitalize">{role.replace(/_/g, ' ')}</span>
                     </label>
                   ))}
                 </div>
