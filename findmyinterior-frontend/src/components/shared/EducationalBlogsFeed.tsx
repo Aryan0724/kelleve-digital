@@ -34,13 +34,13 @@ export function EducationalBlogsFeed({ role }: { role: string }) {
           <FileText className="w-5 h-5 text-indigo-500" />
           Pro Tips & Resources
         </h3>
-        <Link href="/blogs" className="text-sm text-indigo-600 font-semibold hover:text-indigo-700 flex items-center gap-1">
+        <Link href="/blog" className="text-sm text-indigo-600 font-semibold hover:text-indigo-700 flex items-center gap-1">
           View All <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {blogs.map((blog) => (
-          <Link key={blog.id} href={`/blogs/${blog.slug}`} className="group block">
+          <Link key={blog.id} href={`/blog/${blog.slug}`} className="group block">
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all h-full flex flex-col">
               {blog.cover_image && (
                 <div className="w-full h-32 rounded-xl bg-slate-100 dark:bg-slate-800 mb-4 overflow-hidden">
