@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { Badge } from "@/components/ui/card"; // Wait, Badge is usually from @/components/ui/badge
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Eye, ChevronRight } from "lucide-react";
 
