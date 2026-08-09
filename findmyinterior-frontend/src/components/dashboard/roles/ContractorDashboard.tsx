@@ -92,7 +92,6 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             />
 
             <UnverifiedBanner 
-              isVerified={data?.user?.is_verified} 
               onVerifyClick={() => setActiveTab("verification")} 
             />
             
