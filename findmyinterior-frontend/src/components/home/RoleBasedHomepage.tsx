@@ -590,6 +590,7 @@ export function RoleBasedHomepage() {
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        <AdsBanner role={effectiveRole!} location="hero_banner" />
         <AdsBanner role={effectiveRole!} location="mid_page" />
 
         <QuickStats stats={stats} config={config} />
@@ -598,8 +599,9 @@ export function RoleBasedHomepage() {
           const items = dataSources[feed.key] || [];
           
           return (
-            <div key={idx} className="mb-10">
-              <div className="flex items-center justify-between mb-4">
+            <React.Fragment key={idx}>
+              <div className="mb-10">
+                <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">{feed.title}</h3>
                 <Link href={feed.type === 'listing' ? '/professionals' : feed.type === 'supplier' ? '/materials' : '/dashboard'} className="text-sm text-orange-600 font-semibold hover:text-orange-700 flex items-center gap-1">
                   View All <ChevronRight className="w-4 h-4" />
@@ -639,6 +641,10 @@ export function RoleBasedHomepage() {
                 </div>
               )}
             </div>
+            {idx > 0 && idx % 2 === 0 && (
+              <AdsBanner role={effectiveRole!} location="between_categories" />
+            )}
+            </React.Fragment>
           );
         })}
 

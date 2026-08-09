@@ -8,6 +8,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { PopupAd } from "@/components/ads/PopupAd";
 import { TopRibbonAd } from "@/components/ads/TopRibbonAd";
+import { AdSlot } from "@/components/ads/AdSlot";
 import Script from "next/script";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -106,6 +107,9 @@ export default function RootLayout({
           <main className="flex-1 relative pb-16 lg:pb-0">
             {children}
           </main>
+          <div className="container mx-auto px-4 my-8">
+            <AdSlot location="before_footer" className="w-full h-32 md:h-48 rounded-xl" />
+          </div>
           <Footer />
           <MobileBottomNav />
           <ToastContainer position="bottom-right" />

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
 import { Calendar, Eye, User, Tag, ArrowLeft, ChevronRight } from "lucide-react";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { getServerApiUrl } from "@/lib/serverApi";
 
 async function getBlog(slug: string) {
@@ -96,6 +97,11 @@ export default async function BlogPostPage({
             {blog.excerpt}
           </p>
         )}
+
+        {/* Native Ad */}
+        <div className="my-8">
+          <AdSlot location="native_blog" className="w-full h-auto min-h-32 rounded-xl" />
+        </div>
 
         {/* Content */}
         <div

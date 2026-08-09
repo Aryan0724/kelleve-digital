@@ -20,6 +20,11 @@ export function AdvertisementsAdminPanel() {
     link: "",
     target_city: "",
     target_category_id: "",
+    target_role: "",
+    starts_at: "",
+    ends_at: "",
+    max_impressions: "",
+    max_clicks: "",
     is_active: true
   });
 
@@ -53,6 +58,11 @@ export function AdvertisementsAdminPanel() {
         link: "",
         target_city: "",
         target_category_id: "",
+        target_role: "",
+        starts_at: "",
+        ends_at: "",
+        max_impressions: "",
+        max_clicks: "",
         is_active: true
       });
       fetchAds();
@@ -140,6 +150,37 @@ export function AdvertisementsAdminPanel() {
                 <div>
                   <label className="text-sm font-semibold">Target Category ID (Optional)</label>
                   <Input type="number" placeholder="e.g. 1" value={formData.target_category_id} onChange={e => setFormData({...formData, target_category_id: e.target.value})} />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold">Target Role (Optional)</label>
+                  <select 
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                    value={formData.target_role} 
+                    onChange={e => setFormData({...formData, target_role: e.target.value})}
+                  >
+                    <option value="">All Users</option>
+                    <option value="customer">Customer</option>
+                    <option value="interior_designer">Interior Designer</option>
+                    <option value="architect">Architect</option>
+                    <option value="contractor">Contractor</option>
+                    <option value="supplier">Supplier</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-semibold">Start Date (Optional)</label>
+                  <Input type="date" value={formData.starts_at} onChange={e => setFormData({...formData, starts_at: e.target.value})} />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold">End Date (Optional)</label>
+                  <Input type="date" value={formData.ends_at} onChange={e => setFormData({...formData, ends_at: e.target.value})} />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold">Max Impressions (0 = Unlimited)</label>
+                  <Input type="number" min="0" value={formData.max_impressions} onChange={e => setFormData({...formData, max_impressions: e.target.value})} />
+                </div>
+                <div>
+                  <label className="text-sm font-semibold">Max Clicks (0 = Unlimited)</label>
+                  <Input type="number" min="0" value={formData.max_clicks} onChange={e => setFormData({...formData, max_clicks: e.target.value})} />
                 </div>
               </div>
               

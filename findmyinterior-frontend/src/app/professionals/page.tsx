@@ -84,6 +84,9 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
         {/* Desktop Filters Sidebar */}
         <div className="hidden lg:block w-full lg:w-1/4 space-y-6">
           <ProfessionalsFilters />
+          <div className="sticky top-24">
+            <AdSlot location="right_sidebar" className="w-full h-[600px] rounded-xl bg-slate-100" />
+          </div>
         </div>
 
         {/* Results Area */}
