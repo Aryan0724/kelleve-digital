@@ -16,18 +16,8 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 0.00,
                 'price_yearly'           => 0.00,
                 'features'               => [
-                    '1 Business Listing',
-                    'Business Profile',
-                    '10 Project Photos',
-                    '2 Project Videos',
-                    'Portfolio Showcase',
-                    'Contact Form',
-                    'Google Map Location',
-                    'Customer Reviews',
-                    '3 Service Categories',
-                    'Working Hours',
-                    'Mobile-Friendly Profile',
-                    'Basic Search Visibility'
+                    '1 Business Profile',
+                    'Up to 10 Portfolio Images'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 10,
@@ -45,19 +35,9 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 999.00,
                 'price_yearly'           => 4999.00,
                 'features'               => [
-                    '1 Business Listing',
-                    '100 Project Photos',
-                    '10 YouTube/Vimeo Videos',
-                    'Verified Business Badge',
-                    'WhatsApp Chat',
-                    'Click-to-Call',
-                    'Website & Social Links',
-                    'Higher Search Ranking',
-                    'Quote Request Button',
-                    'Performance Insights',
-                    'Before & After Gallery',
-                    'Fast Response Badge',
-                    'Customer Trust Score'
+                    'Up to 100 Portfolio Images',
+                    'Display Website Link on Profile',
+                    'Display WhatsApp Contact Button'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 100,
@@ -75,14 +55,9 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 1999.00,
                 'price_yearly'           => 11999.00,
                 'features'               => [
-                    '1 Business Listing',
-                    'Unlimited Photos & Videos',
-                    'Top Search Placement',
-                    'Unlimited Lead Access',
-                    'Download Leads (Excel)',
-                    'Performance Reports',
-                    'Verified Business Certificate',
-                    'Multiple Contact Numbers'
+                    'Unlimited Portfolio Images',
+                    'View All Customer Leads',
+                    'Featured Profile Placement'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 9999,
@@ -100,14 +75,10 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 2999.00,
                 'price_yearly'           => 24999.00,
                 'features'               => [
-                    '1 Business Listing',
-                    'Top Search Priority',
+                    'Unlimited Portfolio Images',
                     'Gold Verified Badge',
-                    'Premium Profile Design',
-                    'Advanced Analytics',
-                    'Business Growth Reports',
-                    'Premium Advertisement Banner',
-                    'Priority Support'
+                    'View All Customer Leads',
+                    'Featured Profile Placement'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 9999,

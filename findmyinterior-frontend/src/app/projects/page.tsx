@@ -13,6 +13,7 @@ import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { BookmarkButton } from "@/components/common/BookmarkButton";
 
 export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
@@ -312,9 +313,9 @@ export default function ProjectsPage() {
                   <div>
                     <div className="flex justify-between items-start mb-1">
                       <h4 className="font-extrabold text-slate-900 text-lg leading-tight">{req.title}</h4>
-                      <button className="text-slate-400 hover:text-red-500 transition-colors ml-2 shrink-0">
-                        <Heart className="w-5 h-5" />
-                      </button>
+                      <div className="ml-2 shrink-0">
+                        <BookmarkButton id={req.id} type="Requirement" iconType="heart" variant="ghost" className="hover:bg-red-50" />
+                      </div>
                     </div>
                     
                     <div className="flex items-center text-xs font-semibold text-slate-500 mb-4">

@@ -88,6 +88,20 @@ const PROFESSIONAL_CATEGORIES = [
     ],
   },
   {
+    icon: "🏷️",
+    label: "Brands & Manufacturers",
+    types: [
+      { label: "Furniture Brand", value: "furniture_brand" },
+      { label: "Tile & Sanitaryware Brand", value: "tile_sanitaryware_brand" },
+      { label: "Paint & Coatings Brand", value: "paint_coatings_brand" },
+      { label: "Lighting Brand", value: "lighting_brand" },
+      { label: "Plywood & Laminate Brand", value: "plywood_laminate_brand" },
+      { label: "Home Appliances Brand", value: "home_appliances_brand" },
+      { label: "Hardware & Fittings Brand", value: "hardware_fittings_brand" },
+      { label: "Other Manufacturer / Brand", value: "other_brand" },
+    ],
+  },
+  {
     icon: "🏗",
     label: "Builders & Developers",
     types: [

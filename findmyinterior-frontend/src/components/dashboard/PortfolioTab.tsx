@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -160,9 +161,11 @@ export function PortfolioTab() {
             Your portfolio is your storefront. Complete your basic profile first, then start uploading beautiful photos and videos to win <span className="font-bold text-slate-900 dark:text-white">3x more clients.</span>
           </p>
           <div className="flex flex-col sm:flex-row items-center gap-4 w-full justify-center">
-            <Button variant="default" size="lg" className="rounded-full px-10 py-6 text-base shadow-xl shadow-orange-500/20 bg-orange-600 hover:bg-orange-700 transition-all hover:-translate-y-1">
-              Complete Profile
-            </Button>
+            <Link href="?tab=business_profile" passHref>
+              <Button variant="default" size="lg" className="rounded-full px-10 py-6 text-base shadow-xl shadow-orange-500/20 bg-orange-600 hover:bg-orange-700 transition-all hover:-translate-y-1">
+                Complete Profile
+              </Button>
+            </Link>
             <Button variant="outline" size="lg" className="rounded-full px-10 py-6 text-base bg-white/50 dark:bg-slate-800/50 backdrop-blur-sm border-slate-200 dark:border-slate-700 hover:bg-white dark:hover:bg-slate-800 transition-all">
               Learn More
             </Button>

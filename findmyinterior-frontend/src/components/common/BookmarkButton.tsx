@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Bookmark } from "lucide-react";
+import { Bookmark, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
@@ -15,9 +15,10 @@ interface BookmarkButtonProps {
   variant?: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link";
   size?: "default" | "sm" | "lg" | "icon";
   initialIsBookmarked?: boolean;
+  iconType?: 'bookmark' | 'heart';
 }
 
-export function BookmarkButton({ id, type, className, variant = "outline", size = "icon", initialIsBookmarked = false }: BookmarkButtonProps) {
+export function BookmarkButton({ id, type, className, variant = "outline", size = "icon", initialIsBookmarked = false, iconType = 'bookmark' }: BookmarkButtonProps) {
   const { token } = useAuthStore();
   const router = useRouter();
   const [isBookmarked, setIsBookmarked] = useState(initialIsBookmarked);
@@ -81,7 +82,11 @@ export function BookmarkButton({ id, type, className, variant = "outline", size 
       disabled={loading}
       title={isBookmarked ? "Remove Bookmark" : "Add Bookmark"}
     >
-      <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-orange-600 text-orange-600' : ''}`} />
+      {iconType === 'heart' ? (
+        <Heart className={`w-4 h-4 ${isBookmarked ? 'fill-red-500 text-red-500' : ''}`} />
+      ) : (
+        <Bookmark className={`w-4 h-4 ${isBookmarked ? 'fill-orange-600 text-orange-600' : ''}`} />
+      )}
     </Button>
   );
 }
