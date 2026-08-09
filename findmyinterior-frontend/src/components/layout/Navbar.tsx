@@ -37,8 +37,7 @@ import {
   User,
   LocateFixed,
   Loader2,
-  LogIn,
-  UserPlus
+  LogIn
 } from "lucide-react";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { SmartSearch } from "./SmartSearch";
