@@ -7,7 +7,8 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 export function TopRibbonAd() {
   const [ad, setAd] = useState<any>(null);
   const [visible, setVisible] = useState(true);
-  const { role } = useAuthStore();
+  const { user } = useAuthStore();
+  const role = user?.role;
 
   useEffect(() => {
     const fetchAd = async () => {

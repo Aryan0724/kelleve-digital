@@ -8,7 +8,8 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 export function PopupAd() {
   const [ad, setAd] = useState<any>(null);
   const [open, setOpen] = useState(false);
-  const { role } = useAuthStore();
+  const { user } = useAuthStore();
+  const role = user?.role;
 
   useEffect(() => {
     const fetchAd = async () => {
