@@ -12,11 +12,7 @@ import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
-import { useAuthStore } from "@/lib/store/useAuthStore";
-import { handleLogoutAction } from "@/lib/auth";
-import { WalletTab } from "@/components/dashboard/WalletTab";
-import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
-import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
+
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import Link from "next/link";
