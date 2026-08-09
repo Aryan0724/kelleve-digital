@@ -50,6 +50,57 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
         {icon}
       </div>
       <span className="whitespace-nowrap">{label}</span>
+    </button>
+  );
+
+  return (
+    <div className="bg-slate-50 min-h-screen">
+      <div className="bg-white border-b">
+        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2 text-slate-900 font-bold">
+            <HardHat className="h-5 w-5 text-orange-600 hidden md:block" /> 
+            <span className="hidden md:inline">{user?.name}'s Contractor Dashboard</span>
+          </div>
+          <div className="flex items-center gap-2 md:gap-4">
+            <span className="text-sm font-medium text-slate-600 hidden md:block">CONTRACTOR</span>
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600 px-2 md:px-4">
+              <LogOut className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">Logout</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          
+          <div className="lg:col-span-1 space-y-4">
+            <DashboardProfileCard
+              fetchDashboard={fetchDashboard}
+              roleLabel="Contractor"
+              extraContent={
+                <>
+                  <div className="flex justify-between items-center text-sm py-2 border-b">
+                    <span className="text-slate-500">Won Projects</span>
+                    <span className="font-semibold">{data?.stats?.won_projects || 0}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-sm py-2 border-b">
+                    <span className="text-slate-500">Active Bids</span>
+                    <span className="font-semibold">{data?.stats?.active_bids || 0}</span>
+                  </div>
+                </>
+              }
+            />
+
+            <UnverifiedBanner 
+              isVerified={data?.user?.is_verified} 
+              onVerifyClick={() => setActiveTab("verification")} 
+            />
+            
+            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+              <div className="flex overflow-x-auto md:flex-col custom-scrollbar">
+                {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Leads")}
+                {renderSidebarButton("unlocked_leads", <LayoutDashboard className="h-5 w-5" />, "Unlocked Leads")}
+                {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "My Bids")}
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
                 {renderSidebarButton("labour_requests", <HardHat className="h-5 w-5" />, "Labour Requests")}
                 {renderSidebarButton("material_requests", <Truck className="h-5 w-5" />, "Material Requests")}
