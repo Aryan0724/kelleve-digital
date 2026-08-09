@@ -16,10 +16,7 @@ class BlogSeeder extends Seeder
      */
     public function run()
     {
-        $authorId = DB::table('users')->where('role', 'admin')->value('id');
-        if (!$authorId) {
-            $authorId = 1; // Fallback
-        }
+        $authorId = 1; // Fallback
 
         $blogs = [
             [
