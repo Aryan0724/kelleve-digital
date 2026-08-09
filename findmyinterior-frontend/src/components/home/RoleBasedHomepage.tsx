@@ -594,8 +594,6 @@ export function RoleBasedHomepage() {
 
         <QuickStats stats={stats} config={config} />
 
-        <EducationalBlogsFeed role={effectiveRole!} />
-
         {config.feeds?.map((feed: any, idx: number) => {
           const items = dataSources[feed.key] || [];
           
@@ -643,6 +641,8 @@ export function RoleBasedHomepage() {
             </div>
           );
         })}
+
+        <EducationalBlogsFeed role={effectiveRole!} />
       </div>
     </div>
   );
