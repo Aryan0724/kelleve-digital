@@ -595,12 +595,19 @@ export function RoleBasedHomepage() {
 
         <QuickStats stats={stats} config={config} />
 
-        {config.feeds?.map((feed: any, idx: number) => {
-          const items = dataSources[feed.key] || [];
-          
-          return (
-            <React.Fragment key={idx}>
-              <div className="mb-10">
+        <div className="flex flex-col lg:flex-row gap-8 mt-8">
+          <div className="flex-1">
+            {config.feeds?.map((feed: any, idx: number) => {
+              const items = dataSources[feed.key] || [];
+              
+              return (
+                <React.Fragment key={idx}>
+                  {idx === 1 && (
+                    <div className="mb-8">
+                      <AdsBanner role={effectiveRole!} location="between_categories" />
+                    </div>
+                  )}
+                  <div className="mb-10">
                 <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">{feed.title}</h3>
                 <Link href={feed.type === 'listing' ? '/professionals' : feed.type === 'supplier' ? '/materials' : '/dashboard'} className="text-sm text-orange-600 font-semibold hover:text-orange-700 flex items-center gap-1">
@@ -642,13 +649,24 @@ export function RoleBasedHomepage() {
               )}
             </div>
             {idx > 0 && idx % 2 === 0 && (
-              <AdsBanner role={effectiveRole!} location="between_categories" />
+              <div className="mb-8">
+                <AdsBanner role={effectiveRole!} location="between_categories" />
+              </div>
             )}
             </React.Fragment>
           );
         })}
 
         <EducationalBlogsFeed role={effectiveRole!} />
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="hidden lg:block w-80 shrink-0">
+            <div className="sticky top-24 space-y-6">
+              <AdsBanner role={effectiveRole!} location="right_sidebar" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
