@@ -19,6 +19,7 @@ import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirementsTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
+import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
 
 export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
@@ -74,17 +75,10 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
-                  <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                  {user?.avatar && (
-                    <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                  )}
-                </div>
-                <h3 className="font-bold text-lg">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="default">Material Supplier</Badge>
-                
+            <DashboardProfileCard
+              fetchDashboard={fetchDashboard}
+              roleLabel="Material Supplier"
+              extraContent={
                 <div className="w-full space-y-2 mt-2">
                   <div className="w-full bg-orange-50 border border-orange-100 rounded-lg p-3 text-left flex justify-between items-center">
                     <div>
@@ -102,8 +96,8 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                     <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-green-700 border-green-200" onClick={() => setActiveTab("wallet")}>Add</Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              }
+            />
 
             <div className="bg-white border rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">

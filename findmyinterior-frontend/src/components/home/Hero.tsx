@@ -109,7 +109,7 @@ export function Hero() {
                   <Link href="/post-requirement">
                     <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[11px] sm:text-[12px] md:text-sm lg:text-base px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0">
                       <div className="bg-white/20 rounded-full p-1 md:p-1.5"><Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={2.5} /></div> 
-                      <span>Post a Project</span>
+                      <span>Post Requirement</span>
                     </button>
                   </Link>
                   <button 
@@ -127,7 +127,7 @@ export function Hero() {
         </div>
         
         {/* Feature Strip (Responsive Pill) */}
-        <div className="w-[95%] md:w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl md:rounded-full shadow-sm border border-slate-100 dark:border-slate-800 py-3 px-3 md:py-6 md:px-12 -mt-10 md:-mt-14 relative z-20 mx-auto">
+        <div className="w-[95%] md:w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl md:rounded-full shadow-sm border border-slate-100 dark:border-slate-800 py-3 px-3 md:py-6 md:px-12 -mt-10 md:-mt-14 relative z-10 mx-auto">
           <div className="grid grid-cols-4 gap-2 md:gap-6 items-center justify-between">
             <div className="flex flex-col md:flex-row items-center justify-center gap-1.5 md:gap-3 text-center md:text-left group cursor-default">
               <div className="md:bg-orange-50 md:dark:bg-orange-900/20 md:p-3 md:rounded-full group-hover:scale-110 transition-transform">

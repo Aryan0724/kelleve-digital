@@ -30,19 +30,18 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
 
     setLoading(true);
     try {
-      // Create an inquiry automatically as a way of "unlocking"
-      await api.post("/inquiries", {
-        type: "Listing",
-        id: listing.id,
-        message: "I am interested in your services and unlocked your contact details on FindMyInterior.",
-      });
+      await api.post(`/listings/${listing.id}/unlock`);
       
       toast.success("Contact unlocked! You can now chat on WhatsApp.");
       onUnlockSuccess();
       onClose();
-    } catch (error) {
-      console.error(error);
-      toast.error("Failed to unlock contact. Please try again.");
+    } catch (err: any) {
+      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
+        toast.error("Insufficient wallet balance. Redirecting to wallet recharge...");
+        router.push("/dashboard?tab=wallet");
+      } else {
+        toast.error(err.response?.data?.message || "Failed to unlock contact. Please try again.");
+      }
     } finally {
       setLoading(false);
     }
@@ -57,7 +56,7 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
             Unlock Contact Details
           </DialogTitle>
           <DialogDescription>
-            Unlock {listing.title}'s WhatsApp number to chat directly. By unlocking, they will be notified of your interest.
+            Unlock {listing.title}'s WhatsApp number to chat directly. This requires a ₹49 fee which will be deducted from your wallet.
           </DialogDescription>
         </DialogHeader>
         

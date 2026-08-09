@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import api from '@/lib/api';
-import { RefreshCcw, Database, HardDrive, Cpu, Activity, AlertTriangle, CheckCircle, XCircle } from 'lucide-react';
+import { RefreshCcw, Database, HardDrive, Cpu, Activity, AlertTriangle, CheckCircle, XCircle, Terminal } from 'lucide-react';
 
 interface HealthData {
   status: 'healthy' | 'warning' | 'critical';
@@ -36,6 +36,7 @@ interface HealthData {
       environment: string;
       debug_mode: boolean;
       memory_usage: string;
+      cpu_load?: string;
     };
     deployment?: {
       last_deploy: string;
@@ -48,8 +49,11 @@ interface HealthData {
 
 export default function SystemHealthPanel() {
   const [health, setHealth] = useState<HealthData | null>(null);
+  const [logs, setLogs] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
+  const [loadingLogs, setLoadingLogs] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const logsEndRef = useRef<HTMLDivElement>(null);
 
   const fetchHealth = async () => {
     setLoading(true);
@@ -64,12 +68,37 @@ export default function SystemHealthPanel() {
     }
   };
 
-  useEffect(() => {
+  const fetchLogs = async () => {
+    setLoadingLogs(true);
+    try {
+      const res = await api.get('/admin/system-health/logs');
+      if (res.data?.success) {
+        setLogs(res.data.logs);
+      }
+    } catch (err) {
+      console.error('Failed to fetch logs', err);
+    } finally {
+      setLoadingLogs(false);
+    }
+  };
+
+  const handleRefresh = () => {
     fetchHealth();
+    fetchLogs();
+  };
+
+  useEffect(() => {
+    handleRefresh();
     // Auto-refresh every 30 seconds
-    const interval = setInterval(fetchHealth, 30000);
+    const interval = setInterval(handleRefresh, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (logsEndRef.current) {
+      logsEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [logs]);
 
   if (loading && !health) {
     return (
@@ -115,7 +144,7 @@ export default function SystemHealthPanel() {
           </p>
         </div>
         <button
-          onClick={fetchHealth}
+          onClick={handleRefresh}
           disabled={loading}
           className="flex items-center space-x-2 px-4 py-2 bg-white border border-slate-200 shadow-sm text-slate-700 rounded-xl hover:bg-slate-50 transition active:scale-95 disabled:opacity-50"
         >
@@ -216,6 +245,7 @@ export default function SystemHealthPanel() {
             <p>PHP Version: {health.data.system.php_version}</p>
             <p>Laravel Version: {health.data.system.laravel_version}</p>
             <p>Memory Usage: {health.data.system.memory_usage}</p>
+            {health.data.system.cpu_load && <p>CPU Load: {health.data.system.cpu_load}</p>}
             {health.data.deployment && (
               <>
                 <p>Deploy Version: <span className="font-mono text-xs bg-slate-100 px-1 rounded">{health.data.deployment.version || 'Unknown'}</span></p>
@@ -228,6 +258,53 @@ export default function SystemHealthPanel() {
           </div>
         </div>
 
+      </div>
+
+      {/* Application Logs Viewer */}
+      <div className="bg-slate-900 rounded-2xl border border-slate-800 shadow-xl overflow-hidden mt-8">
+        <div className="flex justify-between items-center bg-slate-950 px-4 py-3 border-b border-slate-800">
+          <div className="flex items-center space-x-2">
+            <Terminal className="w-5 h-5 text-slate-400" />
+            <h3 className="text-slate-200 font-mono text-sm font-semibold">storage/logs/laravel.log</h3>
+          </div>
+          <button 
+            onClick={fetchLogs} 
+            disabled={loadingLogs}
+            className="text-slate-400 hover:text-white transition disabled:opacity-50"
+            title="Refresh Logs"
+          >
+            <RefreshCcw className={`w-4 h-4 ${loadingLogs ? 'animate-spin' : ''}`} />
+          </button>
+        </div>
+        <div className="p-4 h-96 overflow-y-auto font-mono text-xs leading-relaxed custom-scrollbar">
+          {logs.length === 0 && !loadingLogs ? (
+            <div className="text-slate-500 italic">No logs found or log file is empty.</div>
+          ) : (
+            logs.map((line, idx) => {
+              // Basic color coding for log lines
+              let textColor = 'text-slate-300';
+              if (line.includes('local.ERROR') || line.includes('production.ERROR')) {
+                textColor = 'text-red-400 font-semibold';
+              } else if (line.includes('local.WARNING') || line.includes('production.WARNING')) {
+                textColor = 'text-amber-400';
+              } else if (line.includes('local.INFO') || line.includes('production.INFO')) {
+                textColor = 'text-blue-300';
+              }
+              
+              return (
+                <div key={idx} className={`whitespace-pre-wrap break-all border-b border-slate-800/50 pb-1 mb-1 ${textColor}`}>
+                  {line}
+                </div>
+              );
+            })
+          )}
+          {loadingLogs && logs.length === 0 && (
+            <div className="text-slate-500 animate-pulse flex items-center gap-2">
+              <RefreshCcw className="w-3 h-3 animate-spin" /> Fetching logs...
+            </div>
+          )}
+          <div ref={logsEndRef} />
+        </div>
       </div>
     </div>
   );

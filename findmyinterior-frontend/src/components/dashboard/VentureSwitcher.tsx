@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Building2, ChevronDown, Plus, X, MapPin, CheckCircle2, Loader2, Search } from "lucide-react";
 import api from "@/lib/api";
+import { useAuthStore } from "@/lib/store/useAuthStore";
 
 // Professional types taxonomy for venture creation
 const VENTURE_TYPES = [
@@ -136,7 +137,7 @@ export function VentureSwitcher() {
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [activeVenture, setActiveVenture] = useState<Venture | null>(null);
+  const { activeVenture, setActiveVenture } = useAuthStore();
 
   const fetchVentures = async () => {
     try {

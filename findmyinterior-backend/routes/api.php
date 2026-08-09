@@ -210,6 +210,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         // Contact Unlocks
         Route::post('/requirements/{requirement}/unlock', [UnlockController::class, 'unlockContact']);
+        Route::post('/listings/{listing}/unlock', [UnlockController::class, 'unlockListing']);
         Route::get('/requirements/{requirement}/pricing-context', [\App\Http\Controllers\Api\V1\PricingController::class, 'getPricingContext']);
         // Saved Items
         Route::post('/saved-projects/{requirement}', [\App\Http\Controllers\Api\V1\SaveController::class, 'saveProject']);
@@ -376,6 +377,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         // System Health Dashboard
         Route::get('system-health', [\App\Http\Controllers\Admin\SystemHealthController::class, 'index']);
+        Route::get('system-health/logs', [\App\Http\Controllers\Admin\SystemHealthController::class, 'logs']);
     });
 });
 

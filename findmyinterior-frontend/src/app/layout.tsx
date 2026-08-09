@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     siteName: "FindMyInterior",
     images: [
       {
-        url: "/og-image.jpg",
+        url: "/og-image.png",
         width: 1200,
         height: 630,
         alt: "FindMyInterior",
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "FindMyInterior",
     description: "Bihar's leading Home Improvement & Construction Marketplace",
-    images: ["/og-image.jpg"],
+    images: ["/og-image.png"],
   },
   alternates: {
     canonical: "/",

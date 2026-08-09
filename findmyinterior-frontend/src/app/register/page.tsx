@@ -341,18 +341,35 @@ export default function RegisterPage() {
   if (!_hasHydrated) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-orange-50/30 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex items-center justify-center px-4 py-10">
-      <div className="w-full max-w-lg">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <h1 className="text-2xl font-extrabold text-[#0a1c3a] dark:text-white">
-            Find<span className="text-[#E8701A]">My</span>Interior
-          </h1>
-          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">Create your account — it's free</p>
+    <div className="flex min-h-[calc(100vh-80px)] bg-slate-50 dark:bg-slate-950">
+      {/* Left Side: Brand Image (Hidden on Mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80" 
+          alt="Luxury Architecture" 
+          className="absolute inset-0 w-full h-full object-cover opacity-70"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute bottom-12 left-12 right-12 text-white">
+          <h2 className="text-4xl font-bold mb-4 leading-tight">Join the network.</h2>
+          <p className="text-lg text-slate-300 max-w-lg">
+            Create an account to discover premium professionals, or list your business to find new clients.
+          </p>
         </div>
+      </div>
 
-        <Card className="border-0 shadow-2xl overflow-visible dark:bg-slate-900/80 dark:border dark:border-slate-800">
-          <CardHeader className="pb-2">
+      {/* Right Side: Register Form */}
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12 overflow-y-auto">
+        <div className="w-full max-w-md space-y-6 pb-20 lg:pb-0">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Create an account</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+              Join FindMyInterior — it's free
+            </p>
+          </div>
+
+          <Card className="border-0 shadow-none sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-xl bg-transparent sm:bg-white sm:dark:bg-slate-900">
+            <CardHeader className="pb-2 px-6 sm:px-6">
             <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">Join the Platform</CardTitle>
             <CardDescription className="dark:text-slate-400">
               {step === "who"
@@ -583,5 +600,6 @@ export default function RegisterPage() {
         </div>
       </div>
     </div>
-  );
+  </div>
+);
 }

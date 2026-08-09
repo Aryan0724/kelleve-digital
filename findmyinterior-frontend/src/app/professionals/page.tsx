@@ -103,11 +103,16 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
               <div className="flex items-center gap-4">
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-medium text-slate-600">Sort by :</span>
-                  <select className="border border-slate-200 rounded-lg text-sm p-1.5 focus:outline-none focus:ring-2 focus:ring-orange-500">
-                    <option value="rating">Highest Rated</option>
-                    <option value="featured">Featured First</option>
-                    <option value="newest">Newest</option>
-                  </select>
+                  <div className="relative">
+                    <select className="appearance-none bg-white border border-slate-200 text-slate-700 rounded-lg text-sm py-2 pl-3 pr-8 focus:outline-none focus:ring-2 focus:ring-orange-500 cursor-pointer shadow-sm transition-all hover:border-slate-300">
+                      <option value="rating">Highest Rated</option>
+                      <option value="featured">Featured First</option>
+                      <option value="newest">Newest</option>
+                    </select>
+                    <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-slate-400">
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                    </div>
+                  </div>
                 </div>
                 <div className="flex bg-slate-100 p-1 rounded-lg border border-slate-200">
                   <Link href={`?${new URLSearchParams({...resolvedSearchParams, layout: 'grid'}).toString()}`} className={`p-1.5 rounded-md ${layout === 'grid' ? 'bg-white shadow-sm text-orange-600' : 'text-slate-500 hover:text-slate-700'}`}>
@@ -240,12 +245,14 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                             <p className="text-sm text-slate-600 line-clamp-2 mb-3">
                               {listing.description || 'Verified professional ready to help with your next project.'}
                             </p>
-                            <div className="flex items-center text-sm text-green-600 font-medium">
-                              <span className="flex items-center justify-center w-4 h-4 rounded-full bg-green-100 mr-2">
-                                <span className="w-2 h-2 rounded-full bg-green-500"></span>
-                              </span>
-                              Open now <span className="text-slate-400 mx-2">•</span> <span className="text-slate-500 font-normal">9:00 AM - 8:00 PM</span>
-                            </div>
+                            {listing.business_hours ? (
+                              <div className="flex items-center text-sm text-green-600 font-medium">
+                                <span className="flex items-center justify-center w-4 h-4 rounded-full bg-green-100 mr-2">
+                                  <span className="w-2 h-2 rounded-full bg-green-500"></span>
+                                </span>
+                                Open now <span className="text-slate-400 mx-2">•</span> <span className="text-slate-500 font-normal">{listing.business_hours}</span>
+                              </div>
+                            ) : null}
                           </div>
                           
                             <div className="flex flex-col sm:flex-row gap-3 min-w-[200px] flex-shrink-0">

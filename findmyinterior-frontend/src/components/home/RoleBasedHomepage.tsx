@@ -418,10 +418,17 @@ function QuickStats({ stats, config }: { stats: any; config: any }) {
                 <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-600 dark:text-orange-500 group-hover:scale-110 transition-transform">
                   <Icon className="w-6 h-6" />
                 </div>
-                <div className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400 rounded-md flex items-center">
-                  <TrendingUp className="w-3 h-3 mr-1" />
-                  Live
-                </div>
+                {s.key === 'recommended_leads_count' && (
+                  <div className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400 rounded-md flex items-center">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    Live
+                  </div>
+                )}
+                {s.key === 'unread_messages' && val > 0 && (
+                  <div className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400 rounded-md flex items-center">
+                    New
+                  </div>
+                )}
               </div>
               <div>
                 <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{val}</div>

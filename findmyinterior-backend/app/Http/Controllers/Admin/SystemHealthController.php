@@ -40,4 +40,43 @@ class SystemHealthController extends Controller
             'data' => $health
         ]);
     }
+
+    /**
+     * Get recent application logs.
+     */
+    public function logs(): JsonResponse
+    {
+        $logFile = storage_path('logs/laravel.log');
+        $lines = [];
+        $linesCount = 200; // Limit to last 200 lines
+
+        if (!file_exists($logFile)) {
+            return response()->json([
+                'success' => true,
+                'logs' => ['Log file not found.']
+            ]);
+        }
+
+        // Efficiently read the last N lines of a file
+        $file = new \SplFileObject($logFile, 'r');
+        $file->seek(PHP_INT_MAX);
+        $totalLines = $file->key();
+        
+        $startLine = max(0, $totalLines - $linesCount);
+        
+        $file->seek($startLine);
+        
+        while (!$file->eof()) {
+            $line = $file->current();
+            if (trim($line) !== '') {
+                $lines[] = trim($line);
+            }
+            $file->next();
+        }
+
+        return response()->json([
+            'success' => true,
+            'logs' => $lines
+        ]);
+    }
 }

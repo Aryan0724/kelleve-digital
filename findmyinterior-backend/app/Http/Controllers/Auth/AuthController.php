@@ -36,6 +36,9 @@ class AuthController extends Controller
             'modular_kitchen_material_supplier', 'glass_supplier',
             'acp_aluminium_supplier', 'furniture_supplier', 'door_window_supplier',
             'supplier', 'material_supplier',
+            'furniture_brand', 'tile_sanitaryware_brand', 'paint_coatings_brand',
+            'lighting_brand', 'plywood_laminate_brand', 'home_appliances_brand',
+            'hardware_fittings_brand', 'other_manufacturer_brand',
         ];
 
         $builderTypes = [
@@ -83,6 +86,10 @@ class AuthController extends Controller
             'lighting_supplier', 'electrical_supplier', 'sanitary_bathroom_supplier',
             'modular_kitchen_material_supplier', 'glass_supplier',
             'acp_aluminium_supplier', 'furniture_supplier', 'door_window_supplier',
+            // Brands & Manufacturers
+            'furniture_brand', 'tile_sanitaryware_brand', 'paint_coatings_brand',
+            'lighting_brand', 'plywood_laminate_brand', 'home_appliances_brand',
+            'hardware_fittings_brand', 'other_manufacturer_brand',
             // Builders & Developers
             'builder', 'real_estate_developer', 'apartment_project',
             'commercial_project', 'villa_project',

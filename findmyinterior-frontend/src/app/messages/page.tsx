@@ -10,6 +10,8 @@ import { User as UserIcon, Loader2, ArrowLeft, MessageSquare } from "lucide-reac
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
 
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+
 interface Message {
   id: number;
   message: string;
@@ -27,10 +29,12 @@ interface Conversation {
   customer: {
     id: number;
     name: string;
+    avatar?: string;
   };
   vendor: {
     id: number;
     name: string;
+    avatar?: string;
   };
   project?: {
     id: number;
@@ -108,10 +112,13 @@ export default function InboxPage() {
                 
                 return (
                   <Link href={`/messages/${conv.id}`} key={conv.id} className="block hover:bg-slate-50 transition-colors p-4 md:p-6 border-l-4 border-transparent hover:border-orange-500">
-                    <div className="flex gap-4">
-                      <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center shrink-0">
-                        <UserIcon className="h-6 w-6 text-orange-600" />
-                      </div>
+                    <div className="flex gap-4 items-center">
+                      <Avatar className="h-12 w-12 border-2 border-white shadow-sm shrink-0">
+                        <AvatarImage src={otherUser?.avatar} alt={otherUser?.name} />
+                        <AvatarFallback className="bg-orange-100 text-orange-600 font-semibold">
+                          {otherUser?.name ? otherUser.name.charAt(0).toUpperCase() : <UserIcon className="h-6 w-6" />}
+                        </AvatarFallback>
+                      </Avatar>
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">

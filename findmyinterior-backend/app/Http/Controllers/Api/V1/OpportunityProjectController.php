@@ -41,6 +41,8 @@ class OpportunityProjectController extends Controller
             'budget_max'       => 'nullable|numeric',
             'budget'           => 'nullable|string',
             'image'            => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'images'           => 'nullable|array|max:5',
+            'images.*'         => 'image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         $user = Auth::user();
@@ -86,11 +88,30 @@ class OpportunityProjectController extends Controller
                 'status'           => 'open',
             ]);
 
-            if ($request->hasFile('image')) {
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $file) {
+                    $path = \App\Helpers\ImageHelper::toStoragePath($file, 'requirements');
+                    
+                    if ($index === 0) {
+                        $req->image = $path;
+                        $req->save();
+                    }
+                    
+                    \App\Models\RequirementImage::create([
+                        'requirement_id' => $req->id,
+                        'image_url' => $path,
+                    ]);
+                }
+            } elseif ($request->hasFile('image')) {
                 $file = $request->file('image');
-                $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
-                $req->image = $dataUri;
+                $path = \App\Helpers\ImageHelper::toStoragePath($file, 'requirements');
+                $req->image = $path;
                 $req->save();
+
+                \App\Models\RequirementImage::create([
+                    'requirement_id' => $req->id,
+                    'image_url' => $path,
+                ]);
             }
 
             return $req;

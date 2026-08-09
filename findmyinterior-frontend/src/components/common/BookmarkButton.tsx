@@ -8,6 +8,10 @@ import api from "@/lib/api";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 
+// Global cache to prevent redundant API calls when rendering lists of items
+let globalBookmarksCache: any[] | null = null;
+let globalBookmarksPromise: Promise<any> | null = null;
+
 interface BookmarkButtonProps {
   id: number;
   type: 'Listing' | 'Worker' | 'Requirement' | 'Project';
@@ -33,8 +37,21 @@ export function BookmarkButton({ id, type, className, variant = "outline", size 
     // Check initial state from server if not provided
     const checkBookmarkStatus = async () => {
       try {
-        const res = await api.get("/user/bookmarks");
+        if (globalBookmarksCache) {
+           const isSaved = globalBookmarksCache.some((b: any) => b.item_id === id && b.type === type);
+           setIsBookmarked(isSaved);
+           setLoading(false);
+           return;
+        }
+
+        if (!globalBookmarksPromise) {
+           globalBookmarksPromise = api.get("/user/bookmarks");
+        }
+
+        const res = await globalBookmarksPromise;
         const bookmarks = res.data?.data || [];
+        globalBookmarksCache = bookmarks;
+        
         const isSaved = bookmarks.some((b: any) => b.item_id === id && b.type === type);
         setIsBookmarked(isSaved);
       } catch (err) {
@@ -47,7 +64,12 @@ export function BookmarkButton({ id, type, className, variant = "outline", size 
     checkBookmarkStatus();
   }, [id, type, token]);
 
-  const toggleBookmark = async () => {
+  const toggleBookmark = async (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
+    
     if (!token) {
       toast.info("Please login to save bookmarks");
       router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));

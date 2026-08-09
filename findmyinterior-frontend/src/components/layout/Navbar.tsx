@@ -36,7 +36,9 @@ import {
   X,
   User,
   LocateFixed,
-  Loader2
+  Loader2,
+  LogIn,
+  UserPlus
 } from "lucide-react";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { SmartSearch } from "./SmartSearch";
@@ -449,14 +451,6 @@ export function Navbar() {
                   <Link href="/dashboard" onClick={closeMobileMenu} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center gap-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
                     <LayoutDashboard className="w-5 h-5 text-[#0a1c3a] dark:text-white" /> Dashboard
                   </Link>
-                  <Link href="/messages" onClick={closeMobileMenu} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg flex items-center gap-3 font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors">
-                    <MessageSquare className="w-5 h-5 text-[#0a1c3a] dark:text-white" /> Messages
-                  </Link>
-                  {!['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business', 'worker', 'skilled_worker'].includes(user?.role || '') && (
-                  <Link href="/post-requirement" onClick={closeMobileMenu} className="p-3 bg-orange-50 dark:bg-orange-900/20 text-orange-600 rounded-lg flex items-center gap-3 font-medium hover:bg-orange-100 transition-colors">
-                    <ClipboardList className="w-5 h-5" /> Post Requirement
-                  </Link>
-                  )}
                   {(user?.isAdmin || user?.role === 'admin') && (
                     <Link href="/admin" onClick={closeMobileMenu} className="p-3 bg-red-50 dark:bg-red-900/20 text-red-600 rounded-lg flex items-center gap-3 font-medium hover:bg-red-100 transition-colors">
                       <ShieldAlert className="w-5 h-5" /> Admin Panel
@@ -468,8 +462,12 @@ export function Navbar() {
                 </>
               ) : (
                 <>
-                  <Link href="/login" onClick={closeMobileMenu} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg font-medium text-center text-gray-800 dark:text-gray-200 hover:bg-gray-100 transition-colors">Login</Link>
-                  <Link href="/register" onClick={closeMobileMenu} className="p-3 bg-[#0a1c3a] text-white rounded-lg font-medium text-center hover:bg-[#1a2c4a] transition-colors">Register</Link>
+                  <Link href="/login" onClick={closeMobileMenu} className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg font-medium text-gray-800 dark:text-gray-200 hover:bg-gray-100 transition-colors flex items-center justify-center gap-2">
+                    <LogIn className="w-4 h-4" /> Login
+                  </Link>
+                  <Link href="/register" onClick={closeMobileMenu} className="p-3 bg-[#0a1c3a] text-white rounded-lg font-medium hover:bg-[#1a2c4a] transition-colors flex items-center justify-center gap-2">
+                    <UserPlus className="w-4 h-4" /> Register
+                  </Link>
                   <Link href="/register" onClick={closeMobileMenu} className="p-3 border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-lg font-medium text-center text-gray-800 dark:text-gray-200 flex items-center justify-center gap-2 hover:bg-gray-50 transition-colors">
                     <Briefcase className="w-4 h-4" /> List Your Business
                   </Link>
@@ -493,9 +491,6 @@ export function Navbar() {
               </Link>
               <Link href="/professionals?search=Supplier" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                 <Truck className="w-4 h-4 text-[#E8701A]" /> Suppliers
-              </Link>
-              <Link href="/projects" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
-                <Home className="w-4 h-4 text-[#E8701A]" /> Projects
               </Link>
               <Link href="/help" onClick={closeMobileMenu} className="p-3 text-sm text-gray-700 dark:text-gray-300 flex items-center gap-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                 <HelpCircle className="w-4 h-4 text-[#E8701A]" /> Help &amp; Support

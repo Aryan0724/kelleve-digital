@@ -52,21 +52,24 @@ export function ContactButtons({ listing }: { listing: any }) {
         className={`flex items-center p-3 rounded-lg transition-colors ${
           hasPhone
             ? "bg-green-50 hover:bg-green-100 cursor-pointer border border-green-200"
-            : "bg-slate-50 opacity-60 cursor-not-allowed border border-slate-100"
+            : "bg-slate-50 hover:bg-slate-100 cursor-pointer border border-slate-200"
         }`}
         onClick={() => {
-          if (!hasPhone) return;
+          if (!hasPhone) {
+            handleContactAction(() => setShowUnlock(true));
+            return;
+          }
           handleContactAction(() => {
             handleTrackClick("phone");
             window.location.href = `tel:${listing.phone}`;
           });
         }}
       >
-        <Phone className={`h-5 w-5 mr-3 flex-shrink-0 ${hasPhone ? "text-green-600" : "text-slate-400"}`} />
+        <Phone className={`h-5 w-5 mr-3 flex-shrink-0 ${hasPhone ? "text-green-600" : "text-slate-600"}`} />
         <div className="min-w-0">
           <div className="text-xs text-slate-500 font-medium">Phone Number</div>
-          <div className={`font-semibold truncate ${hasPhone ? "text-green-700" : "text-slate-400 text-sm"}`}>
-            {phoneDisplay}
+          <div className={`font-semibold truncate ${hasPhone ? "text-green-700" : "text-slate-700 text-sm"}`}>
+            {hasPhone ? phoneDisplay : "Unlock Contact (₹49)"}
           </div>
         </div>
       </div>
@@ -154,9 +157,17 @@ export function ContactButtons({ listing }: { listing: any }) {
       {!hasPhone && !hasEmail && !hasWebsite && (
         <div className="p-3 bg-amber-50 border border-amber-200 rounded-lg text-center">
           <p className="text-sm text-amber-700 font-medium">Contact info not publicly listed.</p>
-          <p className="text-xs text-amber-600 mt-1">Send an enquiry using the form below.</p>
+          <p className="text-xs text-amber-600 mt-1">Unlock the contact to view details.</p>
         </div>
       )}
+
+      {/* Unlock Modal */}
+      <UnlockContactModal 
+        isOpen={showUnlock} 
+        onClose={() => setShowUnlock(false)} 
+        listing={listing} 
+        onUnlockSuccess={() => window.location.reload()} 
+      />
     </div>
   );
 }

@@ -24,6 +24,7 @@ class SystemHealthService
                 'environment' => app()->environment(),
                 'debug_mode' => config('app.debug'),
                 'memory_usage' => $this->getMemoryUsage(),
+                'cpu_load' => $this->getCpuLoad(),
             ],
             'timestamp' => now()->toIso8601String(),
         ];
@@ -120,5 +121,25 @@ class SystemHealthService
     {
         $mem = memory_get_usage(true);
         return round($mem / 1024 / 1024, 2) . ' MB';
+    }
+
+    private function getCpuLoad(): string
+    {
+        if (function_exists('sys_getloadavg')) {
+            $load = sys_getloadavg();
+            if (is_array($load) && count($load) > 0) {
+                return $load[0] . ' (1 min avg)';
+            }
+        }
+        
+        // Windows fallback
+        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+            @exec('wmic cpu get loadpercentage', $output);
+            if (isset($output[1])) {
+                return trim($output[1]) . '%';
+            }
+        }
+
+        return 'Unknown';
     }
 }

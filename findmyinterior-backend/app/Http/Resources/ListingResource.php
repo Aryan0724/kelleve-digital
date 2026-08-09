@@ -88,7 +88,16 @@ class ListingResource extends JsonResource
         // Admin always sees
         if ($user->isAdmin()) return true;
         // Premium subscriber sees
-        return $user->hasPremiumSubscription();
+        if ($user->hasPremiumSubscription()) return true;
+
+        // Check if unlocked explicitly
+        $unlocked = \Illuminate\Support\Facades\DB::table('contact_unlocks')
+            ->where('user_id', $user->id)
+            ->where('requirement_id', $this->id)
+            ->where('requirement_type', get_class($this->resource))
+            ->exists();
+
+        return $unlocked;
     }
 
     private function isOwner(Request $request): bool

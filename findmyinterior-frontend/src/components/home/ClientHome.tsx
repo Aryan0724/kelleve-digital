@@ -80,51 +80,23 @@ export function ClientHome() {
         />
       ))}
       
-      {/* If there are no organic leads, fallback to our beautiful mock data */}
-      {Object.keys(groupedLeads).length === 0 && (
-        <>
-          <PublicProjects 
-            title="Featured Interior Projects" 
-            projects={[
-              { id: 101, title: "Modern 3BHK Flat Interior", category: { name: "Interior Designer" }, city: "Patna", budget_min: 500000, budget_max: 800000 },
-              { id: 102, title: "Modular Kitchen Setup", category: { name: "Kitchen Designer" }, city: "Gaya", budget_min: 150000, budget_max: 200000 },
-              { id: 103, title: "Office Space Renovation", category: { name: "Interior Contractor" }, city: "Muzaffarpur", budget_min: 1200000, budget_max: 1500000 },
-            ]} 
-            type="lead" 
-          />
-          <PublicProjects 
-            title="Construction & Civil Works" 
-            projects={[
-              { id: 201, title: "New Commercial Building Construction", category: { name: "Civil Contractor" }, city: "Patna", budget_min: 5000000 },
-              { id: 202, title: "Residential House Expansion", category: { name: "Builder" }, city: "Darbhanga", budget_min: 800000, budget_max: 1200000 },
-              { id: 203, title: "Turnkey Bungalow Project", category: { name: "Turnkey Contractor" }, city: "Bhagalpur", budget_min: 8000000 },
-            ]} 
-            type="lead" 
-          />
-        </>
+      {/* Urgent Material Requirements */}
+      {homeData?.open_rfqs?.length > 0 && (
+        <PublicProjects 
+          title="Urgent Material Requirements" 
+          projects={homeData.open_rfqs} 
+          type="rfq" 
+        />
       )}
 
-      {/* Urgent Material Requirements */}
-      <PublicProjects 
-        title="Urgent Material Requirements" 
-        projects={homeData?.open_rfqs?.length > 0 ? homeData.open_rfqs : [
-          { id: 301, title: "Bulk Cement & Steel for Hospital Project", category: { name: "Material Supply" }, city: "Patna", budget_min: 150000 },
-          { id: 302, title: "Vitrified Tiles (2000 sq ft)", category: { name: "Tile Dealer" }, city: "Gaya", budget_min: 80000 },
-          { id: 303, title: "Plywood and Laminates for Wardrobes", category: { name: "Plywood Dealer" }, city: "Muzaffarpur", budget_min: 45000 },
-        ]} 
-        type="rfq" 
-      />
-
       {/* Latest Worker Jobs */}
-      <PublicProjects 
-        title="Daily Wage & Contract Jobs" 
-        projects={homeData?.open_jobs?.length > 0 ? homeData.open_jobs : [
-          { id: 401, title: "Need 5 Carpenters for Modular Kitchen fitting", category: { name: "Carpenter" }, city: "Patna", budget_min: 1000, budget_max: 1500 },
-          { id: 402, title: "Painters required for full exterior painting", category: { name: "Painter" }, city: "Bhagalpur", budget_min: 800, budget_max: 1200 },
-          { id: 403, title: "Electrician for complete residential wiring", category: { name: "Electrician" }, city: "Darbhanga", budget_min: 1200, budget_max: 1800 },
-        ]} 
-        type="job" 
-      />
+      {homeData?.open_jobs?.length > 0 && (
+        <PublicProjects 
+          title="Daily Wage & Contract Jobs" 
+          projects={homeData.open_jobs} 
+          type="job" 
+        />
+      )}
       
       <div className="container mx-auto px-4 my-8">
         <AdSlot location="mid_page" className="w-full h-32 md:h-64 rounded-xl" />

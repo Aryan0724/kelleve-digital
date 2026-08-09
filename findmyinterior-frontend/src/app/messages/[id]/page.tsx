@@ -95,10 +95,10 @@ export default function ConversationPage() {
       fetchConversationInfo();
       fetchMessages();
 
-      // 5-second polling
+      // 10-second polling to reduce server load
       pollingInterval.current = setInterval(() => {
         fetchMessages(true);
-      }, 5000);
+      }, 10000);
     }
 
     return () => {

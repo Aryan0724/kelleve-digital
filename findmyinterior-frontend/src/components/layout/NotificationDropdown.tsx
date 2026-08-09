@@ -98,7 +98,13 @@ export function NotificationDropdown() {
             {loading ? (
               <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-orange-500" /></div>
             ) : notifications.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 text-sm">No notifications yet.</div>
+              <div className="p-10 text-center flex flex-col items-center">
+                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3">
+                  <Bell className="w-5 h-5 text-slate-400" />
+                </div>
+                <h4 className="text-sm font-semibold text-slate-700 mb-1">No notifications yet</h4>
+                <p className="text-xs text-slate-500">We'll let you know when something arrives.</p>
+              </div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {notifications.map((notif) => (

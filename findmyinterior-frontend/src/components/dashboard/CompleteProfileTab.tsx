@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { toast } from "react-toastify";
 
 const SERVICE_OPTIONS = [
   "Modular Kitchen", "False Ceiling", "Wardrobes", "Plumbing", 
@@ -228,7 +229,7 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
-      alert(err.response?.data?.message || err.message || "Upload failed. Please try again.");
+      toast.error(err.response?.data?.message || err.message || "Upload failed. Please try again.");
       setPreview(currentCover);
     } finally {
       setUploading(false);
@@ -488,7 +489,7 @@ export function CompleteProfileTab() {
 
   const detectLocation = () => {
     if (!navigator.geolocation) {
-      alert("Geolocation is not supported by your browser");
+      toast.error("Geolocation is not supported by your browser");
       return;
     }
     setLocationLoading(true);
@@ -510,13 +511,13 @@ export function CompleteProfileTab() {
             address: formattedAddress,
           }));
         } catch (e) {
-          alert("Failed to detect location.");
+          toast.error("Failed to detect location.");
         } finally {
           setLocationLoading(false);
         }
       },
       () => {
-        alert("Permission denied or location unavailable.");
+        toast.error("Permission denied or location unavailable.");
         setLocationLoading(false);
       },
       { enableHighAccuracy: true }
@@ -548,11 +549,11 @@ export function CompleteProfileTab() {
     const handleSave = async () => {
       if (isBusiness) {
         if (formData.gst_number && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i.test(formData.gst_number)) {
-          alert("Invalid GST Number format.");
+          toast.error("Invalid GST Number format.");
           return;
         }
         if (formData.pan_number && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(formData.pan_number)) {
-          alert("Invalid PAN Number format.");
+          toast.error("Invalid PAN Number format.");
           return;
         }
       }
@@ -600,9 +601,9 @@ export function CompleteProfileTab() {
     } catch (e: any) {
       if (e.response?.data?.errors) {
         const msgs = Object.values(e.response.data.errors).flat().join("\n");
-        alert(`Validation Error:\n${msgs}`);
+        toast.error(`Validation Error:\n${msgs}`);
       } else {
-        alert(e.response?.data?.message || "Failed to update profile.");
+        toast.error(e.response?.data?.message || "Failed to update profile.");
       }
     } finally {
       setSaving(false);
@@ -614,7 +615,7 @@ export function CompleteProfileTab() {
     if (!file) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      alert("File size must be less than 10MB");
+      toast.error("File size must be less than 10MB");
       return;
     }
 
@@ -627,10 +628,10 @@ export function CompleteProfileTab() {
       await api.post("/verification/upload", form, {
         headers: { "Content-Type": "multipart/form-data" }
       });
-      alert("Document uploaded successfully and is pending review.");
+      toast.success("Document uploaded successfully and is pending review.");
       fetchData();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to upload document");
+      toast.error(err.response?.data?.message || "Failed to upload document");
     } finally {
       setUploadingDoc(null);
       if (e.target) e.target.value = '';
@@ -644,7 +645,7 @@ export function CompleteProfileTab() {
       fetchData();
     } catch (err) {
       console.error(err);
-      alert("Failed to delete document");
+      toast.error("Failed to delete document");
     }
   };
 

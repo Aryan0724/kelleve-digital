@@ -15,6 +15,11 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   const [locations, setLocations] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("Patna");
   const [isLocating, setIsLocating] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [searchQuery, showSuggestions]);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
@@ -241,6 +246,27 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
                 setShowSuggestions(true);
               }}
               onFocus={() => setShowSuggestions(true)}
+              onKeyDown={(e) => {
+                if (showSuggestions && suggestions.length > 0) {
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    setSelectedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
+                  } else if (e.key === "Enter" && selectedIndex >= 0) {
+                    e.preventDefault();
+                    const suggestion = suggestions[selectedIndex];
+                    if (suggestion) {
+                      setSearchQuery(suggestion.text);
+                      handleSearch(undefined, suggestion.text, suggestion.href);
+                      setShowSuggestions(false);
+                    }
+                  } else if (e.key === "Escape") {
+                    setShowSuggestions(false);
+                  }
+                }
+              }}
               placeholder={compact ? "Search..." : "Search services, professionals, projects, suppliers..."} 
               className={`w-full bg-transparent font-medium outline-none text-gray-800 dark:text-white placeholder:text-gray-400 placeholder:font-normal ${compact ? 'text-[13px] py-1.5' : 'text-sm py-2'}`}
             />
@@ -256,9 +282,13 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
                           setSearchQuery(suggestion.text);
                           handleSearch(undefined, suggestion.text, suggestion.href);
                         }}
-                        className="w-full text-left px-5 py-2.5 text-sm text-slate-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-500 flex items-center transition-colors overflow-hidden"
+                        className={`w-full text-left px-5 py-2.5 text-sm flex items-center transition-colors overflow-hidden ${
+                          selectedIndex === idx
+                            ? 'bg-orange-100 dark:bg-slate-600 text-orange-700 dark:text-orange-400'
+                            : 'text-slate-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-500'
+                        }`}
                       >
-                        <Search className="w-4 h-4 mr-3 text-slate-400 group-hover:text-orange-500 shrink-0" />
+                        <Search className={`w-4 h-4 mr-3 shrink-0 ${selectedIndex === idx ? 'text-orange-500' : 'text-slate-400 group-hover:text-orange-500'}`} />
                         <span className="truncate flex-1">{suggestion.text}</span>
                       </button>
                     </li>

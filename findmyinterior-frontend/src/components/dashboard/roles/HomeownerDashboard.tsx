@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -15,34 +16,13 @@ import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import Link from "next/link";
 
 import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
+import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 
 export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, logout, updateUser } = useAuthStore();
-  const coverFileRef = useRef<HTMLInputElement>(null);
-  const [uploadingCover, setUploadingCover] = useState(false);
 
-  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    setUploadingCover(true);
-    try {
-      const form = new FormData();
-      form.append("cover_image", file);
-      const res = await api.post("/user/cover", form);
-      if (user && res.data.cover_image) {
-        updateUser({ ...user, cover_image: res.data.cover_image });
-      }
-      fetchDashboard();
-    } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to upload cover image.");
-    } finally {
-      setUploadingCover(false);
-      if (e.target) e.target.value = "";
-    }
-  };
   
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabParam || "dashboard");
@@ -63,12 +43,12 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   const renderSidebarButton = (id: string, icon: React.ReactNode, label: string) => (
     <button 
       onClick={() => setActiveTab(id)}
-      className={`flex items-center p-3 md:p-4 border-b md:border-r-0 border-r dark:border-slate-800 text-left font-medium text-xs sm:text-sm md:text-base transition-colors w-full h-full ${activeTab === id ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-500' : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}
+      className={`flex items-center shrink-0 snap-start p-3 md:p-4 border-b md:border-b dark:border-slate-800 text-left font-medium text-sm md:text-base transition-colors md:w-full ${activeTab === id ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-500 border-b-2 border-b-orange-600 md:border-b-slate-100 md:dark:border-b-slate-800 md:border-l-4 md:border-l-orange-600' : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}
     >
       <div className={`mr-3 shrink-0 ${activeTab === id ? 'text-orange-600' : 'text-slate-400 dark:text-slate-500'}`}>
         {icon}
       </div>
-      {label}
+      <span className="whitespace-nowrap">{label}</span>
     </button>
   );
 
@@ -92,38 +72,14 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-              <Card className="overflow-hidden">
-                <div className="h-32 w-full bg-gradient-to-r from-orange-400 to-[#E8701A] relative group">
-                  {user?.cover_image && (
-                    <img src={user.cover_image} alt="Cover" className="w-full h-full object-cover" />
-                  )}
-                  <div className="absolute inset-0 bg-black/10"></div>
-                  <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
-                  <button
-                    onClick={() => coverFileRef.current?.click()}
-                    className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all shadow-md z-20 flex items-center gap-1 text-xs"
-                    disabled={uploadingCover}
-                    title="Upload Background Image"
-                  >
-                    {uploadingCover ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                    <span className="hidden sm:inline text-[11px] font-medium">{uploadingCover ? "Uploading..." : "Cover"}</span>
-                  </button>
-                </div>
-                <CardContent className="p-6 flex flex-col items-center text-center -mt-16 relative z-10">
-                  <div className="h-24 w-24 relative rounded-full overflow-hidden ring-4 ring-white dark:ring-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-3xl font-bold text-slate-400 dark:text-slate-500 shadow-md">
-                    <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                    {user?.avatar && (
-                      <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                    )}
-                  </div>
-                  <h3 className="font-bold text-xl">{user?.name}</h3>
-                  <Badge className="mt-2 capitalize mb-2 bg-orange-100 text-orange-700 hover:bg-orange-200 border-0" variant="secondary">Homeowner</Badge>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Managing projects and seeking professionals.</p>
-                </CardContent>
-              </Card>
+              <DashboardProfileCard
+                fetchDashboard={fetchDashboard}
+                roleLabel="Homeowner"
+                description="Managing projects and seeking professionals."
+              />
 
             <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
+              <div className="flex overflow-x-auto snap-x snap-mandatory md:flex-col w-full" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
                 {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
                 {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
                 {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Quotes")}
@@ -178,12 +134,18 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                       {((data?.projects || []).concat(data?.rfqs || []).concat(data?.jobs || [])).map((req: any) => (
                         <div key={req.id + (req.material_type ? '-rfq' : req.skill_required ? '-job' : '-proj')} className="flex flex-col md:flex-row justify-between p-4 border dark:border-slate-700 rounded-xl hover:shadow-md transition-shadow bg-white dark:bg-slate-800">
                             <div className="flex-1 mb-4 md:mb-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-semibold text-lg text-slate-900 dark:text-white">{req.title || req.material_type || req.skill_required}</h4>
-                                <Badge variant="outline" className="bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">{req.status}</Badge>
-                                {req.material_type && <Badge variant="secondary">Material RFQ</Badge>}
-                                {req.skill_required && <Badge variant="secondary">Worker Job</Badge>}
-                              </div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-semibold text-lg text-slate-900 dark:text-white">{req.title || req.material_type || req.skill_required}</h4>
+                                  <Badge variant="outline" className="bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">{req.status}</Badge>
+                                  {req.bids_count > 0 && (
+                                    <Badge variant="default" className="bg-orange-100 text-orange-700 hover:bg-orange-200 border-none flex items-center gap-1">
+                                      <Gavel className="w-3 h-3" />
+                                      {req.bids_count} Bid{req.bids_count !== 1 ? 's' : ''}
+                                    </Badge>
+                                  )}
+                                  {req.material_type && <Badge variant="secondary">Material RFQ</Badge>}
+                                  {req.skill_required && <Badge variant="secondary">Worker Job</Badge>}
+                                </div>
                               <div className="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-4">
                                 <span>{req.city}</span>
                                 <span>•</span>

@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export function ChatModal({ professionalId, professionalName, isOpen, onClose }: { professionalId: number, professionalName: string, isOpen: boolean, onClose: () => void }) {
   const [message, setMessage] = useState("");
@@ -50,9 +51,9 @@ export function ChatModal({ professionalId, professionalName, isOpen, onClose }:
     } catch (err: any) {
       console.error("Failed to send message", err);
       if (err.response?.status === 403) {
-        alert(err.response?.data?.message || "You are not authorized to send a message.");
+        toast.error(err.response?.data?.message || "You are not authorized to send a message.");
       } else {
-        alert("Failed to send message. Please try again.");
+        toast.error("Failed to send message. Please try again.");
       }
     } finally {
       setSending(false);

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
 import { 
@@ -41,18 +42,19 @@ export default function RequirementDetail() {
     return base + suffix;
   };
 
+  const fetchReq = async () => {
+    try {
+      const res = await api.get(getEndpoint(params.id as string));
+      setRequirement(res.data.data);
+      setIsUnlocked(res.data.data?.is_unlocked || false);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchReq = async () => {
-      try {
-        const res = await api.get(getEndpoint(params.id as string));
-        setRequirement(res.data.data);
-        setIsUnlocked(res.data.data?.is_unlocked || false);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchReq();
   }, [params.id, reqType]);
 
@@ -74,11 +76,16 @@ export default function RequirementDetail() {
   const handleAwardBid = async (bidId: number) => {
     try {
       await api.patch(`/bids/${bidId}/award`);
-      alert("Project awarded successfully!");
-      // Refresh the page
-      window.location.reload();
+      toast.success("Project awarded successfully!");
+      // Refresh the data without full page reload
+      fetchReq();
+      if (user?.id === requirement?.user_id || user?.role === 'admin') {
+        const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+        const bidsRes = await api.get(`/requirements/${params.id}/bids${typeStr}`);
+        setBids(bidsRes.data.data || bidsRes.data || []);
+      }
     } catch (e) {
-      alert("Failed to award project.");
+      toast.error("Failed to award project.");
     }
   };
 
@@ -86,10 +93,10 @@ export default function RequirementDetail() {
     try {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
       await api.post(`/requirements/${params.id}/invite-vendor${typeStr}`, { vendor_id: vendorId });
-      alert("Vendor invited successfully!");
+      toast.success("Vendor invited successfully!");
       setRecommendations(prev => prev.map(r => r.vendor_id === vendorId ? { ...r, invited_at: new Date().toISOString() } : r));
     } catch (e) {
-      alert("Failed to invite vendor.");
+      toast.error("Failed to invite vendor.");
     }
   };
 
@@ -103,17 +110,17 @@ export default function RequirementDetail() {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
       await api.post(`/requirements/${params.id}/unlock${typeStr}`);
       setIsUnlocked(true);
-      alert("Contact unlocked successfully!");
+      toast.success("Contact unlocked successfully!");
       setShowUnlockModal(false);
       // Refresh to get the actual contact details
       const res = await api.get(getEndpoint(params.id as string));
       setRequirement(res.data.data);
     } catch (err: any) {
       if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
-        alert("Insufficient wallet balance. Redirecting to wallet recharge...");
+        toast.error("Insufficient wallet balance. Redirecting to wallet recharge...");
         router.push("/dashboard?tab=wallet");
       } else {
-        alert(err.response?.data?.message || "Failed to unlock contact.");
+        toast.error(err.response?.data?.message || "Failed to unlock contact.");
       }
     } finally {
       setUnlockLoading(false);
@@ -484,7 +491,7 @@ export default function RequirementDetail() {
             </div>
 
             {/* Right Column (Actions) */}
-            <div className="space-y-4">
+            <div className="space-y-4 sticky top-24 h-fit">
               
               {/* Unlock Contact Block */}
               {!isOwner && (

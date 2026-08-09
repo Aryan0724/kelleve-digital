@@ -6,12 +6,21 @@ import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/componen
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CheckCircle, Crown, Loader2, X, CreditCard } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 
 
 
 export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [upgradePlan, setUpgradePlan] = useState<any>(null);
 
   useEffect(() => {
     fetchPlans();
@@ -28,8 +37,8 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
     }
   };
 
-  const handleUpgradeRequest = (planName: string) => {
-    window.location.href = `mailto:support@findmyinterior.com?subject=Upgrade request for ${planName} Plan`;
+  const handleUpgradeRequest = (plan: any) => {
+    setUpgradePlan(plan);
   };
 
   if (loading) return <div className="p-12 text-center text-slate-500">Loading plans...</div>;
@@ -80,17 +89,16 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
         {plans.map(plan => {
           const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase() || (currentPlan === '' && plan.slug === 'starter');
-          const isMostPopular = plan.slug === 'business';
+          const isMostPopular = plan.slug === 'professional';
           const price = plan.price_yearly;
           const monthlyPrice = plan.price_monthly;
 
           let strikePrice = null;
-          if (plan.slug === 'professional') strikePrice = "₹9,999";
-          if (plan.slug === 'business') strikePrice = "₹23,999";
-          if (plan.slug === 'premium') strikePrice = "₹49,999";
+          if (plan.slug === 'professional') strikePrice = "₹14,999";
+          if (plan.slug === 'premium') strikePrice = "₹34,999";
 
           return (
             <Card key={plan.id} className={`flex flex-col relative overflow-hidden transition-all ${isCurrent ? 'ring-2 ring-orange-500 scale-105 shadow-lg z-10' : 'hover:shadow-md border'} ${isMostPopular && !isCurrent ? 'border-orange-500 shadow-md md:-translate-y-2' : ''}`}>
@@ -145,7 +153,38 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
         })}
       </div>
 
-
+      <Dialog open={!!upgradePlan} onOpenChange={(open) => !open && setUpgradePlan(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Upgrade to {upgradePlan?.name}</DialogTitle>
+            <DialogDescription>
+              To upgrade your plan, please contact our support team. We will help you set up your account and activate your new features immediately.
+            </DialogDescription>
+          </DialogHeader>
+          
+          <div className="flex flex-col gap-4 py-4">
+            <div className="bg-slate-50 p-4 rounded-lg border flex flex-col items-center justify-center text-center">
+              <span className="text-sm font-medium text-slate-500 mb-1">Email us at</span>
+              <a href={`mailto:support@findmyinterior.com?subject=Upgrade request for ${upgradePlan?.name} Plan`} className="text-lg font-bold text-orange-600 hover:underline">
+                support@findmyinterior.com
+              </a>
+            </div>
+            
+            <div className="bg-slate-50 p-4 rounded-lg border flex flex-col items-center justify-center text-center">
+              <span className="text-sm font-medium text-slate-500 mb-1">Or call us directly</span>
+              <a href="tel:+919999999999" className="text-lg font-bold text-orange-600 hover:underline">
+                +91 99999 99999
+              </a>
+            </div>
+          </div>
+          
+          <DialogFooter className="sm:justify-start">
+            <Button type="button" variant="secondary" onClick={() => setUpgradePlan(null)} className="w-full">
+              Close
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

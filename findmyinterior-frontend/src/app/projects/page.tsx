@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import api from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -27,15 +28,15 @@ export default function ProjectsPage() {
     try {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
       await api.post(`/requirements/${id}/unlock${typeStr}`);
-      alert("Contact unlocked successfully!");
+      toast.success("Contact unlocked successfully!");
       router.push(`/requirements/${id}${typeStr}`);
     } catch (err: any) {
       console.error(err);
       if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
-        alert("Insufficient wallet balance. Redirecting to wallet recharge...");
+        toast.error("Insufficient wallet balance. Redirecting to wallet recharge...");
         router.push("/dashboard?tab=wallet");
       } else {
-        alert(err.response?.data?.message || "Failed to unlock contact.");
+        toast.error(err.response?.data?.message || "Failed to unlock contact.");
       }
     } finally {
       setUnlockingId(null);
@@ -401,14 +402,26 @@ export default function ProjectsPage() {
             );
           })
           ) : (
-            <div className="text-center py-20 bg-white rounded-xl border border-slate-200 shadow-sm">
+            <div className="text-center py-20 bg-white rounded-xl border border-slate-200 shadow-sm px-4">
               <div className="bg-slate-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Search className="w-8 h-8 text-slate-400" />
               </div>
               <h3 className="text-xl font-extrabold text-slate-800 mb-2">No projects found</h3>
-              <p className="text-slate-500 max-w-sm mx-auto text-sm font-medium">
-                There are currently no open projects matching your criteria. Try adjusting your filters.
+              <p className="text-slate-500 max-w-sm mx-auto text-sm font-medium mb-6">
+                There are currently no open projects matching your criteria. Try adjusting your filters or post your own requirement to get quotes.
               </p>
+              <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+                <Link href="/projects">
+                  <Button variant="outline" className="w-full sm:w-auto border-slate-300 text-slate-700 font-semibold shadow-sm">
+                    Clear Filters
+                  </Button>
+                </Link>
+                <Link href="/post-requirement">
+                  <Button className="w-full sm:w-auto bg-[#E8701A] hover:bg-[#c25a12] text-white font-bold shadow-md">
+                    Post a Requirement
+                  </Button>
+                </Link>
+              </div>
             </div>
           )}
 

@@ -24,6 +24,8 @@ type User = {
 interface AuthState {
   user: User | null;
   token: string | null;
+  activeVenture: any | null;
+  setActiveVenture: (venture: any | null) => void;
   _hasHydrated: boolean;
   setHasHydrated: (state: boolean) => void;
   setAuth: (user: User, token: string) => void;
@@ -36,6 +38,8 @@ export const useAuthStore = create<AuthState>()(
     (set) => ({
       user: null,
       token: null,
+      activeVenture: null,
+      setActiveVenture: (venture) => set({ activeVenture: venture }),
       _hasHydrated: false,
       setHasHydrated: (state) => set({ _hasHydrated: state }),
       setAuth: (user, token) => {
@@ -49,7 +53,7 @@ export const useAuthStore = create<AuthState>()(
         if (typeof window !== 'undefined') {
           localStorage.removeItem('auth_token');
         }
-        set({ user: null, token: null });
+        set({ user: null, token: null, activeVenture: null });
       },
     }),
     {

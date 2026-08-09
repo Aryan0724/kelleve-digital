@@ -14,6 +14,7 @@ import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
+import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirementsTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
@@ -68,18 +69,10 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
-                  <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                  {user?.avatar && (
-                    <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                  )}
-                </div>
-                <h3 className="font-bold text-lg">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="default">Skilled Worker</Badge>
-              </CardContent>
-            </Card>
+            <DashboardProfileCard
+              fetchDashboard={fetchDashboard}
+              roleLabel="Skilled Worker"
+            />
 
             <div className="bg-white border rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">

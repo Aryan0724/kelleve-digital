@@ -52,16 +52,36 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-20 flex justify-center items-center min-h-[70vh]">
-      <Card className="w-full max-w-md">
-        <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription>
-            Enter your email and password to login to your account.
-          </CardDescription>
-        </CardHeader>
-        <form onSubmit={handleLogin}>
-          <CardContent className="space-y-4">
+    <div className="flex min-h-[calc(100vh-80px)] bg-slate-50 dark:bg-slate-950">
+      {/* Left Side: Brand Image (Hidden on Mobile) */}
+      <div className="hidden lg:flex lg:w-1/2 relative bg-slate-900 overflow-hidden">
+        <img 
+          src="https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?auto=format&fit=crop&q=80" 
+          alt="Luxury Interior Design" 
+          className="absolute inset-0 w-full h-full object-cover opacity-70"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+        <div className="absolute bottom-12 left-12 right-12 text-white">
+          <h2 className="text-4xl font-bold mb-4 leading-tight">Crafting spaces that inspire.</h2>
+          <p className="text-lg text-slate-300 max-w-lg">
+            Log in to manage your ventures, connect with clients, and explore the best interior professionals.
+          </p>
+        </div>
+      </div>
+
+      {/* Right Side: Login Form */}
+      <div className="flex-1 flex flex-col justify-center items-center p-6 sm:p-12">
+        <div className="w-full max-w-md space-y-8">
+          <div className="text-center">
+            <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Welcome back</h1>
+            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2">
+              Enter your credentials to access your account
+            </p>
+          </div>
+
+          <Card className="border-0 shadow-none sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-xl bg-transparent sm:bg-white sm:dark:bg-slate-900">
+            <form onSubmit={handleLogin}>
+              <CardContent className="space-y-5 pt-6">
             {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md">{error}</div>}
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -99,20 +119,22 @@ export default function LoginPage() {
                 </button>
               </div>
             </div>
-          </CardContent>
-          <CardFooter className="flex flex-col space-y-4">
-            <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700" disabled={loading}>
-              {loading ? "Logging in..." : "Login"}
-            </Button>
-            <div className="text-center text-sm text-slate-500">
-              Don't have an account?{" "}
-              <Link href="/register" className="font-semibold text-orange-600 hover:text-orange-500">
-                Register here
-              </Link>
-            </div>
-          </CardFooter>
-        </form>
-      </Card>
+              </CardContent>
+              <CardFooter className="flex flex-col space-y-5 pb-6">
+                <Button type="submit" className="w-full bg-orange-600 hover:bg-orange-700 text-white shadow-lg h-11" disabled={loading}>
+                  {loading ? "Logging in..." : "Login to account"}
+                </Button>
+                <div className="text-center text-sm text-slate-500 dark:text-slate-400">
+                  Don't have an account?{" "}
+                  <Link href="/register" className="font-semibold text-orange-600 hover:text-orange-500 transition-colors">
+                    Create one now
+                  </Link>
+                </div>
+              </CardFooter>
+            </form>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

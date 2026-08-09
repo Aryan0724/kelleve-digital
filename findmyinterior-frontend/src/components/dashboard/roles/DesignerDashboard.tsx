@@ -22,6 +22,7 @@ import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
 import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
+import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 
 export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -78,45 +79,36 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 dark:ring-orange-900/30 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 dark:text-slate-500 shadow">
-                  <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                  {user?.avatar && (
-                    <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                  )}
-                </div>
-                <h3 className="font-bold text-lg dark:text-white">{user?.name}</h3>
-                <div className="flex flex-col items-center gap-1 mt-2 mb-4">
-                  <Badge className="capitalize" variant="default">
-                    {user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || "Professional"}
-                  </Badge>
+            <DashboardProfileCard
+              fetchDashboard={fetchDashboard}
+              roleLabel={user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || "Professional"}
+              extraContent={
+                <>
                   {((user as any)?.is_verified || data?.user?.is_verified) && (
-                    <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center gap-1 text-xs">
+                    <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center justify-center gap-1 text-xs mb-4">
                       <ShieldCheck className="w-3.5 h-3.5" /> Verified Professional
                     </Badge>
                   )}
-                </div>
-                
-                <div className="w-full space-y-2 mt-2">
-                  <div className="w-full bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-orange-600 dark:text-orange-500 font-medium">Subscription</div>
-                      <div className="font-bold text-slate-900 dark:text-white">{data?.user?.subscription || "Free Plan"}</div>
+                  <div className="w-full space-y-2 mt-2">
+                    <div className="w-full bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 rounded-lg p-3 text-left flex justify-between items-center">
+                      <div>
+                        <div className="text-xs text-orange-600 dark:text-orange-500 font-medium">Subscription</div>
+                        <div className="font-bold text-slate-900 dark:text-white">{data?.user?.subscription || "Free Plan"}</div>
+                      </div>
+                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-slate-700" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
                     </div>
-                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-slate-700" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
-                  </div>
-                  
-                  <div className="w-full bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-green-700 dark:text-green-500 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
-                      <div className="font-bold text-slate-900 dark:text-white">₹{data?.user?.wallet_balance || 0}</div>
+                    
+                    <div className="w-full bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50 rounded-lg p-3 text-left flex justify-between items-center">
+                      <div>
+                        <div className="text-xs text-green-700 dark:text-green-500 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
+                        <div className="font-bold text-slate-900 dark:text-white">₹{data?.user?.wallet_balance || 0}</div>
+                      </div>
+                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-green-700 dark:text-green-500 border-green-200 dark:border-slate-700" onClick={() => setActiveTab("wallet")}>Add</Button>
                     </div>
-                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-green-700 dark:text-green-500 border-green-200 dark:border-slate-700" onClick={() => setActiveTab("wallet")}>Add</Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </>
+              }
+            />
 
             <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
