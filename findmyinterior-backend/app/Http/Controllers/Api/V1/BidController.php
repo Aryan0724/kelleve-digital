@@ -64,7 +64,9 @@ class BidController extends Controller
         $validated['requirement_type_class'] = $modelClass;
 
         // Attempt to auto-fill business details from the user's listing
-        $listing = \App\Models\Listing::where('user_id', $request->user()->id)->first();
+        $listing = \App\Models\Listing::where('user_id', $request->user()->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->first();
         
         $validated['company_name'] = $listing ? $listing->title : $request->user()->name;
         $validated['contact_person'] = $request->user()->name;

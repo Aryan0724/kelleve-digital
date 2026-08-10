@@ -368,7 +368,7 @@ export default function RegisterPage() {
             </p>
           </div>
 
-          <Card className="relative z-20 border-0 shadow-none sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-xl bg-transparent sm:bg-white sm:dark:bg-slate-900">
+          <Card className="relative z-20 border-0 shadow-none sm:border sm:border-slate-200 sm:dark:border-slate-800 sm:shadow-xl bg-transparent sm:bg-white sm:dark:bg-slate-900 overflow-visible">
             <CardHeader className="pb-2 px-6 sm:px-6">
             <CardTitle className="text-xl font-bold text-slate-900 dark:text-white">Join the Platform</CardTitle>
             <CardDescription className="dark:text-slate-400">

@@ -47,15 +47,16 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   const rawRoles = user?.roles || (user?.role ? [user.role] : []);
   const roleSlugs = rawRoles.map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
+  const categorySlugs = user?.categories?.map(c => c.toLowerCase()) || [];
 
   const hasAdminRole = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
   
-  const isRealEstate = roleSlugs.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
-  const isService = roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
-  const isMedical = roleSlugs.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
-  const isRestaurant = roleSlugs.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
+  const isRealEstate = categorySlugs.some(c => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(c)) || roleSlugs.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
+  const isService = categorySlugs.some(c => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(c)) || roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
+  const isMedical = categorySlugs.some(c => ['doctor', 'hospital', 'clinic', 'dentist'].includes(c)) || roleSlugs.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
+  const isRestaurant = categorySlugs.some(c => ['restaurant', 'cafe', 'bakery', 'food'].includes(c)) || roleSlugs.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
   
-  const hasVendorRole = roleSlugs.includes('business') || isRealEstate || isService || isMedical || isRestaurant;
+  const hasVendorRole = roleSlugs.includes('business') || isRealEstate || isService || isMedical || isRestaurant || categorySlugs.length > 0;
 
   let links: any[] = [];
 
@@ -178,7 +179,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Topbar */}
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0 z-30 relative">
           <div className="flex items-center gap-4">
-            <h2 className="font-semibold text-foreground">Business Dashboard</h2>
+            <h2 className="font-semibold text-foreground">{user?.name ? `${user.name} Dashboard` : hasAdminRole ? 'Admin Console' : hasVendorRole ? 'Business Dashboard' : 'User Dashboard'}</h2>
             <Link 
               href="/" 
               className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-full border border-primary/20"

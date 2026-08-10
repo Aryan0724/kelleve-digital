@@ -80,7 +80,13 @@ class ProfessionalProfileController extends Controller
             $type = $this->getProfileType($role);
 
             if ($type === 'listing') {
-                $profile = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
+                $query = Listing::where('user_id', $user->id)->with(['category', 'gallery']);
+                try {
+                    if ($tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId()) {
+                        $query->where('tenant_id', $tenantId);
+                    }
+                } catch (\Throwable $e) {}
+                $profile = $query->first();
             } elseif ($type === 'worker') {
                 $profile = Worker::where('user_id', $user->id)->first();
             } elseif ($type === 'supplier') {
@@ -140,18 +146,19 @@ class ProfessionalProfileController extends Controller
                 'social_links'     => ['nullable', 'array'],
             ]);
 
-            $profile = Listing::firstOrNew(['user_id' => $user->id]);
+            $queryAttr = ['user_id' => $user->id];
+            try {
+                if ($tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId()) {
+                    $queryAttr['tenant_id'] = $tenantId;
+                }
+            } catch (\Throwable $e) {}
+            
+            $profile = Listing::firstOrNew($queryAttr);
             $profile->fill($data);
             if (!$profile->exists) {
                 $profile->slug = Str::slug($data['title']) . '-' . Str::random(6);
                 $profile->state = 'Bihar';
                 $profile->status = 'active';
-                // Set tenant_id so listing appears in public browse
-                try {
-                    $profile->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
-                } catch (\Throwable $e) {
-                    // If tenant context unavailable, leave null; scopeForCurrentTenant will handle
-                }
                 if (empty($profile->category_id)) {
                     $categorySlug = match (true) {
                         in_array($role, ['architect', 'structural_engineer', 'civil_engineer']) => 'architects',
@@ -250,7 +257,14 @@ class ProfessionalProfileController extends Controller
             $type = 'builder';
 
             // Sync to Listing for search visibility
-            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listingQueryAttr = ['user_id' => $user->id];
+            try {
+                if ($tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId()) {
+                    $listingQueryAttr['tenant_id'] = $tenantId;
+                }
+            } catch (\Throwable $e) {}
+            
+            $listing = Listing::firstOrNew($listingQueryAttr);
             $listing->title = $data['company_name'] ?? $user->name;
             $listing->description = $data['tagline'] ?? '';
             $listing->phone = $data['phone'] ?? null;

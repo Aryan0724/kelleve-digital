@@ -18,7 +18,8 @@ class AnalyticsController extends Controller
         $listingId = $request->get('listing_id');
 
         // Verify ownership
-        $query = Listing::where('user_id', $user->id);
+        $query = Listing::where('user_id', $user->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid));
         if ($listingId) {
             $query->where('id', $listingId);
         }
@@ -73,7 +74,8 @@ class AnalyticsController extends Controller
         $listingId = $request->get('listing_id');
 
         // Verify ownership
-        $query = Listing::where('user_id', $user->id);
+        $query = Listing::where('user_id', $user->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid));
         if ($listingId) {
             $query->where('id', $listingId);
         }

@@ -77,7 +77,14 @@ class User extends Authenticatable
 
     public function listing(): HasOne
     {
-        return $this->hasOne(Listing::class);
+        $relation = $this->hasOne(Listing::class);
+        try {
+            $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
+            if ($tenantId) {
+                $relation->where('tenant_id', $tenantId);
+            }
+        } catch (\Throwable $e) {}
+        return $relation;
     }
 
     public function listings(): HasMany

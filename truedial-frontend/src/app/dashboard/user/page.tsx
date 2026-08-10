@@ -260,6 +260,58 @@ export default function UserDashboard() {
         </div>
       </div>
 
+      {/* RECENT ACTIVITY & PERSONALIZED RECOMMENDATIONS */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 pt-4">
+        <div className="premium-card p-6 rounded-2xl">
+          <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
+            <MapPin className="w-5 h-5 text-primary" /> Recent Searches
+          </h3>
+          <div className="space-y-4">
+            {["Interior Designers in Mumbai", "Modular Kitchen Experts", "Architects near me"].map((search, i) => (
+              <div key={i} className="flex justify-between items-center p-3 rounded-lg hover:bg-muted transition cursor-pointer">
+                <span className="text-sm font-medium text-foreground">{search}</span>
+                <Link href={`/search?q=${encodeURIComponent(search)}`}>
+                  <ArrowRight className="w-4 h-4 text-muted-foreground hover:text-primary transition" />
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div className="premium-card p-6 rounded-2xl bg-gradient-to-br from-orange-50 to-amber-50 dark:from-slate-900 dark:to-orange-950/20 border-orange-200 dark:border-orange-900/30">
+          <h3 className="font-bold text-lg text-foreground mb-4 flex items-center gap-2">
+            <Building2 className="w-5 h-5 text-amber-500" /> Recommended For You
+          </h3>
+          <div className="space-y-4">
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-border flex gap-4 items-center">
+              <div className="w-12 h-12 rounded-lg bg-orange-100 flex items-center justify-center shrink-0">
+                <Sparkles className="w-6 h-6 text-orange-600" />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm text-foreground">Top Rated Interior Studios</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">Based on your recent searches</p>
+                <Link href="/search?category=Interior+Designers" className="text-xs text-primary font-bold mt-2 inline-block hover:underline">
+                  View 15+ Studios
+                </Link>
+              </div>
+            </div>
+            
+            <div className="bg-white dark:bg-slate-800 p-4 rounded-xl border border-border flex gap-4 items-center">
+              <div className="w-12 h-12 rounded-lg bg-emerald-100 flex items-center justify-center shrink-0">
+                <Gift className="w-6 h-6 text-emerald-600" />
+              </div>
+              <div>
+                <h4 className="font-bold text-sm text-foreground">Exclusive VIP Offer</h4>
+                <p className="text-xs text-muted-foreground mt-0.5">25% OFF at DesignSpace Furniture</p>
+                <Link href="/offers" className="text-xs text-emerald-600 font-bold mt-2 inline-block hover:underline">
+                  Claim Offer
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* QUICK ACTIONS FOOTER */}
       <div className="flex flex-col sm:flex-row justify-between items-center gap-4 pt-2">
         <Link href="/offers">

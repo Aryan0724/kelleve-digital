@@ -108,7 +108,9 @@ class ProfileController extends Controller
 
         // If user has a listing, update city/district/address there too
         if (isset($data['city']) || isset($data['district']) || isset($data['address'])) {
-            $listing = Listing::where('user_id', $user->id)->first();
+            $listing = Listing::where('user_id', $user->id)
+                ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+                ->first();
             if ($listing) {
                 $listing->update(array_filter([
                     'city'     => $data['city'] ?? null,
@@ -167,6 +169,7 @@ class ProfileController extends Controller
     public function listings(Request $request): JsonResponse
     {
         $listings = Listing::where('user_id', $request->user()->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
             ->with(['category', 'gallery'])
             ->latest()
             ->get();
@@ -187,7 +190,9 @@ class ProfileController extends Controller
         // Check plan listing limit
         $activePlan = $user->activeSubscription?->plan;
         $maxListings = $activePlan?->max_listings ?? 1;
-        $currentCount = Listing::where('user_id', $user->id)->where('status', 'active')->count();
+        $currentCount = Listing::where('user_id', $user->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->where('status', 'active')->count();
 
         if ($currentCount >= $maxListings) {
             return response()->json([
@@ -244,7 +249,9 @@ class ProfileController extends Controller
      */
     public function updateListing(Request $request, int $id): JsonResponse
     {
-        $listing = Listing::where('user_id', $request->user()->id)->findOrFail($id);
+        $listing = Listing::where('user_id', $request->user()->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->findOrFail($id);
 
         $data = $request->validate([
             'title'            => ['sometimes', 'string', 'max:255'],
@@ -289,7 +296,9 @@ class ProfileController extends Controller
      */
     public function uploadListingCover(Request $request, int $id): JsonResponse
     {
-        $listing = Listing::where('user_id', $request->user()->id)->findOrFail($id);
+        $listing = Listing::where('user_id', $request->user()->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->findOrFail($id);
 
         $request->validate([
             'cover_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
@@ -315,7 +324,9 @@ class ProfileController extends Controller
      */
     public function addGalleryImages(Request $request, int $id): JsonResponse
     {
-        $listing = Listing::where('user_id', $request->user()->id)->findOrFail($id);
+        $listing = Listing::where('user_id', $request->user()->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->findOrFail($id);
 
         // Check gallery image limit
         $maxImages = $request->user()->activeSubscription?->plan?->max_gallery_images ?? 5;
@@ -370,7 +381,9 @@ class ProfileController extends Controller
             'is_before_after' => 'nullable|boolean'
         ]);
 
-        $listing = Listing::where('user_id', $request->user()->id)->findOrFail($id);
+        $listing = Listing::where('user_id', $request->user()->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->findOrFail($id);
         $image = ListingGallery::where('listing_id', $listing->id)->findOrFail($imageId);
         
         $image->caption = $request->caption;
@@ -387,7 +400,9 @@ class ProfileController extends Controller
      */
     public function deleteGalleryImage(Request $request, int $id, int $imageId): JsonResponse
     {
-        $listing = Listing::where('user_id', $request->user()->id)->findOrFail($id);
+        $listing = Listing::where('user_id', $request->user()->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->findOrFail($id);
         $image = ListingGallery::where('listing_id', $listing->id)->findOrFail($imageId);
         $image->delete();
 

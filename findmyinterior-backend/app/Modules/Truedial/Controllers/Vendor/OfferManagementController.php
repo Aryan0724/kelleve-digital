@@ -14,7 +14,9 @@ class OfferManagementController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $listingIds = Listing::where('user_id', $user->id)->pluck('id');
+        $listingIds = Listing::where('user_id', $user->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->pluck('id');
 
         $offers = Offer::with(['media', 'listing'])
             ->whereIn('listing_id', $listingIds)

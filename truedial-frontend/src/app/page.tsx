@@ -16,6 +16,7 @@ import HomeSearchBar from "@/components/home/HomeSearchBar";
 import HomeLocationBanner from "@/components/home/HomeLocationBanner";
 import LiveBusinessesGrid from "@/components/home/LiveBusinessesGrid";
 import PlatformPulseCounter from "@/components/home/PlatformPulseCounter";
+import PersonalizedHomeFeed from "@/components/home/PersonalizedHomeFeed";
 
 import { TrueDialAPI } from "@/lib/api";
 
@@ -31,6 +32,7 @@ export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#f8fafc] dark:bg-slate-950 text-navy dark:text-white transition-colors duration-300">
       <Navbar />
+      <PersonalizedHomeFeed />
 
       {/* 1. HERO SECTION WITH LOCATION BANNER & TRENDING PILLS */}
       <section className="bg-gradient-to-br from-blue-50/80 via-orange-50/60 to-white dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 py-16 px-6 md:px-12 flex flex-col items-center justify-center relative overflow-hidden border-b border-gray-200/60 dark:border-slate-800">

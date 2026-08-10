@@ -35,6 +35,7 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         // Route::get('/jobs', [\App\Modules\Truedial\Controllers\Public\JobBoardController::class, 'index']);
         // Route::get('/news', [\App\Modules\Truedial\Controllers\Public\NewsController::class, 'index']);
         
+        Route::get('/requirements', [\App\Modules\Truedial\Controllers\Public\RequirementsController::class, 'sharedFeed']);
         Route::post('/consulting/lead', [\App\Modules\Truedial\Controllers\Public\ConsultingController::class, 'submitLead']);
     });
     
@@ -75,8 +76,12 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::get('/analytics/chart', [\App\Modules\Truedial\Controllers\Vendor\AnalyticsController::class, 'chart']);
         
         // Invoices & Payments
-        Route::get('/invoices', [\App\Modules\Truedial\Controllers\Vendor\InvoiceController::class, 'index']);
-        Route::post('/invoices', [\App\Modules\Truedial\Controllers\Vendor\InvoiceController::class, 'store']);
+        Route::get('/businesses/me/staff', [\App\Modules\Truedial\Controllers\Vendor\StaffController::class, 'index']);
+        Route::post('/businesses/me/staff', [\App\Modules\Truedial\Controllers\Vendor\StaffController::class, 'store']);
+        
+        // Marketing
+        Route::get('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingController::class, 'index']);
+        Route::post('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingController::class, 'store']);
         
         Route::post('/payments/order', [\App\Modules\Truedial\Controllers\Vendor\PaymentController::class, 'createOrder']);
         Route::post('/payments/verify', [\App\Modules\Truedial\Controllers\Vendor\PaymentController::class, 'verifyPayment']);
@@ -94,6 +99,7 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
     Route::prefix('user')->middleware(['auth:sanctum'])->group(function () {
         Route::post('/businesses/{slug}/reviews', [\App\Modules\Truedial\Controllers\User\ReviewController::class, 'store']);
         Route::put('/reviews/{id}/helpful', [\App\Modules\Truedial\Controllers\User\ReviewController::class, 'voteHelpful']);
+        Route::put('/categories', [\App\Modules\Truedial\Controllers\User\CategoryController::class, 'updateCategories']);
     });
     
     // Admin routes

@@ -10,6 +10,7 @@ export interface AuthUser {
   avatar: string | null;
   role: string;
   roles?: string[];
+  categories?: string[];
   verification_level?: string;
   is_active?: boolean;
 }

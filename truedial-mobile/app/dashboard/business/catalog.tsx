@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import {
   Text, View, ScrollView, TouchableOpacity,
-  TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Modal
+  TextInput, ActivityIndicator, Alert, KeyboardAvoidingView, Platform, Modal, Image
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import api from '../../../services/api';
-import { ArrowLeft, Plus, Trash2, Edit2, Package, Save, X } from 'lucide-react-native';
+import * as ImagePicker from 'expo-image-picker';
+import { ArrowLeft, Plus, Trash2, Edit2, Package, Save, X, Camera } from 'lucide-react-native';
 
 export default function CatalogScreen() {
   const router = useRouter();
@@ -15,7 +16,8 @@ export default function CatalogScreen() {
   
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingItem, setEditingItem] = useState<any>(null);
-  const [form, setForm] = useState({ name: '', price: '', description: '', category: '' });
+  const [form, setForm] = useState({ name: '', price: '', description: '', category: '', imageUri: '' });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     fetchCatalog();
@@ -42,7 +44,18 @@ export default function CatalogScreen() {
       return;
     }
     
-    const newItem = { id: editingItem?.id || Date.now(), ...form };
+    // We would normally upload the image here, but for now we'll just save the local URI or uploaded URL
+    let imageUrl = form.imageUri;
+    
+    if (form.imageUri && !form.imageUri.startsWith('http')) {
+      // Logic to upload image to /truedial/vendor/media would go here
+      // const formData = new FormData();
+      // formData.append('image', { uri: form.imageUri, name: 'photo.jpg', type: 'image/jpeg' } as any);
+      // const uploadRes = await api.post('/truedial/vendor/media', formData, { headers: { 'Content-Type': 'multipart/form-data' }});
+      // imageUrl = uploadRes.data.url;
+    }
+    
+    const newItem = { id: editingItem?.id || Date.now(), ...form, image: imageUrl };
     let newItems = [];
     if (editingItem) {
       newItems = items.map(i => i.id === editingItem.id ? newItem : i);
@@ -60,6 +73,19 @@ export default function CatalogScreen() {
     }
   };
 
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [4, 3],
+      quality: 0.8,
+    });
+
+    if (!result.canceled && result.assets[0].uri) {
+      setForm({ ...form, imageUri: result.assets[0].uri });
+    }
+  };
+
   const handleDelete = async (id: number) => {
     const newItems = items.filter(i => i.id !== id);
     setItems(newItems);
@@ -73,13 +99,13 @@ export default function CatalogScreen() {
 
   const openAdd = () => {
     setEditingItem(null);
-    setForm({ name: '', price: '', description: '', category: '' });
+    setForm({ name: '', price: '', description: '', category: '', imageUri: '' });
     setIsModalOpen(true);
   };
 
   const openEdit = (item: any) => {
     setEditingItem(item);
-    setForm({ name: item.name, price: String(item.price), description: item.description || '', category: item.category || '' });
+    setForm({ name: item.name, price: String(item.price), description: item.description || '', category: item.category || '', imageUri: item.image || '' });
     setIsModalOpen(true);
   };
 
@@ -145,6 +171,19 @@ export default function CatalogScreen() {
               </Text>
               <TouchableOpacity onPress={() => setIsModalOpen(false)} className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center">
                 <X size={18} color="#64748B" className="dark:text-slate-400" />
+              </TouchableOpacity>
+            </View>
+            
+            <View className="mb-4 flex-row justify-center">
+              <TouchableOpacity onPress={pickImage} className="w-24 h-24 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 items-center justify-center overflow-hidden">
+                {form.imageUri ? (
+                  <Image source={{ uri: form.imageUri }} className="w-full h-full" />
+                ) : (
+                  <>
+                    <Camera size={24} color="#94A3B8" />
+                    <Text className="text-[10px] text-slate-400 font-bold mt-1 uppercase">Add Photo</Text>
+                  </>
+                )}
               </TouchableOpacity>
             </View>
             

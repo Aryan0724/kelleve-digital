@@ -186,7 +186,8 @@ class PaymentController extends Controller
         );
 
         // Update all active listings of the user to reflect subscription status
-        Listing::where('user_id', $payment->user_id)->update([
+        Listing::where('user_id', $payment->user_id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))->update([
             'subscription_plan' => $plan->name,
             'subscription_status' => 'active',
             'premium_until' => $expiresAt,

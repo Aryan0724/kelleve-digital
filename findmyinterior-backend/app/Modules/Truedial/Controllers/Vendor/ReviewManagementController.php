@@ -15,7 +15,9 @@ class ReviewManagementController extends Controller
     public function index(Request $request)
     {
         $user = auth()->user();
-        $listingIds = Listing::where('user_id', $user->id)->pluck('id');
+        $listingIds = Listing::where('user_id', $user->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->pluck('id');
 
         $reviews = Review::with(['user:id,name', 'listing:id,title', 'media', 'replies'])
             ->whereIn('listing_id', $listingIds)
