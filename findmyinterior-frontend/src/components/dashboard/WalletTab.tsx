@@ -147,7 +147,7 @@ export function WalletTab() {
                 <Input
                   type="number"
                   min="100"
-                  step="100"
+                  step="1"
                   placeholder="500"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}

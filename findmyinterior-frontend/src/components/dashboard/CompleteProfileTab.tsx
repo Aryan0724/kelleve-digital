@@ -944,74 +944,20 @@ export function CompleteProfileTab() {
                 <CardDescription>Upload official documents to get the Verified Badge.</CardDescription>
               </CardHeader>
               <CardContent>
-                {!isProfileComplete && (
+                {!isProfileComplete ? (
                   <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-50/50 rounded-lg backdrop-blur-[1px]">
                     <div className="bg-white px-6 py-3 rounded-full shadow border flex items-center text-slate-500 font-medium">
                       <Lock className="w-4 h-4 mr-2" /> Complete Step 1 First
                     </div>
                   </div>
+                ) : (
+                  <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h4 className="font-semibold text-indigo-900 flex items-center"><ShieldCheck className="w-4 h-4 mr-2" /> Ready for Verification</h4>
+                      <p className="text-sm text-indigo-800 mt-1">Please head over to the <strong>Verification</strong> section from your sidebar menu to upload your official documents and get verified.</p>
+                    </div>
+                  </div>
                 )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {requiredDocs.map(doc => {
-                    const currentDoc = getDocStatus(doc.id);
-                    return (
-                      <div key={doc.id} className={`border rounded-lg p-4 flex flex-col justify-between ${currentDoc?.status === 'approved' ? 'bg-green-50/50 border-green-200' : ''}`}>
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h4 className="font-semibold text-slate-900">{doc.label}</h4>
-                          </div>
-                          {currentDoc?.status === "approved" && <CheckCircle2 className="h-6 w-6 text-green-500" />}
-                          {currentDoc?.status === "pending" && <AlertCircle className="h-6 w-6 text-yellow-500" />}
-                          {currentDoc?.status === "rejected" && <XCircle className="h-6 w-6 text-red-500" />}
-                          {!currentDoc && <ShieldAlert className="h-6 w-6 text-slate-300" />}
-                        </div>
-
-                        {currentDoc?.status === "rejected" && (
-                          <div className="bg-red-50 text-red-700 p-2 text-xs rounded-md mb-3 border border-red-100">
-                            <strong>Rejected:</strong> {currentDoc.rejection_reason}
-                          </div>
-                        )}
-
-                        <div className="mt-auto">
-                          {currentDoc?.status === "approved" ? (
-                            <div className="text-sm text-green-600 font-medium flex items-center">
-                              <CheckCircle2 className="h-4 w-4 mr-1" /> Document Verified
-                            </div>
-                          ) : (
-                            <div className="relative flex gap-2">
-                              <div className="relative flex-1">
-                                <input
-                                  type="file" accept=".pdf,.jpg,.jpeg,.png"
-                                  onChange={(e) => handleDocUpload(e, doc.id)}
-                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
-                                  disabled={uploadingDoc === doc.id || currentDoc?.status === 'pending'}
-                                />
-                                <Button variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
-                                  className={`w-full ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
-                                  disabled={uploadingDoc === doc.id || currentDoc?.status === 'pending'}>
-                                  {uploadingDoc === doc.id ? "Uploading..." : currentDoc?.status === 'pending' ? "Pending Review" : <><UploadCloud className="h-4 w-4 mr-2" /> Upload</>}
-                                </Button>
-                              </div>
-                              {(currentDoc?.status === 'pending' || currentDoc?.status === 'rejected') && (
-                                <Button 
-                                  variant="outline" 
-                                  size="icon" 
-                                  onClick={() => handleDocDelete(currentDoc.id)}
-                                  disabled={uploadingDoc === doc.id}
-                                  className="text-red-500 border-red-200 hover:bg-red-50 shrink-0"
-                                  title="Remove Document"
-                                >
-                                  <XCircle className="h-4 w-4 mr-1" /> Undo
-                                </Button>
-                              )}
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
               </CardContent>
             </Card>
           </div>
