@@ -35,6 +35,16 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
     }
   }, [tabParam]);
 
+  useEffect(() => {
+    // Auto-scroll to content area on mobile when tab changes
+    if (window.innerWidth < 1024) {
+      const contentArea = document.getElementById('dashboard-content-area');
+      if (contentArea) {
+        window.scrollTo({ top: contentArea.offsetTop - 80, behavior: 'smooth' });
+      }
+    }
+  }, [activeTab]);
+
   const handleLogout = async () => {
     await handleLogoutAction();
     router.push("/login");
@@ -114,7 +124,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
             </div>
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
+          <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
             {activeTab === 'projects' && (
               <Card>
                 <CardHeader className="flex flex-row justify-between items-center">
@@ -238,6 +248,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
     </div>
   );
 }
+
 
 
 

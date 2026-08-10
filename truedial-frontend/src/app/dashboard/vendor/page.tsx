@@ -10,6 +10,8 @@ import MedicalWidget from "@/components/dashboard/vendor/MedicalWidget";
 import RestaurantWidget from "@/components/dashboard/vendor/RestaurantWidget";
 import RealEstateWidget from "@/components/dashboard/vendor/RealEstateWidget";
 import ServiceWidget from "@/components/dashboard/vendor/ServiceWidget";
+import B2BCrossSellWidget from "@/components/dashboard/vendor/B2BCrossSellWidget";
+import VIPCardScannerWidget from "@/components/dashboard/vendor/VIPCardScannerWidget";
 
 export default function VendorDashboard() {
   const { user } = useAuth();
@@ -58,6 +60,11 @@ export default function VendorDashboard() {
   const isService = categorySlugs.some(c => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(c)) || roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
   const isMedical = categorySlugs.some(c => ['doctor', 'hospital', 'clinic', 'dentist'].includes(c)) || roleSlugs.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
   const isRestaurant = categorySlugs.some(c => ['restaurant', 'cafe', 'bakery', 'food'].includes(c)) || roleSlugs.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
+
+  const primaryCategory = isRealEstate ? "real_estate" : isRestaurant ? "restaurant" : isMedical ? "medical" : "service";
+  
+  // Reactionary Logic States
+  const hasZeroLeads = displayStats.leadsGenerated === 0;
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -132,57 +139,85 @@ export default function VendorDashboard() {
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-6">
-        {/* Recent Leads */}
-        <div className="lg:col-span-2 premium-card rounded-xl overflow-hidden">
-          <div className="p-6 border-b border-border flex justify-between items-center">
-            <h3 className="font-bold text-navy dark:text-white">Recent Activity</h3>
-            <Link href="/dashboard/vendor/crm" className="text-sm text-primary font-medium hover:underline">View CRM</Link>
-          </div>
-          <div className="divide-y divide-border">
-            {[1, 2, 3].map((lead) => (
-              <div key={lead} className="p-4 px-6 flex justify-between items-center hover:bg-muted/50 transition cursor-pointer">
-                <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">L</div>
-                  <div>
-                    <h4 className="text-sm font-bold text-foreground">New Lead Inquiry</h4>
-                    <p className="text-xs text-muted-foreground">Received a new message from profile.</p>
-                  </div>
+        {/* Dynamic Main Column: Recent Leads vs Marketing Prompt */}
+        <div className="lg:col-span-2 space-y-6">
+          {hasZeroLeads ? (
+            <div className="premium-card rounded-xl overflow-hidden bg-gradient-to-br from-primary/10 to-transparent border-primary/30">
+              <div className="p-8 text-center">
+                <div className="w-16 h-16 bg-primary/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <TrendingUp className="w-8 h-8 text-primary" />
                 </div>
-                <div className="text-right">
-                  <span className="text-xs text-muted-foreground block mb-1">Today</span>
-                  <Link href="/dashboard/vendor/crm">
-                    <button className="text-xs bg-primary text-white px-3 py-1 rounded-full font-medium">View</button>
-                  </Link>
-                </div>
+                <h3 className="font-bold text-2xl text-navy dark:text-white mb-2">You have 0 new leads</h3>
+                <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+                  Don't wait for customers to find you. Launch a targeted SMS blast to 500 locals in your area instantly and get your phone ringing today.
+                </p>
+                <Link href="/dashboard/vendor/marketing">
+                  <button className="bg-primary hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-bold shadow-lg shadow-primary/20 transition hover:scale-105">
+                    Launch SMS Campaign (₹200)
+                  </button>
+                </Link>
               </div>
-            ))}
-          </div>
+            </div>
+          ) : (
+            <div className="premium-card rounded-xl overflow-hidden">
+              <div className="p-6 border-b border-border flex justify-between items-center">
+                <h3 className="font-bold text-navy dark:text-white">Urgent Lead Activity</h3>
+                <Link href="/dashboard/vendor/crm" className="text-sm text-primary font-medium hover:underline">Open Full CRM</Link>
+              </div>
+              <div className="divide-y divide-border">
+                {[1, 2, 3].map((lead) => (
+                  <div key={lead} className="p-4 px-6 flex justify-between items-center hover:bg-muted/50 transition cursor-pointer">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold">L</div>
+                      <div>
+                        <h4 className="text-sm font-bold text-foreground">New Lead Inquiry</h4>
+                        <p className="text-xs text-muted-foreground">Received a new message from profile.</p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <span className="text-xs text-muted-foreground block mb-1">Today</span>
+                      <Link href="/dashboard/vendor/crm">
+                        <button className="text-xs bg-primary text-white px-3 py-1 rounded-full font-medium">Respond Now</button>
+                      </Link>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Dynamic B2B Widget */}
+          <B2BCrossSellWidget categoryType={primaryCategory} />
         </div>
 
-        {/* Quick Actions */}
-        <div className="premium-card p-6 rounded-xl flex flex-col">
-          <h3 className="font-bold text-navy dark:text-white mb-6 border-b border-border pb-2">Subscription</h3>
+        {/* Quick Actions & Tools */}
+        <div className="flex flex-col gap-6">
+          <VIPCardScannerWidget />
           
-          <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6 text-center">
-            <div className="inline-block px-3 py-1 bg-primary text-white text-xs font-bold rounded-full mb-3 shadow-md">PREMIUM SELLER</div>
-            <h4 className="font-bold text-foreground">Annual Growth Plan</h4>
-            <p className="text-xs text-muted-foreground mt-1 mb-4">Valid till: 24th Oct 2027</p>
-            <Link href="/dashboard/vendor/subscription">
-              <button className="w-full text-sm font-medium border border-primary text-primary py-2 rounded-md hover:bg-primary/5 transition">Upgrade Plan</button>
-            </Link>
-          </div>
+          <div className="premium-card p-6 rounded-xl flex flex-col flex-1">
+            <h3 className="font-bold text-navy dark:text-white mb-6 border-b border-border pb-2">Subscription</h3>
+            
+            <div className="bg-primary/5 border border-primary/20 rounded-lg p-4 mb-6 text-center">
+              <div className="inline-block px-3 py-1 bg-primary text-white text-xs font-bold rounded-full mb-3 shadow-md">PREMIUM SELLER</div>
+              <h4 className="font-bold text-foreground">Annual Growth Plan</h4>
+              <p className="text-xs text-muted-foreground mt-1 mb-4">Valid till: 24th Oct 2027</p>
+              <Link href="/dashboard/vendor/subscription">
+                <button className="w-full text-sm font-medium border border-primary text-primary py-2 rounded-md hover:bg-primary/5 transition">Upgrade Plan</button>
+              </Link>
+            </div>
 
-          <h3 className="font-bold text-navy dark:text-white mb-4 mt-auto">Quick Actions</h3>
-          <div className="space-y-2">
-            <Link href="/dashboard/vendor/marketing">
-              <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Send SMS Campaign</button>
-            </Link>
-            <Link href="/dashboard/vendor/profile">
-              <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Update Profile</button>
-            </Link>
-            <Link href="/dashboard/vendor/offers">
-              <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Post an Offer</button>
-            </Link>
+            <h3 className="font-bold text-navy dark:text-white mb-4 mt-auto">Quick Actions</h3>
+            <div className="space-y-2">
+              <Link href="/dashboard/vendor/marketing">
+                <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Send SMS Campaign</button>
+              </Link>
+              <Link href="/dashboard/vendor/profile">
+                <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Update Profile</button>
+              </Link>
+              <Link href="/dashboard/vendor/offers">
+                <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Post an Offer</button>
+              </Link>
+            </div>
           </div>
         </div>
       </div>

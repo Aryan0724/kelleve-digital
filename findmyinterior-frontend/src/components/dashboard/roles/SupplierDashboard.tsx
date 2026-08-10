@@ -35,6 +35,16 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
       setActiveTab(tabParam);
     }
   }, [tabParam]);
+
+  useEffect(() => {
+    // Auto-scroll to content area on mobile when tab changes
+    if (window.innerWidth < 1024) {
+      const contentArea = document.getElementById('dashboard-content-area');
+      if (contentArea) {
+        window.scrollTo({ top: contentArea.offsetTop - 80, behavior: 'smooth' });
+      }
+    }
+  }, [activeTab]);
   const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = async () => {
@@ -117,7 +127,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
             </div>
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
+          <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
 
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
@@ -195,6 +205,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
     </div>
   );
 }
+
 
 
 

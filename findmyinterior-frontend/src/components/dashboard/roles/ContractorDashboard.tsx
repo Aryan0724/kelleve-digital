@@ -36,6 +36,16 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
     }
   }, [tabParam]);
 
+  useEffect(() => {
+    // Auto-scroll to content area on mobile when tab changes
+    if (window.innerWidth < 1024) {
+      const contentArea = document.getElementById('dashboard-content-area');
+      if (contentArea) {
+        window.scrollTo({ top: contentArea.offsetTop - 80, behavior: 'smooth' });
+      }
+    }
+  }, [activeTab]);
+
   const handleLogout = async () => {
     await handleLogoutAction();
     router.push("/login");
@@ -114,7 +124,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             </div>
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
+          <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
 
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
@@ -227,6 +237,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
     </div>
   );
 }
+
 
 
 
