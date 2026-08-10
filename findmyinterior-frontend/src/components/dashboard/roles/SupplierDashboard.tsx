@@ -39,10 +39,13 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
   useEffect(() => {
     // Auto-scroll to content area on mobile when tab changes
     if (window.innerWidth < 1024) {
-      const contentArea = document.getElementById('dashboard-content-area');
-      if (contentArea) {
-        window.scrollTo({ top: contentArea.offsetTop - 80, behavior: 'smooth' });
-      }
+      setTimeout(() => {
+        const contentArea = document.getElementById('dashboard-content-area');
+        if (contentArea) {
+          const y = contentArea.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
     }
   }, [activeTab]);
   const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });

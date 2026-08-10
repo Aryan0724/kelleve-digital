@@ -36,10 +36,13 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   useEffect(() => {
     // Auto-scroll to content area on mobile when tab changes
     if (window.innerWidth < 1024) {
-      const contentArea = document.getElementById('dashboard-content-area');
-      if (contentArea) {
-        window.scrollTo({ top: contentArea.offsetTop - 80, behavior: 'smooth' });
-      }
+      setTimeout(() => {
+        const contentArea = document.getElementById('dashboard-content-area');
+        if (contentArea) {
+          const y = contentArea.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
     }
   }, [activeTab]);
 

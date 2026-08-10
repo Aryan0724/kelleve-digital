@@ -260,7 +260,7 @@ export function Navbar() {
                 </Link>
               )}
               
-              {(!user || !['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business', 'worker', 'skilled_worker'].includes(user?.role || '')) && (
+              {(!user || user?.role === 'customer') && (
               <Link href="/post-requirement">
                 <button className="bg-gradient-to-r from-[#E8701A] to-[#f08535] hover:from-[#c25a12] hover:to-[#E8701A] text-white flex items-center px-5 py-2.5 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 h-full">
                   <ClipboardList className="w-5 h-5 mr-2.5" />

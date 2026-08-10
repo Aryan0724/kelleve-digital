@@ -106,12 +106,14 @@ export function Hero() {
 
 
                 <div className="flex flex-row flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
-                  <Link href="/post-requirement">
-                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[12px] sm:text-[13px] md:text-sm lg:text-base px-4 py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-2 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0 w-full sm:w-auto">
-                      <div className="bg-white/20 rounded-full p-1 md:p-1.5"><Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={2.5} /></div> 
-                      <span>Post Requirement</span>
-                    </button>
-                  </Link>
+                  {(!user || user?.role === 'customer') && (
+                    <Link href="/post-requirement">
+                      <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[12px] sm:text-[13px] md:text-sm lg:text-base px-4 py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-2 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0 w-full sm:w-auto">
+                        <div className="bg-white/20 rounded-full p-1 md:p-1.5"><Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={2.5} /></div> 
+                        <span>Post Requirement</span>
+                      </button>
+                    </Link>
+                  )}
                   <button 
                     type="button" 
                     onClick={() => setIsHowItWorksOpen(true)}

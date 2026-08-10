@@ -60,15 +60,17 @@ export function MobileBottomNav() {
         </Link>
         
         {/* Floating Action Button for Post Requirement */}
-        <div className="relative -top-5 flex justify-center w-16">
-          <Link 
-            href="/post-requirement" 
-            className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-[#E8701A] to-[#f08535] rounded-full shadow-lg shadow-orange-500/30 text-white transform hover:scale-105 transition-transform border-4 border-white dark:border-slate-900"
-          >
-            <Plus className="w-6 h-6" strokeWidth={2.5} />
-          </Link>
-          <span className="absolute -bottom-5 text-[10px] font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap mt-1">Post Requirement</span>
-        </div>
+        {(!user || user?.role === 'customer') && (
+          <div className="relative -top-5 flex justify-center w-16">
+            <Link 
+              href="/post-requirement" 
+              className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-[#E8701A] to-[#f08535] rounded-full shadow-lg shadow-orange-500/30 text-white transform hover:scale-105 transition-transform border-4 border-white dark:border-slate-900"
+            >
+              <Plus className="w-6 h-6" strokeWidth={2.5} />
+            </Link>
+            <span className="absolute -bottom-5 text-[10px] font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap mt-1">Post Requirement</span>
+          </div>
+        )}
         
         <Link 
           href="/messages" 
