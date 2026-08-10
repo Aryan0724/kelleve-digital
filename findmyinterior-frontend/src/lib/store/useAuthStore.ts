@@ -12,6 +12,7 @@ type User = {
   avatar: string | null;
   subscription: any | null;
   verification_level?: string;
+  is_verified_business?: boolean;
   trust_score?: number;
   profile_completion_score?: number;
   isAdmin?: boolean;
