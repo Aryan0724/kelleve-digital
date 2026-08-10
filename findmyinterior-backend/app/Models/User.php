@@ -180,6 +180,18 @@ class User extends Authenticatable
         return $this->roles()->where('slug', $roleSlug)->exists();
     }
 
+    public function assignRole($role)
+    {
+        if (is_string($role)) {
+            $roleModel = \App\Models\Role::where('slug', $role)->orWhere('name', $role)->first();
+            if ($roleModel) {
+                $this->roles()->syncWithoutDetaching([$roleModel->id]);
+            }
+        } elseif ($role instanceof \App\Models\Role) {
+            $this->roles()->syncWithoutDetaching([$role->id]);
+        }
+    }
+
     public function isAdmin(): bool
     {
         return $this->hasRole('admin');

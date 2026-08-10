@@ -16,12 +16,14 @@ class InquiryController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        $request->merge([
-            'inquirable_type' => strtolower(str_replace('BuilderProject', 'builder', $request->inquirable_type))
-        ]);
+        if ($request->has('inquirable_type') && $request->inquirable_type !== 'builder_project') {
+            $request->merge([
+                'inquirable_type' => strtolower(str_replace('BuilderProject', 'builder_project', $request->inquirable_type))
+            ]);
+        }
 
         $data = $request->validate([
-            'inquirable_type' => ['required', 'in:listing,builder,supplier,worker'],
+            'inquirable_type' => ['required', 'in:listing,builder,builder_project,supplier,worker'],
             'inquirable_id'   => ['required', 'integer'],
             'name'            => ['required', 'string', 'max:255'],
             'phone'           => ['required', 'string', 'max:20'],
@@ -33,6 +35,7 @@ class InquiryController extends Controller
         $morphMap = [
             'listing'  => \App\Models\Listing::class,
             'builder'  => \App\Models\Builder::class,
+            'builder_project'  => \App\Models\BuilderProject::class,
             'supplier' => \App\Models\Supplier::class,
             'worker'   => \App\Models\Worker::class,
         ];

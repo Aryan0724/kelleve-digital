@@ -40,6 +40,14 @@ class SearchController extends Controller
                     ->active()
                     ->search($term)
                     ->with(['category'])
+                    ->orderByRaw("CASE 
+                        WHEN subscription_plan = 'elite' THEN 4
+                        WHEN subscription_plan = 'professional' THEN 3
+                        WHEN subscription_plan = 'growth' THEN 2
+                        WHEN is_premium = 1 THEN 1
+                        ELSE 0
+                    END DESC")
+                    ->orderByDesc('is_featured')
                     ->orderByDesc('is_verified')
                     ->distinct()
                     ->take(8)

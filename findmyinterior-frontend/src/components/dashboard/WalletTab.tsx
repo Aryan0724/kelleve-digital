@@ -7,16 +7,21 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Wallet, Loader2 } from "lucide-react";
 
-async function testPay(purpose: string, meta: Record<string, any>) {
-  const orderRes = await api.post("/payments/create-order", { purpose, ...meta });
-  const { order_id } = orderRes.data;
-  const verifyRes = await api.post("/payments/verify", {
-    razorpay_order_id: order_id,
-    razorpay_payment_id: "pay_test_" + Date.now(),
-    razorpay_signature: "mock_signature",
+import { useAuthStore } from "@/lib/store/useAuthStore";
+
+const loadScript = (src: string) => {
+  return new Promise((resolve) => {
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => {
+      resolve(true);
+    };
+    script.onerror = () => {
+      resolve(false);
+    };
+    document.body.appendChild(script);
   });
-  return verifyRes.data;
-}
+};
 
 export function WalletTab() {
   const [balance, setBalance] = useState<number>(0);
@@ -24,6 +29,7 @@ export function WalletTab() {
   const [loading, setLoading] = useState(false);
   const [fetching, setFetching] = useState(true);
   const [transactions, setTransactions] = useState<any[]>([]);
+  const user = useAuthStore((state) => state.user);
 
   const fetchWallet = async () => {
     try {
@@ -43,6 +49,11 @@ export function WalletTab() {
 
   const handleRecharge = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!user) {
+      alert("Please login first.");
+      return;
+    }
+
     const amt = Number(amount);
     if (amt < 100) {
       alert("Minimum recharge amount is ₹100");
@@ -51,10 +62,60 @@ export function WalletTab() {
 
     setLoading(true);
     try {
-      await testPay("wallet_recharge", { amount: amt });
-      alert(`✅ ₹${amt} added to your wallet!`);
-      setAmount("");
-      fetchWallet();
+      // 1. Create order on backend
+      const orderRes = await api.post("/payments/create-order", { 
+        purpose: "wallet_recharge", 
+        amount: amt 
+      });
+      const orderId = orderRes.data.order_id;
+      const amountInPaise = orderRes.data.amount;
+
+      // 2. Load Razorpay Script
+      const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!res) {
+        alert("Razorpay SDK failed to load. Are you offline?");
+        setLoading(false);
+        return;
+      }
+
+      // 3. Configure Razorpay Options
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: amountInPaise.toString(),
+        currency: "INR",
+        name: "FindMyInterior",
+        description: `Wallet Recharge: ₹${amt}`,
+        order_id: orderId,
+        handler: async function (response: any) {
+          try {
+            await api.post("/payments/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            alert(`✅ ₹${amt} added to your wallet!`);
+            setAmount("");
+            fetchWallet();
+          } catch (err: any) {
+            alert(err.response?.data?.message || "Payment verification failed!");
+          }
+        },
+        prefill: {
+          name: user.name,
+          email: user.email,
+          contact: user.phone,
+        },
+        theme: {
+          color: "#ea580c", // Orange-600
+        },
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.on('payment.failed', function (response: any) {
+        alert("Payment Failed. " + response.error.description);
+      });
+      paymentObject.open();
+
     } catch (e: any) {
       alert(e.response?.data?.message || "Recharge failed. Please try again.");
     } finally {

@@ -101,6 +101,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       { label: catalogLabel, href: "/dashboard/vendor/catalog", icon: catalogIcon },
       { label: "Offers & Coupons", href: "/dashboard/vendor/offers", icon: Ticket },
       { label: crmLabel, href: "/dashboard/vendor/crm", icon: crmIcon },
+      { label: "B2B Requirements", href: "/dashboard/vendor/requirements", icon: Briefcase },
       { label: "Marketing Center", href: "/dashboard/vendor/marketing", icon: Megaphone },
       { label: "Reviews", href: "/dashboard/vendor/reputation", icon: Star },
       { label: "Analytics", href: "/dashboard/vendor/analytics", icon: LineChart },

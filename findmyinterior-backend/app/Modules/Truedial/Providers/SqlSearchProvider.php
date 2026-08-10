@@ -62,7 +62,13 @@ class SqlSearchProvider implements SearchProviderInterface
         // In SQLite testing, boolean might be 0/1, in MySQL it's tinyint.
         
         $scoreRaw = "
-            (IFNULL(is_premium, 0) * 40) +
+            (CASE 
+                WHEN subscription_plan = 'elite' THEN 50 
+                WHEN subscription_plan = 'professional' THEN 30 
+                WHEN subscription_plan = 'growth' THEN 10 
+                WHEN is_premium = 1 THEN 10
+                ELSE 0 
+            END) +
             (IFNULL(is_featured, 0) * 20) +
             (IFNULL(is_verified, 0) * 15) +
             (IFNULL(avg_rating, 0) * 10) +

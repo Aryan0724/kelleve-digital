@@ -23,12 +23,28 @@ class TrustScoreService
         // (Profile Completion = 25%, Verification Level = 25%, Reviews = 25%, Project Success = 25%)
         $trustScore = $this->calculateTrustScore($user, $completionScore, $verificationLevel);
 
+        $isVerifiedBusiness = in_array($verificationLevel, ['business_verified', 'site_verified']);
+
         $user->update([
             'profile_completion_score' => $completionScore,
             'verification_level' => $verificationLevel,
             'trust_score' => $trustScore,
-            'is_verified_business' => in_array($verificationLevel, ['business_verified', 'site_verified'])
+            'is_verified_business' => $isVerifiedBusiness
         ]);
+
+        // Sync verification status to all associated profiles
+        $profiles = [
+            $user->listing,
+            $user->worker,
+            $user->builder,
+            $user->supplier
+        ];
+
+        foreach ($profiles as $profile) {
+            if ($profile) {
+                $profile->update(['is_verified' => $isVerifiedBusiness]);
+            }
+        }
     }
 
     private function calculateProfileCompletion(User $user): int

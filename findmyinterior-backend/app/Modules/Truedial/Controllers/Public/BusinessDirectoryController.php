@@ -16,49 +16,37 @@ class BusinessDirectoryController extends Controller
 
     protected TenantContext $tenantContext;
     protected BusinessPageService $businessPageService;
+    protected \App\Modules\Truedial\Services\SearchService $searchService;
 
-    public function __construct(TenantContext $tenantContext, BusinessPageService $businessPageService)
-    {
+    public function __construct(
+        TenantContext $tenantContext, 
+        BusinessPageService $businessPageService,
+        \App\Modules\Truedial\Services\SearchService $searchService
+    ) {
         $this->tenantContext = $tenantContext;
         $this->businessPageService = $businessPageService;
+        $this->searchService = $searchService;
     }
 
     public function index(Request $request)
     {
-        $query = Listing::forCurrentTenant()->with(['category', 'city', 'media'])
-            ->where('status', 'active');
-
-        if ($request->filled('search') || $request->filled('q')) {
-            $search = $request->query('search') ?? $request->query('q');
-            $query->where(function($q) use ($search) {
-                $q->where('title', 'LIKE', "%{$search}%")
-                  ->orWhere('description', 'LIKE', "%{$search}%")
-                  ->orWhere('address', 'LIKE', "%{$search}%");
-            });
+        $params = $request->only([
+            'q', 'search', 'category_id', 'category_name', 'category', 'city', 'verified', 'premium', 
+            'min_rating', 'lat', 'lng', 'max_distance', 'sort', 'per_page'
+        ]);
+        
+        // Normalize search param
+        if (isset($params['search']) && !isset($params['q'])) {
+            $params['q'] = $params['search'];
+        }
+        // Normalize category param
+        if (isset($params['category']) && !isset($params['category_name'])) {
+            $params['category_name'] = $params['category'];
         }
 
-        if ($request->filled('city')) {
-            $city = $request->query('city');
-            $query->where(function($q) use ($city) {
-                $q->where('city', 'LIKE', "%{$city}%")
-                  ->orWhereHas('city', function($cq) use ($city) {
-                      $cq->where('name', 'LIKE', "%{$city}%");
-                  });
-            });
-        }
+        $results = $this->searchService->search($params);
 
-        if ($request->filled('category_id')) {
-            $query->byCategory($request->category_id);
-        } elseif ($request->filled('category_name') || $request->filled('category')) {
-            $cat = $request->query('category_name') ?? $request->query('category');
-            $query->whereHas('category', function($q) use ($cat) {
-                $q->where('name', 'LIKE', "%{$cat}%")
-                  ->orWhere('slug', 'LIKE', "%{$cat}%");
-            });
-        }
-
-        $businesses = $query->latest()->paginate(15);
-        return $this->success($businesses);
+        return $this->success($results['data'] ?? $results);
     }
 
     public function show($slug)

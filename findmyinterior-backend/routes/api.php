@@ -126,6 +126,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
     // Public inquiry submission
     Route::post('inquiries', [InquiryController::class, 'store']);
+    Route::post('call-logs', [\App\Http\Controllers\Api\V1\Public\CallLogController::class, 'store']);
     Route::get('health', \App\Http\Controllers\HealthCheckController::class);
     Route::post('contact', [\App\Http\Controllers\Public\ContactController::class, 'store']);
     
@@ -193,6 +194,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('requirements/{id}/complete', [BidController::class, 'complete']);
         Route::put('requirements/{id}', [RequirementController::class, 'update']);
         Route::patch('requirements/{id}/status', [RequirementController::class, 'updateStatus']);
+        Route::patch('requirements/{id}/extend', [RequirementController::class, 'extend']);
         Route::patch('bids/{bid}/accept', [BidController::class, 'accept']);
         Route::patch('bids/{bid}/reject', [BidController::class, 'reject']);
         Route::patch('bids/{bid}/award', [BidController::class, 'award']);

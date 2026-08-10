@@ -280,7 +280,7 @@ export function Navbar() {
                     </button>
                   </Link>
                   <Link href="/register">
-                    <button className="bg-[#0a1c3a] dark:bg-white dark:text-[#0a1c3a] hover:bg-[#0a1c3a]/90 text-white text-sm font-semibold px-5 py-2 rounded shadow-sm transition-all h-full flex items-center justify-center">
+                    <button className="bg-gradient-to-r from-[#E8701A] to-[#f08535] hover:from-[#c25a12] hover:to-[#E8701A] text-white text-sm font-semibold px-5 py-2 rounded shadow-sm transition-all h-full flex items-center justify-center">
                       Register
                     </button>
                   </Link>

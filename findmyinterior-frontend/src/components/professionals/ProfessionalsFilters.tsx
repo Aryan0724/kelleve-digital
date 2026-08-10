@@ -59,6 +59,7 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
             <SelectItem value="interior-designers">Interior Designers</SelectItem>
             <SelectItem value="architects">Architects</SelectItem>
             <SelectItem value="contractors">Contractors</SelectItem>
+            <SelectItem value="pest-control">Pest Control</SelectItem>
           </SelectContent>
         </Select>
       </div>

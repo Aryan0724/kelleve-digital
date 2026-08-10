@@ -35,8 +35,9 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
     try {
       // 1. Create order on backend
       const { data } = await api.post("/payments/create-order", {
-        type: "subscription",
-        plan_id: planId
+        purpose: "subscription",
+        subscription_plan_id: planId,
+        billing_cycle: "yearly"
       });
 
       const orderId = data.order_id;

@@ -21,7 +21,9 @@ export function DashboardProfileCard({
 }) {
   const { user, updateUser } = useAuthStore();
   const coverFileRef = useRef<HTMLInputElement>(null);
+  const avatarFileRef = useRef<HTMLInputElement>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -40,6 +42,27 @@ export function DashboardProfileCard({
       toast.error(err.response?.data?.message || "Failed to upload cover image.");
     } finally {
       setUploadingCover(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingAvatar(true);
+    try {
+      const form = new FormData();
+      form.append("avatar", file);
+      const res = await api.post("/user/avatar", form);
+      if (user && res.data.avatar) {
+        updateUser({ ...user, avatar: res.data.avatar });
+      }
+      fetchDashboard();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to upload profile picture.");
+    } finally {
+      setUploadingAvatar(false);
       if (e.target) e.target.value = "";
     }
   };
@@ -63,14 +86,23 @@ export function DashboardProfileCard({
         </button>
       </div>
       <CardContent className="p-6 flex flex-col items-center text-center -mt-16 relative z-10">
-        <div className="h-24 w-24 relative rounded-full overflow-hidden ring-4 ring-white dark:ring-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-3xl font-bold text-slate-400 dark:text-slate-500 shadow-md">
+        <div className="h-24 w-24 relative rounded-full overflow-hidden ring-4 ring-white dark:ring-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-3xl font-bold text-slate-400 dark:text-slate-500 shadow-md group cursor-pointer" onClick={() => avatarFileRef.current?.click()}>
           <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
           {user?.avatar && (
-            <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+            <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent group-hover:opacity-50 transition-opacity" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
           )}
+          <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+            {uploadingAvatar ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : <Camera className="w-6 h-6 text-white" />}
+          </div>
+          <input ref={avatarFileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
         </div>
         <h3 className="font-bold text-xl">{user?.name}</h3>
-        <Badge className="mt-2 capitalize mb-2 bg-orange-100 text-orange-700 hover:bg-orange-200 border-0" variant="secondary">{roleLabel}</Badge>
+        <div className="flex gap-2 items-center justify-center mt-2 mb-2">
+          <Badge className="capitalize bg-orange-100 text-orange-700 hover:bg-orange-200 border-0" variant="secondary">{roleLabel}</Badge>
+          {(user?.is_verified_business || user?.verification_level === 'business_verified' || user?.verification_level === 'site_verified') && (
+            <Badge className="bg-green-600 hover:bg-green-700 text-white border-0">Verified</Badge>
+          )}
+        </div>
         {description && <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>}
         {extraContent && (
           <div className="w-full mt-4">

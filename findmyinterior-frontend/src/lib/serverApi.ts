@@ -9,10 +9,11 @@
  */
 export function getServerApiUrl(): string {
   if (typeof window === 'undefined') {
-    // We are on the server. Try the private variable, fallback to Docker service, then localhost.
+    // We are on the server. Try the private variable, fallback to public, then Docker service, then localhost.
     return (
       process.env.NEXT_PRIVATE_API_URL ||
-      'http://backend:80/api/v1'
+      process.env.NEXT_PUBLIC_API_URL ||
+      'http://localhost:8000/api/v1'
     );
   }
   // On the client, always use the public URL

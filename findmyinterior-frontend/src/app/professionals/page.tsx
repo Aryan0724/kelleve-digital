@@ -31,6 +31,7 @@ async function getProfessionals(searchParams: any) {
     }
     const params = new URLSearchParams(cleanParams).toString();
     const apiUrl = `${getServerApiUrl()}/listings?${params}`;
+    console.log("[DEBUG] Fetching professionals from:", apiUrl);
     const res = await fetch(apiUrl, {
       cache: 'no-store'
     });

@@ -14,6 +14,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from "@/components/ui/dialog";
+import { CheckoutButton } from "@/components/payments/CheckoutButton";
 
 
 
@@ -38,12 +39,12 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
   };
 
   const handleUpgradeRequest = (plan: any) => {
-    setUpgradePlan(plan);
+    // Left empty or can be removed if not needed.
   };
 
   if (loading) return <div className="p-12 text-center text-slate-500">Loading plans...</div>;
 
-  const currentPlanObject = plans.find(p => p.name.toLowerCase() === (currentPlan || 'starter').toLowerCase()) || plans.find(p => p.slug === 'starter') || null;
+  const currentPlanObject = plans.find(p => p.name.toLowerCase() === (currentPlan || 'basic').toLowerCase()) || plans.find(p => p.slug === 'basic') || null;
 
   return (
     <div className="space-y-6">
@@ -56,13 +57,13 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
             <div className="text-center md:text-left">
               <h3 className="text-sm font-semibold text-slate-400 tracking-wider uppercase mb-1">Current Plan</h3>
               <div className="text-3xl font-extrabold uppercase bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">
-                {currentPlan || "Starter"}
+                {currentPlan || "Basic"}
               </div>
               
               <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
                 <div className="bg-white/10 px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm border border-white/5 flex items-center gap-2">
                   <span className="text-slate-400">Billing:</span>
-                  <span className="font-semibold text-white">{currentPlan?.toLowerCase() !== "starter" && currentPlan ? "Yearly" : "Free"}</span>
+                  <span className="font-semibold text-white">{currentPlan?.toLowerCase() !== "basic" && currentPlan ? "Yearly" : "Free"}</span>
                 </div>
                 {currentPlanObject?.is_featured_listing && (
                   <div className="bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm flex items-center font-medium">
@@ -91,7 +92,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
         {plans.map(plan => {
-          const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase() || (currentPlan === '' && plan.slug === 'starter');
+          const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase() || (currentPlan === '' && plan.slug === 'basic');
           const isMostPopular = plan.slug === 'professional';
           const price = plan.price_yearly;
           const monthlyPrice = plan.price_monthly;
@@ -139,52 +140,21 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
               </CardContent>
 
               <CardFooter className="mt-auto">
-                <Button
-                  className={`w-full ${isMostPopular && !isCurrent ? 'bg-orange-500 hover:bg-orange-600 text-white border-none' : ''}`}
-                  variant={isCurrent ? "outline" : (isMostPopular ? "default" : "outline")}
-                  disabled={isCurrent || plan.slug === 'starter'}
-                  onClick={() => handleUpgradeRequest(plan.name)}
-                >
-                  {isCurrent ? 'Current Plan' : plan.slug === 'starter' ? 'Free' : 'Contact to Upgrade'}
-                </Button>
+                {isCurrent ? (
+                  <Button className="w-full" variant="outline" disabled>Current Plan</Button>
+                ) : plan.slug === 'basic' ? (
+                  <Button className="w-full" variant="outline" disabled>Free</Button>
+                ) : (
+                  <div className="w-full">
+                    <CheckoutButton planId={plan.id} amount={price} label={`Upgrade to ${plan.name}`} />
+                  </div>
+                )}
               </CardFooter>
             </Card>
           );
         })}
       </div>
 
-      <Dialog open={!!upgradePlan} onOpenChange={(open) => !open && setUpgradePlan(null)}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Upgrade to {upgradePlan?.name}</DialogTitle>
-            <DialogDescription>
-              To upgrade your plan, please contact our support team. We will help you set up your account and activate your new features immediately.
-            </DialogDescription>
-          </DialogHeader>
-          
-          <div className="flex flex-col gap-4 py-4">
-            <div className="bg-slate-50 p-4 rounded-lg border flex flex-col items-center justify-center text-center">
-              <span className="text-sm font-medium text-slate-500 mb-1">Email us at</span>
-              <a href={`mailto:support@findmyinterior.com?subject=Upgrade request for ${upgradePlan?.name} Plan`} className="text-lg font-bold text-orange-600 hover:underline">
-                support@findmyinterior.com
-              </a>
-            </div>
-            
-            <div className="bg-slate-50 p-4 rounded-lg border flex flex-col items-center justify-center text-center">
-              <span className="text-sm font-medium text-slate-500 mb-1">Or call us directly</span>
-              <a href="tel:+919999999999" className="text-lg font-bold text-orange-600 hover:underline">
-                +91 99999 99999
-              </a>
-            </div>
-          </div>
-          
-          <DialogFooter className="sm:justify-start">
-            <Button type="button" variant="secondary" onClick={() => setUpgradePlan(null)} className="w-full">
-              Close
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }

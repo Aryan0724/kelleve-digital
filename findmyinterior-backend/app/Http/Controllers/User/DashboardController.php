@@ -323,6 +323,20 @@ class DashboardController extends Controller
                         $query->whereIn('requirement_type', ['CONSTRUCTION', 'Construction', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
                     } elseif (in_array('builder', $userRoles)) {
                         $query->whereIn('requirement_type', ['BUILDER_PROJECT', 'Builder Project', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                    } else {
+                        // Fallback for all other professional roles (e.g. pest_control, modular_kitchen_designer)
+                        $listingCategoryIds = $user->listings()->pluck('category_id')->toArray();
+                        $roleSlugs = array_map(fn($r) => str_replace('_', '-', $r), $userRoles);
+                        
+                        $query->where(function($q) use ($listingCategoryIds, $roleSlugs) {
+                            if (!empty($listingCategoryIds)) {
+                                $q->whereIn('category_id', $listingCategoryIds);
+                            } else {
+                                $q->whereHas('category', function($q2) use ($roleSlugs) {
+                                    $q2->whereIn('slug', $roleSlugs);
+                                });
+                            }
+                        });
                     }
 
                     if ($recommendedIds->isEmpty()) {

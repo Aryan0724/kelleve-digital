@@ -135,6 +135,7 @@ class RequirementController extends Controller
             'creator_role' => $creatorRole,
             'user_id' => $request->user()?->id,
             'status'  => 'pending',
+            'expires_at' => now()->addDays(15),
         ]);
 
         if (!empty($data['images'])) {
@@ -210,6 +211,39 @@ class RequirementController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Requirement status updated.',
+            'data'    => new RequirementResource($requirement),
+        ]);
+    }
+    /**
+     * PATCH /api/v1/requirements/{id}/extend
+     */
+    public function extend(Request $request, int $id): JsonResponse
+    {
+        $type = $request->query('requirement_type', 'project');
+        $modelClass = \App\Models\Requirement::class;
+        if ($type === 'rfq') $modelClass = \App\Models\Rfq::class;
+        if ($type === 'job') $modelClass = \App\Models\WorkerJob::class;
+
+        $requirement = $modelClass::findOrFail($id);
+        if ($request->user()->id !== $requirement->user_id && !$request->user()->isAdmin()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if ($requirement->extensions_count >= 2) {
+            return response()->json([
+                'message' => 'Maximum extensions reached. A requirement can only be extended 2 times.',
+            ], 400);
+        }
+
+        $requirement->update([
+            'expires_at' => \Carbon\Carbon::parse($requirement->expires_at)->addDays(7),
+            'extensions_count' => $requirement->extensions_count + 1,
+            'status' => 'open' // re-open if expired
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requirement extended for 7 days.',
             'data'    => new RequirementResource($requirement),
         ]);
     }

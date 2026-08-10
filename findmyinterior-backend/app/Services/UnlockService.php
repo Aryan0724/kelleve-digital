@@ -44,6 +44,16 @@ class UnlockService
             ];
         }
 
+        // 1.5 Check max unlocks
+        $unlocksCount = DB::table('contact_unlocks')
+            ->where('requirement_id', $requirement->id)
+            ->where('requirement_type', $requirementType)
+            ->count();
+            
+        if ($unlocksCount >= ($requirement->max_unlocks ?? 10)) {
+            throw new Exception('This requirement has reached its maximum number of contact unlocks.');
+        }
+
         // 2. Fetch the fee from requirement or configuration
         $fee = $requirement->unlock_price ?? config('marketplace.unlock_fee', 50.00);
 

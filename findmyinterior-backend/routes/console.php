@@ -8,6 +8,8 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 \Illuminate\Support\Facades\Schedule::command('subscriptions:downgrade')->daily();
+\Illuminate\Support\Facades\Schedule::command('app:expire-requirements')->daily();
+\Illuminate\Support\Facades\Schedule::command('app:disburse-monthly-wallet-credits-command')->daily();
 
 \Illuminate\Support\Facades\Schedule::command('system:health-check')->everyFiveMinutes();
 
