@@ -21,6 +21,7 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
   const router = useRouter();
 
   const isJob = req.opportunity_type === "JOB";
+  const reqType = req.opportunity_type ? req.opportunity_type.toLowerCase() : "project";
 
   return (
     <>
@@ -44,7 +45,7 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
         >
           <Phone className="w-3.5 h-3.5" /> Unlock Contact
         </Button>
-        <Link href={`/requirements/${req.id}`} className="w-full">
+        <Link href={`/requirements/${req.id}?type=${reqType}`} className="w-full">
           <Button variant="outline" className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 font-bold h-9 text-xs flex items-center justify-center gap-2">
             <Search className="w-3.5 h-3.5" /> View Details
           </Button>
@@ -56,7 +57,7 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
           isOpen={bidModalOpen}
           onClose={() => setBidModalOpen(false)}
           requirementId={req.id}
-          requirementType="lead"
+          requirementType={reqType}
           onSuccess={() => {
             router.refresh();
           }}
@@ -68,7 +69,7 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
           isOpen={unlockModalOpen}
           onClose={() => setUnlockModalOpen(false)}
           requirementId={req.id}
-          requirementType="lead"
+          requirementType={reqType}
           unlockPrice={req.unlock_price}
           onUnlockSuccess={() => {
             router.refresh();
