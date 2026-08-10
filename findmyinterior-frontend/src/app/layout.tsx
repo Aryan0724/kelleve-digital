@@ -5,6 +5,7 @@ import "./globals.css";
 import { Navbar } from "@/components/layout/Navbar";
 import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
+import { GlobalLoginModal } from "@/components/auth/GlobalLoginModal";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { PopupAd } from "@/components/ads/PopupAd";
 import { TopRibbonAd } from "@/components/ads/TopRibbonAd";
@@ -112,6 +113,7 @@ export default function RootLayout({
           </div>
           <Footer />
           <MobileBottomNav />
+          <GlobalLoginModal />
           <ToastContainer position="bottom-right" />
         </ThemeProvider>
       </body>

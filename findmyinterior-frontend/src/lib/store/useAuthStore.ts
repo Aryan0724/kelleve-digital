@@ -32,6 +32,9 @@ interface AuthState {
   setAuth: (user: User, token: string) => void;
   updateUser: (user: User) => void;
   logout: () => void;
+  showLoginModal: boolean;
+  loginRedirectUrl: string | null;
+  setShowLoginModal: (show: boolean, redirectUrl?: string) => void;
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -43,6 +46,9 @@ export const useAuthStore = create<AuthState>()(
       setActiveVenture: (venture) => set({ activeVenture: venture }),
       _hasHydrated: false,
       setHasHydrated: (state) => set({ _hasHydrated: state }),
+      showLoginModal: false,
+      loginRedirectUrl: null,
+      setShowLoginModal: (show, redirectUrl) => set({ showLoginModal: show, loginRedirectUrl: redirectUrl || null }),
       setAuth: (user, token) => {
         if (typeof window !== 'undefined') {
           localStorage.setItem('auth_token', token);

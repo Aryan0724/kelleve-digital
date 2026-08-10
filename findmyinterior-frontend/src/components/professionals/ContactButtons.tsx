@@ -11,14 +11,15 @@ import { toast } from "react-toastify";
 
 export function ContactButtons({ listing }: { listing: any }) {
   const [showUnlock, setShowUnlock] = useState(false);
-  const { token } = useAuthStore();
+  const { token, setShowLoginModal } = useAuthStore();
   const router = useRouter();
   const pathname = usePathname();
+  const [unlockLoading, setUnlockLoading] = useState(false);
 
   const handleContactAction = (action: () => void) => {
     if (!token) {
       toast.info("Please login to view contact details");
-      router.push(`/login?redirect=${pathname}`);
+      setShowLoginModal(true, pathname);
       return;
     }
     action();

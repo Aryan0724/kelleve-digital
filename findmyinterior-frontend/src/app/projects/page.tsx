@@ -20,10 +20,14 @@ export default function ProjectsPage() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, token, setShowLoginModal } = useAuthStore();
   const [unlockingId, setUnlockingId] = useState<number | null>(null);
 
   const handleUnlock = async (id: number, reqType: string = '') => {
+    if (!token) {
+      setShowLoginModal(true, window.location.pathname);
+      return;
+    }
     setUnlockingId(id);
     try {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';

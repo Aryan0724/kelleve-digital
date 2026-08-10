@@ -20,7 +20,7 @@ export default function RequirementDetail() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, token } = useAuthStore();
+  const { user, token, setShowLoginModal } = useAuthStore();
   
   const [requirement, setRequirement] = useState<any>(null);
   const [bids, setBids] = useState<any[]>([]);
@@ -102,7 +102,7 @@ export default function RequirementDetail() {
 
   const handleUnlockContact = async () => {
     if (!token) {
-      router.push("/login");
+      setShowLoginModal(true, window.location.pathname);
       return;
     }
     setUnlockLoading(true);

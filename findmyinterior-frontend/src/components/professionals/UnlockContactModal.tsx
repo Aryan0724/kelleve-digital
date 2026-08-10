@@ -17,14 +17,14 @@ interface UnlockContactModalProps {
 }
 
 export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }: UnlockContactModalProps) {
-  const { token, user } = useAuthStore();
+  const { token, user, setShowLoginModal } = useAuthStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
   const handleUnlock = async () => {
     if (!token) {
       toast.info("Please log in to unlock this contact.");
-      router.push("/login?redirect=" + encodeURIComponent(window.location.pathname));
+      setShowLoginModal(true, window.location.pathname);
       return;
     }
 
