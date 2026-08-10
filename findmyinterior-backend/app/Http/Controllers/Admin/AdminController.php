@@ -15,6 +15,8 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Models\UserSubscription;
 use App\Models\Worker;
+use App\Services\TrustScoreService;
+use App\Notifications\AccountVerifiedNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -524,8 +526,16 @@ class AdminController extends Controller
 
         $user->update([
             'is_verified' => $nextVerified,
+            'is_verified_business' => $nextVerified,
             'verification_level' => $data['verification_level'] ?? ($nextVerified ? 'business_verified' : 'unverified'),
         ]);
+
+        // Recalculate trust score using TrustScoreService
+        app(TrustScoreService::class)->recalculateForUser($user);
+
+        if ($nextVerified) {
+            $user->notify(new AccountVerifiedNotification());
+        }
 
         return response()->json([
             'success' => true,

@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
+use App\Models\Conversation;
+use App\Models\Message;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -174,6 +176,35 @@ class AuthController extends Controller
 
             $token = $user->createToken('api-token')->plainTextToken;
             Log::info("AuthController::register - token created");
+
+            // Send a welcome message if the user is a professional (not a customer)
+            if ($broadRole !== 'customer') {
+                try {
+                    // Find an admin user to act as sender (id 1 or first user with admin role)
+                    $admin = User::whereHas('roles', function ($q) {
+                        $q->where('slug', 'admin');
+                    })->first() ?? User::find(1);
+
+                    if ($admin && $admin->id !== $user->id) {
+                        $conversation = Conversation::firstOrCreate([
+                            'customer_id' => $user->id,
+                            'vendor_id'   => $admin->id,
+                        ]);
+
+                        Message::create([
+                            'conversation_id' => $conversation->id,
+                            'sender_id'       => $admin->id,
+                            'message'         => 'Welcome to Find My Interior! We are thrilled to have your business on our platform. Let us know if you need any help setting up your profile or finding leads.',
+                            'message_type'    => 'text',
+                        ]);
+
+                        $conversation->increment('customer_unread_count');
+                        $conversation->update(['last_message_at' => now(), 'last_vendor_reply_at' => now()]);
+                    }
+                } catch (\Exception $e) {
+                    Log::error("AuthController::register - failed to send welcome message: " . $e->getMessage());
+                }
+            }
 
             return response()->json([
                 'success' => true,

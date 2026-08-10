@@ -185,6 +185,20 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
         </div>
       </div>
 
+      {/* ── Verified Status ── */}
+      <div>
+        <div className="flex items-center space-x-2">
+          <Checkbox 
+            id="verified" 
+            checked={searchParams.get("verified") === "true"}
+            onCheckedChange={(checked) => applyFilters({ verified: checked ? "true" : "" })}
+          />
+          <label htmlFor="verified" className="text-sm font-semibold leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70 text-slate-900 dark:text-white">
+            Verified Professionals Only
+          </label>
+        </div>
+      </div>
+
       {/* ── Delivery Available ── */}
       <div>
         <div className="flex items-center space-x-2">
