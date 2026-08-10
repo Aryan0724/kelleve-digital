@@ -54,7 +54,7 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
               href={`/professionals?category=${category.slug}`}
               prefetch={true}
               key={idx}
-              className="flex flex-col items-center justify-center gap-1.5 p-3 md:p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] md:min-w-0 md:w-auto xl:w-[calc(11.11%-15px)] shrink-0 hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-lg active:scale-95 cursor-pointer transition-all duration-150"
+              className="flex flex-col items-center justify-center gap-1.5 p-3 md:p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[100px] w-[100px] md:min-w-0 md:w-auto xl:w-[calc(11.11%-15px)] shrink-0 hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-lg active:scale-95 cursor-pointer transition-all duration-150"
             >
               <div className="relative flex items-center justify-center w-12 h-12 md:w-16 md:h-16 mb-1">
                 <div className="absolute w-8 h-8 md:w-10 md:h-10 bg-orange-50 dark:bg-orange-900/40 rounded-full bottom-0 left-0"></div>
@@ -62,7 +62,7 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
                   {customIcons[category.slug] || customIcons.default}
                 </div>
               </div>
-              <span className="text-[10px] md:text-xs font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
+              <span className="text-[11px] md:text-xs font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
                 {category.name}
               </span>
             </Link>
@@ -71,7 +71,7 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
           <Link 
             href="/professionals"
             prefetch={true}
-            className="flex flex-col items-center justify-center gap-1.5 p-3 md:p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] md:min-w-0 md:w-auto xl:w-[calc(11.11%-15px)] shrink-0 hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-lg active:scale-95 cursor-pointer transition-all duration-150"
+            className="flex flex-col items-center justify-center gap-1.5 p-3 md:p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[100px] w-[100px] md:min-w-0 md:w-auto xl:w-[calc(11.11%-15px)] shrink-0 hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-lg active:scale-95 cursor-pointer transition-all duration-150"
           >
             <div className="relative flex items-center justify-center w-12 h-12 md:w-16 md:h-16 mb-1">
               <div className="absolute w-8 h-8 md:w-10 md:h-10 bg-orange-50 dark:bg-orange-900/40 rounded-full bottom-0 left-0"></div>
@@ -79,7 +79,7 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
                 {customIcons.default}
               </div>
             </div>
-            <span className="text-[10px] md:text-xs font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
+            <span className="text-[11px] md:text-xs font-bold text-center text-[#0a1c3a] dark:text-white leading-tight">
               View All
             </span>
           </Link>

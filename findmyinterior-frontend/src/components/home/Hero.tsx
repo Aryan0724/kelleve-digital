@@ -50,7 +50,7 @@ export function Hero() {
           </div>
 
           {/* Left Content */}
-          <div className="relative z-10 w-[80%] md:w-[60%] lg:w-[50%]">
+          <div className="relative z-10 w-full sm:w-[80%] md:w-[60%] lg:w-[50%] pt-4 sm:pt-0">
             {isWorker ? (
               <>
                 <h1 className="text-[28px] md:text-5xl lg:text-[4rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
@@ -89,7 +89,7 @@ export function Hero() {
               </>
             ) : (
               <>
-                <h1 className="text-[28px] md:text-5xl lg:text-[4rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
+                <h1 className="text-[32px] sm:text-[36px] md:text-5xl lg:text-[4rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
                   Where Projects<br/>
                   <span className="text-[#E8701A]">Meet Professionals</span>
                 </h1>
@@ -105,9 +105,9 @@ export function Hero() {
 
 
 
-                <div className="flex flex-row flex-nowrap items-center gap-2 sm:gap-3">
+                <div className="flex flex-row flex-wrap sm:flex-nowrap items-center gap-2 sm:gap-3">
                   <Link href="/post-requirement">
-                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[11px] sm:text-[12px] md:text-sm lg:text-base px-3 py-2.5 sm:px-4 sm:py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-1.5 sm:gap-2 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0">
+                    <button className="bg-[#E8701A] hover:bg-[#d66314] text-white font-bold text-[12px] sm:text-[13px] md:text-sm lg:text-base px-4 py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-2 shadow-md shadow-orange-500/25 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0 w-full sm:w-auto">
                       <div className="bg-white/20 rounded-full p-1 md:p-1.5"><Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" strokeWidth={2.5} /></div> 
                       <span>Post Requirement</span>
                     </button>
@@ -115,7 +115,7 @@ export function Hero() {
                   <button 
                     type="button" 
                     onClick={() => setIsHowItWorksOpen(true)}
-                    className="bg-white dark:bg-white/10 dark:text-white text-[#0a1c3a] font-bold text-[11px] sm:text-[12px] md:text-sm lg:text-base px-4 py-2.5 sm:px-5 sm:py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm border border-slate-200 dark:border-white/20 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0"
+                    className="bg-white dark:bg-white/10 dark:text-white text-[#0a1c3a] font-bold text-[12px] sm:text-[13px] md:text-sm lg:text-base px-4 py-3 md:px-6 md:py-4 rounded-full flex items-center justify-center gap-2 shadow-sm border border-slate-200 dark:border-white/20 transition-transform hover:-translate-y-0.5 whitespace-nowrap shrink-0 w-full sm:w-auto"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-[#0a1c3a] dark:text-white w-4 h-4 md:w-5 md:h-5"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
                     <span>How It Works</span>

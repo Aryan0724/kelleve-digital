@@ -85,8 +85,8 @@ export function DashboardProfileCard({
           <span className="hidden sm:inline text-[11px] font-medium">{uploadingCover ? "Uploading..." : "Cover"}</span>
         </button>
       </div>
-      <CardContent className="p-6 flex flex-col items-center text-center -mt-16 relative z-10">
-        <div className="h-24 w-24 relative rounded-full overflow-hidden ring-4 ring-white dark:ring-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-3xl font-bold text-slate-400 dark:text-slate-500 shadow-md group cursor-pointer" onClick={() => avatarFileRef.current?.click()}>
+      <CardContent className="p-4 md:p-6 flex flex-col items-center text-center -mt-12 md:-mt-16 relative z-10">
+        <div className="h-20 w-20 md:h-24 md:w-24 relative rounded-full overflow-hidden ring-4 ring-white dark:ring-slate-900 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-3 md:mb-4 text-2xl md:text-3xl font-bold text-slate-400 dark:text-slate-500 shadow-md group cursor-pointer" onClick={() => avatarFileRef.current?.click()}>
           <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
           {user?.avatar && (
             <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent group-hover:opacity-50 transition-opacity" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
