@@ -6,7 +6,7 @@ import api from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Filter, Search, MapPin, IndianRupee, Layers, Briefcase, Ruler, ArrowRight, Grid, Phone, Lock, User, Clock, ChevronDown } from "lucide-react";
+import { Filter, Search, MapPin, IndianRupee, Layers, Briefcase, Ruler, ArrowRight, Grid, Phone, Lock, User, Clock, ChevronDown, CheckCircle2 } from "lucide-react";
 import { PlaceBidModal } from "@/components/requirements/PlaceBidModal";
 import { RequirementUnlockModal } from "@/components/requirements/RequirementUnlockModal";
 import Link from "next/link";
