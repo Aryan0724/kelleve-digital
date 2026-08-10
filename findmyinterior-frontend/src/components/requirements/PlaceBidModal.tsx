@@ -1,5 +1,5 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
-import { AdvancedBidForm } from "@/components/requirements/AdvancedBidForm";
+import { AdvancedBidForm } from "@/components/bids/AdvancedBidForm";
 import { Gavel } from "lucide-react";
 
 interface PlaceBidModalProps {
