@@ -126,7 +126,7 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                   </div>
 
                   <div className="flex flex-col gap-2 md:w-48 shrink-0">
-                    <Link href={`/requirements/${unlock.requirement?.id}`}>
+                    <Link href={`/requirements/${unlock.requirement?.id}?type=${unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project')}`}>
                       <Button variant="outline" className="w-full">
                         <ExternalLink className="w-4 h-4 mr-2" /> View Details
                       </Button>
