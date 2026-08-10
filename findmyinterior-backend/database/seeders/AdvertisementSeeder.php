@@ -20,7 +20,7 @@ class AdvertisementSeeder extends Seeder
                 'title' => 'Flash Sale: 30% Off Modular Kitchens this week!',
                 'location' => 'top_ribbon',
                 'media_type' => 'html',
-                'custom_code' => '<span><span class="font-bold bg-white text-orange-600 px-2 py-0.5 rounded mr-2 uppercase text-xs">Flash Sale</span> 30% Off Modular Kitchens this week! <a href="/materials" class="underline ml-2 hover:text-orange-200">Shop Now</a></span>',
+                'custom_code' => '<a href="/materials" class="block w-full h-full hover:text-white group flex items-center justify-center"><span><span class="font-bold bg-white text-orange-600 px-2 py-0.5 rounded mr-2 uppercase text-xs">Flash Sale</span> 30% Off Modular Kitchens this week! <span class="underline ml-2 text-orange-100 group-hover:text-white">Shop Now</span></span></a>',
                 'is_active' => true,
                 'priority' => 1,
             ],
