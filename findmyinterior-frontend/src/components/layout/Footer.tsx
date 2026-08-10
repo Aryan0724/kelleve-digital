@@ -4,14 +4,14 @@ import { Globe, Mail, Phone, MapPin } from "lucide-react";
 export function Footer() {
   return (
     <footer className="bg-slate-900 py-12 pb-24 lg:pb-12 text-slate-300">
-      <div className="container mx-auto px-4 grid grid-cols-1 md:grid-cols-5 gap-8">
+      <div className="container mx-auto px-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 lg:gap-6">
 
-        <div>
+        <div className="sm:col-span-2 md:col-span-3 lg:col-span-1">
           <h2 className="text-2xl font-bold text-white mb-2">
             <img src="/logo.jpg" alt="Find My Interior" className="h-24 w-auto mb-4 bg-white p-2 rounded-xl" />
           </h2>
-          <p className="text-sm mb-4 text-slate-400">
-            Bihar&apos;s largest marketplace connecting homeowners with verified
+          <p className="text-sm mb-4 text-slate-400 max-w-md lg:max-w-none">
+            Bihar's largest marketplace connecting homeowners with verified
             interior designers, builders, suppliers, and skilled workers.
           </p>
           <div className="flex items-center gap-3">
@@ -30,9 +30,9 @@ export function Footer() {
             <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
             <li><Link href="/professionals" className="hover:text-white transition-colors">Interior Designers</Link></li>
             <li><Link href="/projects" className="hover:text-white transition-colors">Builder Projects</Link></li>
-            <li><Link href="/materials" className="hover:text-white transition-colors">Materials &amp; Suppliers</Link></li>
+            <li><Link href="/materials" className="hover:text-white transition-colors">Materials & Suppliers</Link></li>
             <li><Link href="/workers" className="hover:text-white transition-colors">Skilled Workers</Link></li>
-            <li><Link href="/blog" className="hover:text-white transition-colors">Blog &amp; Guides</Link></li>
+            <li><Link href="/blog" className="hover:text-white transition-colors">Blog & Guides</Link></li>
           </ul>
         </div>
 
@@ -48,17 +48,17 @@ export function Footer() {
         <div>
           <h3 className="font-semibold text-white mb-4">Contact</h3>
           <ul className="space-y-3 text-sm">
-            <li className="flex items-center gap-2">
-              <Mail className="h-4 w-4 shrink-0 text-orange-400" />
-              info@findmyinterior.com
+            <li className="flex items-start gap-2">
+              <Mail className="h-4 w-4 shrink-0 text-orange-400 mt-0.5" />
+              <span className="break-all">info@findmyinterior.com</span>
             </li>
-            <li className="flex items-center gap-2">
-              <Phone className="h-4 w-4 shrink-0 text-orange-400" />
-              +91 98765 43210
+            <li className="flex items-start gap-2">
+              <Phone className="h-4 w-4 shrink-0 text-orange-400 mt-0.5" />
+              <span>+91 98765 43210</span>
             </li>
-            <li className="flex items-center gap-2">
-              <MapPin className="h-4 w-4 shrink-0 text-orange-400" />
-              Patna, Bihar 800001
+            <li className="flex items-start gap-2">
+              <MapPin className="h-4 w-4 shrink-0 text-orange-400 mt-0.5" />
+              <span>Patna, Bihar 800001</span>
             </li>
           </ul>
         </div>
