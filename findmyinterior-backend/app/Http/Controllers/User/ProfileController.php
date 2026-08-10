@@ -82,6 +82,14 @@ class ProfileController extends Controller
 
         $user->update(['cover_image' => $url]);
 
+        $listing = \App\Models\Listing::where('user_id', $user->id)
+            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
+            ->first();
+            
+        if ($listing) {
+            $listing->update(['cover_image' => $url]);
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Cover image updated.',
@@ -310,6 +318,8 @@ class ProfileController extends Controller
         $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1200, 82);
 
         $listing->update(['cover_image' => $dataUri]);
+        
+        $request->user()->update(['cover_image' => $dataUri]);
 
         return response()->json([
             'success' => true,

@@ -383,6 +383,7 @@ export function CompleteProfileTab() {
   const [locations, setLocations] = useState<any[]>([]);
   const [currentCover, setCurrentCover] = useState<string | null>(null);
   const [listingId, setListingId] = useState<string | null>(null);
+  const [listingSlug, setListingSlug] = useState<string | null>(null);
   const [locationLoading, setLocationLoading] = useState(false);
 
   const role = user?.role || 'homeowner';
@@ -420,6 +421,7 @@ export function CompleteProfileTab() {
 
       if (data) {
         setListingId(data.id || null);
+        setListingSlug(data.slug || null);
         setCurrentCover(data.cover_image || null);
         let newFormData = {
           // Base
@@ -680,7 +682,7 @@ export function CompleteProfileTab() {
               <TrustBadge level={user?.verification_level ?? "basic"} score={user?.trust_score} />
               {(isBusiness || isWorker) && (
                 <div className="mt-3">
-                  <Button variant="outline" size="sm" onClick={() => window.open(`/professionals/${user?.id}?t=${Date.now()}`, '_blank')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                  <Button variant="outline" size="sm" onClick={() => window.open(`/professionals/${listingSlug || user?.id}?t=${Date.now()}`, '_blank')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
                     <Globe className="w-4 h-4 mr-2" /> View Public Listing
                   </Button>
                 </div>
