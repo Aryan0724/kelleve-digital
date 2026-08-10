@@ -6,10 +6,9 @@ import api from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { 
-  MapPin, Filter, Search, Grid, List, Heart, Clock, CheckCircle2, 
-  Lock, User, Briefcase, Phone, ChevronDown
-} from "lucide-react";
+import { Filter, Search, MapPin, IndianRupee, Layers, Briefcase, Ruler, ArrowRight, Grid, Phone, Lock, User, Clock, ChevronDown } from "lucide-react";
+import { PlaceBidModal } from "@/components/requirements/PlaceBidModal";
+import { RequirementUnlockModal } from "@/components/requirements/RequirementUnlockModal";
 import Link from "next/link";
 import { Input } from "@/components/ui/input";
 import { useRouter } from "next/navigation";
@@ -21,31 +20,8 @@ export default function ProjectsPage() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { user, token, setShowLoginModal } = useAuthStore();
-  const [unlockingId, setUnlockingId] = useState<number | null>(null);
-
-  const handleUnlock = async (id: number, reqType: string = '') => {
-    if (!token) {
-      setShowLoginModal(true, window.location.pathname);
-      return;
-    }
-    setUnlockingId(id);
-    try {
-      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
-      await api.post(`/requirements/${id}/unlock${typeStr}`);
-      toast.success("Contact unlocked successfully!");
-      router.push(`/requirements/${id}${typeStr}`);
-    } catch (err: any) {
-      console.error(err);
-      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
-        toast.error("Insufficient wallet balance. Redirecting to wallet recharge...");
-        router.push("/dashboard?tab=wallet");
-      } else {
-        toast.error(err.response?.data?.message || "Failed to unlock contact.");
-      }
-    } finally {
-      setUnlockingId(null);
-    }
-  };
+  const [bidModalReq, setBidModalReq] = useState<any>(null);
+  const [unlockModalReq, setUnlockModalReq] = useState<any>(null);
 
   const getDisplayImages = (req: any) => {
     const imgs = [];
@@ -380,18 +356,21 @@ export default function ProjectsPage() {
                   
                   {req.user_id !== user?.id && (
                     <>
-                      <Link href={`/requirements/${req.id}?type=${reqType}`} className="w-full">
-                        <Button className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white h-9 rounded-md shadow-sm font-bold text-xs flex items-center justify-center gap-2">
-                          <Briefcase className="w-3.5 h-3.5" /> {isJob ? "Apply for Job" : "Apply Now"}
-                        </Button>
-                      </Link>
                       <Button 
-                        onClick={() => handleUnlock(req.id, reqType)}
-                        disabled={unlockingId === req.id}
+                        onClick={() => {
+                          if (!token) setShowLoginModal(true, window.location.pathname);
+                          else setBidModalReq({ id: req.id, type: reqType });
+                        }}
+                        className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white h-9 rounded-md shadow-sm font-bold text-xs flex items-center justify-center gap-2"
+                      >
+                        <Briefcase className="w-3.5 h-3.5" /> {isJob ? "Apply for Job" : "Place Bid"}
+                      </Button>
+                      <Button 
+                        onClick={() => setUnlockModalReq({ id: req.id, type: reqType, price: req.unlock_price })}
                         variant="outline" 
                         className="w-full border-green-500 text-green-600 hover:bg-green-50 h-9 rounded-md font-bold text-xs flex items-center justify-center gap-2"
                       >
-                        <Phone className="w-3.5 h-3.5" /> {unlockingId === req.id ? "Unlocking..." : `Unlock Contact`}
+                        <Phone className="w-3.5 h-3.5" /> Unlock Contact
                       </Button>
                     </>
                   )}
@@ -449,6 +428,31 @@ export default function ProjectsPage() {
 
         </div>
       </div>
+
+      {bidModalReq && (
+        <PlaceBidModal
+          isOpen={!!bidModalReq}
+          onClose={() => setBidModalReq(null)}
+          requirementId={bidModalReq.id}
+          requirementType={bidModalReq.type}
+          onSuccess={() => {
+            fetchProjects();
+          }}
+        />
+      )}
+      
+      {unlockModalReq && (
+        <RequirementUnlockModal
+          isOpen={!!unlockModalReq}
+          onClose={() => setUnlockModalReq(null)}
+          requirementId={unlockModalReq.id}
+          requirementType={unlockModalReq.type}
+          unlockPrice={unlockModalReq.price}
+          onUnlockSuccess={() => {
+            fetchProjects();
+          }}
+        />
+      )}
     </div>
   );
 }

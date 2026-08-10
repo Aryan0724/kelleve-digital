@@ -5,6 +5,7 @@ import api from "@/lib/api";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { LeadActionButtons } from "@/components/requirements/LeadActionButtons";
 import { MapPin, Search } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import Link from "next/link";
@@ -17,30 +18,8 @@ function locationName(value: any) {
 
 export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
   const { user } = useAuthStore();
-  const router = useRouter();
-  const [unlockingId, setUnlockingId] = useState<number | null>(null);
 
   const requirements = leads || [];
-
-  const handleUnlock = async (id: number, reqType: string = '') => {
-    setUnlockingId(id);
-    try {
-      const typeStr = reqType ? `?requirement_type=${reqType}` : '';
-      await api.post(`/requirements/${id}/unlock${typeStr}`);
-      alert("Contact unlocked successfully! Check your Unlocked Leads tab.");
-      router.push(`/requirements/${id}${typeStr}`);
-    } catch (err: any) {
-      console.error(err);
-      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
-        alert("Insufficient wallet balance. Redirecting to wallet recharge...");
-        router.push("/dashboard?tab=wallet");
-      } else {
-        alert(err.response?.data?.message || "Failed to unlock contact.");
-      }
-    } finally {
-      setUnlockingId(null);
-    }
-  };
 
   return (
     <Card>
@@ -106,25 +85,8 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
                       </div>
 
                       {req.user_id !== user?.id && (
-                        <div className="flex gap-2 w-full mt-2">
-                          <Link href={`/requirements/${req.id}${isRFQ ? '?type=rfq' : isJob ? '?type=job' : ''}`} className="flex-1">
-                            <Button variant="outline" className="w-full text-xs h-9 hover:bg-slate-50 dark:hover:bg-slate-800">
-                              View Details
-                            </Button>
-                          </Link>
-                          <Button 
-                            onClick={() => handleUnlock(req.id, isRFQ ? 'rfq' : isJob ? 'job' : '')} 
-                            disabled={unlockingId === req.id}
-                            className="flex-1 text-xs h-9 bg-slate-900 text-white hover:bg-orange-600 dark:bg-white dark:text-slate-900 dark:hover:bg-orange-500"
-                          >
-                            {unlockingId === req.id 
-                              ? "Unlocking..." 
-                              : isWorkerJob 
-                                ? "Apply" 
-                                : `Unlock (${(user?.role === 'worker' || user?.role === 'skilled_worker' || user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker') || user?.subscription?.plan?.can_see_all_leads) ? 'Free' : '₹' + (req.unlock_price || 49)})`}
-                          </Button>
-                      </div>
-                    )}
+                        <LeadActionButtons req={req} className="flex flex-col gap-2 w-full mt-2" />
+                      )}
                   </div>
                 </div>
               </div>
