@@ -124,7 +124,7 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
           variant="default"
           className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg text-white font-bold"
         >
-          {loading ? "Processing..." : `Pay with Wallet (Bal: ₹${user.wallet_balance})`}
+          {loading ? "Processing..." : `Pay with Wallet (Bal: ₹${user?.wallet_balance})`}
         </Button>
       )}
       <Button 
