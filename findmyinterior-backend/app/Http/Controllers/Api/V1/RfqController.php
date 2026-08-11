@@ -126,6 +126,12 @@ class RfqController extends Controller
         $rfq->is_unlocked = $rfq->isUnlockedBy($user);
         $rfq->has_bid = $rfq->bids()->where('professional_id', $user->id)->exists();
 
+        if (!$rfq->is_unlocked) {
+            $rfq->phone = substr($rfq->phone, 0, 2) . '********';
+            $rfq->email = '********';
+            $rfq->name = '***';
+        }
+
         return $this->success($rfq);
     }
 

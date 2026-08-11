@@ -93,13 +93,48 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
     }
   };
 
+  const handleWalletPayment = async () => {
+    if (!user) return;
+    if (!confirm(`Pay ₹${amount} using your wallet balance?`)) return;
+    
+    setLoading(true);
+    try {
+      await api.post("/payments/pay-with-wallet", {
+        purpose: "subscription",
+        subscription_plan_id: planId,
+        billing_cycle: "yearly"
+      });
+      alert("Payment Successful! Your subscription is now active.");
+      window.location.reload();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Wallet payment failed!");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const hasEnoughWalletBalance = (user?.wallet_balance || 0) >= amount;
+
   return (
-    <Button 
-      onClick={displayRazorpay} 
-      disabled={loading} 
-      className="w-full bg-orange-600 hover:bg-orange-700 h-12 text-lg"
-    >
-      {loading ? "Processing..." : label}
-    </Button>
+    <div className="w-full flex flex-col gap-2">
+      {hasEnoughWalletBalance && (
+        <Button 
+          onClick={handleWalletPayment} 
+          disabled={loading} 
+          variant="default"
+          className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg text-white font-bold"
+        >
+          {loading ? "Processing..." : `Pay with Wallet (Bal: ₹${user.wallet_balance})`}
+        </Button>
+      )}
+      <Button 
+        onClick={displayRazorpay} 
+        disabled={loading} 
+        variant={hasEnoughWalletBalance ? "outline" : "default"}
+        className={`w-full h-12 text-lg font-bold ${!hasEnoughWalletBalance ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'border-orange-600 text-orange-600 hover:bg-orange-50'}`}
+      >
+        {loading ? "Processing..." : (hasEnoughWalletBalance ? "Pay with Razorpay" : label)}
+      </Button>
+    </div>
   );
 }

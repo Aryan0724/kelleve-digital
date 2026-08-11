@@ -29,6 +29,7 @@ class UserResource extends JsonResource
             'profile_completion_score' => $this->profile_completion_score ?? 0,
             'verification_level' => $this->verification_level ?? 'unverified',
             'has_listing'        => $this->listings()->exists(),
+            'wallet_balance'     => (float) (\Illuminate\Support\Facades\DB::table('wallets')->where('user_id', $this->id)->value('balance') ?? 0.0),
             'subscription'       => $this->whenLoaded('activeSubscription', fn() =>
                 $this->activeSubscription
                     ? new UserSubscriptionResource($this->activeSubscription)

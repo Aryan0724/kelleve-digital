@@ -123,6 +123,12 @@ class JobController extends Controller
         $job->is_unlocked = $job->isUnlockedBy($user);
         $job->has_bid = $job->bids()->where('professional_id', $user->id)->exists();
 
+        if (!$job->is_unlocked) {
+            $job->phone = substr($job->phone, 0, 2) . '********';
+            $job->email = '********';
+            $job->name = '***';
+        }
+
         return $this->success($job);
     }
 

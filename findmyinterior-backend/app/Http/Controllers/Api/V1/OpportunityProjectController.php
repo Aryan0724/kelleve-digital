@@ -167,6 +167,12 @@ class OpportunityProjectController extends Controller
         $requirement->is_unlocked = $requirement->isUnlockedBy($user);
         $requirement->has_bid = $requirement->bids()->where('professional_id', $user->id)->exists();
 
+        if (!$requirement->is_unlocked) {
+            $requirement->phone = substr($requirement->phone, 0, 2) . '********';
+            $requirement->email = '********';
+            $requirement->name = '***';
+        }
+
         return $this->success($requirement);
     }
 
