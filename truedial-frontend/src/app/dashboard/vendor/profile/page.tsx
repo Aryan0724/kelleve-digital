@@ -6,7 +6,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Loader2, Save, Store, MapPin, Phone, Globe } from "lucide-react";
+import { Loader2, Save, Store, MapPin, Phone, Globe, ShieldCheck, Upload } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 
 export default function VendorProfilePage() {
   const [business, setBusiness] = useState<any>(null);
@@ -172,8 +173,45 @@ export default function VendorProfilePage() {
           </div>
         </CardContent>
       </Card>
+      <Card className="border-0 shadow-lg bg-white dark:bg-[#0a1c3a]/50 dark:border dark:border-white/10 mt-6">
+        <CardHeader className="border-b border-slate-100 dark:border-slate-800 pb-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center">
+                <ShieldCheck className="mr-2 h-5 w-5 text-emerald-500" />
+                Verification & Documents
+              </CardTitle>
+              <CardDescription className="mt-1">Upload legal documents to get the TrueDial Verified Badge.</CardDescription>
+            </div>
+            <Badge className={business?.verification_level === 'verified' ? 'bg-emerald-500 text-white' : 'bg-amber-500 text-white'}>
+              {business?.verification_level === 'verified' ? 'Verified' : 'Pending Verification'}
+            </Badge>
+          </div>
+        </CardHeader>
+        <CardContent className="space-y-6 pt-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+              <h4 className="font-semibold text-sm mb-1 flex items-center justify-between">
+                GST / Trade License
+                <Upload className="w-4 h-4 text-muted-foreground" />
+              </h4>
+              <p className="text-xs text-muted-foreground mb-3">Required for B2B transactions and RFQs</p>
+              <Input type="file" className="text-xs" accept=".pdf,.jpg,.png" />
+            </div>
+            
+            <div className="border border-slate-200 dark:border-slate-800 rounded-xl p-4">
+              <h4 className="font-semibold text-sm mb-1 flex items-center justify-between">
+                Aadhar / PAN Card
+                <Upload className="w-4 h-4 text-muted-foreground" />
+              </h4>
+              <p className="text-xs text-muted-foreground mb-3">Required for identity verification</p>
+              <Input type="file" className="text-xs" accept=".pdf,.jpg,.png" />
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
-      <div className="flex justify-end">
+      <div className="flex justify-end pt-6">
         <Button onClick={handleSave} disabled={saving} className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
           {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
           Save Changes

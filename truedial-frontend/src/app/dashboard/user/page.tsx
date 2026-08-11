@@ -1,10 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { CreditCard, ShieldCheck, MapPin, Download, Copy, Check, Sparkles, IndianRupee, HelpCircle, ArrowRight, Tag, Gift, Percent, Building2 } from "lucide-react";
+import { CreditCard, ShieldCheck, MapPin, Download, Copy, Check, Sparkles, IndianRupee, HelpCircle, ArrowRight, Tag, Gift, Percent, Building2, Briefcase, FileText, Heart } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { useTenant } from "@/context/TenantContext";
 
 export default function UserDashboard() {
   const [card, setCard] = useState<any>({
@@ -19,6 +20,11 @@ export default function UserDashboard() {
   const [copied, setCopied] = useState(false);
   const [estimatedBudget, setEstimatedBudget] = useState(500000);
   const [activeStep, setActiveStep] = useState(1);
+  const { isFindMyInterior } = useTenant();
+
+  // FMI Dashboard State
+  const [requirements, setRequirements] = useState<any[]>([]);
+  const [bookmarks, setBookmarks] = useState<any[]>([]);
 
   useEffect(() => {
     const fetchCard = async () => {
@@ -49,8 +55,83 @@ export default function UserDashboard() {
 
   const calculatedSavings = Math.round(estimatedBudget * 0.20); // 20% avg discount
 
+  if (isFindMyInterior) {
+    return (
+      <div className="max-w-6xl mx-auto space-y-8 animate-fade-in-up p-4">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div>
+            <h1 className="text-2xl font-bold text-navy dark:text-white">Homeowner Dashboard</h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              Manage your interior requirements, cross-platform bids, and saved professionals.
+            </p>
+          </div>
+          <Link href="/post-requirement">
+            <Button className="bg-primary hover:bg-primary/90 text-white font-bold flex items-center gap-2">
+              <Sparkles className="w-4 h-4" /> Post New Requirement
+            </Button>
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 space-y-6">
+            <div className="premium-card p-6 rounded-2xl">
+              <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
+                <Briefcase className="w-5 h-5 text-primary" /> Active Projects & Requirements
+              </h2>
+              {requirements.length === 0 ? (
+                <div className="text-center py-10 border border-dashed border-border rounded-xl bg-muted/20">
+                  <FileText className="w-10 h-10 text-muted-foreground mx-auto mb-3" />
+                  <h3 className="font-semibold text-foreground">No active requirements</h3>
+                  <p className="text-sm text-muted-foreground max-w-sm mx-auto mb-4">
+                    Post your interior or architectural requirement to start receiving quotes from verified professionals.
+                  </p>
+                  <Link href="/post-requirement">
+                    <Button variant="outline" size="sm">Get Quotes</Button>
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Requirements List (Mocked for now) */}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-6">
+            <div className="premium-card p-6 rounded-2xl">
+              <h2 className="text-lg font-bold flex items-center gap-2 mb-4">
+                <Heart className="w-5 h-5 text-primary" /> Saved Professionals
+              </h2>
+              {bookmarks.length === 0 ? (
+                <div className="text-center py-8">
+                  <p className="text-sm text-muted-foreground">You haven't saved any professionals yet.</p>
+                  <Link href="/search" className="text-primary text-sm font-semibold hover:underline mt-2 inline-block">
+                    Explore Directory
+                  </Link>
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  {/* Bookmarks List */}
+                </div>
+              )}
+            </div>
+
+            <div className="premium-card p-6 rounded-2xl bg-primary/5 border-primary/20">
+              <h3 className="font-bold text-md text-foreground mb-2 flex items-center gap-2">
+                <ShieldCheck className="w-5 h-5 text-green-600" /> TrueDial Verified Leads
+              </h3>
+              <p className="text-xs text-muted-foreground mb-4">
+                Your requirements are syndicated to the TrueDial B2B network to get you the best competitive bids.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up">
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up p-4">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>

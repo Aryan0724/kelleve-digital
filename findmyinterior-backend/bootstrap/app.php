@@ -22,6 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'admin' => \App\Http\Middleware\AdminMiddleware::class,
             'role'  => \App\Http\Middleware\EnsureRoleMiddleware::class,
+            'cross_auth' => \App\Http\Middleware\CrossPlatformAuth::class,
         ]);
 
         // Allow cross-origin requests from the frontend (Vercel)

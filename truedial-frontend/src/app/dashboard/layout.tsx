@@ -10,11 +10,14 @@ import {
   Store, Ticket, LineChart, UserCircle
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useRole } from "@/context/RoleContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
+import DashboardSidebarContent from "@/components/dashboard/sidebar/DashboardSidebarContent";
 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoggedIn, role, clearUser } = useAuth();
+  const { user, isLoggedIn, clearUser } = useAuth();
+  const { activeRole, isAdmin, isVendor, isCustomer, availableRoles, switchRole } = useRole();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -45,98 +48,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setMessages(messages.map(m => ({ ...m, unread: false })));
   };
 
-  const rawRoles = user?.roles || (user?.role ? [user.role] : []);
-  const roleSlugs = rawRoles.map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
-  const categorySlugs = user?.categories?.map(c => c.toLowerCase()) || [];
 
-  const hasAdminRole = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
-  
-  const isRealEstate = categorySlugs.some(c => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(c)) || roleSlugs.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
-  const isService = categorySlugs.some(c => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(c)) || roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
-  const isMedical = categorySlugs.some(c => ['doctor', 'hospital', 'clinic', 'dentist'].includes(c)) || roleSlugs.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
-  const isRestaurant = categorySlugs.some(c => ['restaurant', 'cafe', 'bakery', 'food'].includes(c)) || roleSlugs.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
-  
-  const hasVendorRole = roleSlugs.includes('business') || isRealEstate || isService || isMedical || isRestaurant || categorySlugs.length > 0;
-
-  let links: any[] = [];
-
-  if (hasAdminRole) {
-    links = [
-      { label: "Overview", href: "/dashboard/admin", icon: LayoutDashboard },
-      { label: "Users", href: "/dashboard/admin/users", icon: Users },
-      { label: "Vendors", href: "/dashboard/admin/vendors", icon: ShieldAlert },
-      { label: "Approvals", href: "/dashboard/admin/approvals", icon: FileText },
-      { label: "Settings", href: "/dashboard/admin/settings", icon: Settings },
-    ];
-  } else if (hasVendorRole) {
-    let catalogLabel = "Products & Services";
-    let catalogIcon = FileText;
-    let crmLabel = "CRM & Leads";
-    let crmIcon = Users;
-
-    if (isMedical) {
-      catalogLabel = "Clinic Services";
-      catalogIcon = Stethoscope;
-      crmLabel = "Appointments";
-      crmIcon = CalendarCheck;
-    } else if (isRestaurant) {
-      catalogLabel = "Menu Management";
-      catalogIcon = Utensils;
-      crmLabel = "Reservations";
-      crmIcon = CalendarCheck;
-    } else if (isService) {
-      catalogLabel = "Service Catalog";
-      catalogIcon = Wrench;
-      crmLabel = "Service Requests";
-      crmIcon = ClipboardList;
-    } else if (isRealEstate) {
-      catalogLabel = "Project Portfolio";
-      catalogIcon = Briefcase;
-      crmLabel = "High-Value Leads";
-      crmIcon = Users;
-    }
-
-    links = [
-      { label: "Overview", href: "/dashboard/vendor", icon: LayoutDashboard },
-      { label: "My Business", href: "/dashboard/vendor/profile", icon: Store },
-      { label: catalogLabel, href: "/dashboard/vendor/catalog", icon: catalogIcon },
-      { label: "Offers & Coupons", href: "/dashboard/vendor/offers", icon: Ticket },
-      { label: crmLabel, href: "/dashboard/vendor/crm", icon: crmIcon },
-      { label: "B2B Requirements", href: "/dashboard/vendor/requirements", icon: Briefcase },
-      { label: "Marketing Center", href: "/dashboard/vendor/marketing", icon: Megaphone },
-      { label: "Reviews", href: "/dashboard/vendor/reputation", icon: Star },
-      { label: "Analytics", href: "/dashboard/vendor/analytics", icon: LineChart },
-      { label: "Subscription & Billing", href: "/dashboard/vendor/subscription", icon: CreditCard },
-      { label: "Staff", href: "/dashboard/vendor/staff", icon: UserCircle },
-      { label: "Notifications", href: "/dashboard/vendor/notifications", icon: Bell },
-      { label: "Settings", href: "/dashboard/vendor/settings", icon: Settings },
-    ];
-  } else {
-    links = [
-      { label: "Overview", href: "/dashboard/user", icon: LayoutDashboard },
-      { label: "Saved & Favorites", href: "/dashboard/user/favorites", icon: Heart },
-      { label: "My Reviews", href: "/dashboard/user/reviews", icon: Star },
-      { label: "Privilege Card", href: "/dashboard/user/privilege", icon: CreditCard },
-      { label: "Settings", href: "/dashboard/settings", icon: Settings },
-    ];
-  }
-
-  const NavLink = ({ item }: { item: any }) => {
-    const isActive = pathname === item.href;
-    const Icon = item.icon;
-    return (
-      <Link 
-        href={item.href} 
-        className={`flex items-center gap-3 px-3 py-2.5 rounded-md transition ${
-          isActive 
-            ? 'bg-white/10 text-white font-medium shadow-inner' 
-            : 'text-navy-foreground/70 hover:text-white hover:bg-white/5'
-        }`}
-      >
-        <Icon className={`w-5 h-5 ${isActive ? 'text-primary' : ''}`} /> {item.label}
-      </Link>
-    );
-  };
 
   return (
     <ProtectedRoute>
@@ -154,9 +66,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <ArrowLeft className="w-5 h-5 shrink-0" /> Back to Homepage
           </Link>
 
-          {links.map((link) => (
-            <NavLink key={link.href} item={link} />
-          ))}
+          <DashboardSidebarContent />
+
+          {/* Role Switcher */}
+          {availableRoles.length > 1 && (
+            <div className="mt-6 px-3">
+              <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Switch View</p>
+              <div className="flex bg-white/5 rounded-lg p-1">
+                {availableRoles.includes('customer') && (
+                  <button
+                    onClick={() => switchRole('customer')}
+                    className={`flex-1 text-xs py-1.5 rounded-md transition ${activeRole === 'customer' ? 'bg-primary text-white font-medium shadow' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+                  >
+                    User
+                  </button>
+                )}
+                {availableRoles.includes('vendor') && (
+                  <button
+                    onClick={() => switchRole('vendor')}
+                    className={`flex-1 text-xs py-1.5 rounded-md transition ${activeRole === 'vendor' ? 'bg-primary text-white font-medium shadow' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+                  >
+                    Business
+                  </button>
+                )}
+                {availableRoles.includes('admin') && (
+                  <button
+                    onClick={() => switchRole('admin')}
+                    className={`flex-1 text-xs py-1.5 rounded-md transition ${activeRole === 'admin' ? 'bg-primary text-white font-medium shadow' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+                  >
+                    Admin
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </nav>
         
         <div className="p-4 border-t border-white/10">

@@ -102,6 +102,21 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
             </p>
           </section>
 
+          {/* Gallery Section */}
+          {businessDTO.media && businessDTO.media.length > 1 && (
+            <section>
+              <h2 className="text-2xl font-bold text-navy dark:text-white mb-4">Gallery</h2>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                {businessDTO.media.slice(1).map((m: any, i: number) => (
+                  <div key={i} className="aspect-square rounded-xl overflow-hidden bg-muted relative group">
+                    <img src={m.url} alt={`Gallery Image ${i+1}`} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors duration-300" />
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           {/* Active Offers Section */}
           {activeOffers && activeOffers.length > 0 && (
             <section className="bg-blue-50 dark:bg-blue-900/10 p-6 rounded-2xl border border-blue-100 dark:border-blue-900/50">
@@ -263,6 +278,16 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                     </div>
                   </div>
                 )}
+              </div>
+
+              {/* Operating Hours (Mocked fallback, ideally comes from API) */}
+              <div className="pt-6 border-t border-border mb-6">
+                <h3 className="font-bold flex items-center gap-2 mb-4"><Clock className="w-4 h-4 text-primary" /> Operating Hours</h3>
+                <div className="space-y-2 text-sm">
+                  <div className="flex justify-between items-center"><span className="text-muted-foreground">Mon - Fri</span><span className="font-medium text-foreground">10:00 AM - 7:00 PM</span></div>
+                  <div className="flex justify-between items-center"><span className="text-muted-foreground">Saturday</span><span className="font-medium text-foreground">10:00 AM - 4:00 PM</span></div>
+                  <div className="flex justify-between items-center"><span className="text-muted-foreground">Sunday</span><span className="font-bold text-red-500">Closed</span></div>
+                </div>
               </div>
 
               <div className="pt-6 border-t border-border">

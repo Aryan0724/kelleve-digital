@@ -393,7 +393,4 @@ Route::get('clear-cache', function () {
     return response()->json(['success' => true, 'message' => 'OPcache, route, config, and application cache reset successfully.']);
 });
 
-// -------------------------------------------------------------
-// TRUEDIAL MULTI-TENANT ROUTES
-// -------------------------------------------------------------
-require base_path('routes/truedial_api.php');
+
