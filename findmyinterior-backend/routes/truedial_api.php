@@ -76,12 +76,12 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::get('/analytics/chart', [\App\Modules\Truedial\Controllers\Vendor\AnalyticsController::class, 'chart']);
         
         // Invoices & Payments
-        Route::get('/businesses/me/staff', [\App\Modules\Truedial\Controllers\Vendor\StaffController::class, 'index']);
-        Route::post('/businesses/me/staff', [\App\Modules\Truedial\Controllers\Vendor\StaffController::class, 'store']);
+        // Route::get('/businesses/me/staff', [\App\Modules\Truedial\Controllers\Vendor\StaffController::class, 'index']);
+        // Route::post('/businesses/me/staff', [\App\Modules\Truedial\Controllers\Vendor\StaffController::class, 'store']);
         
         // Marketing
-        Route::get('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingController::class, 'index']);
-        Route::post('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingController::class, 'store']);
+        // Route::get('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingController::class, 'index']);
+        // Route::post('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingController::class, 'store']);
         
         Route::post('/payments/order', [\App\Modules\Truedial\Controllers\Vendor\PaymentController::class, 'createOrder']);
         Route::post('/payments/verify', [\App\Modules\Truedial\Controllers\Vendor\PaymentController::class, 'verifyPayment']);
@@ -90,9 +90,9 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::get('/crm/leads', [\App\Modules\Truedial\Controllers\Vendor\CrmController::class, 'leads']);
         Route::patch('/crm/leads/{id}/status', [\App\Modules\Truedial\Controllers\Vendor\CrmController::class, 'updateLeadStatus']);
         
-        // Marketing Campaigns
-        Route::get('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingCampaignController::class, 'index']);
-        Route::post('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingCampaignController::class, 'store']);
+        // Marketing Campaigns (Duplicate block, also commenting out)
+        // Route::get('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingCampaignController::class, 'index']);
+        // Route::post('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingCampaignController::class, 'store']);
     });
     
     // Auth protected user routes
