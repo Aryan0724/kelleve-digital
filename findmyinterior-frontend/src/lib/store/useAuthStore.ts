@@ -18,6 +18,7 @@ type User = {
   isAdmin?: boolean;
   city?: string | null;
   district?: string | null;
+  wallet_balance?: number;
   address?: string | null;
   cover_image?: string | null;
 };
