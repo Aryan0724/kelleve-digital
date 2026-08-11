@@ -122,7 +122,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Topbar */}
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0 z-30 relative">
           <div className="flex items-center gap-4">
-            <h2 className="font-semibold text-foreground">{user?.name ? `${user.name} Dashboard` : hasAdminRole ? 'Admin Console' : hasVendorRole ? 'Business Dashboard' : 'User Dashboard'}</h2>
+            <h2 className="font-semibold text-foreground">{user?.name ? `${user.name} Dashboard` : isAdmin ? 'Admin Console' : isVendor ? 'Business Dashboard' : 'User Dashboard'}</h2>
             <Link 
               href="/" 
               className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-full border border-primary/20"
