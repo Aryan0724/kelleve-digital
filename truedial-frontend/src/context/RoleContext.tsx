@@ -36,15 +36,21 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     // For now, if the user exists, default to 'customer'. If they have a 'vendor' role flag, allow both.
     
     const userRoles = (user as any).roles || [];
+    const userCategories = (user as any).categories || [];
     const derivedRoles: Role[] = ['customer'];
     
     const roleSlugs = userRoles.map((r: any) => typeof r === 'string' ? r.toLowerCase() : (r.slug || r.name || '').toLowerCase());
+    const categorySlugs = userCategories.map((c: any) => typeof c === 'string' ? c.toLowerCase() : (c.slug || c.name || '').toLowerCase());
 
     // If the user's general role includes vendor or admin
     if (user.role === 'admin' || roleSlugs.includes('admin')) {
       derivedRoles.push('admin');
     }
-    if (user.role === 'vendor' || roleSlugs.includes('vendor') || roleSlugs.some((r: string) => ['business', 'professional', 'seller', 'partner', 'restaurant', 'medical', 'service', 'real_estate'].includes(r))) {
+    
+    const isVendorRole = roleSlugs.some((r: string) => ['vendor', 'business', 'professional', 'seller', 'partner', 'restaurant', 'medical', 'service', 'real_estate'].includes(r));
+    const hasBusinessCategories = categorySlugs.length > 0;
+
+    if (user.role === 'vendor' || isVendorRole || hasBusinessCategories) {
       derivedRoles.push('vendor');
     }
 
