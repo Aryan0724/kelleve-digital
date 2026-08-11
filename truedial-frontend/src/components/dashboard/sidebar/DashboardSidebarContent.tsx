@@ -22,7 +22,7 @@ export default function DashboardSidebarContent() {
   // Determine vendor type
   const rawRoles = user?.roles || (user?.role ? [user.role] : []);
   const roleSlugs = rawRoles.map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
-  const categorySlugs = user?.categories?.map((c: string) => c.toLowerCase()) || [];
+  const categorySlugs = (user?.categories || []).map((c: any) => typeof c === 'string' ? c.toLowerCase() : (c.slug || c.name || '').toLowerCase());
 
   const isRealEstate = categorySlugs.some((c: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(c)) || roleSlugs.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
   const isService = categorySlugs.some((c: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(c)) || roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));

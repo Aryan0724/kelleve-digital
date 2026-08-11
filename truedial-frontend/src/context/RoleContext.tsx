@@ -35,15 +35,16 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     // In our simplified mock or if real auth token contains tenant_roles:
     // For now, if the user exists, default to 'customer'. If they have a 'vendor' role flag, allow both.
     
-    // We are checking the user's role array or falling back
     const userRoles = (user as any).roles || [];
     const derivedRoles: Role[] = ['customer'];
     
+    const roleSlugs = userRoles.map((r: any) => typeof r === 'string' ? r.toLowerCase() : (r.slug || r.name || '').toLowerCase());
+
     // If the user's general role includes vendor or admin
-    if (user.role === 'admin' || userRoles.includes('admin')) {
+    if (user.role === 'admin' || roleSlugs.includes('admin')) {
       derivedRoles.push('admin');
     }
-    if (user.role === 'vendor' || userRoles.includes('vendor')) {
+    if (user.role === 'vendor' || roleSlugs.includes('vendor') || roleSlugs.some((r: string) => ['business', 'professional', 'seller', 'partner', 'restaurant', 'medical', 'service', 'real_estate'].includes(r))) {
       derivedRoles.push('vendor');
     }
 
