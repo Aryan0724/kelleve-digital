@@ -18,7 +18,7 @@ export function Footer() {
             <Link href="#" className="hover:text-white transition-colors" aria-label="Website">
               <Globe className="h-5 w-5" />
             </Link>
-            <Link href="mailto:info@findmyinterior.com" className="hover:text-white transition-colors" aria-label="Email">
+            <Link href="mailto:Contact@findmyinterior.com" className="hover:text-white transition-colors" aria-label="Email">
               <Mail className="h-5 w-5" />
             </Link>
           </div>
@@ -27,6 +27,7 @@ export function Footer() {
         <div>
           <h3 className="font-semibold text-white mb-4">Quick Links</h3>
           <ul className="space-y-2 text-sm">
+            <li><Link href="/about" className="hover:text-white transition-colors">About Us</Link></li>
             <li><Link href="/" className="hover:text-white transition-colors">Home</Link></li>
             <li><Link href="/professionals" className="hover:text-white transition-colors">Interior Designers</Link></li>
             <li><Link href="/projects" className="hover:text-white transition-colors">Builder Projects</Link></li>
@@ -50,15 +51,17 @@ export function Footer() {
           <ul className="space-y-3 text-sm">
             <li className="flex items-start gap-2">
               <Mail className="h-4 w-4 shrink-0 text-orange-400 mt-0.5" />
-              <span className="break-all">info@findmyinterior.com</span>
+              <span className="break-all">Contact@findmyinterior.com</span>
             </li>
             <li className="flex items-start gap-2">
               <Phone className="h-4 w-4 shrink-0 text-orange-400 mt-0.5" />
-              <span>+91 98765 43210</span>
+              <span>+91 7070440365<br />+91 9534900999</span>
             </li>
             <li className="flex items-start gap-2">
               <MapPin className="h-4 w-4 shrink-0 text-orange-400 mt-0.5" />
-              <span>Patna, Bihar 800001</span>
+              <a href="https://maps.app.goo.gl/UaY84sBFCaLg17nQ6" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+                Patna, Bihar 800001
+              </a>
             </li>
           </ul>
         </div>

@@ -77,6 +77,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [textInputs, setTextInputs] = useState<Record<string, string>>({});
   const { user } = useAuthStore();
   const currentRole = user?.role || 'homeowner';
   const isHomeowner = ['customer', 'homeowner'].includes(currentRole);
@@ -95,19 +96,24 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
 
       const pData = profileRes.data?.data;
 
-      let fieldsToCheck = [user?.phone];
-      if (pData) {
-        fieldsToCheck = [user?.phone || pData.phone, pData.city, pData.district, pData.address];
-        if (isBusiness) {
-          fieldsToCheck.push(pData.title || pData.company_name, pData.description || pData.tagline);
+      let score = 0;
+      if (!isHomeowner && !pData) {
+        score = 0;
+      } else {
+        let fieldsToCheck = [user?.phone];
+        if (pData) {
+          fieldsToCheck = [user?.phone || pData.phone, pData.city, pData.district, pData.address];
+          if (isBusiness) {
+            fieldsToCheck.push(pData.title || pData.company_name, pData.description || pData.tagline);
+          }
+          if (isWorker) {
+            fieldsToCheck.push(pData.skill, pData.experience_years, pData.daily_rate);
+          }
         }
-        if (isWorker) {
-          fieldsToCheck.push(pData.skill, pData.experience_years, pData.daily_rate);
-        }
+        
+        const filledFields = fieldsToCheck.filter((v) => v && String(v).trim().length > 0).length;
+        score = fieldsToCheck.length === 0 ? 100 : Math.min(100, Math.round((filledFields / fieldsToCheck.length) * 100));
       }
-      
-      const filledFields = fieldsToCheck.filter((v) => v && String(v).trim().length > 0).length;
-      const score = fieldsToCheck.length === 0 ? 100 : Math.min(100, Math.round((filledFields / fieldsToCheck.length) * 100));
       setProfileCompletion(score);
     } catch (e) {
       console.error(e);
@@ -145,6 +151,28 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
     } finally {
       setUploading(null);
       if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleTextSubmit = async (docType: string) => {
+    const textVal = textInputs[docType];
+    if (!textVal || textVal.trim() === '') return;
+    
+    setUploading(docType);
+    const formData = new FormData();
+    formData.append("text_value", textVal.trim());
+    formData.append("document_type", docType);
+
+    try {
+      await api.post("/verification/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      alert("Information submitted successfully and is pending review.");
+      fetchStatus();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Failed to submit information");
+    } finally {
+      setUploading(null);
     }
   };
 
@@ -296,6 +324,38 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
                         {currentDoc?.status === "approved" ? (
                           <div className="text-sm text-green-600 font-medium flex items-center">
                             <CheckCircle2 className="h-4 w-4 mr-1" /> Document Verified
+                          </div>
+                        ) : (doc.id === 'pan_card' || doc.id === 'gst_certificate') ? (
+                          <div className="relative flex flex-col gap-2">
+                            <input
+                              type="text"
+                              placeholder={`Enter ${doc.label} Number`}
+                              value={textInputs[doc.id] || ''}
+                              onChange={(e) => setTextInputs({ ...textInputs, [doc.id]: e.target.value })}
+                              className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
+                              disabled={uploading === doc.id || currentDoc?.status === 'pending'}
+                            />
+                            <div className="flex gap-2">
+                              <Button 
+                                onClick={() => handleTextSubmit(doc.id)}
+                                variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
+                                className={`flex-1 ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
+                                disabled={uploading === doc.id || currentDoc?.status === 'pending' || !textInputs[doc.id]}
+                              >
+                                {uploading === doc.id ? (
+                                  "Submitting..."
+                                ) : currentDoc?.status === 'pending' ? (
+                                  "Pending Admin Review"
+                                ) : (
+                                  <><UploadCloud className="h-4 w-4 mr-2" /> Submit {doc.label}</>
+                                )}
+                              </Button>
+                              {currentDoc && (currentDoc.status === 'pending' || currentDoc.status === 'rejected') && (
+                                 <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-slate-100 px-3 z-20 shrink-0" onClick={() => handleDeleteDoc(currentDoc.id)} title="Undo Submit">
+                                   <Undo2 className="h-4 w-4 mr-1" /> Undo
+                                 </Button>
+                              )}
+                            </div>
                           </div>
                         ) : (
                           <div className="relative flex gap-2">

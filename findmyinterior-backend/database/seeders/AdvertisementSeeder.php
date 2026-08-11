@@ -17,10 +17,11 @@ class AdvertisementSeeder extends Seeder
         $ads = [
             // Top Ribbon
             [
-                'title' => 'Flash Sale: 30% Off Modular Kitchens this week!',
+                'title' => 'Kleve World | Premium Modular Kitchen Designers in Patna, Bihar & Across India',
                 'location' => 'top_ribbon',
                 'media_type' => 'html',
-                'custom_code' => '<a href="/materials" class="block w-full h-full hover:text-white group flex items-center justify-center"><span><span class="font-bold bg-white text-orange-600 px-2 py-0.5 rounded mr-2 uppercase text-xs">Flash Sale</span> 30% Off Modular Kitchens this week! <span class="underline ml-2 text-orange-100 group-hover:text-white">Shop Now</span></span></a>',
+                'custom_code' => '<a href="https://share.google/yeJMh0WHL1WAWLOSI" target="_blank" class="block w-full h-full hover:text-white group flex items-center justify-center text-center"><span><span class="font-bold bg-white text-orange-600 px-2 py-0.5 rounded mr-2 uppercase text-xs">Kleve World</span> Premium Modular Kitchen Designers in Patna, Bihar & Across India <span class="underline ml-2 text-orange-100 group-hover:text-white hidden sm:inline">Visit Now</span></span></a>',
+                'link' => 'https://share.google/yeJMh0WHL1WAWLOSI',
                 'is_active' => true,
                 'priority' => 1,
             ],

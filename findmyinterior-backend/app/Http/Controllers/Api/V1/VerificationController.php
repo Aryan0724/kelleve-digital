@@ -51,7 +51,8 @@ class VerificationController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'document_type' => 'required|string|in:gst_certificate,pan_card,owner_photo,business_logo,business_image,office_image,portfolio_document,trade_license,aadhaar,work_history,business_registration,warehouse_image,self_photo,skill_photo',
-            'file' => 'required|file|mimes:jpeg,png,jpg,pdf|max:10240', // 10MB max
+            'file' => 'required_without:text_value|file|mimes:jpeg,png,jpg,pdf|max:10240', // 10MB max
+            'text_value' => 'required_without:file|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -63,17 +64,20 @@ class VerificationController extends Controller
         }
 
         $user = $request->user();
-        $file = $request->file('file');
         $documentType = $request->input('document_type');
 
-        // Convert to base64 data URI — stored directly in DB, no filesystem needed.
-        $mime = $file->getMimeType() ?: 'application/octet-stream';
-        if (str_contains($mime, 'pdf')) {
-            // PDF: store as base64 data URI directly
-            $dataUri = 'data:application/pdf;base64,' . base64_encode(file_get_contents($file->getRealPath()));
+        if ($request->has('text_value') && $request->input('text_value') !== null) {
+            $dataUri = 'TEXT:' . $request->input('text_value');
         } else {
-            // Image: resize + compress then base64
-            $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1600, 85);
+            $file = $request->file('file');
+            $mime = $file->getMimeType() ?: 'application/octet-stream';
+            if (str_contains($mime, 'pdf')) {
+                // PDF: store as base64 data URI directly
+                $dataUri = 'data:application/pdf;base64,' . base64_encode(file_get_contents($file->getRealPath()));
+            } else {
+                // Image: resize + compress then base64
+                $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1600, 85);
+            }
         }
 
         // Check if user already has this document type (update it to pending)

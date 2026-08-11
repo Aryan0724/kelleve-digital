@@ -78,6 +78,9 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::prefix('auth')->middleware('throttle:auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
         Route::post('login', [AuthController::class, 'login']);
+        Route::post('send-otp', [AuthController::class, 'sendOtp']);
+        Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
+        Route::post('login-with-otp', [AuthController::class, 'loginWithOtp']);
         Route::post('forgot-password', [PasswordResetController::class, 'forgotPassword']);
         Route::post('reset-password', [PasswordResetController::class, 'resetPassword']);
 

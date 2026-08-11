@@ -35,16 +35,27 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
         >
           <Briefcase className="w-3.5 h-3.5" /> {isJob ? "Apply for Job" : "Place Bid"}
         </Button>
-        <Button 
-          onClick={() => {
-            if (!token) setShowLoginModal(true, window.location.pathname);
-            else setUnlockModalOpen(true);
-          }}
-          variant="outline" 
-          className="w-full border-green-500 text-green-600 hover:bg-green-50 font-bold h-9 text-xs flex items-center justify-center gap-2"
-        >
-          <Phone className="w-3.5 h-3.5" /> Unlock Contact
-        </Button>
+        {req.is_unlocked ? (
+          <a href={`tel:${req.phone}`} className="w-full">
+            <Button 
+              variant="outline" 
+              className="w-full border-green-500 text-green-600 hover:bg-green-50 font-bold h-9 text-xs flex items-center justify-center gap-2"
+            >
+              <Phone className="w-3.5 h-3.5" /> {req.phone}
+            </Button>
+          </a>
+        ) : (
+          <Button 
+            onClick={() => {
+              if (!token) setShowLoginModal(true, window.location.pathname);
+              else setUnlockModalOpen(true);
+            }}
+            variant="outline" 
+            className="w-full border-green-500 text-green-600 hover:bg-green-50 font-bold h-9 text-xs flex items-center justify-center gap-2"
+          >
+            <Phone className="w-3.5 h-3.5" /> Unlock {req.phone || 'Contact'}
+          </Button>
+        )}
         <Link href={`/requirements/${req.id}?type=${reqType}`} className="w-full">
           <Button variant="outline" className="w-full border-slate-200 text-slate-700 hover:bg-slate-50 font-bold h-9 text-xs flex items-center justify-center gap-2">
             <Search className="w-3.5 h-3.5" /> View Details

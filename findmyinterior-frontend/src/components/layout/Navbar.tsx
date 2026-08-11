@@ -412,7 +412,7 @@ export function Navbar() {
         >
           {/* Slide-in drawer */}
           <div
-            className="absolute top-0 right-0 h-full w-80 max-w-full bg-white dark:bg-[#0a1c3a] shadow-2xl flex flex-col overflow-y-auto"
+            className="absolute top-0 left-0 h-full w-80 max-w-full bg-white dark:bg-[#0a1c3a] shadow-2xl flex flex-col overflow-y-auto"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Drawer Header */}

@@ -521,7 +521,7 @@ export default function RequirementDetail() {
                       ) : (
                         <div className="text-center mb-2">
                           <div className="text-2xl font-black text-slate-900 tracking-wider mb-1 opacity-70">
-                            {requirement.phone ? `${requirement.phone.substring(0, 4)}XXXXXX` : "9999XXXXXX"}
+                            {requirement.phone || "99********"}
                           </div>
                           <div className="text-sm text-slate-600 font-medium">Phone number hidden. Message to discuss further.</div>
                         </div>
@@ -551,7 +551,7 @@ export default function RequirementDetail() {
                     <>
                       <div className="mt-4 mb-4 flex flex-col items-center">
                         <div className="text-3xl font-black text-slate-900 tracking-wider mb-3 opacity-60">
-                          {requirement.phone ? `${requirement.phone.substring(0, 4)}XXXXXX` : "9999XXXXXX"}
+                          {requirement.phone || "99********"}
                         </div>
                         <div className="flex items-baseline">
                           <span className="text-4xl font-black text-[#16a34a]">{displayUnlockPrice}</span>

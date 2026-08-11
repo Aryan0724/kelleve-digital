@@ -47,7 +47,7 @@ class RequirementResource extends JsonResource
             'images'         => RequirementImageResource::collection($this->whenLoaded('images')),
             // Contact details — only for premium subscribers or admin
             'name'           => $canSeeContact ? $this->name : '***',
-            'phone'          => $canSeeContact ? $this->phone : substr($this->phone, 0, 4) . 'XXXXXX',
+            'phone'          => $canSeeContact ? $this->phone : substr($this->phone, 0, 2) . '********',
             'email'          => $canSeeContact ? $this->email : null,
             'is_unlocked'    => $canSeeContact,
             'created_at'     => $this->created_at ? \Carbon\Carbon::parse($this->created_at)->diffForHumans() : null,

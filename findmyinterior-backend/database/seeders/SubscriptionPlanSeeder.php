@@ -9,102 +9,203 @@ class SubscriptionPlanSeeder extends Seeder
 {
     public function run(): void
     {
+        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
+        SubscriptionPlan::truncate();
+        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+
         $plans = [
+            // WORKER TRACK
             [
-                'name'                   => 'Basic',
-                'slug'                   => 'basic',
+                'name'                   => 'Starter',
+                'slug'                   => 'worker-starter',
+                'target_role_category'   => 'worker',
                 'price_monthly'          => 0.00,
                 'price_yearly'           => 0.00,
                 'features'               => [
-                    'Start Your Journey',
-                    'Get Basic Access',
-                    'Projects देख सकते हैं',
-                    'Projects पर Bid कर सकते हैं',
-                    'Contact Unlock (Wallet से)',
-                    '₹100 Welcome Wallet Bonus'
+                    'Free Profile',
+                    'Basic Search Visibility'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 5,
-                'lead_unlocks_per_month' => 0,
-                'can_see_all_leads'      => false,
-                'can_add_website'        => false,
-                'can_add_whatsapp'       => false,
-                'is_gold_verified'       => false,
-                'is_featured_listing'    => false,
                 'is_active'              => true,
-                'monthly_wallet_credit'  => 0,
-                'search_ranking_boost'   => 0,
-                'recommendation_score_boost' => 0,
-                'contact_unlock_discount_percent' => 0,
-                'early_lead_access_hours' => null,
-                'lead_notification_type' => 'none',
-                'badge_type'             => 'none',
+            ],
+            [
+                'name'                   => 'Growth',
+                'slug'                   => 'worker-growth',
+                'target_role_category'   => 'worker',
+                'price_monthly'          => 199.00,
+                'price_yearly'           => 1999.00,
+                'features'               => [
+                    'Enhanced Profile',
+                    'WhatsApp Chat Link',
+                    'Instant Lead Notifications',
+                    'Basic Support'
+                ],
+                'max_listings'           => 1,
+                'max_gallery_images'     => 15,
+                'is_active'              => true,
             ],
             [
                 'name'                   => 'Professional',
-                'slug'                   => 'professional',
+                'slug'                   => 'worker-professional',
+                'target_role_category'   => 'worker',
+                'price_monthly'          => 399.00,
+                'price_yearly'           => 3999.00,
+                'features'               => [
+                    'Better Ranking',
+                    'More Leads',
+                    'Profile Analytics',
+                    'Verified Badge'
+                ],
+                'max_listings'           => 1,
+                'max_gallery_images'     => 30,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'Elite',
+                'slug'                   => 'worker-elite',
+                'target_role_category'   => 'worker',
+                'price_monthly'          => 799.00,
+                'price_yearly'           => 7999.00,
+                'features'               => [
+                    'Maximum Visibility',
+                    'Priority Opportunities',
+                    'Top of Search Results',
+                    'Premium Support'
+                ],
+                'max_listings'           => 1,
+                'max_gallery_images'     => 50,
+                'is_active'              => true,
+            ],
+
+            // PROFESSIONAL TRACK
+            [
+                'name'                   => 'Starter',
+                'slug'                   => 'professional-starter',
+                'target_role_category'   => 'professional',
+                'price_monthly'          => 0.00,
+                'price_yearly'           => 0.00,
+                'features'               => [
+                    '1 Business Listing',
+                    'Basic Business Profile',
+                    'Contact Form'
+                ],
+                'max_listings'           => 1,
+                'max_gallery_images'     => 10,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'Growth',
+                'slug'                   => 'professional-growth',
+                'target_role_category'   => 'professional',
+                'price_monthly'          => 499.00,
+                'price_yearly'           => 4499.00,
+                'features'               => [
+                    'Verified Business Badge',
+                    'WhatsApp Chat',
+                    'Higher Search Ranking'
+                ],
+                'max_listings'           => 1,
+                'max_gallery_images'     => 20,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'Professional',
+                'slug'                   => 'professional-professional',
+                'target_role_category'   => 'professional',
                 'price_monthly'          => 999.00,
                 'price_yearly'           => 8999.00,
                 'features'               => [
-                    'Be Among the First.',
-                    'Get More Projects.',
-                    'Category Spotlight Placement',
-                    'Weekly Profile Analytics'
+                    'Project Leads + Bidding',
+                    'Unlimited Portfolio',
+                    'Top Category Placement'
                 ],
                 'max_listings'           => 3,
-                'max_gallery_images'     => 30,
-                'lead_unlocks_per_month' => 0,
-                'can_see_all_leads'      => false,
-                'can_add_website'        => true,
-                'can_add_whatsapp'       => true,
-                'is_gold_verified'       => false,
-                'is_featured_listing'    => false, // wait, should it be true? The old one was true for Professional. Let's keep it true.
+                'max_gallery_images'     => 50,
                 'is_active'              => true,
-                'monthly_wallet_credit'  => 500,
-                'search_ranking_boost'   => 30,
-                'recommendation_score_boost' => 15,
-                'contact_unlock_discount_percent' => 20,
-                'early_lead_access_hours' => 2,
-                'lead_notification_type' => 'instant',
-                'badge_type'             => 'trusted',
             ],
             [
-                'name'                   => 'Premium',
-                'slug'                   => 'premium',
-                'price_monthly'          => 2499.00,
-                'price_yearly'           => 24990.00,
+                'name'                   => 'Elite',
+                'slug'                   => 'professional-elite',
+                'target_role_category'   => 'professional',
+                'price_monthly'          => 1999.00,
+                'price_yearly'           => 17999.00,
                 'features'               => [
-                    'Dominate Your Category.',
-                    'Own Your City.',
                     'Homepage Featured Slot',
                     'Full Analytics Dashboard',
                     'Competitor Insights',
                     'Priority Admin Support'
                 ],
                 'max_listings'           => 5,
-                'max_gallery_images'     => 60,
-                'lead_unlocks_per_month' => 0,
-                'can_see_all_leads'      => false,
-                'can_add_website'        => true,
-                'can_add_whatsapp'       => true,
-                'is_gold_verified'       => true,
-                'is_featured_listing'    => true,
+                'max_gallery_images'     => 100,
                 'is_active'              => true,
-                'monthly_wallet_credit'  => 1500,
-                'search_ranking_boost'   => 50,
-                'recommendation_score_boost' => 25,
-                'contact_unlock_discount_percent' => 30,
-                'early_lead_access_hours' => 0,
-                'lead_notification_type' => 'real-time',
-                'badge_type'             => 'elite',
             ],
+
+            // BUSINESS TRACK
+            [
+                'name'                   => 'Starter',
+                'slug'                   => 'business-starter',
+                'target_role_category'   => 'business',
+                'price_monthly'          => 0.00,
+                'price_yearly'           => 0.00,
+                'features'               => [
+                    'Basic Company Profile',
+                    'Standard Discovery'
+                ],
+                'max_listings'           => 1,
+                'max_gallery_images'     => 10,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'Growth',
+                'slug'                   => 'business-growth',
+                'target_role_category'   => 'business',
+                'price_monthly'          => 999.00,
+                'price_yearly'           => 8999.00,
+                'features'               => [
+                    'Multiple Listings',
+                    'Verified Company Badge',
+                    'Team Member Profiles'
+                ],
+                'max_listings'           => 3,
+                'max_gallery_images'     => 30,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'Professional',
+                'slug'                   => 'business-professional',
+                'target_role_category'   => 'business',
+                'price_monthly'          => 1999.00,
+                'price_yearly'           => 17999.00,
+                'features'               => [
+                    'Priority Visibility',
+                    'Project Promotion',
+                    'Professional Network Access'
+                ],
+                'max_listings'           => 10,
+                'max_gallery_images'     => 100,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'Elite Business',
+                'slug'                   => 'business-elite',
+                'target_role_category'   => 'business',
+                'price_monthly'          => 3999.00,
+                'price_yearly'           => 35999.00,
+                'features'               => [
+                    'Multiple Branches',
+                    'Dominant Search Real Estate',
+                    'Dedicated Account Manager',
+                    'Custom Branding'
+                ],
+                'max_listings'           => 20,
+                'max_gallery_images'     => 200,
+                'is_active'              => true,
+            ]
         ];
 
-        foreach ($plans as $plan) {
-            SubscriptionPlan::updateOrCreate(
-                ['slug' => $plan['slug']],
-                $plan
-            );
+        foreach ($plans as $planData) {
+            SubscriptionPlan::create($planData);
         }
     }
 }

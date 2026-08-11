@@ -60,7 +60,11 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900">Our Office</h3>
-                  <p className="text-slate-600 mt-1">123 Innovation Drive<br/>Tech Park, Patna, Bihar 800001</p>
+                  <p className="text-slate-600 mt-1">
+                    <a href="https://maps.app.goo.gl/UaY84sBFCaLg17nQ6" target="_blank" rel="noopener noreferrer" className="hover:text-orange-600 transition-colors">
+                      123 Innovation Drive<br/>Tech Park, Patna, Bihar 800001
+                    </a>
+                  </p>
                 </div>
               </CardContent>
             </Card>
@@ -72,7 +76,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900">Phone</h3>
-                  <p className="text-slate-600 mt-1">+91 98765 43210</p>
+                  <p className="text-slate-600 mt-1">+91 7070440365<br/>+91 9534900999</p>
                 </div>
               </CardContent>
             </Card>
@@ -84,7 +88,7 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900">Email</h3>
-                  <p className="text-slate-600 mt-1">support@findmyinterior.com</p>
+                  <p className="text-slate-600 mt-1">Contact@findmyinterior.com</p>
                 </div>
               </CardContent>
             </Card>

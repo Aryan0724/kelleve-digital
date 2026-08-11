@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\Validation\ValidationException;
+use App\Services\OtpService;
 
 class AuthController extends Controller
 {
@@ -251,6 +252,100 @@ class AuthController extends Controller
         }
 
         // Revoke old tokens and issue fresh one
+        $user->tokens()->delete();
+        $token = $user->createToken('api-token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Login successful.',
+            'data'    => [
+                'user'  => new UserResource($user->load('activeSubscription.plan')),
+                'token' => $token,
+            ],
+        ]);
+    }
+
+    /**
+     * POST /api/v1/auth/send-otp
+     */
+    public function sendOtp(Request $request, OtpService $otpService): JsonResponse
+    {
+        $request->validate([
+            'phone' => ['required', 'string', 'regex:/^[6-9]\d{9}$/'],
+            'type'  => ['nullable', 'in:login,registration,lead_verification,phone_update']
+        ]);
+
+        $otpService->sendOtp($request->phone, $request->type ?? 'login');
+
+        return response()->json([
+            'success' => true,
+            'message' => 'OTP sent successfully.'
+        ]);
+    }
+
+    /**
+     * POST /api/v1/auth/verify-otp
+     */
+    public function verifyOtp(Request $request, OtpService $otpService): JsonResponse
+    {
+        $request->validate([
+            'phone' => ['required', 'string', 'regex:/^[6-9]\d{9}$/'],
+            'otp'   => ['required', 'string', 'size:6'],
+            'type'  => ['nullable', 'in:login,registration,lead_verification,phone_update']
+        ]);
+
+        $result = $otpService->verifyOtp($request->phone, $request->otp, $request->type ?? 'login');
+
+        if (!$result['status']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], 400);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => $result['message'],
+            'data'    => isset($result['user']) ? new UserResource($result['user']) : null
+        ]);
+    }
+
+    /**
+     * POST /api/v1/auth/login-with-otp
+     */
+    public function loginWithOtp(Request $request, OtpService $otpService): JsonResponse
+    {
+        $request->validate([
+            'phone' => ['required', 'string', 'regex:/^[6-9]\d{9}$/'],
+            'otp'   => ['required', 'string', 'size:6'],
+        ]);
+
+        $result = $otpService->verifyOtp($request->phone, $request->otp, 'login');
+
+        if (!$result['status']) {
+            return response()->json([
+                'success' => false,
+                'message' => $result['message'],
+            ], 400);
+        }
+
+        $user = $result['user'] ?? User::where('phone', $request->phone)->first();
+
+        if (!$user) {
+            return response()->json([
+                'success' => false,
+                'message' => 'No account found with this phone number. Please register first.',
+                'action'  => 'register'
+            ], 404);
+        }
+
+        if (!$user->is_active) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Your account has been suspended. Please contact support.',
+            ], 403);
+        }
+
         $user->tokens()->delete();
         $token = $user->createToken('api-token')->plainTextToken;
 

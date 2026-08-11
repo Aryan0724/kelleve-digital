@@ -16,8 +16,19 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 import { BookmarkButton } from "@/components/common/BookmarkButton";
 
 export default function ProjectsPage() {
-  const [projects, setProjects] = useState([]);
+  const [projects, setProjects] = useState<any[]>([]);
+  const [filteredProjects, setFilteredProjects] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  
+  // Filter states
+  const [budgetMin, setBudgetMin] = useState<string>("");
+  const [budgetMax, setBudgetMax] = useState<string>("");
+  const [areaMin, setAreaMin] = useState<string>("");
+  const [areaMax, setAreaMax] = useState<string>("");
+  const [category, setCategory] = useState<string>("All Categories");
+  const [propertyType, setPropertyType] = useState<string>("All Types");
+  const [location, setLocation] = useState<string>("");
+  const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
   const router = useRouter();
   const { user, token, setShowLoginModal } = useAuthStore();
   const [bidModalReq, setBidModalReq] = useState<any>(null);
@@ -46,6 +57,7 @@ export default function ProjectsPage() {
       setLoading(true);
       const res = await api.get("/projects");
       setProjects(res.data.data || []);
+      setFilteredProjects(res.data.data || []);
     } catch (err) {
       console.error(err);
     } finally {
@@ -80,10 +92,17 @@ export default function ProjectsPage() {
               <div>
                 <label className="text-xs font-bold mb-2 block text-slate-700">Project Category</label>
                 <div className="relative border border-slate-200 rounded-lg bg-white overflow-hidden">
-                  <select className="w-full appearance-none bg-transparent py-2.5 pl-3 pr-8 text-sm font-medium text-slate-700 focus:outline-none">
+                  <select 
+                    className="w-full appearance-none bg-transparent py-2.5 pl-3 pr-8 text-sm font-medium text-slate-700 focus:outline-none"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
                     <option>All Categories</option>
                     <option>Interior Design</option>
                     <option>Construction</option>
+                    <option>Renovation</option>
+                    <option>Architecture</option>
+                    <option>Builder Project</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                 </div>
@@ -93,26 +112,37 @@ export default function ProjectsPage() {
               <div>
                 <label className="text-xs font-bold mb-2 block text-slate-700">Location</label>
                 <div className="relative border border-slate-200 rounded-lg bg-white overflow-hidden flex items-center">
-                  <Input placeholder="Enter Location" className="border-0 focus-visible:ring-0 shadow-none text-sm font-medium" />
+                  <Input 
+                    placeholder="Enter Location" 
+                    className="border-0 focus-visible:ring-0 shadow-none text-sm font-medium" 
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                  />
                   <MapPin className="w-4 h-4 text-slate-400 mr-3 shrink-0" />
                 </div>
               </div>
 
               {/* Budget Range */}
               <div>
-                <label className="text-xs font-bold mb-2 block text-slate-700">Budget Range</label>
+                <label className="text-xs font-bold mb-2 block text-slate-700">Budget Range (₹)</label>
                 <div className="flex gap-2">
                   <div className="relative border border-slate-200 rounded-lg bg-white flex-1 overflow-hidden">
-                    <select className="w-full appearance-none bg-transparent py-2 pl-3 pr-6 text-sm font-medium text-slate-700 focus:outline-none">
-                      <option>Min</option>
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    <input 
+                      type="number" 
+                      placeholder="Min" 
+                      className="w-full bg-transparent py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none" 
+                      value={budgetMin}
+                      onChange={(e) => setBudgetMin(e.target.value)}
+                    />
                   </div>
                   <div className="relative border border-slate-200 rounded-lg bg-white flex-1 overflow-hidden">
-                    <select className="w-full appearance-none bg-transparent py-2 pl-3 pr-6 text-sm font-medium text-slate-700 focus:outline-none">
-                      <option>Max</option>
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    <input 
+                      type="number" 
+                      placeholder="Max" 
+                      className="w-full bg-transparent py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none" 
+                      value={budgetMax}
+                      onChange={(e) => setBudgetMax(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
@@ -121,8 +151,18 @@ export default function ProjectsPage() {
               <div>
                 <label className="text-xs font-bold mb-2 block text-slate-700">Property Type</label>
                 <div className="relative border border-slate-200 rounded-lg bg-white overflow-hidden">
-                  <select className="w-full appearance-none bg-transparent py-2.5 pl-3 pr-8 text-sm font-medium text-slate-700 focus:outline-none">
+                  <select 
+                    className="w-full appearance-none bg-transparent py-2.5 pl-3 pr-8 text-sm font-medium text-slate-700 focus:outline-none"
+                    value={propertyType}
+                    onChange={(e) => setPropertyType(e.target.value)}
+                  >
                     <option>All Types</option>
+                    <option>1BHK</option>
+                    <option>2BHK</option>
+                    <option>3BHK</option>
+                    <option>4BHK+</option>
+                    <option>Villa</option>
+                    <option>Commercial</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                 </div>
@@ -133,16 +173,22 @@ export default function ProjectsPage() {
                 <label className="text-xs font-bold mb-2 block text-slate-700">Area (Sq. Ft.)</label>
                 <div className="flex gap-2">
                   <div className="relative border border-slate-200 rounded-lg bg-white flex-1 overflow-hidden">
-                    <select className="w-full appearance-none bg-transparent py-2 pl-3 pr-6 text-sm font-medium text-slate-700 focus:outline-none">
-                      <option>Min</option>
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    <input 
+                      type="number" 
+                      placeholder="Min" 
+                      className="w-full bg-transparent py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none" 
+                      value={areaMin}
+                      onChange={(e) => setAreaMin(e.target.value)}
+                    />
                   </div>
                   <div className="relative border border-slate-200 rounded-lg bg-white flex-1 overflow-hidden">
-                    <select className="w-full appearance-none bg-transparent py-2 pl-3 pr-6 text-sm font-medium text-slate-700 focus:outline-none">
-                      <option>Max</option>
-                    </select>
-                    <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                    <input 
+                      type="number" 
+                      placeholder="Max" 
+                      className="w-full bg-transparent py-2 px-3 text-sm font-medium text-slate-700 focus:outline-none" 
+                      value={areaMax}
+                      onChange={(e) => setAreaMax(e.target.value)}
+                    />
                   </div>
                 </div>
               </div>
@@ -153,6 +199,9 @@ export default function ProjectsPage() {
                 <div className="relative border border-slate-200 rounded-lg bg-white overflow-hidden">
                   <select className="w-full appearance-none bg-transparent py-2.5 pl-3 pr-8 text-sm font-medium text-slate-700 focus:outline-none">
                     <option>All Status</option>
+                    <option>Open for Bidding</option>
+                    <option>In Progress</option>
+                    <option>Completed</option>
                   </select>
                   <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none" />
                 </div>
@@ -160,13 +209,31 @@ export default function ProjectsPage() {
 
               {/* Verified Projects Only */}
               <div className="flex items-center gap-2 pt-2 pb-2">
-                <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-[#E8701A] focus:ring-[#E8701A]" />
-                <label className="text-sm font-bold text-slate-700 flex items-center gap-1">
+                <input 
+                  type="checkbox" 
+                  className="w-4 h-4 rounded border-slate-300 text-[#E8701A] focus:ring-[#E8701A]" 
+                  checked={verifiedOnly}
+                  onChange={(e) => setVerifiedOnly(e.target.checked)}
+                />
+                <label className="text-sm font-bold text-slate-700 flex items-center gap-1 cursor-pointer" onClick={() => setVerifiedOnly(!verifiedOnly)}>
                   Verified Projects Only <CheckCircle2 className="w-4 h-4 text-[#E8701A]" />
                 </label>
               </div>
 
-              <Button className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white font-bold h-11 rounded-lg transition-all shadow-md flex items-center justify-center gap-2">
+              <Button 
+                onClick={() => {
+                  let res = [...projects];
+                  if (category !== "All Categories") res = res.filter(p => p.project_category === category || p.requirement_type === category.toUpperCase());
+                  if (propertyType !== "All Types") res = res.filter(p => p.property_type === propertyType || p.project_category === propertyType);
+                  if (location) res = res.filter(p => p.city?.toLowerCase().includes(location.toLowerCase()) || p.district?.toLowerCase().includes(location.toLowerCase()));
+                  if (budgetMin) res = res.filter(p => (p.budget_min || p.budget) >= parseInt(budgetMin));
+                  if (budgetMax) res = res.filter(p => (p.budget_max || p.budget_min || p.budget) <= parseInt(budgetMax));
+                  if (areaMin) res = res.filter(p => p.area >= parseInt(areaMin));
+                  if (areaMax) res = res.filter(p => p.area <= parseInt(areaMax));
+                  setFilteredProjects(res);
+                }}
+                className="w-full bg-[#E8701A] hover:bg-[#c25a12] text-white font-bold h-11 rounded-lg transition-all shadow-md flex items-center justify-center gap-2"
+              >
                 <Filter className="w-4 h-4" /> Apply Filters
               </Button>
             </div>
@@ -205,9 +272,14 @@ export default function ProjectsPage() {
           <div className="bg-white p-5 border border-slate-200 shadow-sm rounded-xl">
             <h4 className="font-extrabold text-slate-800 text-sm mb-1">Need Help?</h4>
             <p className="text-xs text-slate-500 mb-4 font-medium">Our team is ready to help you</p>
-            <Button variant="outline" className="w-full border-[#E8701A] text-[#E8701A] hover:bg-orange-50 font-bold h-10 rounded-lg flex items-center justify-center gap-2">
-              <Phone className="w-4 h-4" /> +91 9534900999
-            </Button>
+            <div className="flex flex-col gap-2">
+              <Button variant="outline" className="w-full border-[#E8701A] text-[#E8701A] hover:bg-orange-50 font-bold h-10 rounded-lg flex items-center justify-center gap-2">
+                <Phone className="w-4 h-4" /> +91 9534900999
+              </Button>
+              <Button variant="outline" className="w-full border-[#E8701A] text-[#E8701A] hover:bg-orange-50 font-bold h-10 rounded-lg flex items-center justify-center gap-2">
+                <Phone className="w-4 h-4" /> +91 7070440365
+              </Button>
+            </div>
           </div>
         </div>
 
@@ -365,13 +437,24 @@ export default function ProjectsPage() {
                       >
                         <Briefcase className="w-3.5 h-3.5" /> {isJob ? "Apply for Job" : "Place Bid"}
                       </Button>
-                      <Button 
-                        onClick={() => setUnlockModalReq({ id: req.id, type: reqType, price: req.unlock_price })}
-                        variant="outline" 
-                        className="w-full border-green-500 text-green-600 hover:bg-green-50 h-9 rounded-md font-bold text-xs flex items-center justify-center gap-2"
-                      >
-                        <Phone className="w-3.5 h-3.5" /> Unlock Contact
-                      </Button>
+                      {req.is_unlocked ? (
+                        <a href={`tel:${req.phone}`} className="w-full">
+                          <Button 
+                            variant="outline" 
+                            className="w-full border-green-500 text-green-600 hover:bg-green-50 h-9 rounded-md font-bold text-xs flex items-center justify-center gap-2"
+                          >
+                            <Phone className="w-3.5 h-3.5" /> {req.phone}
+                          </Button>
+                        </a>
+                      ) : (
+                        <Button 
+                          onClick={() => setUnlockModalReq({ id: req.id, type: reqType, price: req.unlock_price })}
+                          variant="outline" 
+                          className="w-full border-green-500 text-green-600 hover:bg-green-50 h-9 rounded-md font-bold text-xs flex items-center justify-center gap-2"
+                        >
+                          <Phone className="w-3.5 h-3.5" /> Unlock {req.phone || 'Contact'}
+                        </Button>
+                      )}
                     </>
                   )}
                   <Link href={`/requirements/${req.id}?type=${reqType}`} className="w-full">

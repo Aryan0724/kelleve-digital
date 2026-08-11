@@ -19,7 +19,7 @@ $settings = [
     ["key" => "bid_fee_worker", "value" => "0.00", "type" => "integer", "group" => "fees", "description" => "Bid fee for Skilled Workers"],
     ["key" => "bid_fee_supplier", "value" => "5.00", "type" => "integer", "group" => "fees", "description" => "Bid fee for Suppliers"],
     ["key" => "platform_commission_percent", "value" => "5", "type" => "integer", "group" => "fees", "description" => "Platform commission percentage on completed projects"],
-    ["key" => "contact_unlock_fee", "value" => "50.00", "type" => "integer", "group" => "fees", "description" => "Fee to unlock a lead contact"],
+    ["key" => "contact_unlock_fee", "value" => "49.00", "type" => "integer", "group" => "fees", "description" => "Fee to unlock a lead contact"],
 ];
 
 foreach ($settings as $s) {
