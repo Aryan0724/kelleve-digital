@@ -114,7 +114,7 @@ const DashboardSkeleton = () => (
 );
 
 export default function UserDashboard() {
-  const { user, token, _hasHydrated } = useAuthStore();
+  const { user, token, _hasHydrated, updateUser } = useAuthStore();
   const router = useRouter();
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -124,6 +124,13 @@ export default function UserDashboard() {
     try {
       const res = await api.get("/user/dashboard");
       setData(res.data.data);
+      
+      if (user && res.data.data.user) {
+        updateUser({
+          ...user,
+          wallet_balance: res.data.data.user.wallet_balance,
+        });
+      }
     } catch (err) {
       console.error("Dashboard fetch error", err);
     } finally {

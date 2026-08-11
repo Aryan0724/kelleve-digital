@@ -113,7 +113,22 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
     }
   };
 
-  const hasEnoughWalletBalance = (user?.wallet_balance || 0) >= amount;
+  const numAmount = Number(amount) || 0;
+  const numBalance = Number(user?.wallet_balance) || 0;
+  const hasEnoughWalletBalance = numAmount > 0 && numBalance >= numAmount;
+
+  if (numAmount <= 0) {
+    return (
+      <Button 
+        onClick={() => alert("To switch to a free plan, please contact support or use the downgrade option.")} 
+        disabled={loading} 
+        variant="outline"
+        className="w-full h-12 text-lg font-bold"
+      >
+        {label}
+      </Button>
+    );
+  }
 
   return (
     <div className="w-full flex flex-col gap-2">
@@ -124,7 +139,7 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
           variant="default"
           className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg text-white font-bold"
         >
-          {loading ? "Processing..." : `Pay with Wallet (Bal: ₹${user?.wallet_balance})`}
+          {loading ? "Processing..." : `Pay with Wallet (Bal: ₹${numBalance})`}
         </Button>
       )}
       <Button 

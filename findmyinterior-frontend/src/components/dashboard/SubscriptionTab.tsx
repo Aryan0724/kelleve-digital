@@ -92,7 +92,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
         {plans.map(plan => {
-          const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase() || (currentPlan === '' && plan.slug === 'basic');
+          const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase() || (currentPlan === '' && (plan.slug === 'basic' || plan.slug === 'starter'));
           const isMostPopular = plan.slug === 'professional';
           const price = plan.price_yearly;
           const monthlyPrice = plan.price_monthly;
@@ -142,7 +142,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
               <CardFooter className="mt-auto">
                 {isCurrent ? (
                   <Button className="w-full" variant="outline" disabled>Current Plan</Button>
-                ) : plan.slug === 'basic' ? (
+                ) : plan.slug === 'basic' || plan.slug === 'starter' || Number(price) === 0 ? (
                   <Button className="w-full" variant="outline" disabled>Free</Button>
                 ) : (
                   <div className="w-full">
