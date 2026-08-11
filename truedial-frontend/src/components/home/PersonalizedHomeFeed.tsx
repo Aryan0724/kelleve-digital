@@ -35,10 +35,8 @@ export default function PersonalizedHomeFeed() {
               </h2>
               {availableRoles.length > 1 && (
                 <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="outline" size="sm" className="h-6 text-[10px] uppercase tracking-wider font-bold px-2 py-0 border-primary/50 text-primary hover:bg-primary/10">
-                      Viewing as: {activeRole} <ChevronDown className="w-3 h-3 ml-1" />
-                    </Button>
+                  <DropdownMenuTrigger className="inline-flex items-center justify-center whitespace-nowrap rounded-md border border-primary/50 bg-transparent h-6 text-[10px] uppercase tracking-wider font-bold px-2 py-0 text-primary hover:bg-primary/10">
+                    Viewing as: {activeRole} <ChevronDown className="w-3 h-3 ml-1" />
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="start">
                     {availableRoles.map(role => (
