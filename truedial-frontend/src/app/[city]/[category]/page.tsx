@@ -145,7 +145,7 @@ export default function CategoryCityPage({ params }: PageProps) {
             </div>
             
             {/* Re-use the existing component which maps businesses */}
-            <LiveBusinessesGrid filterCategory={formattedCategory} filterCity={formattedCity} />
+            <LiveBusinessesGrid businesses={[]} />
           </div>
         </div>
       </section>
