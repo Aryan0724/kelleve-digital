@@ -90,7 +90,7 @@ export function RequirementUnlockModal({
             ) : (
               <div className="flex flex-col items-end">
                 <span className="text-xs text-slate-500 line-through">₹99</span>
-                <span className="font-bold text-slate-800">₹{unlockPrice}</span>
+                <span className="font-bold text-slate-800">₹{unlockPrice ?? 49}</span>
               </div>
             )}
           </div>
