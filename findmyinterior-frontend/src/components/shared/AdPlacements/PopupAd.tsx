@@ -47,7 +47,7 @@ export function PopupAd() {
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogContent className="sm:max-w-[600px] p-0 overflow-hidden bg-transparent border-0 shadow-none">
+      <DialogContent className="sm:max-w-[600px] 2xl:max-w-[800px] p-0 overflow-hidden bg-transparent border-0 shadow-none">
         <div className="relative bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-2xl">
           <button 
             onClick={() => setOpen(false)}

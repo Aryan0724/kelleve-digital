@@ -606,6 +606,27 @@ function InquiriesView() {
 
 // ─── Main CRM Page ─────────────────────────────────────────────────────────────
 export default function CrmPage() {
+  const { user } = useAuth();
+
+  const userRoles = (user as any)?.roles || [];
+  const userCategories = (user as any)?.categories || [];
+  const roleSlugs = userRoles.map((r: any) => typeof r === 'string' ? r.toLowerCase() : (r.slug || r.name || '').toLowerCase());
+  const categorySlugs = userCategories.map((c: any) => typeof c === 'string' ? c.toLowerCase() : (c.slug || c.name || '').toLowerCase());
+
+  const isMedical = categorySlugs.some((c: string) => ['hospital', 'clinic', 'doctor', 'medical'].includes(c)) || roleSlugs.some((r: string) => ['hospital', 'clinic', 'doctor', 'medical'].includes(r));
+  const isRestaurant = categorySlugs.some((c: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(c)) || roleSlugs.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
+  const isService = categorySlugs.some((c: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(c)) || roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
+  const isRealEstate = categorySlugs.some((c: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(c)) || roleSlugs.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
+
+  if (isMedical) return <AppointmentsView />;
+  if (isRestaurant) return <ReservationsView />;
+  if (isService) return <ServiceRequestsView />;
+
+  // Default to the Leads Pipeline (Kanban) for Real Estate, General Vendors, etc.
+  return <DefaultLeadsView />;
+}
+
+function DefaultLeadsView() {
   const [leads, setLeads] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 

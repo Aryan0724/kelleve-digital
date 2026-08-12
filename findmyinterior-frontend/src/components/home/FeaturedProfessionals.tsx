@@ -68,7 +68,7 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
         <div className="hidden lg:block">
           <div className="flex justify-between items-end mb-8">
             <div>
-              <h2 className="text-3xl font-bold text-[#0a1c3a] dark:text-white mb-2">Top Rated Professionals</h2>
+              <h2 className="text-3xl xl:text-4xl font-bold text-[#0a1c3a] dark:text-white mb-2">Top Rated Professionals</h2>
               <p className="text-gray-600 dark:text-gray-400">Hire the most trusted experts in Bihar</p>
             </div>
             <Link href="/professionals" className="text-[#E8701A] font-semibold hover:underline">
@@ -76,7 +76,7 @@ export function FeaturedProfessionals({ pros = [] }: { pros?: any[] }) {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
             {displayPros.map((pro, i) => (
               <div key={pro.id || i} className="bg-white dark:bg-slate-900 rounded-xl p-5 shadow-sm border border-gray-100 dark:border-slate-800 hover:shadow-md transition">
                 <div className="flex items-center gap-4 mb-4">

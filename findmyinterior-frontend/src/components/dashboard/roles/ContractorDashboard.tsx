@@ -109,7 +109,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             />
             
             <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
-              <div className="flex overflow-x-auto md:flex-col custom-scrollbar">
+              <div className="flex overflow-x-auto md:flex-col no-scrollbar md:overflow-x-hidden md:overflow-y-auto custom-scrollbar">
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Leads")}
                 {renderSidebarButton("unlocked_leads", <LayoutDashboard className="h-5 w-5" />, "Unlocked Leads")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "My Bids")}

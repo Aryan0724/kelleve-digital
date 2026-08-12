@@ -89,7 +89,7 @@ export default async function LeadsPage({ searchParams }: { searchParams: Promis
                   
                   <p className="text-slate-600 line-clamp-2">{req.description}</p>
                 </div>
-                  <LeadActionButtons req={req} className="flex flex-col gap-2 shrink-0 border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-6 min-w-[140px] md:items-center justify-center" />
+                  <LeadActionButtons req={req} className="flex flex-col gap-2 shrink-0 border-t md:border-t-0 md:border-l pt-4 md:pt-0 md:pl-6 min-w-0 w-full md:w-auto md:min-w-[140px] md:items-center justify-center" />
                 </div>
             </CardContent>
           </Card>

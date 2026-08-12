@@ -50,10 +50,10 @@ export function Hero() {
           </div>
 
           {/* Left Content */}
-          <div className="relative z-10 w-full sm:w-[80%] md:w-[60%] lg:w-[50%] pt-4 sm:pt-0">
+          <div className="relative z-10 w-full sm:w-4/5 md:w-3/5 lg:w-1/2 xl:w-[55%] 2xl:w-1/2 pt-4 sm:pt-0">
             {isWorker ? (
               <>
-                <h1 className="text-[28px] md:text-5xl lg:text-[4rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
+                <h1 className="text-[28px] md:text-5xl lg:text-[4rem] xl:text-[4.5rem] 2xl:text-[5.5rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
                   Find Regular<br/>
                   Work in <span className="text-[#E8701A]">Bihar</span>
                 </h1>
@@ -71,7 +71,7 @@ export function Hero() {
               </>
             ) : isPro ? (
               <>
-                <h1 className="text-[28px] md:text-5xl lg:text-[4rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
+                <h1 className="text-[28px] md:text-5xl lg:text-[4rem] xl:text-[4.5rem] 2xl:text-[5.5rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
                   Grow Your<br/>
                   Business in <span className="text-[#E8701A]">Bihar</span>
                 </h1>
@@ -89,7 +89,7 @@ export function Hero() {
               </>
             ) : (
               <>
-                <h1 className="text-[32px] sm:text-[36px] md:text-5xl lg:text-[4rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
+                <h1 className="text-[32px] sm:text-[36px] md:text-5xl lg:text-[4rem] xl:text-[4.5rem] 2xl:text-[5.5rem] font-black text-[#0a1c3a] dark:text-white leading-[1.12] mb-3 md:mb-6 tracking-tight">
                   Where Projects<br/>
                   <span className="text-[#E8701A]">Meet Professionals</span>
                 </h1>
@@ -129,7 +129,7 @@ export function Hero() {
         </div>
         
         {/* Feature Strip (Responsive Pill) */}
-        <div className="w-[95%] md:w-full max-w-5xl bg-white dark:bg-slate-900 rounded-2xl md:rounded-full shadow-sm border border-slate-100 dark:border-slate-800 py-3 px-3 md:py-6 md:px-12 -mt-10 md:-mt-14 relative z-10 mx-auto">
+        <div className="w-[95%] md:w-full max-w-5xl 2xl:max-w-6xl bg-white dark:bg-slate-900 rounded-2xl md:rounded-full shadow-sm border border-slate-100 dark:border-slate-800 py-3 px-3 md:py-6 md:px-12 -mt-10 md:-mt-14 relative z-10 mx-auto">
           <div className="grid grid-cols-4 gap-2 md:gap-6 items-center justify-between">
             <div className="flex flex-col md:flex-row items-center justify-center gap-1.5 md:gap-3 text-center md:text-left group cursor-default">
               <div className="md:bg-orange-50 md:dark:bg-orange-900/20 md:p-3 md:rounded-full group-hover:scale-110 transition-transform">

@@ -272,7 +272,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
             />
 
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 right-0 w-full min-w-[320px] mt-3 bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-[9999]">
+              <div className="absolute top-full left-0 right-0 w-full mt-3 bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-[9999]">
                 <ul className="py-2">
                   {suggestions.map((suggestion, idx) => (
                     <li key={idx}>

@@ -112,7 +112,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
             />
 
             <div className="bg-white border rounded-xl overflow-hidden w-full">
-              <div className="flex overflow-x-auto snap-x snap-mandatory md:flex-col w-full" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+              <div className="flex overflow-x-auto snap-x snap-mandatory md:flex-col w-full no-scrollbar md:overflow-x-hidden md:overflow-y-auto">
                 {renderSidebarButton("projects", <Building className="h-5 w-5" />, "Projects")}
                 {renderSidebarButton("possession_projects", <Building className="h-5 w-5" />, "Possession Projects")}
                 {renderSidebarButton("contractor_requests", <HardHat className="h-5 w-5" />, "Contractor Requests")}

@@ -48,13 +48,13 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
         {/* Categories Grid/Carousel */}
         {/* Mobile: Horizontal scroll (flex overflow-x-auto) */}
         {/* Desktop: Grid (grid-cols-4 or flex-wrap) */}
-        <div className="flex overflow-x-auto md:grid md:grid-cols-3 lg:grid-cols-4 xl:flex xl:flex-wrap hide-scrollbar md:justify-start gap-3 md:gap-4 pb-2 px-1 md:px-0">
+        <div className="flex overflow-x-auto md:grid md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 hide-scrollbar md:justify-start gap-3 md:gap-4 pb-2 px-1 md:px-0">
           {exactCategories.map((category, idx) => (
             <Link 
               href={`/professionals?category=${category.slug}`}
               prefetch={true}
               key={idx}
-              className="flex flex-col items-center justify-center gap-1.5 p-3 md:p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[100px] w-[100px] md:min-w-0 md:w-auto xl:w-[calc(11.11%-15px)] shrink-0 hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-lg active:scale-95 cursor-pointer transition-all duration-150"
+              className="flex flex-col items-center justify-center gap-1.5 p-3 md:p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[90px] w-[90px] sm:min-w-[100px] sm:w-[100px] md:min-w-0 md:w-auto shrink-0 hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-lg active:scale-95 cursor-pointer transition-all duration-150"
             >
               <div className="relative flex items-center justify-center w-12 h-12 md:w-16 md:h-16 mb-1">
                 <div className="absolute w-8 h-8 md:w-10 md:h-10 bg-orange-50 dark:bg-orange-900/40 rounded-full bottom-0 left-0"></div>

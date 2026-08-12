@@ -92,7 +92,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
               />
 
             <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">
-              <div className="flex overflow-x-auto snap-x snap-mandatory md:flex-col w-full" style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}>
+              <div className="flex overflow-x-auto snap-x snap-mandatory md:flex-col w-full no-scrollbar md:overflow-x-hidden md:overflow-y-auto">
                 {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
                 {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
                 {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Quotes")}

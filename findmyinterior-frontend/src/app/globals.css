@@ -158,6 +158,9 @@
 }
 
 @layer utilities {
+  /* ============================================================
+     CONTAINER — supports 320px (phone) → 4K TV (3840px)
+  ============================================================ */
   .container {
     width: 100%;
     margin-right: auto;
@@ -165,32 +168,70 @@
     padding-right: 1rem;
     padding-left: 1rem;
   }
+  @media (min-width: 375px) {
+    .container { max-width: 375px; padding-right: 1rem; padding-left: 1rem; }
+  }
   @media (min-width: 640px) {
-    .container {
-      max-width: 640px;
-    }
+    .container { max-width: 640px; padding-right: 1.5rem; padding-left: 1.5rem; }
   }
   @media (min-width: 768px) {
-    .container {
-      max-width: 768px;
-    }
+    .container { max-width: 768px; }
   }
   @media (min-width: 1024px) {
-    .container {
-      max-width: 1024px;
-    }
+    .container { max-width: 1024px; padding-right: 2rem; padding-left: 2rem; }
   }
   @media (min-width: 1280px) {
-    .container {
-      max-width: 1280px;
-    }
+    .container { max-width: 1280px; }
   }
   @media (min-width: 1536px) {
-    .container {
-      max-width: 1536px;
-    }
+    .container { max-width: 1536px; }
   }
-  
+  /* TV / Ultrawide breakpoints */
+  @media (min-width: 1920px) {
+    .container { max-width: 1700px; padding-right: 2.5rem; padding-left: 2.5rem; }
+  }
+  @media (min-width: 2560px) {
+    .container { max-width: 2100px; }
+  }
+  @media (min-width: 3840px) {
+    .container { max-width: 2800px; }
+  }
+
+  /* ============================================================
+     SCROLLBAR UTILITIES — used widely across the app
+  ============================================================ */
+  .no-scrollbar::-webkit-scrollbar,
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar,
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9999px; }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+
+  /* ============================================================
+     TV / LARGE SCREEN FONT SCALING
+     Browsers on Smart TVs often render at 100% zoom but on a
+     1920px+ canvas — scale up base font for readability.
+  ============================================================ */
+  @media (min-width: 1920px) {
+    :root { font-size: 17px; }
+  }
+  @media (min-width: 2560px) {
+    :root { font-size: 18px; }
+  }
+  @media (min-width: 3840px) {
+    :root { font-size: 20px; }
+  }
+
+  /* ============================================================
+     ANIMATIONS
+  ============================================================ */
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out forwards;
   }
@@ -200,15 +241,13 @@
   .animate-fade-in-right {
     animation: fadeInRight 0.8s ease-out forwards;
   }
-  .delay-100 {
-    animation-delay: 100ms;
-  }
-  .delay-200 {
-    animation-delay: 200ms;
-  }
-  .delay-300 {
-    animation-delay: 300ms;
-  }
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+
+  /* ============================================================
+     GLASS & CARD UTILITIES
+  ============================================================ */
   .glass-panel {
     @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-lg;
   }

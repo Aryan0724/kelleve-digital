@@ -128,7 +128,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
           </div>
 
           {layout === 'grid' ? (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-6">
               {listings.length > 0 ? listings.map((listing: any, index: number) => (
                 <React.Fragment key={listing.id}>
                   {/* Grid layout omitted for brevity as the focus is List view. Render a simpler grid card here or re-use existing. */}

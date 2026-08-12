@@ -224,7 +224,7 @@ export default function ConversationPage() {
               const isMe = Number(msg.sender_id) === Number(user.id);
               return (
                 <div key={msg.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[85%] md:max-w-[70%] rounded-2xl px-4 py-2 shadow-sm ${isMe ? 'bg-orange-600 text-white rounded-tr-sm' : 'bg-white border text-slate-800 rounded-tl-sm'}`}>
+                  <div className={`max-w-[85%] md:max-w-[70%] xl:max-w-[60%] 2xl:max-w-[50%] rounded-2xl px-4 py-2 shadow-sm ${isMe ? 'bg-orange-600 text-white rounded-tr-sm' : 'bg-white border text-slate-800 rounded-tl-sm'}`}>
                     <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.message}</p>
                     <div className={`text-[10px] mt-1 text-right ${isMe ? 'text-orange-200' : 'text-slate-400'}`}>
                       {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

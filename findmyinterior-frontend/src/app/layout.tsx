@@ -24,14 +24,14 @@ export const metadata: Metadata = {
   },
   description: "Find the Best Interior Designer, Civil Contractor, and Home Renovation Services in Patna, Bihar. Connect with top interior design companies, modular kitchen designers, and verified builders for residential and commercial projects.",
   keywords: [
-    "Interior Designer Near Me", "Best Interior Designer", "Interior Designers in Patna", 
-    "Home Interior Design", "Interior Design Company", "Interior Decoration Services", 
-    "Interior Contractor", "Home Renovation Services", "Home Improvement Services", 
-    "Residential Interior Designer", "Commercial Interior Designer", "Modular Kitchen Designer", 
+    "Interior Designer Near Me", "Best Interior Designer", "Interior Designers in Patna",
+    "Home Interior Design", "Interior Design Company", "Interior Decoration Services",
+    "Interior Contractor", "Home Renovation Services", "Home Improvement Services",
+    "Residential Interior Designer", "Commercial Interior Designer", "Modular Kitchen Designer",
     "False Ceiling Contractor", "Wardrobe Designer", "Office Interior Designer",
-    "Civil Contractor Near Me", "Building Contractor", "House Construction Contractor", 
-    "Renovation Contractor", "Turnkey Interior Contractor", "Painting Contractor", 
-    "Plumbing Contractor", "Electrical Contractor", "Builders in Patna", 
+    "Civil Contractor Near Me", "Building Contractor", "House Construction Contractor",
+    "Renovation Contractor", "Turnkey Interior Contractor", "Painting Contractor",
+    "Plumbing Contractor", "Electrical Contractor", "Builders in Patna",
     "Real Estate Developers", "Apartment Projects", "Villa Builders", "Residential Builder",
     "FindMyInterior", "Bihar"
   ],
@@ -105,13 +105,15 @@ export default function RootLayout({
           <TopRibbonAd />
           <Navbar />
           <PopupAd />
-          <main className="flex-1 relative pb-16 lg:pb-0">
+          {/* pb-16 for mobile bottom nav; hidden on md+ */}
+          <main className="flex-1 relative pb-16 md:pb-0">
             {children}
           </main>
           <div className="container mx-auto px-4 my-8">
             <AdSlot location="before_footer" className="w-full h-32 md:h-48 rounded-xl" />
           </div>
           <Footer />
+          {/* MobileBottomNav only shows on mobile — hidden on md+ via its own styles */}
           <MobileBottomNav />
           <GlobalLoginModal />
           <ToastContainer position="bottom-right" />

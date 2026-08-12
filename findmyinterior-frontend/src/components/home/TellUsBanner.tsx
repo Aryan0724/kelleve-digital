@@ -9,7 +9,7 @@ export function TellUsBanner() {
         <div className="bg-gradient-to-r from-[#FFF8F0] via-[#FFECD9] to-[#FFE0C4] dark:from-[#0f2142] dark:via-[#162d5a] dark:to-[#1b366b] rounded-[24px] p-5.5 sm:p-6 flex items-center justify-between shadow-md border-2 border-orange-200/80 dark:border-orange-500/40 relative overflow-hidden">
           
           {/* Left Text & CTA Button */}
-          <div className="flex flex-col max-w-[64%] z-10">
+          <div className="flex flex-col flex-1 min-w-0 z-10">
             <h3 className="text-base sm:text-lg font-black text-[#0a1c3a] dark:text-white leading-tight mb-1 tracking-tight">
               Tell us what you need.
             </h3>
@@ -25,7 +25,7 @@ export function TellUsBanner() {
           </div>
           
           {/* Right Side - Custom Figma-Style Requirement Clipboard & Quote Badge Illustration */}
-          <div className="w-[36%] flex justify-end items-center pr-1 pointer-events-none">
+          <div className="flex-shrink-0 w-20 sm:w-24 flex justify-end items-center pr-1 pointer-events-none">
             <svg className="w-22 h-22 drop-shadow-md" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
               {/* Warm glow background circle */}
               <circle cx="44" cy="40" r="28" fill="#FFE0C6" fillOpacity="0.9" />
