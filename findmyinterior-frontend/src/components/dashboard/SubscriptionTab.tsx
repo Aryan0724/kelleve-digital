@@ -36,17 +36,56 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
     try {
       const res = await api.get("/subscriptions/plans");
       const allPlans = res.data.data || [];
-      const userRole = user?.role || "worker";
       
-      let targetCategory = "worker";
-      if (userRole === "professional" || userRole === "architect" || userRole === "interior_designer") {
+      // user.roles is an array of slugs from the dashboard API
+      // user.role is a single string (may be undefined)
+      const userRoles: string[] = (user?.roles as any) || [];
+      const rolesArray = Array.isArray(userRoles) ? userRoles : [userRoles];
+      const primaryRole = (rolesArray[0] || user?.role || "worker") as string;
+
+      const PROFESSIONAL_ROLES = [
+        "interior_designer", "interior_company", "architect", "builder",
+        "contractor", "interior_contractor", "civil_contractor", "turnkey_contractor",
+        "renovation_contractor", "demolition_contractor", "modular_kitchen_designer",
+        "wardrobe_designer", "2d_3d_designer", "space_planner", "structural_engineer",
+        "civil_engineer", "mep_consultant", "landscape_designer", "vastu_consultant",
+        "interior_project_consultant", "real_estate_developer", "pest_control",
+        "deep_cleaning", "waterproofing", "home_renovation", "cctv_security",
+        "home_automation", "solar_installation", "ac_installation", "packers_movers",
+        "interior_material_transport", "equipment_rental"
+      ];
+      const SUPPLIER_ROLES = [
+        "material_supplier", "supplier", "plywood_dealer", "laminate_dealer",
+        "tile_dealer", "marble_granite_dealer", "paint_dealer", "hardware_supplier",
+        "lighting_supplier", "electrical_supplier", "sanitary_bathroom_supplier",
+        "modular_kitchen_material_supplier", "glass_supplier", "acp_aluminium_supplier",
+        "furniture_supplier", "door_window_supplier"
+      ];
+      const WORKER_ROLES = [
+        "worker", "skilled_worker", "carpenter", "electrician", "plumber", "painter",
+        "pop_false_ceiling_worker", "tile_marble_fitter", "granite_installer",
+        "fabricator", "aluminium_fabricator", "glass_installer", "welder",
+        "polish_worker", "wallpaper_installer"
+      ];
+
+      let targetCategory = "worker"; // default fallback
+      
+      const hasRole = (rolesList: string[]) =>
+        rolesArray.some(r => rolesList.includes(r)) || rolesList.includes(primaryRole);
+
+      if (hasRole(PROFESSIONAL_ROLES)) {
         targetCategory = "professional";
-      } else if (userRole === "business" || userRole === "contractor" || userRole === "supplier") {
+      } else if (hasRole(SUPPLIER_ROLES)) {
+        targetCategory = "business";
+      } else if (hasRole(WORKER_ROLES)) {
+        targetCategory = "worker";
+      } else if (primaryRole === "business") {
         targetCategory = "business";
       }
       
       const filteredPlans = allPlans.filter((p: any) => p.target_role_category === targetCategory);
-      setPlans(filteredPlans);
+      // If still no plans, show all plans as fallback
+      setPlans(filteredPlans.length > 0 ? filteredPlans : allPlans);
     } catch (e) {
       console.error(e);
     } finally {
