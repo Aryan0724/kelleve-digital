@@ -19,12 +19,14 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 import { toast } from "react-toastify";
 
 
-export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
+export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
   const { user } = useAuthStore();
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlanForUpgrade, setSelectedPlanForUpgrade] = useState<any>(null);
   const [isProcessingWallet, setIsProcessingWallet] = useState(false);
+  
+  const currentPlanName = typeof currentPlan === 'string' ? currentPlan : (currentPlan?.plan?.name || currentPlan?.name || "Free Plan");
 
   useEffect(() => {
     fetchPlans();
@@ -85,7 +87,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
 
   if (loading) return <div className="p-12 text-center text-slate-500">Loading plans...</div>;
 
-  const currentPlanObject = plans.find(p => p.name.toLowerCase() === (currentPlan || 'basic').toLowerCase()) || plans.find(p => p.slug === 'basic') || null;
+  const currentPlanObject = plans.find(p => p.name.toLowerCase() === (currentPlanName || 'basic').toLowerCase()) || plans.find(p => p.slug === 'basic') || null;
 
   return (
     <div className="space-y-6">
@@ -98,13 +100,13 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
             <div className="text-center md:text-left">
               <h3 className="text-sm font-semibold text-slate-400 tracking-wider uppercase mb-1">Current Plan</h3>
               <div className="text-3xl font-extrabold uppercase bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">
-                {currentPlan || "Basic"}
+                {currentPlanName || "Basic"}
               </div>
               
               <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
                 <div className="bg-white/10 px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm border border-white/5 flex items-center gap-2">
                   <span className="text-slate-400">Billing:</span>
-                  <span className="font-semibold text-white">{currentPlan?.toLowerCase() !== "basic" && currentPlan ? "Yearly" : "Free"}</span>
+                  <span className="font-semibold text-white">{currentPlanName?.toLowerCase() !== "basic" && currentPlanName ? "Yearly" : "Free"}</span>
                 </div>
                 {currentPlanObject?.is_featured_listing && (
                   <div className="bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm flex items-center font-medium">
@@ -133,7 +135,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
         {plans.map(plan => {
-          const currentPlanSafe = currentPlan || '';
+          const currentPlanSafe = currentPlanName || '';
           const isCurrent = currentPlanSafe.toLowerCase() === plan.name.toLowerCase() || (currentPlanSafe === '' && (plan.slug === 'basic' || plan.slug === 'starter'));
           const isMostPopular = plan.slug === 'professional';
           const price = plan.price_yearly;
