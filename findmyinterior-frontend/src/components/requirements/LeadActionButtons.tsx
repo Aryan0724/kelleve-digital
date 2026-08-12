@@ -53,7 +53,7 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
             variant="outline" 
             className="w-full border-green-500 text-green-600 hover:bg-green-50 font-bold h-9 text-xs flex items-center justify-center gap-2"
           >
-            <Phone className="w-3.5 h-3.5" /> Unlock {req.phone || 'Contact'}
+            <Phone className="w-3.5 h-3.5" /> Unlock Contact
           </Button>
         )}
         <Link href={`/requirements/${req.id}?type=${reqType}`} className="w-full">

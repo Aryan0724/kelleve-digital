@@ -15,10 +15,11 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { CheckoutButton } from "@/components/payments/CheckoutButton";
-
+import { useAuthStore } from "@/lib/store/useAuthStore";
 
 
 export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
+  const { user } = useAuthStore();
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [upgradePlan, setUpgradePlan] = useState<any>(null);
@@ -30,7 +31,18 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
   const fetchPlans = async () => {
     try {
       const res = await api.get("/subscriptions/plans");
-      setPlans(res.data.data || []);
+      const allPlans = res.data.data || [];
+      const userRole = user?.role || "worker";
+      
+      let targetCategory = "worker";
+      if (userRole === "professional" || userRole === "architect" || userRole === "interior_designer") {
+        targetCategory = "professional";
+      } else if (userRole === "business" || userRole === "contractor" || userRole === "supplier") {
+        targetCategory = "business";
+      }
+      
+      const filteredPlans = allPlans.filter((p: any) => p.target_role_category === targetCategory);
+      setPlans(filteredPlans);
     } catch (e) {
       console.error(e);
     } finally {

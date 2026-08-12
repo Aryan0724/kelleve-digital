@@ -350,6 +350,38 @@ class DashboardController extends Controller
                 }
             }
 
+            if (isset($data['recommended_leads']) && $data['recommended_leads']->isNotEmpty()) {
+                $data['recommended_leads'] = $data['recommended_leads']->map(function($lead) use ($user) {
+                    $hasBid = false;
+                    if ($lead instanceof \App\Models\Requirement) {
+                        $hasBid = \App\Models\Bid::where('requirement_id', $lead->id)
+                            ->where('professional_id', $user->id)
+                            ->exists();
+                    }
+                    
+                    $canSeeContact = clone $user;
+                    $canSeeContact = $canSeeContact && (
+                        $canSeeContact->id === $lead->user_id ||
+                        $canSeeContact->isAdmin() || 
+                        $canSeeContact->hasPremiumSubscription() || 
+                        $canSeeContact->hasUnlockedRequirement($lead->id) ||
+                        $hasBid
+                    );
+                    
+                    // Mask phone if not allowed
+                    if (!$canSeeContact && !empty($lead->phone)) {
+                        $lead->phone = substr($lead->phone, 0, 2) . '********';
+                    }
+                    if (!$canSeeContact && !empty($lead->email)) {
+                        $lead->email = null;
+                    }
+                    
+                    $lead->is_unlocked = $canSeeContact;
+                    
+                    return $lead;
+                });
+            }
+
             return $this->success($data);
         } catch (\Exception $e) {
             \Illuminate\Support\Facades\Log::error('Dashboard loading failed: ' . $e->getMessage(), [
