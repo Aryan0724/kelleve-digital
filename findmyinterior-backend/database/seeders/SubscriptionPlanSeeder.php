@@ -22,8 +22,8 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 0.00,
                 'price_yearly'           => 0.00,
                 'features'               => [
-                    'Free Profile',
-                    'Basic Search Visibility'
+                    '1 Free Profile',
+                    'Up to 5 Portfolio Images'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 5,
@@ -36,10 +36,9 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 199.00,
                 'price_yearly'           => 1999.00,
                 'features'               => [
-                    'Enhanced Profile',
-                    'WhatsApp Chat Link',
-                    'Instant Lead Notifications',
-                    'Basic Support'
+                    'WhatsApp Chat Integration',
+                    'Category Lead Notifications',
+                    'Up to 15 Portfolio Images'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 15,
@@ -52,10 +51,10 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 399.00,
                 'price_yearly'           => 3999.00,
                 'features'               => [
-                    'Better Ranking',
-                    'More Leads',
-                    'Profile Analytics',
-                    'Verified Badge'
+                    'Trusted Worker Badge',
+                    'Search Ranking Boost',
+                    'Instant Lead Notifications',
+                    'Up to 30 Portfolio Images'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 30,
@@ -68,10 +67,11 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 799.00,
                 'price_yearly'           => 7999.00,
                 'features'               => [
-                    'Maximum Visibility',
-                    'Priority Opportunities',
-                    'Top of Search Results',
-                    'Premium Support'
+                    'Elite Worker Badge',
+                    'Early Lead Access',
+                    'Real-time Notifications',
+                    'Maximum Search Boost',
+                    'Up to 50 Portfolio Images'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 50,
@@ -87,8 +87,7 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_yearly'           => 0.00,
                 'features'               => [
                     '1 Business Listing',
-                    'Basic Business Profile',
-                    'Contact Form'
+                    'Up to 10 Portfolio Images'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 10,
@@ -101,9 +100,10 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 499.00,
                 'price_yearly'           => 4499.00,
                 'features'               => [
-                    'Verified Business Badge',
-                    'WhatsApp Chat',
-                    'Higher Search Ranking'
+                    'Trusted Professional Badge',
+                    'WhatsApp Chat Integration',
+                    'Category Lead Notifications',
+                    'Up to 20 Portfolio Images'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 20,
@@ -116,9 +116,11 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 999.00,
                 'price_yearly'           => 8999.00,
                 'features'               => [
-                    'Project Leads + Bidding',
-                    'Unlimited Portfolio',
-                    'Top Category Placement'
+                    '3 Business Listings',
+                    'Search Ranking Boost',
+                    'Instant Lead Notifications',
+                    'Website Link Integration',
+                    'Up to 50 Portfolio Images'
                 ],
                 'max_listings'           => 3,
                 'max_gallery_images'     => 50,
@@ -131,10 +133,12 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 1999.00,
                 'price_yearly'           => 17999.00,
                 'features'               => [
-                    'Homepage Featured Slot',
-                    'Full Analytics Dashboard',
-                    'Competitor Insights',
-                    'Priority Admin Support'
+                    '5 Business Listings',
+                    'Elite Professional Badge',
+                    'Gold Verification',
+                    'Early Lead Access',
+                    'Real-time Notifications',
+                    'Up to 100 Portfolio Images'
                 ],
                 'max_listings'           => 5,
                 'max_gallery_images'     => 100,
@@ -149,8 +153,8 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 0.00,
                 'price_yearly'           => 0.00,
                 'features'               => [
-                    'Basic Company Profile',
-                    'Standard Discovery'
+                    '1 Business Profile',
+                    'Up to 10 Portfolio Images'
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 10,
@@ -163,9 +167,10 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 999.00,
                 'price_yearly'           => 8999.00,
                 'features'               => [
-                    'Multiple Listings',
-                    'Verified Company Badge',
-                    'Team Member Profiles'
+                    '3 Business Profiles',
+                    'Trusted Business Badge',
+                    'WhatsApp Chat Integration',
+                    'Up to 30 Portfolio Images'
                 ],
                 'max_listings'           => 3,
                 'max_gallery_images'     => 30,
@@ -178,9 +183,11 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 1999.00,
                 'price_yearly'           => 17999.00,
                 'features'               => [
-                    'Priority Visibility',
-                    'Project Promotion',
-                    'Professional Network Access'
+                    '10 Business Profiles',
+                    'Search Ranking Boost',
+                    'Instant Lead Notifications',
+                    'Website Link Integration',
+                    'Up to 100 Portfolio Images'
                 ],
                 'max_listings'           => 10,
                 'max_gallery_images'     => 100,
@@ -193,10 +200,12 @@ class SubscriptionPlanSeeder extends Seeder
                 'price_monthly'          => 3999.00,
                 'price_yearly'           => 35999.00,
                 'features'               => [
-                    'Multiple Branches',
-                    'Dominant Search Real Estate',
-                    'Dedicated Account Manager',
-                    'Custom Branding'
+                    '20 Business Profiles',
+                    'Elite Business Badge',
+                    'Gold Verification',
+                    'Maximum Search Boost',
+                    'Early Lead Access',
+                    'Up to 200 Portfolio Images'
                 ],
                 'max_listings'           => 20,
                 'max_gallery_images'     => 200,
