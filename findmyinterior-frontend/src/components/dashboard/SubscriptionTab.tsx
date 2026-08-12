@@ -16,13 +16,15 @@ import {
 } from "@/components/ui/dialog";
 import { CheckoutButton } from "@/components/payments/CheckoutButton";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { toast } from "sonner";
 
 
 export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
   const { user } = useAuthStore();
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [upgradePlan, setUpgradePlan] = useState<any>(null);
+  const [selectedPlanForUpgrade, setSelectedPlanForUpgrade] = useState<any>(null);
+  const [isProcessingWallet, setIsProcessingWallet] = useState(false);
 
   useEffect(() => {
     fetchPlans();
@@ -50,8 +52,35 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
     }
   };
 
-  const handleUpgradeRequest = (plan: any) => {
-    // Left empty or can be removed if not needed.
+  const handlePayWithWallet = async (plan: any) => {
+    setIsProcessingWallet(true);
+    try {
+      const response = await api.post("/payments/pay-with-wallet", {
+        purpose: "subscription",
+        subscription_plan_id: plan.id,
+        billing_cycle: "yearly" // Defaulting to yearly for now based on UI
+      });
+      
+      if (response.data.success) {
+        toast.success("Successfully upgraded subscription using wallet!");
+        
+        // Re-fetch user profile to update wallet balance and premium status
+        const { fetchUser } = useAuthStore.getState() as any;
+        if (typeof fetchUser === 'function') {
+          await fetchUser();
+        } else {
+          // Fallback if fetchUser is not in store, just reload page
+          window.location.reload();
+        }
+        
+        setSelectedPlanForUpgrade(null);
+      }
+    } catch (e: any) {
+      console.error(e);
+      toast.error(e.response?.data?.message || "Failed to process payment from wallet");
+    } finally {
+      setIsProcessingWallet(false);
+    }
   };
 
   if (loading) return <div className="p-12 text-center text-slate-500">Loading plans...</div>;
@@ -104,7 +133,8 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
         {plans.map(plan => {
-          const isCurrent = currentPlan.toLowerCase() === plan.name.toLowerCase() || (currentPlan === '' && (plan.slug === 'basic' || plan.slug === 'starter'));
+          const currentPlanSafe = currentPlan || '';
+          const isCurrent = currentPlanSafe.toLowerCase() === plan.name.toLowerCase() || (currentPlanSafe === '' && (plan.slug === 'basic' || plan.slug === 'starter'));
           const isMostPopular = plan.slug === 'professional';
           const price = plan.price_yearly;
           const monthlyPrice = plan.price_monthly;
@@ -158,7 +188,9 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
                   <Button className="w-full" variant="outline" disabled>Free</Button>
                 ) : (
                   <div className="w-full">
-                    <CheckoutButton planId={plan.id} amount={price} label={`Upgrade to ${plan.name}`} />
+                    <Button className="w-full bg-orange-600 hover:bg-orange-700 text-white" onClick={() => setSelectedPlanForUpgrade(plan)}>
+                      Upgrade to {plan.name}
+                    </Button>
                   </div>
                 )}
               </CardFooter>
@@ -166,6 +198,60 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
           );
         })}
       </div>
+
+      <Dialog open={!!selectedPlanForUpgrade} onOpenChange={(open) => !open && setSelectedPlanForUpgrade(null)}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Complete Your Upgrade</DialogTitle>
+            <DialogDescription>
+              Choose a payment method to upgrade to the {selectedPlanForUpgrade?.name} plan (₹{selectedPlanForUpgrade?.price_yearly}/yr).
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="flex flex-col gap-4 py-4">
+            <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-full">
+                  <CreditCard className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Wallet Balance</p>
+                  <p className="text-xs text-slate-500">Available: ₹{user?.wallet_balance || 0}</p>
+                </div>
+              </div>
+              <Button 
+                onClick={() => handlePayWithWallet(selectedPlanForUpgrade)} 
+                disabled={isProcessingWallet || (user?.wallet_balance || 0) < (selectedPlanForUpgrade?.price_yearly || 0)}
+                className="bg-orange-600 hover:bg-orange-700"
+              >
+                {isProcessingWallet ? <Loader2 className="h-4 w-4 animate-spin mr-2" /> : null}
+                Pay ₹{selectedPlanForUpgrade?.price_yearly}
+              </Button>
+            </div>
+            
+            <div className="relative my-2">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t border-slate-200 dark:border-slate-800" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-white dark:bg-slate-950 px-2 text-slate-500">Or pay directly</span>
+              </div>
+            </div>
+
+            <div className="flex justify-center w-full">
+               {selectedPlanForUpgrade && (
+                 <div className="w-full">
+                   <CheckoutButton 
+                     planId={selectedPlanForUpgrade.id} 
+                     amount={selectedPlanForUpgrade.price_yearly} 
+                     label="Pay via Razorpay" 
+                   />
+                 </div>
+               )}
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
     </div>
   );
