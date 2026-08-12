@@ -119,6 +119,7 @@ class UnlockService
             return [
                 'success' => true,
                 'message' => 'Contact unlocked successfully',
+                'wallet_balance' => $this->walletService->getBalance($vendor),
                 'contact' => [
                     'name' => $requirement->name ?? $requirement->user->name ?? 'Customer',
                     'phone' => $requirement->phone ?? $requirement->user->phone ?? null,

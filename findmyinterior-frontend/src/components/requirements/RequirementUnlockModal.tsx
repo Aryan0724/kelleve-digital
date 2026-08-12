@@ -43,7 +43,15 @@ export function RequirementUnlockModal({
     setLoading(true);
     try {
       const typeStr = requirementType ? `?requirement_type=${requirementType}` : '';
-      await api.post(`/requirements/${requirementId}/unlock${typeStr}`);
+      const response = await api.post(`/requirements/${requirementId}/unlock${typeStr}`);
+      
+      if (response.data?.wallet_balance !== undefined && user) {
+        useAuthStore.getState().updateUser({
+          ...user,
+          wallet_balance: response.data.wallet_balance
+        });
+      }
+
       toast.success("Contact unlocked successfully!");
       if (onUnlockSuccess) {
         onUnlockSuccess();
