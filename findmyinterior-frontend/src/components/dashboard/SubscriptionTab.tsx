@@ -16,7 +16,7 @@ import {
 } from "@/components/ui/dialog";
 import { CheckoutButton } from "@/components/payments/CheckoutButton";
 import { useAuthStore } from "@/lib/store/useAuthStore";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 
 
 export function SubscriptionTab({ currentPlan }: { currentPlan: string }) {
