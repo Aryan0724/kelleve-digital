@@ -33,20 +33,20 @@ export default function WholesaleDashboard() {
 
   const fetchStats = async () => {
     try {
-      const [analyticsRes, rfqsRes, businessRes] = await Promise.all([
+      const [analyticsRes, leadsRes, businessRes] = await Promise.all([
         api.get('/truedial/vendor/analytics/overview').catch(() => null),
-        api.get('/rfqs').catch(() => null),
+        api.get('/truedial/vendor/crm/leads').catch(() => null),
         api.get('/truedial/vendor/my-business').catch(() => null)
       ]);
 
       const analytics = analyticsRes?.data?.data || analyticsRes?.data || {};
-      const rfqs = rfqsRes?.data?.data || rfqsRes?.data || [];
+      const leads = leadsRes?.data?.data || leadsRes?.data || [];
       const biz = businessRes?.data?.data || businessRes?.data || {};
 
-      setRfqList(Array.isArray(rfqs) ? rfqs.slice(0, 3) : []);
+      setRfqList(Array.isArray(leads) ? leads.slice(0, 3) : []);
 
       setStats({
-        rfqsReceived: Array.isArray(rfqs) ? rfqs.length : (analytics.total_leads || 0),
+        rfqsReceived: Array.isArray(leads) ? leads.length : (analytics.total_leads || 0),
         tenderQuotes: analytics.quotations_count || analytics.active_offers_count || 0,
         bulkOrders: analytics.bulk_orders_count || biz.products_count || 0,
         gstinStatus: biz.gstin ? 'Verified' : 'Pending'

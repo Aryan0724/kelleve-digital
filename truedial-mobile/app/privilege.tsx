@@ -27,12 +27,11 @@ export default function PrivilegeScreen() {
   const fetchPrivilegeCard = async () => {
     setLoading(true);
     try {
-      const response = await api.get('/privilege-cards');
+      const response = await api.get('/truedial/vendor/privilege-cards/my-cards');
       const resData = response.data;
-      if (resData.success && resData.data) {
-        setCard(resData.data);
-      } else if (resData.card_number) {
-        setCard(resData);
+      const cards = resData.data || [];
+      if (cards.length > 0) {
+        setCard(cards[0]);
       } else {
         setCard(null);
       }
@@ -47,7 +46,7 @@ export default function PrivilegeScreen() {
   const handleGenerateCard = async () => {
     setGenerating(true);
     try {
-      const response = await api.post('/privilege-cards/generate');
+      const response = await api.post('/truedial/vendor/privilege-cards/generate');
       const resData = response.data;
       const cardInfo = resData.data || resData;
       setCard(cardInfo);

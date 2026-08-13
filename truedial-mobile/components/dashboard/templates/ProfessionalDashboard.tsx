@@ -36,24 +36,24 @@ export default function ProfessionalDashboard() {
 
   const fetchStats = async () => {
     try {
-      const [analyticsRes, bidsRes] = await Promise.all([
+      const [analyticsRes, leadsRes] = await Promise.all([
         api.get('/truedial/vendor/analytics/overview').catch(() => null),
-        api.get('/bids').catch(() => null)
+        api.get('/truedial/vendor/crm/leads').catch(() => null)
       ]);
 
       const analytics = analyticsRes?.data?.data || analyticsRes?.data || {};
-      const bids = bidsRes?.data?.data || bidsRes?.data || [];
+      const leads = leadsRes?.data?.data || leadsRes?.data || [];
 
       let wonCount = 0;
       let newCount = 0;
       let quotedCount = 0;
       let lostCount = 0;
 
-      if (Array.isArray(bids)) {
-        bids.forEach((b: any) => {
-          const status = (b.status || '').toLowerCase();
-          if (status === 'accepted' || status === 'awarded' || status === 'won') wonCount++;
-          else if (status === 'pending' || status === 'quoted') quotedCount++;
+      if (Array.isArray(leads)) {
+        leads.forEach((l: any) => {
+          const status = (l.status || '').toLowerCase();
+          if (status === 'converted' || status === 'won') wonCount++;
+          else if (status === 'contacted' || status === 'quoted') quotedCount++;
           else if (status === 'rejected' || status === 'lost') lostCount++;
           else newCount++;
         });
