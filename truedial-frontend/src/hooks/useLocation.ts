@@ -22,7 +22,7 @@ export function useLocation(defaultLocation: string = "Mumbai"): UseLocationRetu
         const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1'}/locations?active_only=1`);
         if (res.ok) {
           const data = await res.json();
-          const locs = data.data || [];
+          const locs = (data.data || []).map((loc: any) => typeof loc === 'string' ? loc : loc.name);
           setLocationsList(locs);
           if (locs.length > 0 && !location) {
             setLocation(locs[0]);

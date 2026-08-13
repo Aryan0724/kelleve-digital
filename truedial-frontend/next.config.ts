@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
-// Target VPS Backend URL (default: http://187.127.164.142:8000)
-const VPS_BACKEND = process.env.VPS_BACKEND_URL || "http://187.127.164.142:8000";
+// Target VPS Backend URL (default: https://findmyinterior.com)
+const VPS_BACKEND = process.env.VPS_BACKEND_URL || "https://findmyinterior.com";
 
 const nextConfig: NextConfig = {
   async rewrites() {
