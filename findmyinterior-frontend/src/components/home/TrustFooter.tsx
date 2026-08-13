@@ -9,8 +9,8 @@ export function TrustFooter() {
     "Zero Degree", "Red Leaf"
   ];
 
-  const phone = "+919304355011";
-  const phoneDisplay = "+91 93043 55011";
+  const phone = "+919534900999";
+  const phoneDisplay = "+91 95349 00999";
 
   return (
     <section className="w-full flex flex-col font-sans">

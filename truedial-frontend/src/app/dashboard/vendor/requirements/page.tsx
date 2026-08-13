@@ -7,6 +7,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { Briefcase, Building2, PackageSearch, Plus, MapPin, CalendarDays, FileText, Send, CheckCircle2, IndianRupee, Clock, ArrowRight, Loader2 } from "lucide-react";
 import { TrueDialAPI } from "@/lib/api";
+import { useVendorType } from "@/hooks/useVendorType";
 
 export default function B2BRequirementsPage() {
   const [activeTab, setActiveTab] = useState<"marketplace" | "post" | "my-requirements">("marketplace");
@@ -16,6 +17,8 @@ export default function B2BRequirementsPage() {
   const [marketplaceReqs, setMarketplaceReqs] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
 
+  const config = useVendorType();
+  
   useEffect(() => {
     if (activeTab === "marketplace") {
       const fetchRequirements = async () => {
@@ -23,7 +26,11 @@ export default function B2BRequirementsPage() {
         try {
           const res = await TrueDialAPI.get("/truedial/public/requirements");
           if (res && res.data) {
-            setMarketplaceReqs(res.data);
+            // Filter by category or archetype
+            const filtered = res.data.filter((req: any) => 
+              !req.target_archetype || req.target_archetype === config.archetype
+            );
+            setMarketplaceReqs(filtered.length > 0 ? filtered : res.data);
           }
         } catch (error) {
           console.error("Failed to fetch requirements", error);
@@ -33,7 +40,7 @@ export default function B2BRequirementsPage() {
       };
       fetchRequirements();
     }
-  }, [activeTab]);
+  }, [activeTab, config.archetype]);
 
   const handlePost = (e: React.FormEvent) => {
     e.preventDefault();

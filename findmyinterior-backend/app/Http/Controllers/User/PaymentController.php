@@ -46,18 +46,26 @@ class PaymentController extends Controller
             $amount = 49.00;
         }
 
-        if (empty(config('services.razorpay.key')) || config('app.env') === 'local' && empty(config('services.razorpay.key'))) {
-            // Mock response for local environment testing when keys are missing
+        if (empty(config('services.razorpay.key')) || config('app.env') === 'local') {
+            // Mock response for local environment testing when keys are missing or invalid
             $razorpayOrder = ['id' => 'order_mock_' . time()];
         } else {
             $api  = new RazorpayApi(config('services.razorpay.key'), config('services.razorpay.secret'));
             // Razorpay expects paise (INR * 100)
-            $razorpayOrder = $api->order->create([
-                'amount'          => (int) ($amount * 100),
-                'currency'        => 'INR',
-                'receipt'         => 'fmi_' . $user->id . '_' . time(),
-                'payment_capture' => 1,
-            ]);
+            try {
+                $razorpayOrder = $api->order->create([
+                    'amount'          => (int) ($amount * 100),
+                    'currency'        => 'INR',
+                    'receipt'         => 'fmi_' . $user->id . '_' . time(),
+                    'payment_capture' => 1,
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Razorpay order creation failed: " . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment Gateway Error: ' . $e->getMessage(),
+                ], 422);
+            }
         }
 
         // Pre-create payment record in pending state
@@ -165,7 +173,7 @@ class PaymentController extends Controller
             'razorpay_signature'  => ['required', 'string'],
         ]);
 
-        if (empty(config('services.razorpay.key'))) {
+        if (empty(config('services.razorpay.key')) || config('app.env') === 'local') {
             // Mock verification for local/testing
             if ($data['razorpay_signature'] !== 'mock_signature') {
                 return response()->json([

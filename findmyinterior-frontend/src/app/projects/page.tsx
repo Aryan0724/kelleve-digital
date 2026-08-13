@@ -452,7 +452,7 @@ export default function ProjectsPage() {
                           variant="outline" 
                           className="w-full border-green-500 text-green-600 hover:bg-green-50 h-9 rounded-md font-bold text-xs flex items-center justify-center gap-2"
                         >
-                          <Phone className="w-3.5 h-3.5" /> Unlock {req.phone || 'Contact'}
+                          <Phone className="w-3.5 h-3.5" /> Unlock Contact
                         </Button>
                       )}
                     </>

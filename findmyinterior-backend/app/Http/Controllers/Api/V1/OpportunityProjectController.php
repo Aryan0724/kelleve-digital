@@ -23,6 +23,27 @@ class OpportunityProjectController extends Controller
             })
             ->latest()
             ->get();
+
+        $user = Auth::guard('sanctum')->user();
+        $isAdmin = $user && in_array('admin', $user->roles->pluck('slug')->toArray());
+
+        $projects->transform(function ($req) use ($user, $isAdmin) {
+            $req->is_unlocked = $user ? $req->isUnlockedBy($user) : false;
+            
+            if ($user && $user->id === $req->user_id) {
+                $req->is_unlocked = true;
+            }
+            if ($isAdmin) {
+                $req->is_unlocked = true;
+            }
+
+            if (!$req->is_unlocked) {
+                $req->phone = $req->phone ? substr($req->phone, 0, 2) . '********' : null;
+                $req->email = '********';
+                $req->name = '***';
+            }
+            return $req;
+        });
             
         return $this->success($projects);
     }

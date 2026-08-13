@@ -18,8 +18,6 @@ function LoginForm() {
   const urlError = searchParams.get("error");
   const redirectTo = searchParams.get("redirect");
 
-  const [role, setRole] = useState<"customer" | "business">("customer");
-
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setIsLoading(true);
@@ -33,17 +31,18 @@ function LoginForm() {
       const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, role }), // pass the role just in case backend needs it for redirect logic
+        body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
       if (data.success) {
         await refreshUser();
-        const roleSlugs = (data.roles || (data.role ? [data.role] : [])).map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
+        // Determine routing based on roles
+        const roleSlugs = (data.data?.user?.roles || []).map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
         
         const isVendor = roleSlugs.some((r: string) => 
-          ['business', 'builder', 'supplier', 'worker', 'contractor', 'architect', 'interior_designer', 'skilled_worker', 'material_supplier', 'doctor', 'hospital', 'clinic', 'dentist', 'restaurant', 'cafe', 'bakery', 'food', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r)
+          ['business', 'builder', 'supplier', 'worker', 'contractor', 'architect', 'interior_designer', 'skilled_worker', 'material_supplier', 'food_vendor', 'healthcare', 'beauty', 'fitness', 'education', 'retail', 'hospitality', 'professional_service', 'events', 'automotive', 'travel', 'it_digital'].includes(r)
         );
         const isAdmin = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
         
@@ -68,22 +67,20 @@ function LoginForm() {
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-background">
       {/* Left Panel - Branding */}
-      <div className={`hidden md:flex flex-1 relative overflow-hidden items-center justify-center p-12 transition-colors duration-500 ${role === 'business' ? 'bg-[#E8701A]' : 'bg-navy'}`}>
-        <div className={`absolute inset-0 bg-cover bg-center opacity-20 ${role === 'business' ? 'bg-[url("https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop")]' : 'bg-[url("https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=2000&auto=format&fit=crop")]'}`}></div>
-        <div className={`absolute inset-0 bg-gradient-to-br ${role === 'business' ? 'from-[#E8701A] via-[#E8701A]/90 to-navy/30' : 'from-navy via-navy/90 to-primary/30'}`}></div>
+      <div className="hidden md:flex flex-1 relative overflow-hidden items-center justify-center p-12 transition-colors duration-500 bg-navy">
+        <div className="absolute inset-0 bg-cover bg-center opacity-20 bg-[url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop')]"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy/90 to-primary/30"></div>
         
         <div className="relative z-10 text-white max-w-lg">
           <Link href="/" className="flex items-center gap-2 mb-12">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg ${role === 'business' ? 'bg-white text-[#E8701A] shadow-white/30' : 'bg-primary text-white shadow-primary/30'}`}>T</div>
+            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg bg-primary text-white shadow-primary/30">T</div>
             <span className="text-3xl font-bold">truedial</span>
           </Link>
           <h1 className="text-4xl font-bold mb-6 leading-tight">
-            {role === 'business' ? "Grow your business with TrueDial." : "Welcome back to India's fastest growing network."}
+            Welcome back to India's fastest growing network.
           </h1>
           <p className="text-white/80 text-lg mb-8">
-            {role === 'business' 
-              ? "Access your dashboard, manage your listings, and connect with millions of customers instantly." 
-              : "Discover local services, read reviews, and connect with verified businesses in your area."}
+            Access your dashboard, manage your listings, and connect with millions of customers instantly.
           </p>
           
           <div className="flex items-center gap-3 text-sm font-medium bg-white/10 backdrop-blur-sm p-4 rounded-lg w-fit border border-white/20">
@@ -102,23 +99,7 @@ function LoginForm() {
           </div>
 
           <h2 className="text-3xl font-bold text-navy dark:text-white mb-2">Login to your account</h2>
-          <p className="text-muted-foreground mb-6">Enter your email and password to access your TrueDial dashboard.</p>
-
-          {/* Account Type Toggle */}
-          <div className="flex p-1 bg-muted/50 rounded-lg mb-8 relative border border-border">
-            <label className="flex-1 cursor-pointer">
-              <input type="radio" name="role" value="customer" className="peer sr-only" checked={role === "customer"} onChange={() => setRole("customer")} />
-              <div className="text-center py-2.5 rounded-md text-sm font-medium text-muted-foreground peer-checked:bg-background peer-checked:shadow-sm peer-checked:font-bold peer-checked:text-foreground transition-all duration-300">
-                Personal Login
-              </div>
-            </label>
-            <label className="flex-1 cursor-pointer">
-              <input type="radio" name="role" value="business" className="peer sr-only" checked={role === "business"} onChange={() => setRole("business")} />
-              <div className="text-center py-2.5 rounded-md text-sm font-medium text-muted-foreground peer-checked:bg-background peer-checked:shadow-sm peer-checked:font-bold peer-checked:text-primary transition-all duration-300">
-                Business Login
-              </div>
-            </label>
-          </div>
+          <p className="text-muted-foreground mb-8">Enter your email and password to access your TrueDial dashboard.</p>
 
           {displayError && (
             <div className="bg-red-50 dark:bg-red-950/50 text-red-600 dark:text-red-400 border border-red-200 dark:border-red-800 p-3 rounded-md text-sm font-medium mb-6 flex items-start gap-2">
@@ -136,7 +117,7 @@ function LoginForm() {
                   <Input 
                     type="email" 
                     name="email" 
-                    placeholder={role === 'business' ? "business@company.com" : "name@example.com"} 
+                    placeholder="name@example.com" 
                     className="pl-10 h-12 bg-background border-border focus:ring-primary transition-colors" 
                     required 
                     disabled={isLoading}
@@ -188,12 +169,6 @@ function LoginForm() {
           <div className="mt-8 text-center text-sm text-muted-foreground">
             Don't have an account? <Link href="/register" className="text-primary font-bold hover:underline">Sign up</Link>
           </div>
-          
-          {role === 'customer' && (
-            <div className="mt-4 text-center text-sm text-muted-foreground">
-              Want to list your business? <Link href="/free-listing" className="text-[#E8701A] font-bold hover:underline">Get a Free Listing</Link>
-            </div>
-          )}
         </div>
       </div>
     </div>

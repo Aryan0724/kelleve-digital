@@ -208,6 +208,23 @@ export class TrueDialAPI {
     }
   }
 
+  static async createBusiness(data: Record<string, any>) {
+    try {
+      const res = await fetch(`/api-proxy/truedial/vendor/businesses`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      return await res.json();
+    } catch (error) {
+      console.error(error);
+      return { success: false, message: "Network error" };
+    }
+  }
+
   static async updateBusiness(id: number, data: Record<string, any>) {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/businesses/${id}`, {

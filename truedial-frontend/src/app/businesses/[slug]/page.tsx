@@ -211,6 +211,67 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               </div>
             )}
 
+            {/* DYNAMIC SECTION (Based on Archetype) */}
+            {businessDTO.basicInfo.category?.toLowerCase().includes('food') || businessDTO.basicInfo.category?.toLowerCase().includes('restaurant') ? (
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
+                <h3 className="text-base font-black text-slate-900 dark:text-white mb-4">Popular Menu Items</h3>
+                <div className="space-y-4">
+                  {['Butter Chicken', 'Paneer Tikka Masala', 'Garlic Naan', 'Dal Makhani'].map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3 last:border-0 last:pb-0">
+                      <div>
+                        <div className="font-bold text-slate-900 dark:text-white">{item}</div>
+                        <div className="text-xs text-slate-500 mt-0.5">Chef's special preparation</div>
+                      </div>
+                      <div className="font-bold text-emerald-600">₹{250 + (idx * 50)}</div>
+                    </div>
+                  ))}
+                </div>
+                <button className="w-full mt-4 py-2 bg-slate-50 dark:bg-slate-800 text-sm font-bold text-slate-600 dark:text-slate-300 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition">
+                  View Full Menu
+                </button>
+              </div>
+            ) : businessDTO.basicInfo.category?.toLowerCase().includes('health') || businessDTO.basicInfo.category?.toLowerCase().includes('clinic') ? (
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
+                <h3 className="text-base font-black text-slate-900 dark:text-white mb-4">Services & Procedures</h3>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  {['General Consultation', 'Dental Checkup', 'Blood Test', 'Vaccination', 'Physiotherapy', 'X-Ray'].map((service, idx) => (
+                    <div key={idx} className="bg-slate-50 dark:bg-slate-800 p-3 rounded-xl border border-slate-100 dark:border-slate-700 flex items-center gap-3">
+                      <div className="w-8 h-8 rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-600 flex items-center justify-center">
+                        <CheckCircle2 className="w-4 h-4" />
+                      </div>
+                      <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{service}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ) : businessDTO.basicInfo.category?.toLowerCase().includes('beauty') || businessDTO.basicInfo.category?.toLowerCase().includes('salon') ? (
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
+                <h3 className="text-base font-black text-slate-900 dark:text-white mb-4">Top Services</h3>
+                <div className="space-y-4">
+                  {['Advanced Haircut & Styling', 'Keratin Treatment', 'Bridal Makeup Package', 'Deep Tissue Massage'].map((item, idx) => (
+                    <div key={idx} className="flex justify-between items-center border-b border-slate-100 dark:border-slate-800 pb-3 last:border-0 last:pb-0">
+                      <div>
+                        <div className="font-bold text-slate-900 dark:text-white">{item}</div>
+                        <div className="text-xs text-slate-500 mt-0.5">{45 + (idx * 15)} mins duration</div>
+                      </div>
+                      <div className="font-bold text-pink-500">From ₹{499 + (idx * 500)}</div>
+                    </div>
+                  ))}
+                </div>
+                <button className="w-full mt-4 py-2 bg-pink-50 dark:bg-pink-900/10 text-sm font-bold text-pink-600 dark:text-pink-400 rounded-lg border border-pink-100 dark:border-pink-900/20 hover:bg-pink-100 transition">
+                  Book a Service
+                </button>
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 shadow-sm border border-slate-200 dark:border-slate-800">
+                <h3 className="text-base font-black text-slate-900 dark:text-white mb-4">Featured Highlights</h3>
+                <div className="grid grid-cols-2 gap-3">
+                  <img src="https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070" className="w-full h-32 object-cover rounded-xl" alt="Highlight 1" />
+                  <img src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?q=80&w=2070" className="w-full h-32 object-cover rounded-xl" alt="Highlight 2" />
+                </div>
+              </div>
+            )}
+
             {/* 9. REVIEWS */}
             <div id="reviews" className="scroll-mt-32">
               <ReviewSection listing={businessDTO.basicInfo} />
@@ -256,7 +317,7 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
               {/* Inquiry Form */}
               <div className="pt-6 border-t border-slate-100 dark:border-slate-800">
                 <h3 className="font-bold text-slate-900 dark:text-white mb-4">Send an Inquiry</h3>
-                <InquiryForm listingId={businessDTO.basicInfo.id} />
+                <InquiryForm listingId={businessDTO.basicInfo.id} archetype={businessDTO.basicInfo.category?.toLowerCase() || 'default'} />
               </div>
             </div>
 

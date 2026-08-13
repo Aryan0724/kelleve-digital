@@ -7,20 +7,22 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Loader2, Package, Tag, Plus, Trash2, IndianRupee, Image as ImageIcon } from "lucide-react";
+import { Loader2, Plus, Trash2, IndianRupee, Image as ImageIcon, Tag } from "lucide-react";
+import { useVendorType } from "@/hooks/useVendorType";
 
 export default function CatalogPage() {
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [isCreating, setIsCreating] = useState(false);
   const [saving, setSaving] = useState(false);
+  const config = useVendorType();
   
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
     type: "product",
-    image: "" // Updated field name to match backend expectation
+    image: ""
   });
 
   useEffect(() => {
@@ -119,9 +121,12 @@ export default function CatalogPage() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Product Catalog</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
+            <config.catalogIcon className="w-8 h-8 text-[#E8701A]" />
+            {config.catalogLabel}
+          </h1>
           <p className="text-muted-foreground mt-2">
-            Showcase your products and services on your public profile.
+            Showcase your offerings on your public profile.
           </p>
         </div>
         {!isCreating && (
@@ -136,16 +141,16 @@ export default function CatalogPage() {
         <Card className="border-0 shadow-lg bg-white dark:bg-[#0a1c3a]/50 dark:border dark:border-white/10 mb-8 animate-in fade-in slide-in-from-top-4 duration-300">
           <CardHeader>
             <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center">
-              <Package className="mr-2 h-5 w-5 text-[#E8701A]" />
-              New Catalog Item
+              <config.catalogIcon className="mr-2 h-5 w-5 text-[#E8701A]" />
+              New Item in {config.catalogLabel}
             </CardTitle>
-            <CardDescription>Add a new product or service offering.</CardDescription>
+            <CardDescription>Add a new offering to your profile.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
                 <label className="text-sm font-medium dark:text-slate-300">Item Name</label>
-                <Input name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Italian Marble Flooring" className="bg-slate-50 dark:bg-slate-900" />
+                <Input name="name" value={formData.name} onChange={handleChange} placeholder="e.g. Standard Package" className="bg-slate-50 dark:bg-slate-900" />
               </div>
               <div className="space-y-2">
                 <label className="text-sm font-medium dark:text-slate-300">Type</label>
@@ -155,7 +160,7 @@ export default function CatalogPage() {
                   onChange={handleChange}
                   className="flex h-10 w-full items-center justify-between rounded-md border border-input bg-slate-50 dark:bg-slate-900 px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
                 >
-                  <option value="product">Physical Product</option>
+                  <option value="product">Product / Package</option>
                   <option value="service">Service</option>
                 </select>
               </div>
@@ -202,7 +207,6 @@ export default function CatalogPage() {
           >
             <div className="h-40 w-full rounded-xl overflow-hidden mb-4 bg-slate-100 dark:bg-slate-800 flex items-center justify-center relative">
               {item.image ? (
-                /* eslint-disable-next-line @next/next/no-img-element */
                 <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
               ) : (
                 <ImageIcon className="h-10 w-10 text-slate-300 dark:text-slate-600" />
@@ -230,7 +234,7 @@ export default function CatalogPage() {
         {items.length === 0 && !isCreating && (
           <div className="col-span-full text-center py-20 border border-dashed rounded-xl border-slate-300 dark:border-slate-700 bg-white/50 dark:bg-slate-900/50">
             <Tag className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-            <h3 className="text-lg font-medium text-slate-900 dark:text-white">No items in your catalog</h3>
+            <h3 className="text-lg font-medium text-slate-900 dark:text-white">No items in your {config.catalogLabel.toLowerCase()}</h3>
             <p className="mt-2 text-sm text-slate-500">Add products or services to attract more customers.</p>
           </div>
         )}

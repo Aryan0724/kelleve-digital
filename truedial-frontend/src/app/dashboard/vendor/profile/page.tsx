@@ -51,18 +51,23 @@ export default function VendorProfilePage() {
   };
 
   const handleSave = async () => {
-    if (!business) return;
     setSaving(true);
     try {
-      const res = await TrueDialAPI.updateBusiness(business.id, formData);
+      let res;
+      if (business) {
+        res = await TrueDialAPI.updateBusiness(business.id, formData);
+      } else {
+        res = await TrueDialAPI.createBusiness(formData);
+      }
+      
       if (res.success) {
         setBusiness(res.data);
-        alert("Business profile updated successfully!");
+        alert("Business profile saved successfully!");
       } else {
-        alert(res.message || "Failed to update business");
+        alert(res.message || "Failed to save business");
       }
     } catch (error) {
-      console.error("Failed to update business:", error);
+      console.error("Failed to save business:", error);
     } finally {
       setSaving(false);
     }
@@ -76,15 +81,7 @@ export default function VendorProfilePage() {
     );
   }
 
-  if (!business) {
-    return (
-      <div className="text-center py-20 border border-dashed rounded-xl border-slate-300 dark:border-slate-700">
-        <Store className="mx-auto h-12 w-12 text-slate-400 mb-4" />
-        <h3 className="text-lg font-medium text-slate-900 dark:text-white">No business found</h3>
-        <p className="mt-2 text-sm text-slate-500">Please complete your business registration first.</p>
-      </div>
-    );
-  }
+  const isNew = !business;
 
   return (
     <div className="space-y-6 max-w-4xl">

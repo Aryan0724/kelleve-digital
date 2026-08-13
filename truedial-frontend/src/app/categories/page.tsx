@@ -53,8 +53,8 @@ export default async function CategoriesPage() {
                     </div>
                     <div>
                       <h3 className="text-xl font-bold text-navy">{cat.name}</h3>
-                      <Link href={`/search?category=${encodeURIComponent(cat.name)}`} className="text-sm text-primary hover:underline font-medium">
-                        View All &gt;
+                      <Link href={`/categories/${encodeURIComponent(cat.name)}`} className="text-sm text-primary hover:underline font-medium">
+                        View Hub &gt;
                       </Link>
                     </div>
                   </div>

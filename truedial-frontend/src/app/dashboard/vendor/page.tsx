@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { TrueDialAPI } from "@/lib/api";
 import { useAuth } from "@/context/AuthContext";
+import { useVendorType } from "@/hooks/useVendorType";
 
 import MedicalWidget from "@/components/dashboard/vendor/MedicalWidget";
 import RestaurantWidget from "@/components/dashboard/vendor/RestaurantWidget";
@@ -17,6 +18,7 @@ export default function VendorDashboard() {
   const { user } = useAuth();
   const [stats, setStats] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const config = useVendorType();
 
   useEffect(() => {
     const fetchStats = async () => {
@@ -51,20 +53,14 @@ export default function VendorDashboard() {
     smartBidScore: 92
   };
 
-  // Determine which specialized widget to show
-  const categorySlugs = user?.categories?.map(c => c.toLowerCase()) || [];
-  const rawRoles = user?.roles || (user?.role ? [user.role] : []);
-  const roleSlugs = rawRoles.map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
-
-  const isRealEstate = categorySlugs.some(c => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(c)) || roleSlugs.some((r: string) => ['builder', 'architect', 'interior_designer', 'contractor', 'supplier', 'material_supplier'].includes(r));
-  const isService = categorySlugs.some(c => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(c)) || roleSlugs.some((r: string) => ['worker', 'skilled_worker', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r));
-  const isMedical = categorySlugs.some(c => ['doctor', 'hospital', 'clinic', 'dentist'].includes(c)) || roleSlugs.some((r: string) => ['doctor', 'hospital', 'clinic', 'dentist'].includes(r));
-  const isRestaurant = categorySlugs.some(c => ['restaurant', 'cafe', 'bakery', 'food'].includes(c)) || roleSlugs.some((r: string) => ['restaurant', 'cafe', 'bakery', 'food'].includes(r));
-
-  const primaryCategory = isRealEstate ? "real_estate" : isRestaurant ? "restaurant" : isMedical ? "medical" : "service";
-  
   // Reactionary Logic States
   const hasZeroLeads = displayStats.leadsGenerated === 0;
+
+  // Let's keep legacy widgets for the first 4 if they match perfectly, otherwise use a dynamic one.
+  const isMedical = config.archetype === 'healthcare';
+  const isRestaurant = config.archetype === 'food';
+  const isRealEstate = config.archetype === 'builder';
+  const isService = config.archetype === 'worker';
 
   return (
     <div className="space-y-6 animate-fade-in-up">
@@ -123,17 +119,60 @@ export default function VendorDashboard() {
         {isMedical && <MedicalWidget />}
         {isRestaurant && <RestaurantWidget />}
         {isRealEstate && <RealEstateWidget />}
-        {isService && !isRealEstate && !isRestaurant && !isMedical && <ServiceWidget />}
+        {isService && <ServiceWidget />}
         
-        {/* Fallback general widget if no specific category matched */}
+        {/* Fallback generic dynamic widget for other archetypes */}
         {!isMedical && !isRestaurant && !isRealEstate && !isService && (
-          <div className="p-6 border border-border border-dashed rounded-xl text-center">
-            <p className="text-muted-foreground text-sm">Update your business categories in Settings to see personalized industry insights here.</p>
-            <Link href="/dashboard/vendor/settings">
-              <button className="mt-4 text-xs font-bold text-primary px-4 py-2 border border-primary/20 rounded-md hover:bg-primary/5 transition">
-                Go to Settings
-              </button>
-            </Link>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
+            <div className="premium-card p-6 rounded-xl flex flex-col justify-between">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                  <config.crmIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-navy dark:text-white">{config.crmLabel} Activity</h3>
+                  <p className="text-xs text-muted-foreground">Recent inquiries</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-medium text-foreground">New Today</span>
+                  <span className="font-bold text-foreground">12</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-medium text-foreground">Pending Action</span>
+                  <span className="font-bold text-foreground">3</span>
+                </div>
+              </div>
+              <Link href="/dashboard/vendor/crm" className="mt-4">
+                <button className="w-full text-sm font-medium border border-border text-foreground py-2 rounded-md hover:bg-muted transition">Manage {config.crmLabel}</button>
+              </Link>
+            </div>
+
+            <div className="premium-card p-6 rounded-xl flex flex-col justify-between">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-primary/10 text-primary flex items-center justify-center">
+                  <config.catalogIcon className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-navy dark:text-white">{config.catalogLabel} Stats</h3>
+                  <p className="text-xs text-muted-foreground">Active items</p>
+                </div>
+              </div>
+              <div className="space-y-3">
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-medium text-foreground">Total Published</span>
+                  <span className="font-bold text-foreground">48</span>
+                </div>
+                <div className="flex justify-between items-center text-sm">
+                  <span className="font-medium text-foreground">Most Viewed</span>
+                  <span className="text-xs text-muted-foreground truncate w-24 text-right">Premium Package</span>
+                </div>
+              </div>
+              <Link href="/dashboard/vendor/catalog" className="mt-4">
+                <button className="w-full text-sm font-medium border border-border text-foreground py-2 rounded-md hover:bg-muted transition">Update {config.catalogLabel}</button>
+              </Link>
+            </div>
           </div>
         )}
       </div>
@@ -149,7 +188,7 @@ export default function VendorDashboard() {
                 </div>
                 <h3 className="font-bold text-2xl text-navy dark:text-white mb-2">You have 0 new leads</h3>
                 <p className="text-muted-foreground mb-6 max-w-md mx-auto">
-                  Don't wait for customers to find you. Launch a targeted SMS blast to 500 locals in your area instantly and get your phone ringing today.
+                  Don't wait for customers to find you. Launch a targeted SMS blast to 500 locals in your area instantly using the "{config.marketingTemplates[0]?.replace('_', ' ')}" template.
                 </p>
                 <Link href="/dashboard/vendor/marketing">
                   <button className="bg-primary hover:bg-orange-600 text-white px-6 py-3 rounded-lg font-bold shadow-lg shadow-primary/20 transition hover:scale-105">
@@ -187,7 +226,7 @@ export default function VendorDashboard() {
           )}
 
           {/* Dynamic B2B Widget */}
-          <B2BCrossSellWidget categoryType={primaryCategory} />
+          <B2BCrossSellWidget categoryType={config.archetype} />
         </div>
 
         {/* Quick Actions & Tools */}
@@ -214,9 +253,13 @@ export default function VendorDashboard() {
               <Link href="/dashboard/vendor/profile">
                 <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Update Profile</button>
               </Link>
-              <Link href="/dashboard/vendor/offers">
-                <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition">Post an Offer</button>
-              </Link>
+              {config.uniqueTabs.map(tab => (
+                <Link key={tab.href} href={tab.href}>
+                  <button className="w-full text-left px-4 py-2.5 text-sm font-medium rounded-md bg-muted hover:bg-primary hover:text-white transition mt-2">
+                    Manage {tab.label}
+                  </button>
+                </Link>
+              ))}
             </div>
           </div>
         </div>

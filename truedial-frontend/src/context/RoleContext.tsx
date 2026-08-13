@@ -48,7 +48,7 @@ export function RoleProvider({ children }: { children: ReactNode }) {
     }
     
     const isVendorRole = roleSlugs.some((r: string) => 
-      ['vendor', 'business', 'professional', 'seller', 'partner', 'restaurant', 'medical', 'service', 'real_estate', 'builder', 'interior_designer', 'worker', 'supplier'].includes(r)
+      ['vendor', 'business', 'professional', 'seller', 'partner', 'builder', 'interior_designer', 'worker', 'supplier', 'food_vendor', 'healthcare', 'beauty', 'fitness', 'education', 'retail', 'hospitality', 'professional_service', 'events', 'automotive', 'travel', 'it_digital'].includes(r)
     );
     const hasBusinessCategories = categorySlugs.length > 0;
 
