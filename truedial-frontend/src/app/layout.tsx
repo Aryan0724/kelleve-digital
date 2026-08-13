@@ -32,6 +32,8 @@ import { TenantProvider } from "@/context/TenantContext";
 import { RoleProvider } from "@/context/RoleContext";
 import LocationSelectorModal from "@/components/shared/LocationSelectorModal";
 import MobileNav from "@/components/layout/MobileNav";
+import { TopRibbonAd } from "@/components/shared/AdPlacements/TopRibbonAd";
+import { PopupAd } from "@/components/shared/AdPlacements/PopupAd";
 
 export default function RootLayout({
   children,
@@ -48,6 +50,8 @@ export default function RootLayout({
           <AuthProvider>
             <RoleProvider>
               <LocationProvider>
+                <TopRibbonAd />
+                <PopupAd />
                 {children}
                 <MobileNav />
                 <LocationSelectorModal />

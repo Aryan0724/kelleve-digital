@@ -8,6 +8,7 @@ import { SlidersHorizontal, MapPin, Star, ShieldCheck, Loader2 } from "lucide-re
 import { Button } from "@/components/ui/button";
 import { useUserLocation } from "@/context/LocationContext";
 import { useLocation } from "@/hooks/useLocation";
+import { InlineListAd } from "@/components/shared/AdPlacements/InlineListAd";
 
 function SearchContent() {
   const searchParams = useSearchParams();
@@ -240,8 +241,14 @@ function SearchContent() {
           </div>
         ) : results.length > 0 ? (
           <div className="flex flex-col gap-6">
-            {results.map((biz) => (
-              <BusinessCard key={biz.id} {...biz} />
+            {results.map((biz, index) => (
+              <React.Fragment key={biz.id}>
+                <BusinessCard {...biz} />
+                {/* Show an inline ad after every 4th item (index 3, 7, 11...) */}
+                {(index + 1) % 4 === 0 && (
+                  <InlineListAd targetCity={location} targetCategoryId={undefined} />
+                )}
+              </React.Fragment>
             ))}
           </div>
         ) : (
