@@ -198,7 +198,10 @@ export class TrueDialAPI {
   static async getMyBusiness() {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/my-business`, {
-        headers: { 'Accept': 'application/json' }
+        headers: { 
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
+        }
       });
       if (!res.ok) throw new Error("Failed to fetch my business");
       return await res.json();
@@ -214,7 +217,8 @@ export class TrueDialAPI {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
         },
         body: JSON.stringify(data)
       });
@@ -231,7 +235,8 @@ export class TrueDialAPI {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json'
+          'Accept': 'application/json',
+          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
         },
         body: JSON.stringify(data)
       });
