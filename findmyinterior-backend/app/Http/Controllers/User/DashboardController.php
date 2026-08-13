@@ -315,14 +315,24 @@ class DashboardController extends Controller
                             $q->where('slug', 'workers');
                         });
                     
-                    if (in_array('interior_designer', $userRoles) || in_array('interior_company', $userRoles)) {
-                        $query->whereIn('requirement_type', ['INTERIOR_DESIGN', 'Interior Design', 'FURNITURE', 'Furniture', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
-                    } elseif (in_array('architect', $userRoles)) {
-                        $query->whereIn('requirement_type', ['ARCHITECTURE', 'Architecture', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
-                    } elseif (in_array('contractor', $userRoles)) {
-                        $query->whereIn('requirement_type', ['CONSTRUCTION', 'Construction', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
-                    } elseif (in_array('builder', $userRoles)) {
-                        $query->whereIn('requirement_type', ['BUILDER_PROJECT', 'Builder Project', 'Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project']);
+                    $validReqTypes = ['Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project'];
+                    $profType = $user->professional_type;
+
+                    if (in_array('interior_designer', $userRoles) || in_array('interior_company', $userRoles) || in_array($profType, ['interior_designer', 'interior_company'])) {
+                        $validReqTypes = array_merge($validReqTypes, ['INTERIOR_DESIGN', 'Interior Design', 'FURNITURE', 'Furniture']);
+                    }
+                    if (in_array('architect', $userRoles) || in_array($profType, ['architect', 'architecture_firm'])) {
+                        $validReqTypes = array_merge($validReqTypes, ['ARCHITECTURE', 'Architecture']);
+                    }
+                    if (in_array('contractor', $userRoles) || in_array($profType, ['contractor', 'civil_contractor', 'turnkey_contractor'])) {
+                        $validReqTypes = array_merge($validReqTypes, ['CONSTRUCTION', 'Construction']);
+                    }
+                    if (in_array('builder', $userRoles) || in_array($profType, ['builder', 'real_estate_developer'])) {
+                        $validReqTypes = array_merge($validReqTypes, ['BUILDER_PROJECT', 'Builder Project']);
+                    }
+
+                    if (count($validReqTypes) > 4) { // 4 is the base array length
+                        $query->whereIn('requirement_type', $validReqTypes);
                     } else {
                         // Fallback for all other professional roles (e.g. pest_control, modular_kitchen_designer)
                         $listingCategoryIds = $user->listings()->pluck('category_id')->toArray();
