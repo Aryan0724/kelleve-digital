@@ -10,7 +10,7 @@ export default async function CategoryHubPage({ params }: { params: Promise<{ ca
   const categoryName = decodeURIComponent(resolvedParams.category);
 
   // Fetch businesses for this category
-  const response = await TrueDialAPI.searchBusinesses({ category_name: categoryName, limit: 10 });
+  const response = await TrueDialAPI.searchBusinesses({ category_name: categoryName, limit: "10" });
   let businesses = [];
   if (Array.isArray(response.data)) {
     businesses = response.data;
