@@ -43,7 +43,7 @@ export function useVendorType(): VendorConfig {
   const professionalType = (user?.professional_type || '').toLowerCase();
   
   // A helper to check roles just in case
-  const roleSlugs = (user?.roles || []).map(r => r.slug.toLowerCase());
+  const roleSlugs = (user?.roles || []).map(r => (typeof r === 'string' ? r.toLowerCase() : r.slug?.toLowerCase() || ''));
   const hasRole = (role: string) => roleSlugs.includes(role);
 
   return useMemo(() => {
