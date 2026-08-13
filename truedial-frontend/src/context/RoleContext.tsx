@@ -47,7 +47,9 @@ export function RoleProvider({ children }: { children: ReactNode }) {
       derivedRoles.push('admin');
     }
     
-    const isVendorRole = roleSlugs.some((r: string) => ['vendor', 'business', 'professional', 'seller', 'partner', 'restaurant', 'medical', 'service', 'real_estate'].includes(r));
+    const isVendorRole = roleSlugs.some((r: string) => 
+      ['vendor', 'business', 'professional', 'seller', 'partner', 'restaurant', 'medical', 'service', 'real_estate', 'builder', 'interior_designer', 'worker', 'supplier'].includes(r)
+    );
     const hasBusinessCategories = categorySlugs.length > 0;
 
     if (user.role === 'vendor' || isVendorRole || hasBusinessCategories) {
