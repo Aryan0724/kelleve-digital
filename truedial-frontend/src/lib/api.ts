@@ -150,6 +150,7 @@ export class TrueDialAPI {
   static async getVendorReviews(page = 1) {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/reviews?page=${page}`, {
+        credentials: 'include',
         headers: { 'Accept': 'application/json' }
       });
       if (!res.ok) throw new Error("Failed to fetch vendor reviews");
@@ -164,6 +165,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/reviews/${reviewId}/reply`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -181,6 +183,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/reviews/${reviewId}/report`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -251,6 +254,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/businesses/me/products`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -268,6 +272,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/businesses/me/services`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -286,6 +291,7 @@ export class TrueDialAPI {
   static async getVendorOffers() {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/offers`, {
+        credentials: 'include',
         headers: { 'Accept': 'application/json' }
       });
       if (!res.ok) throw new Error("Failed to fetch vendor offers");
@@ -300,6 +306,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/offers`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -317,6 +324,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/offers/${id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -334,6 +342,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/offers/${id}`, {
         method: 'DELETE',
+        credentials: 'include',
         headers: {
           'Accept': 'application/json'
         }
@@ -446,6 +455,7 @@ export class TrueDialAPI {
       if (listingId) url.searchParams.append('listing_id', listingId.toString());
 
       const res = await fetch(url.toString(), {
+        credentials: 'include',
         headers: {
           'Accept': 'application/json'
         }
@@ -462,6 +472,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/payments/order`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -479,6 +490,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/payments/verify`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'

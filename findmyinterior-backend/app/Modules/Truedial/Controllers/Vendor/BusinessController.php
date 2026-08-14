@@ -52,12 +52,23 @@ class BusinessController extends Controller
             'district' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'website' => 'nullable|url',
+            'availability' => 'nullable|string',
+            'response_time' => 'nullable|string',
+            'social_links' => 'nullable|array',
+            'services' => 'nullable|array',
+            'professional_type' => 'nullable|string',
         ]);
 
+        $tenantId = $this->tenantContext->getTenantId();
         $validated['tenant_id'] = $tenantId;
         $validated['user_id'] = Auth::id();
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . time();
         $validated['status'] = 'pending'; // Requires admin approval
+
+        if (isset($validated['professional_type'])) {
+            Auth::user()->update(['professional_type' => $validated['professional_type']]);
+            unset($validated['professional_type']);
+        }
 
         $business = Listing::create($validated);
 
@@ -80,10 +91,21 @@ class BusinessController extends Controller
             'district' => 'sometimes|required|string|max:100',
             'state' => 'sometimes|required|string|max:100',
             'website' => 'nullable|url',
+            'availability' => 'nullable|string',
+            'response_time' => 'nullable|string',
+            'social_links' => 'nullable|array',
+            'services' => 'nullable|array',
+            'professional_type' => 'nullable|string',
         ]);
 
         if (isset($validated['title']) && $validated['title'] !== $business->title) {
             $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . time();
+        }
+
+        // Update professional_type on user if provided
+        if (isset($validated['professional_type'])) {
+            $business->user->update(['professional_type' => $validated['professional_type']]);
+            unset($validated['professional_type']);
         }
 
         $business->update($validated);
