@@ -198,6 +198,7 @@ export class TrueDialAPI {
   static async getMyBusiness() {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/my-business`, {
+        credentials: 'include',
         headers: { 
           'Accept': 'application/json'
         }
@@ -214,6 +215,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/businesses`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -231,6 +233,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/businesses/${id}`, {
         method: 'PUT',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
@@ -369,6 +372,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`${API_BASE_URL}/truedial/vendor/media`, {
         method: 'POST',
+        credentials: 'include',
         body: formData
       });
       if (!res.ok) throw new Error("Failed to upload media");
@@ -382,7 +386,8 @@ export class TrueDialAPI {
   static async deleteMedia(id: number) {
     try {
       const res = await fetch(`${API_BASE_URL}/truedial/vendor/media/${id}`, {
-        method: 'DELETE'
+        method: 'DELETE',
+        credentials: 'include'
       });
       if (!res.ok) throw new Error("Failed to delete media");
       return await res.json();
@@ -395,7 +400,8 @@ export class TrueDialAPI {
   static async setMediaCover(id: number) {
     try {
       const res = await fetch(`${API_BASE_URL}/truedial/vendor/media/${id}/cover`, {
-        method: 'PUT'
+        method: 'PUT',
+        credentials: 'include'
       });
       if (!res.ok) throw new Error("Failed to set media cover");
       return await res.json();
@@ -496,7 +502,7 @@ export class TrueDialAPI {
       url.searchParams.append('period', period);
       if (listingId) url.searchParams.append('listing_id', listingId.toString());
 
-      const res = await fetch(url.toString());
+      const res = await fetch(url.toString(), { credentials: 'include' });
       if (!res.ok) throw new Error("Failed to fetch analytics chart");
       return await res.json();
     } catch (error) {
@@ -507,6 +513,7 @@ export class TrueDialAPI {
   static async get(endpoint: string) {
     try {
       const res = await fetch(`${API_BASE_URL}${endpoint}`, {
+        credentials: 'include',
         headers: {
           'Accept': 'application/json'
         }
@@ -523,6 +530,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`${API_BASE_URL}${endpoint}`, {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
