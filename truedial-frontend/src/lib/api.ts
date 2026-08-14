@@ -199,8 +199,7 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`/api-proxy/truedial/vendor/my-business`, {
         headers: { 
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
+          'Accept': 'application/json'
         }
       });
       if (!res.ok) throw new Error("Failed to fetch my business");
@@ -217,8 +216,7 @@ export class TrueDialAPI {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
+          'Accept': 'application/json'
         },
         body: JSON.stringify(data)
       });
@@ -235,8 +233,7 @@ export class TrueDialAPI {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
+          'Accept': 'application/json'
         },
         body: JSON.stringify(data)
       });
@@ -372,9 +369,6 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`${API_BASE_URL}/truedial/vendor/media`, {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
         body: formData
       });
       if (!res.ok) throw new Error("Failed to upload media");
@@ -388,10 +382,7 @@ export class TrueDialAPI {
   static async deleteMedia(id: number) {
     try {
       const res = await fetch(`${API_BASE_URL}/truedial/vendor/media/${id}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        method: 'DELETE'
       });
       if (!res.ok) throw new Error("Failed to delete media");
       return await res.json();
@@ -404,10 +395,7 @@ export class TrueDialAPI {
   static async setMediaCover(id: number) {
     try {
       const res = await fetch(`${API_BASE_URL}/truedial/vendor/media/${id}/cover`, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
+        method: 'PUT'
       });
       if (!res.ok) throw new Error("Failed to set media cover");
       return await res.json();
@@ -429,8 +417,7 @@ export class TrueDialAPI {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          ...(typeof localStorage !== 'undefined' && localStorage.getItem('token') ? { 'Authorization': `Bearer ${localStorage.getItem('token')}` } : {})
+          'Accept': 'application/json'
         },
         body: JSON.stringify({
           event_type: eventType,
@@ -509,11 +496,7 @@ export class TrueDialAPI {
       url.searchParams.append('period', period);
       if (listingId) url.searchParams.append('listing_id', listingId.toString());
 
-      const res = await fetch(url.toString(), {
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      const res = await fetch(url.toString());
       if (!res.ok) throw new Error("Failed to fetch analytics chart");
       return await res.json();
     } catch (error) {
@@ -525,7 +508,6 @@ export class TrueDialAPI {
     try {
       const res = await fetch(`${API_BASE_URL}${endpoint}`, {
         headers: {
-          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`,
           'Accept': 'application/json'
         }
       });
@@ -543,8 +525,7 @@ export class TrueDialAPI {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          'Authorization': `Bearer ${typeof window !== 'undefined' ? localStorage.getItem('token') : ''}`
+          'Accept': 'application/json'
         },
         body: JSON.stringify(data)
       });
