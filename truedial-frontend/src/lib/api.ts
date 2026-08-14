@@ -379,9 +379,9 @@ export class TrueDialAPI {
   // Analytics Tracking
   static async uploadMedia(formData: FormData) {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/media`, {
+      // Use the proxy so auth token + tenant headers are injected server-side
+      const res = await fetch(`/api/proxy/truedial/vendor/media`, {
         method: 'POST',
-        credentials: 'include',
         body: formData
       });
       if (!res.ok) throw new Error("Failed to upload media");
@@ -394,9 +394,9 @@ export class TrueDialAPI {
 
   static async deleteMedia(id: number) {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/media/${id}`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/media/${id}`, {
         method: 'DELETE',
-        credentials: 'include'
+        headers: { 'Accept': 'application/json' }
       });
       if (!res.ok) throw new Error("Failed to delete media");
       return await res.json();
@@ -408,9 +408,9 @@ export class TrueDialAPI {
 
   static async setMediaCover(id: number) {
     try {
-      const res = await fetch(`${API_BASE_URL}/truedial/vendor/media/${id}/cover`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/media/${id}/cover`, {
         method: 'PUT',
-        credentials: 'include'
+        headers: { 'Accept': 'application/json' }
       });
       if (!res.ok) throw new Error("Failed to set media cover");
       return await res.json();
@@ -510,11 +510,11 @@ export class TrueDialAPI {
 
   static async getAnalyticsChart(listingId?: number, period: string = '30d') {
     try {
-      const url = new URL(`${API_BASE_URL}/truedial/vendor/analytics/chart`);
-      url.searchParams.append('period', period);
-      if (listingId) url.searchParams.append('listing_id', listingId.toString());
-
-      const res = await fetch(url.toString(), { credentials: 'include' });
+      const params = new URLSearchParams({ period });
+      if (listingId) params.append('listing_id', listingId.toString());
+      const res = await fetch(`/api/proxy/truedial/vendor/analytics/chart?${params.toString()}`, {
+        headers: { 'Accept': 'application/json' }
+      });
       if (!res.ok) throw new Error("Failed to fetch analytics chart");
       return await res.json();
     } catch (error) {
