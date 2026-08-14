@@ -34,8 +34,10 @@ export async function GET() {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
-        "X-Platform": "truedial",
+        // Always send tenant headers so the backend resolves to TrueDial (tenant_id=2)
+        // even though requests go through findmyinterior.com domain
         "X-Tenant-ID": "2",
+        "X-Platform": "truedial",
       },
       cache: "no-store",
     });
