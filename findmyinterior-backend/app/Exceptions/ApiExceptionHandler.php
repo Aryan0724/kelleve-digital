@@ -20,10 +20,13 @@ class ApiExceptionHandler
     public static function handle(Throwable $exception, $request)
     {
         if ($exception instanceof ValidationException) {
+            $errors = $exception->errors();
+            $firstError = collect($errors)->first()[0] ?? 'Validation failed';
+            
             return response()->json([
                 'success' => false,
-                'message' => 'Validation failed',
-                'errors'  => $exception->errors(),
+                'message' => $firstError,
+                'errors'  => $errors,
             ], 422);
         }
 
