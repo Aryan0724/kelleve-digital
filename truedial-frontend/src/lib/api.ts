@@ -14,7 +14,7 @@ function getApiBaseUrl(): string {
     const vps = process.env.VPS_BACKEND_URL || "https://findmyinterior.com";
     return `${vps}/api/v1`;
   }
-  return process.env.NEXT_PUBLIC_API_URL || "/api-proxy";
+  return process.env.NEXT_PUBLIC_API_URL || "/api/proxy";
 }
 
 const API_BASE_URL = getApiBaseUrl();
@@ -149,7 +149,7 @@ export class TrueDialAPI {
   // Vendor Reputation Management
   static async getVendorReviews(page = 1) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/reviews?page=${page}`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/reviews?page=${page}`, {
         credentials: 'include',
         headers: { 'Accept': 'application/json' }
       });
@@ -163,7 +163,7 @@ export class TrueDialAPI {
 
   static async replyToReview(reviewId: number, reply: string) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/reviews/${reviewId}/reply`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/reviews/${reviewId}/reply`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -181,7 +181,7 @@ export class TrueDialAPI {
 
   static async reportReview(reviewId: number, reason: string, notes: string = "") {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/reviews/${reviewId}/report`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/reviews/${reviewId}/report`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -200,7 +200,7 @@ export class TrueDialAPI {
   // Vendor Business Management
   static async getMyBusiness() {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/my-business`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/my-business`, {
         credentials: 'include',
         headers: { 
           'Accept': 'application/json'
@@ -216,7 +216,7 @@ export class TrueDialAPI {
 
   static async createBusiness(data: Record<string, any>) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/businesses`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/businesses`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -234,7 +234,7 @@ export class TrueDialAPI {
 
   static async updateBusiness(id: number, data: Record<string, any>) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/businesses/${id}`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/businesses/${id}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -252,7 +252,7 @@ export class TrueDialAPI {
 
   static async updateProducts(products: any[]) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/businesses/me/products`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/businesses/me/products`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -270,7 +270,7 @@ export class TrueDialAPI {
 
   static async updateServices(services: any[]) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/businesses/me/services`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/businesses/me/services`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -290,7 +290,7 @@ export class TrueDialAPI {
 
   static async getVendorOffers() {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/offers`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/offers`, {
         credentials: 'include',
         headers: { 'Accept': 'application/json' }
       });
@@ -304,7 +304,7 @@ export class TrueDialAPI {
 
   static async createOffer(data: Record<string, any>) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/offers`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/offers`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -322,7 +322,7 @@ export class TrueDialAPI {
 
   static async updateOffer(id: number, data: Record<string, any>) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/offers/${id}`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/offers/${id}`, {
         method: 'PUT',
         credentials: 'include',
         headers: {
@@ -340,7 +340,7 @@ export class TrueDialAPI {
 
   static async deleteOffer(id: number) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/offers/${id}`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/offers/${id}`, {
         method: 'DELETE',
         credentials: 'include',
         headers: {
@@ -450,7 +450,7 @@ export class TrueDialAPI {
 
   static async getAnalyticsOverview(listingId?: number, period: string = '30d') {
     try {
-      const url = new URL(`/api-proxy/truedial/vendor/analytics/overview`, window.location.origin);
+      const url = new URL(`/api/proxy/truedial/vendor/analytics/overview`, window.location.origin);
       url.searchParams.append('period', period);
       if (listingId) url.searchParams.append('listing_id', listingId.toString());
 
@@ -470,7 +470,7 @@ export class TrueDialAPI {
 
   static async createPaymentOrder(planId: number, billingCycle: string = 'monthly') {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/payments/order`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/payments/order`, {
         method: 'POST',
         credentials: 'include',
         headers: {
@@ -488,7 +488,7 @@ export class TrueDialAPI {
 
   static async verifyPayment(orderId: string, paymentId: string, signature: string) {
     try {
-      const res = await fetch(`/api-proxy/truedial/vendor/payments/verify`, {
+      const res = await fetch(`/api/proxy/truedial/vendor/payments/verify`, {
         method: 'POST',
         credentials: 'include',
         headers: {
