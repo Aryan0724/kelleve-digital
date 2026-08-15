@@ -20,6 +20,42 @@ function getApiBaseUrl(): string {
 const API_BASE_URL = getApiBaseUrl();
 
 export class TrueDialAPI {
+  // ------------------------------------------------------------------
+  // Patients (EHR)
+  // ------------------------------------------------------------------
+  static async getPatients() {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/patients`, {
+        credentials: 'include',
+        headers: { 'Accept': 'application/json' }
+      });
+      if (!res.ok) throw new Error("Failed to fetch patients");
+      return await res.json();
+    } catch (error) {
+      console.error("API Fetch failed for getPatients.", error);
+      return { success: false, data: [] };
+    }
+  }
+
+  static async createPatient(data: any) {
+    try {
+      const res = await fetch(`${API_BASE_URL}/truedial/vendor/patients`, {
+        method: "POST",
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error("Failed to create patient");
+      return await res.json();
+    } catch (error) {
+      console.error("API Fetch failed for createPatient.", error);
+      return { success: false, message: "Network error" };
+    }
+  }
+
   static async getCategories() {
     try {
       const res = await fetch(`${API_BASE_URL}/categories`, { next: { revalidate: 3600 } });

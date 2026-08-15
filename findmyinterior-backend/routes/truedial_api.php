@@ -89,6 +89,9 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         // CRM
         Route::get('/crm/leads', [\App\Modules\Truedial\Controllers\Vendor\CrmController::class, 'leads']);
         Route::patch('/crm/leads/{id}/status', [\App\Modules\Truedial\Controllers\Vendor\CrmController::class, 'updateLeadStatus']);
+
+        // Patients (EHR)
+        Route::apiResource('/patients', \App\Modules\Truedial\Controllers\Vendor\PatientController::class);
         
         // Marketing Campaigns (Duplicate block, also commenting out)
         // Route::get('/marketing/campaigns', [\App\Modules\Truedial\Controllers\Vendor\MarketingCampaignController::class, 'index']);
