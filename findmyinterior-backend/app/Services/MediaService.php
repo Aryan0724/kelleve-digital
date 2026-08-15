@@ -37,8 +37,12 @@ class MediaService
 
         $media = $model->media()->save($media);
         
-        // Dispatch job to generate variants
-        ProcessMediaVariants::dispatch($media);
+        // Dispatch job to generate variants (catch exceptions for sync queues)
+        try {
+            ProcessMediaVariants::dispatch($media);
+        } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::warning('Failed to dispatch/run ProcessMediaVariants synchronously: ' . $e->getMessage());
+        }
         
         return $media;
     }
@@ -50,21 +54,35 @@ class MediaService
         }
 
         // Handle Base64
-        if (preg_match('/^data:image\/(\w+);base64,/', $file, $type)) {
+        if (preg_match('/^data:image\/([a-zA-Z0-9]+);base64,/', $file, $type)) {
             $file = substr($file, strpos($file, ',') + 1);
+            
+            // Fix common copy-paste errors like double commas
+            $file = ltrim($file, ',');
+            
             $type = strtolower($type[1]); // jpg, png, gif
 
             if (!in_array($type, ['jpg', 'jpeg', 'gif', 'png', 'webp'])) {
-                throw new \Exception('Invalid image type');
+                throw new \Exception('Invalid image type: ' . $type);
             }
 
-            $file = base64_decode($file);
-            if ($file === false) {
-                throw new \Exception('Base64 decode failed');
+            // strict mode to return false if invalid characters
+            $decodedFile = base64_decode(str_replace(' ', '+', $file), true);
+            if ($decodedFile === false) {
+                // fallback without strict
+                $decodedFile = base64_decode(str_replace(' ', '+', $file));
+            }
+            if (empty($decodedFile)) {
+                throw new \Exception('Base64 decode failed or resulted in empty string');
+            }
+            
+            // Try to validate it's an actual image before saving
+            if (!@getimagesizefromstring($decodedFile)) {
+                throw new \Exception('Decoded data is not a valid image');
             }
             
             $fileName = 'media/' . Str::uuid() . '.' . $type;
-            Storage::disk($disk)->put($fileName, $file);
+            Storage::disk($disk)->put($fileName, $decodedFile);
             return $fileName;
         }
 
