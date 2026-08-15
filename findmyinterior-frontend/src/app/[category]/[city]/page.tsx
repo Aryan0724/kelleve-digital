@@ -26,9 +26,10 @@ const validCategories: Record<string, { title: string, searchParam: string, icon
 
 
 
-export function generateMetadata({ params }: Props): Metadata {
-  const cat = params.category.toLowerCase();
-  const city = params.city.toLowerCase();
+export async function generateMetadata({ params }: { params: Promise<Props['params']> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const cat = resolvedParams.category.toLowerCase();
+  const city = resolvedParams.city.toLowerCase();
 
   if (!validCategories[cat]) return {};
 
@@ -65,9 +66,10 @@ export function generateMetadata({ params }: Props): Metadata {
   };
 }
 
-export default function CategoryCityLandingPage({ params }: Props) {
-  const cat = params.category.toLowerCase();
-  const city = params.city.toLowerCase();
+export default async function CategoryCityLandingPage({ params }: { params: Promise<Props['params']> }) {
+  const resolvedParams = await params;
+  const cat = resolvedParams.category.toLowerCase();
+  const city = resolvedParams.city.toLowerCase();
 
   if (!validCategories[cat]) {
     notFound();

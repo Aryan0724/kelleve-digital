@@ -70,7 +70,11 @@ class RfqController extends Controller
             'status' => 'open'
         ]);
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('images')) {
+            $file = $request->file('images')[0];
+            $rfq->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
+            $rfq->save();
+        } elseif ($request->hasFile('image')) {
             $file = $request->file('image');
             $rfq->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
             $rfq->save();

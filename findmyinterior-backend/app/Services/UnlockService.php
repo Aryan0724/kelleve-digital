@@ -37,9 +37,9 @@ class UnlockService
                 'success' => true,
                 'message' => 'Contact already unlocked',
                 'contact' => [
-                    'name' => $requirement->name ?? $requirement->user->name ?? 'Customer',
-                    'phone' => $requirement->phone ?? $requirement->user->phone ?? null,
-                    'email' => $requirement->email ?? $requirement->user->email ?? null,
+                    'name' => $requirement->user->name ?? $requirement->name ?? 'Customer',
+                    'phone' => $requirement->user->phone ?? $requirement->phone ?? null,
+                    'email' => $requirement->user->email ?? $requirement->email ?? null,
                 ]
             ];
         }
@@ -121,9 +121,9 @@ class UnlockService
                 'message' => 'Contact unlocked successfully',
                 'wallet_balance' => $this->walletService->getBalance($vendor),
                 'contact' => [
-                    'name' => $requirement->name ?? $requirement->user->name ?? 'Customer',
-                    'phone' => $requirement->phone ?? $requirement->user->phone ?? null,
-                    'email' => $requirement->email ?? $requirement->user->email ?? null,
+                    'name' => $requirement->user->name ?? $requirement->name ?? 'Customer',
+                    'phone' => $requirement->user->phone ?? $requirement->phone ?? null,
+                    'email' => $requirement->user->email ?? $requirement->email ?? null,
                 ]
             ];
         });

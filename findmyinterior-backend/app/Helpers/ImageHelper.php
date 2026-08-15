@@ -17,14 +17,15 @@ class ImageHelper
         return '/storage/' . $path;
     }
 
-    /**
-     * Legacy method: redirect to storage to prevent base64 DB blobs
-     */
     public static function toBase64(
         \Illuminate\Http\UploadedFile $file,
         int $maxDimension = 800,
         int $quality = 80
     ): string {
-        return self::toStoragePath($file, 'legacy');
+        // Fallback: just base64-encode the raw file bytes
+        // The frontend already compresses images to max 1200x1200, so we can safely store this directly.
+        $raw  = file_get_contents($file->getRealPath());
+        $mime = $file->getMimeType() ?: 'image/jpeg';
+        return "data:{$mime};base64," . base64_encode($raw);
     }
 }

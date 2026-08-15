@@ -1,198 +1,220 @@
 "use client";
 
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { CheckCircle2, Star, ShieldCheck, Zap, Rocket, Building2, Search, Briefcase, HardHat } from "lucide-react";
+import { CheckCircle2, Star, Zap, Crown, Building2, Briefcase, Award } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
 
 export default function PricingPage() {
-  const [activeTab, setActiveTab] = useState<'worker' | 'professional' | 'business'>('professional');
+  const plans = [
+    {
+      name: "FREE STARTER",
+      price: "₹0",
+      period: "/ Month",
+      subtitle: "Start Your Journey",
+      desc: "Get Basic Access",
+      features: [
+        "1 Business Listing",
+        "5 Portfolio Images",
+        "Projects देख सकते हैं",
+        "Projects पर Bid कर सकते हैं",
+        "Contact Unlock (Wallet से)"
+      ],
+      bonus: "₹100 Welcome Wallet Bonus",
+      footer: "Best For New Professionals & Small Businesses",
+      color: "green",
+      popular: false,
+      icon: <Award className="w-8 h-8 text-green-500 mb-2" />
+    },
+    {
+      name: "GROWTH",
+      price: "₹499",
+      period: "/ Month",
+      yearlyPrice: "₹4,499 / Year",
+      subtitle: "Get Found. Get Notified.",
+      desc: "Get Business.",
+      features: [
+        "1 Business Listing",
+        "15 Portfolio Images",
+        "₹200 Monthly Wallet Credit",
+        "Category-wise Lead Notifications",
+        "Search Ranking Boost (+10)",
+        "Recommendation Score +5",
+        "WhatsApp Button",
+        "Website Link",
+        "Bid on Projects",
+        "10% Discount on Contact Unlock"
+      ],
+      footer: "Best For Growing Businesses & Active Professionals",
+      color: "blue",
+      popular: false,
+      icon: <Briefcase className="w-8 h-8 text-blue-500 mb-2" />
+    },
+    {
+      name: "PROFESSIONAL",
+      price: "₹999",
+      period: "/ Month",
+      yearlyPrice: "₹8,999 / Year",
+      subtitle: "Be Among the First.",
+      desc: "Get More Projects.",
+      features: [
+        "Up to 3 Business Listings",
+        "30 Portfolio Images",
+        "₹500 Monthly Wallet Credit",
+        "Instant Lead Notifications",
+        "Early Lead Access (2 Hours)",
+        "Search Ranking Boost (+30)",
+        "Recommendation Score +15",
+        "Trusted Professional Badge",
+        "WhatsApp + Website",
+        "Category Spotlight Placement",
+        "20% Discount on Contact Unlock",
+        "Weekly Profile Analytics"
+      ],
+      footer: "Best For Serious Professionals & Established Businesses",
+      color: "orange",
+      popular: true,
+      icon: <Star className="w-8 h-8 text-orange-500 mb-2" />
+    },
+    {
+      name: "ELITE",
+      price: "₹1,999",
+      period: "/ Month",
+      yearlyPrice: "₹17,999 / Year",
+      subtitle: "Dominate Your Category.",
+      desc: "Own Your City.",
+      features: [
+        "Up to 5 Business Listings",
+        "60 Portfolio Images",
+        "₹1,500 Monthly Wallet Credit",
+        "Real-Time Lead Alerts",
+        "Immediate Lead Access",
+        "Top 3 Category Placement",
+        "Recommendation Score +25",
+        "Elite Professional Badge",
+        "WhatsApp + Website",
+        "Homepage Featured Slot",
+        "30% Discount on Contact Unlock",
+        "Full Analytics Dashboard",
+        "Competitor Insights",
+        "Priority Admin Support",
+        '"Responds Fast" Badge'
+      ],
+      footer: "Best For Top Brands, Companies & Large Businesses",
+      color: "fuchsia",
+      popular: false,
+      icon: <Crown className="w-8 h-8 text-fuchsia-500 mb-2" />
+    }
+  ];
 
-  const plans = {
-    worker: [
-      {
-        name: "Starter",
-        desc: "Perfect for Getting Started",
-        price: "₹0",
-        features: ["Free Profile", "Basic Search Visibility"],
-        popular: false
-      },
-      {
-        name: "Growth",
-        desc: "Best for Individual Workers",
-        price: "₹199",
-        features: ["Enhanced Profile", "WhatsApp Chat Link", "Instant Lead Notifications", "Basic Support"],
-        popular: true
-      },
-      {
-        name: "Professional",
-        desc: "More Leads & Visibility",
-        price: "₹399",
-        features: ["Better Ranking", "More Leads", "Profile Analytics", "Verified Badge"],
-        popular: false
-      },
-      {
-        name: "Elite",
-        desc: "Top of the Market",
-        price: "₹799",
-        features: ["Maximum Visibility", "Priority Opportunities", "Top of Search Results", "Premium Support"],
-        popular: false
-      }
-    ],
-    professional: [
-      {
-        name: "Starter",
-        desc: "Perfect for Getting Started",
-        price: "₹0",
-        features: ["1 Business Listing", "Basic Business Profile", "Contact Form"],
-        popular: false
-      },
-      {
-        name: "Growth",
-        desc: "Growing Professionals",
-        price: "₹499",
-        features: ["Verified Business Badge", "WhatsApp Chat", "Higher Search Ranking"],
-        popular: false
-      },
-      {
-        name: "Professional",
-        desc: "Best for Most Designers",
-        price: "₹999",
-        features: ["Project Leads + Bidding", "Unlimited Portfolio", "Top Category Placement"],
-        popular: true
-      },
-      {
-        name: "Elite",
-        desc: "Maximum Lead Generation",
-        price: "₹1,999",
-        features: ["Homepage Featured Slot", "Full Analytics Dashboard", "Competitor Insights", "Priority Admin Support"],
-        popular: false
-      }
-    ],
-    business: [
-      {
-        name: "Starter",
-        desc: "Perfect for Getting Started",
-        price: "₹0",
-        features: ["Basic Company Profile", "Standard Discovery"],
-        popular: false
-      },
-      {
-        name: "Growth",
-        desc: "Small Agencies",
-        price: "₹999",
-        features: ["Multiple Listings", "Verified Company Badge", "Team Member Profiles"],
-        popular: false
-      },
-      {
-        name: "Professional",
-        desc: "Growing Companies",
-        price: "₹1,999",
-        features: ["Priority Visibility", "Project Promotion", "Professional Network Access"],
-        popular: true
-      },
-      {
-        name: "Elite Business",
-        desc: "National Brands",
-        price: "₹3,999",
-        features: ["Multiple Branches", "Dominant Search Real Estate", "Dedicated Account Manager", "Custom Branding"],
-        popular: false
-      }
-    ]
+  const getColorClasses = (color: string) => {
+    switch (color) {
+      case 'green': return { bg: 'bg-green-500', text: 'text-green-600', border: 'border-green-200', lightBg: 'bg-green-50', gradient: 'from-green-500 to-emerald-600' };
+      case 'blue': return { bg: 'bg-blue-500', text: 'text-blue-600', border: 'border-blue-200', lightBg: 'bg-blue-50', gradient: 'from-blue-500 to-indigo-600' };
+      case 'orange': return { bg: 'bg-orange-500', text: 'text-orange-600', border: 'border-orange-200', lightBg: 'bg-orange-50', gradient: 'from-orange-500 to-red-500' };
+      case 'fuchsia': return { bg: 'bg-fuchsia-500', text: 'text-fuchsia-600', border: 'border-fuchsia-200', lightBg: 'bg-fuchsia-50', gradient: 'from-fuchsia-500 to-purple-600' };
+      default: return { bg: 'bg-slate-500', text: 'text-slate-600', border: 'border-slate-200', lightBg: 'bg-slate-50', gradient: 'from-slate-500 to-slate-600' };
+    }
   };
-
-  const currentPlans = plans[activeTab];
 
   return (
     <div className="bg-slate-50 min-h-screen flex flex-col">
       <Navbar />
       
-      <main className="flex-1 py-16">
+      <main className="flex-1 py-12 md:py-16">
         <div className="container mx-auto px-4 text-center">
           
-          <div className="bg-orange-100 border border-orange-200 text-orange-800 rounded-lg p-3 inline-flex items-center gap-3 mb-8 mx-auto shadow-sm">
-            <Rocket className="w-5 h-5 text-orange-600" />
-            <div className="text-sm text-left">
-              <span className="font-bold">HOMEOWNERS ARE ALWAYS FREE.</span> Only professionals & businesses pay to get leads!
-            </div>
+          <div className="mb-4 inline-flex items-center justify-center gap-4 bg-white px-6 py-3 rounded-2xl shadow-sm border border-slate-100 flex-wrap">
+            <span className="font-bold text-slate-800 flex items-center gap-2"><Building2 className="w-4 h-4 text-slate-500"/> Interior Designers</span>
+            <span className="text-slate-300 hidden md:inline">|</span>
+            <span className="font-bold text-slate-800">Architects</span>
+            <span className="text-slate-300 hidden md:inline">|</span>
+            <span className="font-bold text-slate-800">Contractors</span>
+            <span className="text-slate-300 hidden md:inline">|</span>
+            <span className="font-bold text-slate-800">Builders</span>
+            <span className="text-slate-300 hidden md:inline">|</span>
+            <span className="font-bold text-slate-800">Material Suppliers</span>
           </div>
 
-          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-4">Choose the Perfect Plan to Grow</h1>
-          <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-10">
-            Select your role below to see customized pricing for your business size.
+          <h1 className="text-4xl md:text-5xl font-extrabold text-slate-900 mb-2 uppercase tracking-tight">
+            More Visibility. More Projects. <span className="text-orange-600">More Business.</span>
+          </h1>
+          <p className="text-xl text-slate-600 max-w-2xl mx-auto mb-12 font-medium bg-slate-800 text-white py-2 px-6 rounded-full inline-block">
+            Choose the Right Membership. Grow Your Business with Find My Interior.
           </p>
-
-          {/* Role Tabs */}
-          <div className="flex flex-wrap justify-center gap-4 mb-16">
-            <button 
-              onClick={() => setActiveTab('worker')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all ${activeTab === 'worker' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'bg-white text-slate-600 border hover:bg-slate-100'}`}
-            >
-              <HardHat className="w-5 h-5" /> Skilled Worker
-            </button>
-            <button 
-              onClick={() => setActiveTab('professional')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all ${activeTab === 'professional' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'bg-white text-slate-600 border hover:bg-slate-100'}`}
-            >
-              <Briefcase className="w-5 h-5" /> Professional
-            </button>
-            <button 
-              onClick={() => setActiveTab('business')}
-              className={`flex items-center gap-2 px-6 py-3 rounded-full font-bold transition-all ${activeTab === 'business' ? 'bg-orange-500 text-white shadow-lg scale-105' : 'bg-white text-slate-600 border hover:bg-slate-100'}`}
-            >
-              <Building2 className="w-5 h-5" /> Business
-            </button>
-          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto items-stretch">
-            {currentPlans.map((plan, idx) => (
-              <div key={idx} className={`${plan.popular ? 'bg-[#0b1b36] shadow-xl md:-translate-y-2' : 'bg-white shadow-sm'} rounded-2xl border p-6 text-left relative overflow-hidden flex flex-col transform transition-transform`}>
-                {plan.popular && (
-                  <div className="absolute top-0 right-0 bg-[#ff6b00] text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg tracking-wider">
-                    RECOMMENDED
+            {plans.map((plan, idx) => {
+              const colors = getColorClasses(plan.color);
+              return (
+                <div key={idx} className={`bg-white rounded-3xl border-2 ${colors.border} shadow-lg relative flex flex-col transform transition-transform hover:-translate-y-2 hover:shadow-2xl overflow-hidden`}>
+                  
+                  {plan.popular && (
+                    <div className="absolute top-0 right-0 left-0 bg-gradient-to-r from-amber-400 to-orange-500 text-white text-xs font-bold py-1 text-center tracking-wider z-10 shadow-md">
+                      RECOMMENDED
+                    </div>
+                  )}
+                  
+                  {/* Header */}
+                  <div className={`p-6 pb-8 bg-gradient-to-br ${colors.lightBg} text-center relative ${plan.popular ? 'pt-8' : ''}`}>
+                    <div className="flex justify-center">{plan.icon}</div>
+                    <div className={`text-white font-extrabold text-xl py-2 px-6 rounded-full inline-block shadow-md bg-gradient-to-r ${colors.gradient} mb-4`}>
+                      {plan.name}
+                    </div>
+                    
+                    <div className="mt-2">
+                      <span className="text-4xl font-extrabold text-slate-900">{plan.price}</span>
+                      <span className="font-medium text-slate-500 font-semibold text-lg"> {plan.period}</span>
+                    </div>
+                    {plan.yearlyPrice && (
+                      <div className="text-sm font-bold text-slate-500 mt-1 line-through opacity-70">
+                        {plan.yearlyPrice}
+                      </div>
+                    )}
                   </div>
-                )}
-                
-                <h3 className={`text-xl font-bold mb-2 flex items-center gap-2 ${plan.popular ? 'text-white' : 'text-slate-900'}`}>
-                  {plan.popular && <Star className="w-5 h-5 text-[#ff6b00] fill-[#ff6b00]" />} {plan.name}
-                </h3>
-                
-                <p className={`mb-6 min-h-[40px] text-sm ${plan.popular ? 'text-slate-300' : 'text-slate-500'}`}>{plan.desc}</p>
-                
-                <div className="mb-6 flex flex-col">
-                  <div>
-                    <span className={`text-4xl font-extrabold ${plan.popular ? 'text-white' : 'text-slate-900'}`}>{plan.price}</span>
-                    <span className={`font-medium ${plan.popular ? 'text-slate-400' : 'text-slate-500'}`}> {plan.price === '₹0' ? '' : '/mo'}</span>
+                  
+                  {/* Tagline */}
+                  <div className="bg-slate-100 py-3 px-4 text-center border-y border-slate-200 min-h-[72px] flex flex-col justify-center">
+                    <p className="font-bold text-slate-800 text-sm leading-tight">{plan.subtitle}</p>
+                    <p className="font-bold text-slate-800 text-sm leading-tight">{plan.desc}</p>
                   </div>
+                  
+                  {/* Features */}
+                  <div className="p-6 flex-1 bg-white">
+                    <ul className="space-y-3.5 mb-6 text-left">
+                      {plan.features.map((f, i) => (
+                        <li key={i} className="flex gap-3 text-sm font-semibold text-slate-700 items-start">
+                          <CheckCircle2 className={`w-5 h-5 shrink-0 ${colors.text} bg-${plan.color}-100 rounded-full p-0.5`} />
+                          <span dangerouslySetInnerHTML={{ __html: f.replace(/\(\+(.*?)\)/g, '<span class="text-green-600 font-bold">(+$1)</span>') }} />
+                        </li>
+                      ))}
+                    </ul>
+                    
+                    {plan.bonus && (
+                      <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-sm font-bold text-amber-800 flex items-center gap-2 mt-4 shadow-inner">
+                        <Zap className="w-5 h-5 text-amber-500" />
+                        {plan.bonus}
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Button & Footer */}
+                  <div className="p-6 pt-0 mt-auto bg-white flex flex-col gap-4">
+                    <Link href={plan.price === '₹0' ? '/register' : '/dashboard?tab=subscription'} className="w-full">
+                      <Button className={`w-full h-12 text-base font-bold shadow-md hover:shadow-lg transition-all ${plan.popular ? `bg-gradient-to-r ${colors.gradient} text-white hover:opacity-90 border-none` : `bg-white border-2 border-${plan.color}-500 ${colors.text} hover:${colors.bg} hover:text-white`}`}>
+                        {plan.price === '₹0' ? 'Start Free' : 'Choose Plan'}
+                      </Button>
+                    </Link>
+                    
+                    <div className={`text-xs font-bold text-center flex items-center justify-center gap-2 p-3 rounded-xl ${colors.lightBg} ${colors.text}`}>
+                      <Star className="w-4 h-4" /> {plan.footer}
+                    </div>
+                  </div>
+                  
                 </div>
-                
-                <Link href={plan.price === '₹0' ? '/register' : '/dashboard?tab=subscription'} className="mt-auto">
-                  <Button variant={plan.popular ? 'default' : 'outline'} className={`w-full h-10 text-sm font-semibold mb-6 ${plan.popular ? 'bg-[#ff6b00] hover:bg-[#ea580c] border-none text-white' : ''}`}>
-                    {plan.price === '₹0' ? 'Start Free' : 'Choose Plan'}
-                  </Button>
-                </Link>
-                
-                <ul className={`space-y-3 mt-auto flex-1 ${plan.popular ? 'text-slate-200' : 'text-slate-600'}`}>
-                  {plan.features.map((f, i) => (
-                    <li key={i} className="flex gap-2 text-sm">
-                      <CheckCircle2 className={`w-4 h-4 shrink-0 mt-0.5 ${plan.popular ? 'text-[#ff6b00]' : 'text-blue-500'}`} />
-                      <span>{f}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </div>
-          
-          {/* Advertising Link */}
-          <div className="mt-16 text-center">
-            <h3 className="text-2xl font-bold text-slate-800 mb-4">Looking for Brand Advertising & Corporate Packages?</h3>
-            <p className="text-slate-600 mb-6 max-w-2xl mx-auto">We offer premium website banners, category sponsorships, and corporate brand partnerships to give your brand maximum visibility.</p>
-            <Link href="/advertise">
-              <Button variant="outline" className="border-orange-500 text-orange-600 hover:bg-orange-50 font-bold px-8">View Advertisement Pricing</Button>
-            </Link>
+              );
+            })}
           </div>
           
         </div>

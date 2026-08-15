@@ -68,7 +68,11 @@ class JobController extends Controller
             'status' => 'open'
         ]);
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('images')) {
+            $file = $request->file('images')[0];
+            $job->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
+            $job->save();
+        } elseif ($request->hasFile('image')) {
             $file = $request->file('image');
             $job->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
             $job->save();
