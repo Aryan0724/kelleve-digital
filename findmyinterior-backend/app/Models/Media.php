@@ -13,6 +13,8 @@ class Media extends Model
 {
     use HasFactory, TenantAwareTrait, SoftDeletes;
 
+    protected $appends = ['url'];
+
     protected $fillable = [
         'tenant_id',
         'model_type',
@@ -30,6 +32,12 @@ class Media extends Model
         'sort_order',
         'is_cover',
     ];
+
+    public function getUrlAttribute(): string
+    {
+        // Media files are stored in the 'media' directory
+        return \Illuminate\Support\Facades\Storage::disk($this->disk)->url('media/' . $this->file_name);
+    }
 
     public function model(): MorphTo
     {
