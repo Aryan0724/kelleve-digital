@@ -42,6 +42,14 @@ class BusinessController extends Controller
             return $this->error('You already have a business listing', 400);
         }
 
+        // Default missing required fields for TrueDial
+        $data = $request->all();
+        if (!isset($data['category_id'])) $data['category_id'] = \App\Models\Category::first()->id ?? 1;
+        if (!isset($data['city_id'])) $data['city_id'] = \App\Models\City::first()->id ?? 1;
+        if (!isset($data['district'])) $data['district'] = 'N/A';
+        if (!isset($data['state'])) $data['state'] = 'N/A';
+        $request->merge($data);
+
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'city_id' => 'required|exists:cities,id',
