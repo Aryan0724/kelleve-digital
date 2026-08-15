@@ -71,7 +71,7 @@ class BusinessController extends Controller
         $validated['tenant_id'] = $tenantId;
         $validated['user_id'] = Auth::id();
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . time();
-        $validated['status'] = 'pending'; // Requires admin approval
+        $validated['status'] = 'active'; // Set active by default so it appears in search
 
         if (isset($validated['professional_type'])) {
             Auth::user()->update(['professional_type' => $validated['professional_type']]);

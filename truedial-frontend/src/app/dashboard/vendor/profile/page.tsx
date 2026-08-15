@@ -8,6 +8,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Loader2, Save, Store, MapPin, Phone, Globe, ShieldCheck, Upload, Link as LinkIcon, Clock, Zap, Star, UserCircle } from "lucide-react";
 import { useVendorType } from "@/hooks/useVendorType";
 import { useAuth } from "@/context/AuthContext";
+import { CATEGORIES } from "@/lib/categories";
+
 
 const TIME_SLOTS = [
   "12:00 AM", "01:00 AM", "02:00 AM", "03:00 AM", "04:00 AM", "05:00 AM", "06:00 AM", "07:00 AM", "08:00 AM", "09:00 AM", "10:00 AM", "11:00 AM",
@@ -100,8 +102,13 @@ export default function VendorProfilePage() {
           services: res.data.services || []
         });
       } else {
-        // Init empty
-        setFormData(prev => ({ ...prev, professional_type: user?.professional_type || "" }));
+        // Init empty but pre-populate with auth user data
+        setFormData(prev => ({ 
+          ...prev, 
+          professional_type: user?.professional_type || "",
+          title: user?.name || "",
+          phone: user?.phone || ""
+        }));
       }
     } catch (error) {
       console.error("Failed to fetch business:", error);
@@ -147,12 +154,49 @@ export default function VendorProfilePage() {
     }
   };
 
+  const detectLocation = () => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (position) => {
+          const { latitude, longitude } = position.coords;
+          // Reverse geocode to get an address (using a free API like OpenStreetMap Nominatim)
+          try {
+            const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`);
+            const data = await res.json();
+            if (data && data.display_name) {
+              setFormData(prev => ({ ...prev, address: data.display_name }));
+            } else {
+              setFormData(prev => ({ ...prev, address: `${latitude}, ${longitude}` }));
+            }
+          } catch (error) {
+            setFormData(prev => ({ ...prev, address: `${latitude}, ${longitude}` }));
+          }
+        },
+        (error) => {
+          alert("Failed to get location. Please ensure location services are enabled.");
+        }
+      );
+    } else {
+      alert("Geolocation is not supported by your browser.");
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
       // Build final availability string
       const finalAvailability = `${openTime} to ${closeTime}`;
-      const payload = { ...formData, availability: finalAvailability };
+      
+      // We inject default category_id, city_id, district, state to satisfy backend validation
+      // if this is a brand new business creation.
+      const payload = { 
+        ...formData, 
+        availability: finalAvailability,
+        category_id: business?.category_id || 1,
+        city_id: business?.city_id || 1,
+        district: business?.district || "Default",
+        state: business?.state || "Default"
+      };
 
       let res;
       if (business) {
@@ -222,7 +266,7 @@ export default function VendorProfilePage() {
             
               <div className="space-y-2">
                 <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
-                  <UserCircle className="w-4 h-4 text-muted-foreground" /> Business Type / Category
+                  <UserCircle className="w-4 h-4 text-muted-foreground" /> Business Type / Category <span className="text-red-500">*</span>
                 </label>
                 <select 
                   name="professional_type"
@@ -231,20 +275,20 @@ export default function VendorProfilePage() {
                   className="w-full h-10 px-3 rounded-md border border-input bg-background/50 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
                 >
                   <option value="">Select your business type</option>
-                  <option value="restaurant">Restaurant / Cafe</option>
-                  <option value="clinic">Clinic / Healthcare</option>
-                  <option value="interior_designer">Interior Designer</option>
-                  <option value="builder">Builder / Real Estate</option>
-                  <option value="salon">Salon / Spa</option>
-                  <option value="gym">Gym / Fitness Center</option>
-                  <option value="carpenter">Carpenter / Woodworker</option>
+                  {CATEGORIES.map(category => (
+                    <optgroup key={category.id} label={category.name}>
+                      {category.subTypes.map(sub => (
+                        <option key={sub.value} value={sub.value}>{sub.label}</option>
+                      ))}
+                    </optgroup>
+                  ))}
                   <option value="vendor">Other Business</option>
                 </select>
                 <p className="text-xs text-muted-foreground">Changing this will update your personalized sidebar tabs.</p>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground/80">Business / Clinic Name</label>
+                <label className="text-sm font-medium text-foreground/80">Business / Clinic Name <span className="text-red-500">*</span></label>
                 <Input 
                   name="title"
                   value={formData.title}
@@ -268,7 +312,7 @@ export default function VendorProfilePage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-2">
                   <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-muted-foreground" /> Contact Number
+                    <Phone className="w-4 h-4 text-muted-foreground" /> Contact Number <span className="text-red-500">*</span>
                   </label>
                   <Input 
                     name="phone"
@@ -292,10 +336,15 @@ export default function VendorProfilePage() {
               </div>
               
               <div className="space-y-2">
-                <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-muted-foreground" /> Full Address
-                </label>
-                <Input 
+                <div className="flex justify-between items-center">
+                  <label className="text-sm font-medium text-foreground/80 flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-muted-foreground" /> Full Address <span className="text-red-500">*</span>
+                  </label>
+                  <button type="button" onClick={detectLocation} className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1">
+                    <MapPin className="w-3 h-3" /> Detect Location
+                  </button>
+                </div>
+                <Textarea 
                   name="address"
                   value={formData.address}
                   onChange={handleChange}
