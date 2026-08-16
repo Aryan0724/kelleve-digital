@@ -150,43 +150,45 @@ class ListingController extends Controller
      */
     public function show(Request $request, string $slug): JsonResponse
     {
-        // 1. Try exact match by slug, id, or user_id (without global tenant scope so cross-tenant/public links work)
-        $query = Listing::withoutGlobalScopes()
-            ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user']);
+        // 1. Try exact slug match FIRST (without global tenant scope so cross-tenant/public links work)
+        $listing = Listing::withoutGlobalScopes()
+            ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+            ->where('slug', $slug)
+            ->first();
 
-        if (is_numeric($slug)) {
-            $query->where(function($q) use ($slug) {
-                $q->where('id', $slug)
-                  ->orWhere('user_id', $slug);
-            });
-        } else {
-            $prefix = explode('-', $slug)[0];
-            $query->where(function($q) use ($slug, $prefix) {
-                $q->where('slug', $slug)
-                  ->orWhere('slug', 'LIKE', '%' . $slug . '%')
-                  ->orWhere('slug', 'LIKE', $prefix . '-%')
-                  ->orWhere('title', 'LIKE', '%' . str_replace('-', ' ', $prefix) . '%');
-            });
+        // 2. If numeric, try exact ID or user_id match
+        if (!$listing && is_numeric($slug)) {
+            $listing = Listing::withoutGlobalScopes()
+                ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+                ->where(function($q) use ($slug) {
+                    $q->where('id', $slug)->orWhere('user_id', $slug);
+                })
+                ->first();
         }
 
-        $listing = $query->first();
+        // 3. Try partial match on SLUG column only (never fuzzy title match, to prevent wrong profile resolution)
+        if (!$listing && !is_numeric($slug)) {
+            $listing = Listing::withoutGlobalScopes()
+                ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+                ->where('slug', 'LIKE', $slug . '-%')
+                ->orWhere('slug', 'LIKE', '%' . $slug . '%')
+                ->first();
+        }
 
-        // 2. Fallback: check if slug contains a numeric ID at the end or anywhere
+        // 4. Fallback: check if slug contains numeric ID at the end or in segments
         if (!$listing && !is_numeric($slug)) {
             $parts = explode('-', $slug);
-            foreach ($parts as $part) {
-                if (is_numeric($part) && (int)$part > 0) {
-                    $listing = Listing::withoutGlobalScopes()
-                        ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
-                        ->where('id', $part)
-                        ->orWhere('user_id', $part)
-                        ->first();
-                    if ($listing) break;
-                }
+            $lastPart = end($parts);
+            if (is_numeric($lastPart) && (int)$lastPart > 0) {
+                $listing = Listing::withoutGlobalScopes()
+                    ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+                    ->where('id', $lastPart)
+                    ->orWhere('user_id', $lastPart)
+                    ->first();
             }
         }
 
-        // 3. Fallback: User ID lookup & stub generation for workers/suppliers/builders
+        // 5. Fallback: User ID lookup & stub generation for workers/suppliers/builders
         if (!$listing) {
             $userIdToFind = is_numeric($slug) ? $slug : null;
             if (!$userIdToFind) {
@@ -230,7 +232,6 @@ class ListingController extends Controller
                         $listing->phone = $user->phone;
                         $listing->achievements = $user->worker->achievements ?? [];
                         $listing->languages = $user->worker->languages ?? [];
-                        $listing->business_hours = $user->worker->availability ? 'Availability: ' . $user->worker->availability : null;
                     } elseif ($user->supplier) {
                         $listing->description = $user->supplier->company_name ?? 'Profile pending completion.';
                         $listing->phone = $user->supplier->phone ?? $user->phone;
