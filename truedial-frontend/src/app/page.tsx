@@ -11,6 +11,7 @@ import {
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import HeroSearch from "@/components/shared/HeroSearch";
 import { TrueDialAPI } from "@/lib/api";
 
 export default async function Home() {
@@ -66,68 +67,7 @@ export default async function Home() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6 sm:py-8 space-y-8 sm:space-y-12">
         
         {/* 1. SMART SEARCH & HERO BANNER COMBINED */}
-        <div className="w-full">
-          <div className="bg-[#0A1C3A] rounded-[32px] p-6 sm:p-10 overflow-hidden shadow-2xl border border-[#1E40AF]/40 relative">
-            
-            {/* Background elements to match design slightly */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full -mr-20 -mt-20 blur-3xl" />
-            <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/20 rounded-full -ml-10 -mb-10 blur-3xl" />
-            
-            <div className="max-w-4xl mx-auto z-10 relative">
-              {/* Location Bar & Voice */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-6 gap-4">
-                <div className="flex-row inline-flex items-center bg-white px-5 py-3 rounded-full shadow-md w-full sm:w-auto">
-                  <MapPin className="w-5 h-5 text-[#1E40AF]" />
-                  <span className="text-sm font-bold text-slate-900 mx-3 truncate max-w-[200px]">Patna, Bihar</span>
-                  <ChevronRight className="w-5 h-5 text-slate-400 ml-auto sm:ml-2 rotate-90 sm:rotate-0" />
-                </div>
-
-                <button className="hidden sm:flex w-12 h-12 rounded-full bg-white items-center justify-center shadow-md hover:bg-gray-50 transition">
-                  <Mic className="w-5 h-5 text-[#1E40AF]" />
-                </button>
-              </div>
-
-              {/* Search Bar Input */}
-              <form action="/search" method="GET" className="flex flex-row items-center bg-white rounded-full pl-5 pr-2 h-16 shadow-xl mb-10 z-10 w-full hover:shadow-2xl transition-shadow duration-300">
-                <Search className="w-6 h-6 text-slate-400 mr-3 hidden sm:block" />
-                <input
-                  type="text"
-                  name="q"
-                  className="flex-1 text-slate-900 text-base font-medium outline-none bg-transparent h-full"
-                  placeholder="Search Business, Service, Product..."
-                />
-                <button type="submit" className="bg-[#1E40AF] hover:bg-blue-800 transition-colors h-12 px-6 rounded-full items-center justify-center flex shadow-md">
-                  <span className="text-white font-bold hidden sm:inline mr-2">Search</span>
-                  <Search className="w-5 h-5 text-white" />
-                </button>
-              </form>
-
-              {/* Hero Text */}
-              <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
-                <div className="flex-1">
-                  <h2 className="text-lg md:text-xl font-semibold text-blue-200 mb-2 uppercase tracking-wide">India's Emerging</h2>
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-[#F59E0B] leading-tight md:leading-[1.1]">Business Growth</h1>
-                  <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight md:leading-[1.1] mb-4">Platform</h1>
-                  <p className="text-lg md:text-xl text-blue-100 font-medium mb-1">Beyond Listing.</p>
-                  <p className="text-lg md:text-xl text-blue-100 font-medium mb-8">We Help Businesses Grow.</p>
-
-                  <Link href="/search">
-                    <button className="bg-[#F59E0B] hover:bg-amber-400 transition-colors py-4 px-8 rounded-full inline-flex items-center shadow-xl group">
-                      <span className="text-base font-black text-slate-900 mr-3 uppercase tracking-wide">Explore Now</span>
-                      <ArrowRight className="w-5 h-5 text-slate-900 group-hover:translate-x-1 transition-transform" />
-                    </button>
-                  </Link>
-                </div>
-
-                {/* Right side floating badge */}
-                <div className="md:w-48 bg-[#1E40AF]/40 backdrop-blur-md border border-blue-400/30 p-4 md:p-6 rounded-3xl items-center text-center shadow-2xl">
-                  <Trophy className="w-12 h-12 text-[#F59E0B] mb-3 mx-auto" />
-                  <p className="text-sm font-bold text-white leading-snug">Trusted by Thousands of Businesses Across India</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+        <HeroSearch />
 
         {/* 2. QUICK ACTIONS GRID */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6">
