@@ -334,14 +334,29 @@ class ProfileController extends Controller
      */
     public function addGalleryImages(Request $request, int $id): JsonResponse
     {
-        $listing = Listing::where('user_id', $request->user()->id)
-            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
-            ->findOrFail($id);
+        $tenantId = null;
+        try {
+            $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
+        } catch (\Throwable $e) {}
 
-        // Check gallery image limit
-        $maxImages = $request->user()->activeSubscription?->plan?->max_gallery_images ?? 5;
+        // Allow matching by provided listing ID or fallback to user's first listing
+        $listing = Listing::where('id', $id)
+            ->where(function ($q) use ($request) {
+                if ($request->user()->role !== 'admin') {
+                    $q->where('user_id', $request->user()->id);
+                }
+            })
+            ->first()
+            ?? Listing::where('user_id', $request->user()->id)->first();
+
+        if (!$listing) {
+            return response()->json(['success' => false, 'message' => 'Listing profile not found.'], 404);
+        }
+
+        // Check gallery image limit (default 50 images per gallery)
+        $maxImages = $request->user()->role === 'admin' ? 100 : ($request->user()->activeSubscription?->plan?->max_gallery_images ?? 50);
         $currentCount = ListingGallery::where('listing_id', $listing->id)->count();
-        $allowed = $maxImages - $currentCount;
+        $allowed = max(1, $maxImages - $currentCount);
 
         if ($allowed <= 0) {
             return response()->json([

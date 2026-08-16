@@ -59,7 +59,7 @@ class ProfessionalProfileController extends Controller
             'apartment_project', 'commercial_project', 'villa_project',
         ];
 
-        if (in_array($role, $listingRoles)) return 'listing';
+        if (in_array($role, $listingRoles) || $role === 'admin') return 'listing';
         if (in_array($role, $workerRoles)) return 'worker';
         if (in_array($role, $supplierRoles)) return 'supplier';
         if (in_array($role, $builderRoles)) return 'builder';
@@ -80,13 +80,37 @@ class ProfessionalProfileController extends Controller
             $type = $this->getProfileType($role);
 
             if ($type === 'listing') {
-                $query = Listing::where('user_id', $user->id)->with(['category', 'gallery']);
+                $tenantId = null;
                 try {
-                    if ($tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId()) {
-                        $query->where('tenant_id', $tenantId);
-                    }
+                    $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
                 } catch (\Throwable $e) {}
-                $profile = $query->first();
+
+                // Try tenant-scoped first, then fall back to user's any listing
+                $profile = Listing::where('user_id', $user->id)
+                    ->when($tenantId, fn($q, $tid) => $q->where('tenant_id', $tid))
+                    ->with(['category', 'gallery'])
+                    ->first()
+                    ?? Listing::where('user_id', $user->id)
+                    ->with(['category', 'gallery'])
+                    ->first();
+
+                // If no listing exists yet, auto-create a default active listing so portfolio uploads work immediately
+                if (!$profile) {
+                    $profile = Listing::create([
+                        'tenant_id'   => $tenantId ?? 1,
+                        'user_id'     => $user->id,
+                        'category_id' => 1,
+                        'title'       => ($user->name ?? 'Professional') . ' Studio',
+                        'slug'        => Str::slug(($user->name ?? 'pro') . '-studio-' . Str::random(6)),
+                        'description' => 'Professional interior design and architectural services.',
+                        'phone'       => $user->phone ?? '9876543210',
+                        'city'        => $user->city ?? 'Patna',
+                        'district'    => $user->district ?? 'Patna',
+                        'state'       => 'Bihar',
+                        'status'      => 'active',
+                    ]);
+                    $profile->load(['category', 'gallery']);
+                }
             } elseif ($type === 'worker') {
                 $profile = Worker::where('user_id', $user->id)->first();
             } elseif ($type === 'supplier') {
@@ -94,7 +118,7 @@ class ProfessionalProfileController extends Controller
             } elseif ($type === 'builder') {
                 $profile = Builder::where('user_id', $user->id)->first();
             } else {
-                $type = 'none'; // Homeowner, Customer, Admin
+                $type = 'none'; // Homeowner, Customer
             }
 
             return response()->json([
