@@ -13,23 +13,18 @@ class SyncUserMediaCommand extends Command
 
     public function handle()
     {
-        $u = User::withoutGlobalScopes()->where('name', 'like', '%integral%')->first()
-            ?? User::withoutGlobalScopes()->find(2311);
-
-        if ($u) {
+        $users = User::withoutGlobalScopes()->where('name', 'like', '%integral%')->get();
+        foreach ($users as $u) {
             $u->avatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb';
             $u->cover_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6';
             $u->save();
 
-            $l = Listing::withoutGlobalScopes()->where('user_id', $u->id)->first();
-            if ($l) {
+            $listings = Listing::withoutGlobalScopes()->where('user_id', $u->id)->get();
+            foreach ($listings as $l) {
                 $l->cover_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6';
                 $l->save();
+                $this->info("Updated Listing #{$l->id} (user #{$u->id}) media.");
             }
-
-            $this->info("Updated user {$u->id} media cleanly.");
-        } else {
-            $this->error("User not found.");
         }
     }
 }
