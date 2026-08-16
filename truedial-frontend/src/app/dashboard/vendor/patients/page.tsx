@@ -78,10 +78,8 @@ export default function PatientRecords() {
         </div>
         
         <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
-          <DialogTrigger asChild>
-            <Button className="bg-blue-500 hover:bg-blue-600 text-white font-bold h-10 px-6">
-              <Plus className="w-4 h-4 mr-2" /> Add New Patient
-            </Button>
+          <DialogTrigger className="bg-blue-500 hover:bg-blue-600 text-white font-bold h-10 px-6 rounded-md flex items-center">
+            <Plus className="w-4 h-4 mr-2" /> Add New Patient
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
