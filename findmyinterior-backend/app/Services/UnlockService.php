@@ -54,16 +54,11 @@ class UnlockService
             throw new Exception('This requirement has reached its maximum number of contact unlocks.');
         }
 
-        // 2. Fetch the fee from requirement or configuration
-        $fee = $requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00);
+        // 2. Fetch the fee from requirement or configuration (default ₹49)
+        $fee = (float) ($requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00));
 
-        // Workers and Skilled Workers can unlock any requirement for free
-        if ($vendor->hasRole('worker') || $vendor->hasRole('skilled_worker')) {
-            $fee = 0;
-        }
-
-        // Premium subscribers (Business/Premium plans) get unlimited leads for free
-        if ($vendor->hasPremiumSubscription()) {
+        // Only the actual owner of the listing/requirement gets their own contact for free
+        if ($vendor->id === ($requirement->user_id ?? null)) {
             $fee = 0;
         }
 
