@@ -110,7 +110,10 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                       )}
                     </div>
                     {listing.user?.name && (
-                      <p className="text-lg text-slate-700 font-medium mb-2">{listing.user.name}</p>
+                      <p className="text-lg text-slate-700 font-medium mb-1">{listing.user.name}</p>
+                    )}
+                    {listing.tagline && (
+                      <p className="text-base text-slate-600 italic mb-2">{listing.tagline}</p>
                     )}
                     <div className="flex items-center text-slate-500 mb-2">
                       <MapPin className="h-4 w-4 mr-1" /> {[listing.address, listing.city, listing.district, 'Bihar', 'India'].filter(Boolean).join(', ')}

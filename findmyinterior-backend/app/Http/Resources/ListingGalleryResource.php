@@ -11,10 +11,20 @@ class ListingGalleryResource extends JsonResource
     {
         $formatUrl = function($img) {
             if (empty($img)) return null;
+            if (\Illuminate\Support\Str::startsWith($img, 'data:')) {
+                return $img;
+            }
+            if (\Illuminate\Support\Str::startsWith($img, 'http://findmyinterior.com')) {
+                $img = str_replace('http://', 'https://', $img);
+            }
             if (\Illuminate\Support\Str::startsWith($img, 'http://') || \Illuminate\Support\Str::startsWith($img, 'https://')) {
                 return $img;
             }
-            return url($img);
+            $url = url($img);
+            if (config('app.env') === 'production' || str_contains($url, 'findmyinterior.com')) {
+                $url = str_replace('http://', 'https://', $url);
+            }
+            return $url;
         };
 
         return [

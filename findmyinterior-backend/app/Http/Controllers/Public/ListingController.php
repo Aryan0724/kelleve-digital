@@ -182,37 +182,10 @@ class ListingController extends Controller
         }
 
         // 4. Try matching words in slug against slug, title, or user name
-        if (!$listing && !is_numeric($slug)) {
-            $words = array_values(array_filter(explode('-', $slug), fn($w) => strlen($w) >= 3 && !is_numeric($w)));
-            if (!empty($words)) {
-                $query = Listing::withoutGlobalScopes()
-                    ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user']);
-                foreach ($words as $word) {
-                    $query->where(function($q) use ($word) {
-                        $q->where('slug', 'LIKE', "%{$word}%")
-                          ->orWhere('title', 'LIKE', "%{$word}%")
-                          ->orWhereHas('user', fn($uq) => $uq->where('name', 'LIKE', "%{$word}%"));
-                    });
-                }
-                $listing = $query->first();
-            }
-        }
+        // REMOVED: Dangerous fuzzy matching that returned incorrect profiles.
 
         // 5. Fallback: match by first significant word in slug
-        if (!$listing && !is_numeric($slug)) {
-            $firstWord = explode('-', $slug)[0];
-            if (strlen($firstWord) >= 3) {
-                $listing = Listing::withoutGlobalScopes()
-                    ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
-                    ->where(function($q) use ($firstWord) {
-                        $q->where('slug', 'LIKE', "%{$firstWord}%")
-                          ->orWhere('title', 'LIKE', "%{$firstWord}%")
-                          ->orWhereHas('user', fn($uq) => $uq->where('name', 'LIKE', "%{$firstWord}%"));
-                    })
-                    ->latest('id')
-                    ->first();
-            }
-        }
+        // REMOVED: Dangerous fuzzy matching that returned incorrect profiles.
 
         // 6. Fallback: User ID lookup & stub generation for workers/suppliers/builders
         if (!$listing) {

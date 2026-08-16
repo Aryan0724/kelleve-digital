@@ -40,10 +40,12 @@ export function ContactButtons({ listing }: { listing: any }) {
   };
 
   const hasPhone = !!listing.phone;
+  const hasWhatsApp = !!listing.whatsapp;
   const hasEmail = !!listing.email;
   const hasWebsite = !!listing.website;
 
   const phoneDisplay = hasPhone ? listing.phone : "Not Available";
+  const whatsappDisplay = hasWhatsApp ? listing.whatsapp : "Not Available";
   const emailDisplay = hasEmail ? listing.email : "Not Available";
 
   return (
@@ -74,6 +76,28 @@ export function ContactButtons({ listing }: { listing: any }) {
           </div>
         </div>
       </div>
+
+      {/* WhatsApp */}
+      {hasWhatsApp && (
+        <div
+          className="flex items-center p-3 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-lg cursor-pointer transition-colors"
+          onClick={() => {
+            handleContactAction(() => {
+              handleTrackClick("whatsapp");
+              const number = listing.whatsapp.replace(/\D/g, "");
+              window.open(`https://wa.me/91${number}?text=Hi, I found your profile on FindMyInterior and would like to enquire about your services.`, "_blank");
+            });
+          }}
+        >
+          <MessageCircle className="h-5 w-5 mr-3 text-emerald-600 flex-shrink-0" />
+          <div className="min-w-0">
+            <div className="text-xs text-slate-500 font-medium">WhatsApp</div>
+            <div className="font-semibold truncate text-emerald-700">
+              {whatsappDisplay}
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Email */}
       <div

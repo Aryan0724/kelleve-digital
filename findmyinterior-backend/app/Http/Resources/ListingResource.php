@@ -17,10 +17,20 @@ class ListingResource extends JsonResource
 
         $formatUrl = function($img) {
             if (empty($img)) return null;
+            if (\Illuminate\Support\Str::startsWith($img, 'data:')) {
+                return $img;
+            }
+            if (\Illuminate\Support\Str::startsWith($img, 'http://findmyinterior.com')) {
+                $img = str_replace('http://', 'https://', $img);
+            }
             if (\Illuminate\Support\Str::startsWith($img, 'http://') || \Illuminate\Support\Str::startsWith($img, 'https://')) {
                 return $img;
             }
-            return url($img);
+            $url = url($img);
+            if (config('app.env') === 'production' || str_contains($url, 'findmyinterior.com')) {
+                $url = str_replace('http://', 'https://', $url);
+            }
+            return $url;
         };
 
         $coverImage = $formatUrl($this->cover_image ?: $ownerUser?->cover_image);
@@ -42,6 +52,8 @@ class ListingResource extends JsonResource
             'address'          => $this->address,
             'years_experience' => $this->years_experience,
             'team_size'        => $this->team_size,
+            'gst_number'       => $this->gst_number,
+            'pan_number'       => $this->pan_number,
             'avg_rating'       => (float) $this->avg_rating,
             'review_count'     => $this->review_count,
             'is_verified'      => (bool) $this->is_verified,
