@@ -72,15 +72,17 @@ export default function HeroSearch() {
         
         <div className="max-w-4xl mx-auto z-10 relative">
           {/* Location Bar & Voice */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-6 gap-4">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-4">
             <button 
               type="button" 
               onClick={openLocationModal}
-              className="flex-row inline-flex items-center bg-white px-5 py-3 rounded-full shadow-md w-full sm:w-auto hover:bg-gray-50 transition"
+              className="flex items-center bg-white px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl sm:rounded-full shadow-sm sm:shadow-md w-full sm:w-auto hover:bg-gray-50 transition border border-transparent hover:border-blue-100"
             >
-              <MapPin className="w-5 h-5 text-[#1E40AF]" />
-              <span className="text-sm font-bold text-slate-900 mx-3 truncate max-w-[200px]">{city || "Select Location"}</span>
-              <ChevronRight className="w-5 h-5 text-slate-400 ml-auto sm:ml-2 rotate-90 sm:rotate-0" />
+              <div className="bg-blue-50 w-8 h-8 rounded-full flex items-center justify-center shrink-0">
+                <MapPin className="w-4 h-4 text-[#1E40AF]" />
+              </div>
+              <span className="text-sm sm:text-base font-bold text-slate-900 mx-3 truncate max-w-[200px] text-left flex-1">{city || "Select Location"}</span>
+              <ChevronRight className="w-5 h-5 text-slate-400 shrink-0" />
             </button>
 
             <button type="button" className="hidden sm:flex w-12 h-12 rounded-full bg-white items-center justify-center shadow-md hover:bg-gray-50 transition">
@@ -89,9 +91,9 @@ export default function HeroSearch() {
           </div>
 
           {/* Search Bar Input */}
-          <div className="relative w-full mb-10 z-20" ref={dropdownRef}>
-            <form onSubmit={handleSearch} className="flex flex-row items-center bg-white rounded-full pl-5 pr-2 h-16 shadow-xl w-full hover:shadow-2xl transition-shadow duration-300">
-              <Search className="w-6 h-6 text-slate-400 mr-3 hidden sm:block" />
+          <div className="relative w-full mb-8 sm:mb-10 z-20" ref={dropdownRef}>
+            <form onSubmit={handleSearch} className="flex flex-row items-center bg-white rounded-2xl sm:rounded-full p-1.5 sm:pl-6 sm:pr-2 h-14 sm:h-16 shadow-lg w-full hover:shadow-xl transition-shadow duration-300">
+              <Search className="w-5 h-5 text-slate-400 mr-3 hidden sm:block" />
               <input
                 type="text"
                 value={query}
@@ -102,12 +104,12 @@ export default function HeroSearch() {
                 onFocus={() => {
                   if (query.trim().length >= 2) setShowDropdown(true);
                 }}
-                className="flex-1 text-slate-900 text-base font-medium outline-none bg-transparent h-full placeholder:text-gray-400"
+                className="flex-1 text-slate-900 text-sm sm:text-base font-medium outline-none bg-transparent h-full px-3 sm:px-0 placeholder:text-gray-400"
                 placeholder="Search Business, Service, Product..."
               />
-              <button type="submit" className="bg-[#1E40AF] hover:bg-blue-800 transition-colors h-12 px-6 rounded-full items-center justify-center flex shadow-md">
+              <button type="submit" className="bg-[#1E40AF] hover:bg-blue-800 transition-colors h-11 sm:h-12 w-11 sm:w-auto sm:px-8 rounded-xl sm:rounded-full items-center justify-center flex shadow-md shrink-0">
                 <span className="text-white font-bold hidden sm:inline mr-2">Search</span>
-                <Search className="w-5 h-5 text-white" />
+                <Search className="w-5 h-5 sm:w-4 sm:h-4 text-white" />
               </button>
             </form>
 
