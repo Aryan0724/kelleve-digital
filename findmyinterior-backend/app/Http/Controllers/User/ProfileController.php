@@ -47,14 +47,20 @@ class ProfileController extends Controller
             return response()->json(['success' => false, 'message' => 'No avatar image provided.'], 422);
         }
 
+        $fullUrl = \Illuminate\Support\Str::startsWith($url, 'http') ? $url : url($url);
         $user->update(['avatar' => $url]);
+
+        $listing = \App\Models\Listing::withoutGlobalScopes()->where('user_id', $user->id)->first();
+        if ($listing) {
+            $listing->touch();
+        }
 
         app(TrustScoreService::class)->recalculateForUser($user);
 
         return response()->json([
             'success' => true,
             'message' => 'Avatar updated.',
-            'avatar'  => $url,
+            'avatar'  => $fullUrl,
             'data'    => new UserResource($user->fresh()),
         ]);
     }
@@ -80,12 +86,10 @@ class ProfileController extends Controller
             return response()->json(['success' => false, 'message' => 'No cover image file provided.'], 422);
         }
 
+        $fullUrl = \Illuminate\Support\Str::startsWith($url, 'http') ? $url : url($url);
         $user->update(['cover_image' => $url]);
 
-        $listing = \App\Models\Listing::where('user_id', $user->id)
-            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
-            ->first();
-            
+        $listing = \App\Models\Listing::withoutGlobalScopes()->where('user_id', $user->id)->first();
         if ($listing) {
             $listing->update(['cover_image' => $url]);
         }
@@ -93,7 +97,7 @@ class ProfileController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Cover image updated.',
-            'cover_image' => $url,
+            'cover_image' => $fullUrl,
             'data'        => new UserResource($user->fresh()),
         ]);
     }

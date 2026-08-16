@@ -63,9 +63,15 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
       {/* Cover Image Header */}
-      <div className="h-64 md:h-96 w-full bg-slate-900 relative">
-        {(listing.cover_image || listing.user?.cover_image) && (
-          <img src={listing.cover_image || listing.user?.cover_image} alt={listing.title} className="w-full h-full object-cover opacity-60" />
+      <div className="h-64 md:h-96 w-full bg-slate-900 relative overflow-hidden">
+        {(listing.cover_image || listing.user?.cover_image) ? (
+          <img 
+            src={listing.cover_image || listing.user?.cover_image} 
+            alt={listing.title} 
+            className="w-full h-full object-cover opacity-60" 
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-r from-slate-900 via-slate-800 to-orange-950 opacity-90" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
       </div>
@@ -78,10 +84,19 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
             <div className="bg-white rounded-xl shadow-sm border p-6 md:p-8">
               <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
                 <div className="flex flex-col md:flex-row items-start gap-4">
-                  <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 border-orange-100 flex-shrink-0 shadow-md">
-                    <AvatarImage src={listing.user?.avatar || listing.cover_image} />
-                    <AvatarFallback className="bg-orange-100 text-orange-700 font-bold text-2xl">{listing.title.charAt(0)}</AvatarFallback>
-                  </Avatar>
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-orange-100 flex-shrink-0 shadow-md bg-white overflow-hidden relative">
+                    {(listing.user?.avatar || listing.avatar) ? (
+                      <img 
+                        src={listing.user?.avatar || listing.avatar} 
+                        alt={listing.title} 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-orange-100 text-orange-700 font-bold text-2xl flex items-center justify-center">
+                        {listing.title.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>

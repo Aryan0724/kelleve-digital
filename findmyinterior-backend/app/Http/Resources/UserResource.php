@@ -9,6 +9,14 @@ class UserResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $formatUrl = function($img) {
+            if (empty($img)) return null;
+            if (\Illuminate\Support\Str::startsWith($img, 'http://') || \Illuminate\Support\Str::startsWith($img, 'https://')) {
+                return $img;
+            }
+            return url($img);
+        };
+
         return [
             'id'                 => $this->id,
             'name'               => $this->name,
@@ -18,8 +26,8 @@ class UserResource extends JsonResource
             'professional_type'  => $this->professional_type ?: null,
             'roles'              => $this->roles->pluck('slug'),
             'isAdmin'            => $this->isAdmin(),
-            'avatar'             => $this->avatar,
-            'cover_image'        => $this->cover_image,
+            'avatar'             => $formatUrl($this->avatar),
+            'cover_image'        => $formatUrl($this->cover_image),
             'city'               => $this->city,
             'district'           => $this->district,
             'address'            => $this->address,
