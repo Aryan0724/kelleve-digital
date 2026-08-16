@@ -150,7 +150,8 @@ class ListingController extends Controller
      */
     public function show(Request $request, string $slug): JsonResponse
     {
-        $query = Listing::active()
+        // 1. Try exact match by slug, id, or user_id (without global tenant scope so cross-tenant/public links work)
+        $query = Listing::withoutGlobalScopes()
             ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user']);
 
         if (is_numeric($slug)) {
@@ -159,85 +160,111 @@ class ListingController extends Controller
                   ->orWhere('user_id', $slug);
             });
         } else {
-            $query->where('slug', $slug);
+            $prefix = explode('-', $slug)[0];
+            $query->where(function($q) use ($slug, $prefix) {
+                $q->where('slug', $slug)
+                  ->orWhere('slug', 'LIKE', '%' . $slug . '%')
+                  ->orWhere('slug', 'LIKE', $prefix . '-%')
+                  ->orWhere('title', 'LIKE', '%' . str_replace('-', ' ', $prefix) . '%');
+            });
         }
 
         $listing = $query->first();
 
-        if (!$listing && is_numeric($slug)) {
-            // If listing not found, check if it's a valid user id and generate a stub Listing
-            $user = \App\Models\User::with([
-                'worker.approvedReviews.reviewer', 
-                'supplier.approvedReviews.reviewer', 
-                'builder.approvedReviews.reviewer'
-            ])->find($slug);
-            
-            if (!$user) {
-                abort(404);
+        // 2. Fallback: check if slug contains a numeric ID at the end or anywhere
+        if (!$listing && !is_numeric($slug)) {
+            $parts = explode('-', $slug);
+            foreach ($parts as $part) {
+                if (is_numeric($part) && (int)$part > 0) {
+                    $listing = Listing::withoutGlobalScopes()
+                        ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+                        ->where('id', $part)
+                        ->orWhere('user_id', $part)
+                        ->first();
+                    if ($listing) break;
+                }
             }
-            
-            $listing = new Listing();
-            $listing->id = $user->id;
-            $listing->user_id = $user->id;
-            $listing->title = $user->name;
-            $listing->slug = (string)$user->id;
-            $listing->description = 'Profile pending completion.';
-            $listing->city = $user->worker?->city ?? $user->builder?->city ?? $user->supplier?->city ?? 'Unknown';
-            $listing->address = $user->worker?->address ?? null;
-            $listing->avg_rating = $user->worker?->avg_rating ?? $user->builder?->avg_rating ?? $user->supplier?->avg_rating ?? 0;
-            $listing->review_count = $user->worker?->review_count ?? $user->builder?->review_count ?? $user->supplier?->review_count ?? 0;
-            $listing->is_verified = false;
-            $listing->trust_score = $user->trust_score;
-            $listing->profile_completion_score = $user->profile_completion_score;
-            $listing->verification_level = $user->verification_level;
-
-            // Worker specific fields mapping to Listing fields
-            if ($user->worker) {
-                $listing->years_experience = (int)$user->worker->experience_years;
-                $listing->budget_tier = '₹' . $user->worker->daily_rate . '/day';
-                $listing->services = $user->worker->services ?? ($user->worker->skill ? [$user->worker->skill] : []);
-                $listing->description = $user->worker->bio ?? 'Profile pending completion.';
-                $listing->phone = $user->phone;
-                $listing->achievements = $user->worker->achievements ?? [];
-                $listing->languages = $user->worker->languages ?? [];
-                $listing->business_hours = $user->worker->availability ? 'Availability: ' . $user->worker->availability : null;
-                $listing->instagram = $user->worker->social_links['instagram'] ?? null;
-                $listing->facebook = $user->worker->social_links['facebook'] ?? null;
-                $listing->linkedin = $user->worker->social_links['linkedin'] ?? null;
-            } elseif ($user->supplier) {
-                $listing->description = $user->supplier->company_name ?? 'Profile pending completion.';
-                $listing->phone = $user->supplier->phone ?? $user->phone;
-                $listing->services = $user->supplier->services ?? [];
-                $listing->achievements = $user->supplier->achievements ?? [];
-                $listing->languages = $user->supplier->languages ?? [];
-                $listing->instagram = $user->supplier->social_links['instagram'] ?? null;
-                $listing->facebook = $user->supplier->social_links['facebook'] ?? null;
-                $listing->linkedin = $user->supplier->social_links['linkedin'] ?? null;
-            } elseif ($user->builder) {
-                $listing->description = $user->builder->company_name ?? 'Profile pending completion.';
-                $listing->phone = $user->builder->phone ?? $user->phone;
-                $listing->services = $user->builder->services ?? [];
-                $listing->achievements = $user->builder->achievements ?? [];
-                $listing->languages = $user->builder->languages ?? [];
-                $listing->instagram = $user->builder->social_links['instagram'] ?? null;
-                $listing->facebook = $user->builder->social_links['facebook'] ?? null;
-                $listing->linkedin = $user->builder->social_links['linkedin'] ?? null;
-            }
-            
-            $listing->setRelation('user', $user);
-            $listing->setRelation('category', new \App\Models\Category(['name' => 'Professional', 'slug' => 'professional']));
-            $listing->setRelation('gallery', collect());
-            
-            $reviews = $user->worker?->approvedReviews ?? 
-                       $user->builder?->approvedReviews ?? 
-                       $user->supplier?->approvedReviews ?? 
-                       collect();
-            $listing->setRelation('approvedReviews', $reviews);
-        } elseif (!$listing) {
-            abort(404);
-        } else {
-            $listing->incrementViews();
         }
+
+        // 3. Fallback: User ID lookup & stub generation for workers/suppliers/builders
+        if (!$listing) {
+            $userIdToFind = is_numeric($slug) ? $slug : null;
+            if (!$userIdToFind) {
+                $parts = explode('-', $slug);
+                foreach ($parts as $part) {
+                    if (is_numeric($part) && (int)$part > 0) {
+                        $userIdToFind = $part;
+                        break;
+                    }
+                }
+            }
+
+            if ($userIdToFind) {
+                $user = \App\Models\User::with([
+                    'worker.approvedReviews.reviewer', 
+                    'supplier.approvedReviews.reviewer', 
+                    'builder.approvedReviews.reviewer'
+                ])->find($userIdToFind);
+                
+                if ($user) {
+                    $listing = new Listing();
+                    $listing->id = $user->id;
+                    $listing->user_id = $user->id;
+                    $listing->title = $user->name;
+                    $listing->slug = (string)$user->id;
+                    $listing->description = 'Profile pending completion.';
+                    $listing->city = $user->worker?->city ?? $user->builder?->city ?? $user->supplier?->city ?? 'Unknown';
+                    $listing->address = $user->worker?->address ?? null;
+                    $listing->avg_rating = $user->worker?->avg_rating ?? $user->builder?->avg_rating ?? $user->supplier?->avg_rating ?? 0;
+                    $listing->review_count = $user->worker?->review_count ?? $user->builder?->review_count ?? $user->supplier?->review_count ?? 0;
+                    $listing->is_verified = false;
+                    $listing->trust_score = $user->trust_score;
+                    $listing->profile_completion_score = $user->profile_completion_score;
+                    $listing->verification_level = $user->verification_level;
+
+                    if ($user->worker) {
+                        $listing->years_experience = (int)$user->worker->experience_years;
+                        $listing->budget_tier = '₹' . $user->worker->daily_rate . '/day';
+                        $listing->services = $user->worker->services ?? ($user->worker->skill ? [$user->worker->skill] : []);
+                        $listing->description = $user->worker->bio ?? 'Profile pending completion.';
+                        $listing->phone = $user->phone;
+                        $listing->achievements = $user->worker->achievements ?? [];
+                        $listing->languages = $user->worker->languages ?? [];
+                        $listing->business_hours = $user->worker->availability ? 'Availability: ' . $user->worker->availability : null;
+                    } elseif ($user->supplier) {
+                        $listing->description = $user->supplier->company_name ?? 'Profile pending completion.';
+                        $listing->phone = $user->supplier->phone ?? $user->phone;
+                        $listing->services = $user->supplier->services ?? [];
+                        $listing->achievements = $user->supplier->achievements ?? [];
+                        $listing->languages = $user->supplier->languages ?? [];
+                    } elseif ($user->builder) {
+                        $listing->description = $user->builder->company_name ?? 'Profile pending completion.';
+                        $listing->phone = $user->builder->phone ?? $user->phone;
+                        $listing->services = $user->builder->services ?? [];
+                        $listing->achievements = $user->builder->achievements ?? [];
+                        $listing->languages = $user->builder->languages ?? [];
+                    }
+                    
+                    $listing->setRelation('user', $user);
+                    $listing->setRelation('category', new \App\Models\Category(['name' => 'Professional', 'slug' => 'professional']));
+                    $listing->setRelation('gallery', collect());
+                    
+                    $reviews = $user->worker?->approvedReviews ?? 
+                               $user->builder?->approvedReviews ?? 
+                               $user->supplier?->approvedReviews ?? 
+                               collect();
+                    $listing->setRelation('approvedReviews', $reviews);
+                }
+            }
+        }
+
+        if (!$listing) {
+            return response()->json(['success' => false, 'message' => 'Professional not found'], 404);
+        }
+
+        try {
+            $listing->incrementViews();
+        } catch (\Throwable $e) {}
 
         return response()->json([
             'success' => true,
