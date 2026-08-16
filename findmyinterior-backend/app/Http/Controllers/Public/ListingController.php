@@ -240,6 +240,7 @@ class ListingController extends Controller
                     $listing->user_id = $user->id;
                     $listing->title = $user->name;
                     $listing->slug = (string)$user->id;
+                    $listing->cover_image = $user->cover_image;
                     $listing->description = 'Profile pending completion.';
                     $listing->city = $user->worker?->city ?? $user->builder?->city ?? $user->supplier?->city ?? 'Unknown';
                     $listing->address = $user->worker?->address ?? null;
