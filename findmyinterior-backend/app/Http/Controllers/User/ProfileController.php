@@ -132,6 +132,17 @@ class ProfileController extends Controller
         $userFields = array_intersect_key($data, array_flip(['name', 'phone', 'avatar', 'city', 'district', 'address']));
         if (!empty($userFields)) {
             $user->update($userFields);
+            
+            // Keep Listing title & slug in sync if user changes their name
+            if (isset($userFields['name']) && !empty($userFields['name'])) {
+                $listing = Listing::where('user_id', $user->id)->first();
+                if ($listing) {
+                    $listing->update([
+                        'title' => $userFields['name'],
+                        'slug'  => \Illuminate\Support\Str::slug($userFields['name']) . '-' . \Illuminate\Support\Str::random(6),
+                    ]);
+                }
+            }
         }
 
         return response()->json([

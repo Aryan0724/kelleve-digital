@@ -166,29 +166,55 @@ class ListingController extends Controller
                 ->first();
         }
 
-        // 3. Try partial match on SLUG column only (never fuzzy title match, to prevent wrong profile resolution)
-        if (!$listing && !is_numeric($slug)) {
-            $listing = Listing::withoutGlobalScopes()
-                ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
-                ->where('slug', 'LIKE', $slug . '-%')
-                ->orWhere('slug', 'LIKE', '%' . $slug . '%')
-                ->first();
-        }
-
-        // 4. Fallback: check if slug contains numeric ID at the end or in segments
+        // 3. Match by numeric ID contained within slug if present
         if (!$listing && !is_numeric($slug)) {
             $parts = explode('-', $slug);
-            $lastPart = end($parts);
-            if (is_numeric($lastPart) && (int)$lastPart > 0) {
+            foreach ($parts as $part) {
+                if (is_numeric($part) && (int)$part > 0) {
+                    $listing = Listing::withoutGlobalScopes()
+                        ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+                        ->where('id', $part)
+                        ->orWhere('user_id', $part)
+                        ->first();
+                    if ($listing) break;
+                }
+            }
+        }
+
+        // 4. Try matching words in slug against slug, title, or user name
+        if (!$listing && !is_numeric($slug)) {
+            $words = array_values(array_filter(explode('-', $slug), fn($w) => strlen($w) >= 3 && !is_numeric($w)));
+            if (!empty($words)) {
+                $query = Listing::withoutGlobalScopes()
+                    ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user']);
+                foreach ($words as $word) {
+                    $query->where(function($q) use ($word) {
+                        $q->where('slug', 'LIKE', "%{$word}%")
+                          ->orWhere('title', 'LIKE', "%{$word}%")
+                          ->orWhereHas('user', fn($uq) => $uq->where('name', 'LIKE', "%{$word}%"));
+                    });
+                }
+                $listing = $query->first();
+            }
+        }
+
+        // 5. Fallback: match by first significant word in slug
+        if (!$listing && !is_numeric($slug)) {
+            $firstWord = explode('-', $slug)[0];
+            if (strlen($firstWord) >= 3) {
                 $listing = Listing::withoutGlobalScopes()
                     ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
-                    ->where('id', $lastPart)
-                    ->orWhere('user_id', $lastPart)
+                    ->where(function($q) use ($firstWord) {
+                        $q->where('slug', 'LIKE', "%{$firstWord}%")
+                          ->orWhere('title', 'LIKE', "%{$firstWord}%")
+                          ->orWhereHas('user', fn($uq) => $uq->where('name', 'LIKE', "%{$firstWord}%"));
+                    })
+                    ->latest('id')
                     ->first();
             }
         }
 
-        // 5. Fallback: User ID lookup & stub generation for workers/suppliers/builders
+        // 6. Fallback: User ID lookup & stub generation for workers/suppliers/builders
         if (!$listing) {
             $userIdToFind = is_numeric($slug) ? $slug : null;
             if (!$userIdToFind) {
