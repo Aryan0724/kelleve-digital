@@ -9,7 +9,7 @@ class ListingResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
-        $ownerUser = $this->relationLoaded('user') ? $this->user : \App\Models\User::find($this->user_id);
+        $ownerUser = $this->relationLoaded('user') ? $this->user : \App\Models\User::withoutGlobalScopes()->find($this->user_id);
         $ownerPlan = $ownerUser?->activeSubscription?->plan;
         
         $canHaveWebsite = $ownerPlan?->can_add_website ?? false;

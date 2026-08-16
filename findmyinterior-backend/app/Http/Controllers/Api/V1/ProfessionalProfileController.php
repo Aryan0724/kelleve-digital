@@ -196,7 +196,16 @@ class ProfessionalProfileController extends Controller
                 'response_time'    => ['nullable', 'string', 'max:255'],
                 'languages'        => ['nullable'],
                 'social_links'     => ['nullable'],
+                'avatar'           => ['nullable', 'string'],
+                'cover_image'      => ['nullable', 'string'],
             ]);
+
+            if (!empty($data['avatar'])) {
+                $user->update(['avatar' => $data['avatar']]);
+            }
+            if (!empty($data['cover_image'])) {
+                $user->update(['cover_image' => $data['cover_image']]);
+            }
 
             // Ensure title & description are fallback-populated if missing
             $data['title'] = $data['title'] ?? $request->input('name') ?? $request->input('company_name') ?? $user->name;
@@ -207,6 +216,9 @@ class ProfessionalProfileController extends Controller
 
             $listing = Listing::firstOrNew(['user_id' => $user->id]);
             $listing->fill(array_filter($data, fn($v) => !is_null($v)));
+            if (!empty($data['cover_image'])) {
+                $listing->cover_image = $data['cover_image'];
+            }
             $listing->title = $data['title'];
             $listing->slug = Str::slug($data['title']) . '-' . Str::random(6);
             if (!$listing->exists) {
