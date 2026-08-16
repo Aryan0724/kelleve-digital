@@ -23,11 +23,11 @@ export default function MobileNav() {
     { icon: Bell, label: 'Alerts', href: '/dashboard/notifications' },
     { icon: User, label: 'Profile', href: '/dashboard/vendor/profile' },
   ] : [
-    { icon: Home, label: 'Home', href: '/' },
-    { icon: Search, label: 'Search', href: '/search' },
-    { icon: Heart, label: 'Saved', href: '/dashboard/user' },
+    { icon: Home, label: 'Dashboard', href: '/dashboard/user' },
+    { icon: Search, label: 'Leads', href: '/search' },
     { icon: MessageSquare, label: 'Messages', href: '/dashboard/messages' },
-    { icon: User, label: 'Account', href: isLoggedIn ? '/dashboard/user/profile' : '/login' },
+    { icon: Bell, label: 'Alerts', href: '/dashboard/notifications' },
+    { icon: User, label: 'Profile', href: isLoggedIn ? '/dashboard/user/profile' : '/login' },
   ];
 
   return (

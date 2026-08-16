@@ -64,7 +64,7 @@ export default function HeroSearch() {
 
   return (
     <div className="w-full">
-      <div className="bg-[#0A1C3A] rounded-[32px] p-6 sm:p-10 overflow-hidden shadow-2xl border border-[#1E40AF]/40 relative">
+      <div className="bg-[#0B1530] rounded-3xl md:rounded-[2rem] p-6 sm:p-10 overflow-hidden shadow-2xl border border-[#1E40AF]/40 relative">
         
         {/* Background elements */}
         <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full -mr-20 -mt-20 blur-3xl" />
@@ -74,40 +74,25 @@ export default function HeroSearch() {
           {/* Hero Text */}
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 relative z-10 mb-12">
             <div className="flex-1">
-              <h2 className="text-xl md:text-2xl font-medium text-white mb-2">India's Emerging</h2>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#F59E0B] leading-tight md:leading-[1.1]">Business Growth <span className="text-white">Platform</span></h1>
-              <p className="text-xl md:text-2xl text-blue-100 font-medium mt-4 mb-8 italic">
-                Beyond Listing. <span className="text-white not-italic font-bold">We Help Businesses <span className="text-[#F59E0B]">Grow.</span></span>
+              <h2 className="text-lg md:text-xl font-normal text-white mb-2">India's Emerging</h2>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight md:leading-[1.1]"><span className="text-[#F59E0B]">Business Growth</span> <span className="text-white">Platform</span></h1>
+              <p className="text-lg md:text-xl text-blue-100 font-medium mt-4 mb-8">
+                <span className="italic text-white">Beyond Listing.</span> <span className="text-white font-normal">We Help Businesses </span><span className="text-[#F59E0B] font-bold">Grow.</span>
               </p>
 
               {/* Feature Bullets */}
-              <div className="flex flex-col sm:flex-row gap-6 mt-8">
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/10 p-2 rounded-full border border-white/20">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  </div>
-                  <div>
-                    <p className="text-white font-bold text-sm leading-tight">Find</p>
-                    <p className="text-blue-200 text-xs">Verified Businesses</p>
-                  </div>
+              <div className="flex flex-col md:flex-row gap-4 mt-8">
+                <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 w-max">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                  <p className="text-white font-medium text-sm">Find Verified Businesses</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/10 p-2 rounded-full border border-white/20">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
-                  </div>
-                  <div>
-                    <p className="text-white font-bold text-sm leading-tight">Get</p>
-                    <p className="text-blue-200 text-xs">Best Deals & Offers</p>
-                  </div>
+                <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 w-max">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                  <p className="text-white font-medium text-sm">Get Best Deals & Offers</p>
                 </div>
-                <div className="flex items-center gap-3">
-                  <div className="bg-white/10 p-2 rounded-full border border-white/20">
-                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                  </div>
-                  <div>
-                    <p className="text-white font-bold text-sm leading-tight">Grow</p>
-                    <p className="text-blue-200 text-xs">Your Business</p>
-                  </div>
+                <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 w-max">
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                  <p className="text-white font-medium text-sm">Grow Your Business</p>
                 </div>
               </div>
             </div>
@@ -120,25 +105,25 @@ export default function HeroSearch() {
           </div>
 
           {/* Unified Search Bar */}
-          <div className="relative w-full -mb-20 z-20" ref={dropdownRef}>
-            <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-center bg-white rounded-2xl md:rounded-[24px] p-2 md:p-2 h-auto md:h-[72px] shadow-2xl w-full border border-gray-100 gap-2 md:gap-0">
+          <div className="relative w-full -mb-24 md:-mb-20 z-20" ref={dropdownRef}>
+            <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-center bg-white rounded-2xl md:rounded-[24px] p-2 md:p-2 h-auto md:h-[72px] shadow-2xl w-full md:w-[90%] max-w-4xl mx-auto border border-gray-100 gap-0">
               
               {/* Location Selector */}
               <button 
                 type="button" 
                 onClick={openLocationModal}
-                className="flex items-center justify-between w-full md:w-auto px-4 py-3 md:py-0 h-full hover:bg-gray-50 transition rounded-xl md:rounded-l-[20px] md:rounded-r-none border-b md:border-b-0 md:border-r border-gray-200 shrink-0 min-w-[180px]"
+                className="flex items-center justify-between w-full md:w-auto px-4 py-3 md:py-0 h-full hover:bg-gray-50 transition rounded-xl md:rounded-l-[20px] md:rounded-r-none border-b md:border-b-0 md:border-r border-gray-200 shrink-0 md:min-w-[180px]"
               >
                 <div className="flex items-center gap-2">
                   <MapPin className="w-5 h-5 text-slate-700" />
-                  <span className="text-base font-medium text-slate-800">{city || "Patna"}</span>
+                  <span className="text-base font-medium text-slate-800">{city || "Mumbai"}</span>
                 </div>
                 <ChevronDown className="w-4 h-4 text-slate-400" />
               </button>
 
               {/* Search Input */}
-              <div className="flex-1 flex items-center h-full w-full px-4 py-2 md:py-0">
-                <Search className="w-5 h-5 text-slate-400 mr-3 hidden sm:block shrink-0" />
+              <div className="flex-1 flex items-center h-[52px] md:h-full w-full px-4 md:px-4">
+                <Search className="w-5 h-5 text-slate-400 mr-3 hidden md:block shrink-0" />
                 <input
                   type="text"
                   value={query}
@@ -154,8 +139,8 @@ export default function HeroSearch() {
                 />
               </div>
 
-              {/* Search Button */}
-              <button type="submit" className="w-full md:w-auto bg-[#1E40AF] hover:bg-blue-800 transition-colors h-12 md:h-full px-10 rounded-xl md:rounded-[18px] items-center justify-center flex shadow-md shrink-0">
+              {/* Search Button (Hidden on Mobile) */}
+              <button type="submit" className="hidden md:flex bg-[#1E40AF] hover:bg-blue-800 transition-colors h-full px-10 rounded-[18px] items-center justify-center shadow-md shrink-0">
                 <span className="text-white font-bold text-base">Search</span>
               </button>
             </form>
