@@ -8,7 +8,7 @@ use App\Models\Listing;
 
 class SyncUserMediaCommand extends Command
 {
-    protected $signature = 'user:sync-media';
+    protected $signature = 'app:sync-media';
     protected $description = 'Sync user avatar and cover image';
 
     public function handle()
