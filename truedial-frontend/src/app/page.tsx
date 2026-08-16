@@ -88,18 +88,19 @@ export default async function Home() {
               </div>
 
               {/* Search Bar Input */}
-              <div className="flex flex-row items-center bg-white rounded-full pl-5 pr-2 h-16 shadow-xl mb-10 z-10 w-full hover:shadow-2xl transition-shadow duration-300">
+              <form action="/search" method="GET" className="flex flex-row items-center bg-white rounded-full pl-5 pr-2 h-16 shadow-xl mb-10 z-10 w-full hover:shadow-2xl transition-shadow duration-300">
                 <Search className="w-6 h-6 text-slate-400 mr-3 hidden sm:block" />
                 <input
                   type="text"
+                  name="q"
                   className="flex-1 text-slate-900 text-base font-medium outline-none bg-transparent h-full"
                   placeholder="Search Business, Service, Product..."
                 />
-                <button className="bg-[#1E40AF] hover:bg-blue-800 transition-colors h-12 px-6 rounded-full items-center justify-center flex shadow-md">
+                <button type="submit" className="bg-[#1E40AF] hover:bg-blue-800 transition-colors h-12 px-6 rounded-full items-center justify-center flex shadow-md">
                   <span className="text-white font-bold hidden sm:inline mr-2">Search</span>
                   <Search className="w-5 h-5 text-white" />
                 </button>
-              </div>
+              </form>
 
               {/* Hero Text */}
               <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8">
@@ -167,13 +168,13 @@ export default async function Home() {
           <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-8">Our Ecosystem Platform</h3>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
             {ecosystemPlatforms.map((platform, i) => (
-              <div key={i} className="flex flex-col p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer group">
+              <Link href={platform.name === 'truedial.com' ? '/' : '#'} key={i} className="flex flex-col p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer group">
                 <div className={`w-14 h-14 ${platform.logoBg} rounded-2xl flex items-center justify-center mb-4 text-white shadow-sm group-hover:scale-110 transition-transform`}>
                   <span className="font-black text-xl">{platform.name.charAt(0)}</span>
                 </div>
                 <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-1" style={{ color: platform.color }}>{platform.name}</h4>
                 <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 leading-snug">{platform.tag}</p>
-              </div>
+              </Link>
             ))}
           </div>
         </div>
@@ -183,10 +184,10 @@ export default async function Home() {
           <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-8">Premium Services</h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
             {premiumServices.map((service, i) => (
-              <div key={i} className={`flex flex-col items-center p-6 rounded-3xl ${service.bg} border border-slate-100 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group text-center`}>
+              <Link href="/consulting" key={i} className={`flex flex-col items-center p-6 rounded-3xl ${service.bg} border border-slate-100 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group text-center`}>
                 <service.icon className="w-12 h-12 mb-4 group-hover:scale-110 transition-transform" color={service.color} strokeWidth={1.5} />
                 <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 leading-snug">{service.name}</h4>
-              </div>
+              </Link>
             ))}
           </div>
         </div>

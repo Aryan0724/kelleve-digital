@@ -38,14 +38,11 @@ export default async function Navbar() {
       <header className="bg-background py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm border-b border-border gap-6">
         <div className="flex items-center gap-4 flex-shrink-0">
           <Link href="/" className="flex items-center gap-2">
-            <div className="w-10 h-10 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold text-xl">T</div>
-            <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
+            <img src="/images/logo.png" alt="TrueDial Logo" className="h-10 w-auto" />
           </Link>
-          <NavbarLocationPill />
-        </div>
-        
-        <div className="flex-1 max-w-xl mx-auto hidden md:block">
-          <AutocompleteSearch />
+          <div className="hidden md:block w-64 ml-4">
+            <AutocompleteSearch />
+          </div>
         </div>
 
         <nav className="hidden xl:flex items-center gap-5 text-foreground/80 font-medium whitespace-nowrap">
@@ -79,7 +76,7 @@ export default async function Navbar() {
           ) : (
             <div className="flex items-center gap-3">
               <Link href="/dashboard/user">
-                <button className="bg-primary text-primary-foreground px-5 py-2 rounded-md font-medium hover:bg-primary/90 transition flex items-center gap-2 shadow-sm">
+                <button className="bg-[#EA580C] text-white px-5 py-2.5 rounded-md font-bold hover:bg-[#C2410C] transition flex items-center gap-2 shadow-sm">
                   <LayoutDashboard className="w-4 h-4"/> Go to Dashboard
                 </button>
               </Link>
