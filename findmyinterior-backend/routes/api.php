@@ -53,6 +53,17 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             'version' => '1.0.0',
             'environment' => app()->environment()
         ]);
+    Route::get('/debug-media', function() {
+        $users = \App\Models\User::whereNotNull('avatar')->orWhereNotNull('cover_image')->get(['id', 'name', 'avatar', 'cover_image']);
+        $listings = \App\Models\Listing::whereNotNull('cover_image')->get(['id', 'title', 'cover_image', 'user_id']);
+        $u2311 = \App\Models\User::find(2311);
+        $l1635 = \App\Models\Listing::find(1635);
+        return response()->json([
+            'users_with_media' => $users,
+            'listings_with_cover' => $listings,
+            'user_2311' => $u2311 ? $u2311->only(['id', 'name', 'avatar', 'cover_image']) : null,
+            'listing_1635' => $l1635 ? $l1635->only(['id', 'title', 'cover_image', 'user_id']) : null,
+        ]);
     });
 
     Route::get('/debug-internal', function (\Illuminate\Http\Request $request) {
