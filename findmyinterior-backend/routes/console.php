@@ -3,9 +3,26 @@
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
-Artisan::command('inspire', function () {
-    $this->comment(Inspiring::quote());
-})->purpose('Display an inspiring quote');
+Artisan::command('app:sync-media', function () {
+    $u = \App\Models\User::withoutGlobalScopes()->where('name', 'like', '%integral%')->first()
+        ?? \App\Models\User::withoutGlobalScopes()->find(2311);
+
+    if ($u) {
+        $u->avatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb';
+        $u->cover_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6';
+        $u->save();
+
+        $l = \App\Models\Listing::withoutGlobalScopes()->where('user_id', $u->id)->first();
+        if ($l) {
+            $l->cover_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6';
+            $l->save();
+        }
+
+        $this->info("Updated user {$u->id} ({$u->name}) media cleanly.");
+    } else {
+        $this->error("User not found.");
+    }
+})->purpose('Sync user avatar and cover image');
 
 \Illuminate\Support\Facades\Schedule::command('subscriptions:downgrade')->daily();
 \Illuminate\Support\Facades\Schedule::command('app:expire-requirements')->daily();
