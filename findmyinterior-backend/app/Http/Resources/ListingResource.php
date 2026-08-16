@@ -12,6 +12,9 @@ class ListingResource extends JsonResource
         $ownerUser = $this->relationLoaded('user') ? $this->user : \App\Models\User::find($this->user_id);
         $ownerPlan = $ownerUser?->activeSubscription?->plan;
         
+        $canHaveWebsite = $ownerPlan?->can_add_website ?? false;
+        $canHaveWhatsapp = $ownerPlan?->can_add_whatsapp ?? false;
+
         $formatUrl = function($img) {
             if (empty($img)) return null;
             if (\Illuminate\Support\Str::startsWith($img, 'http://') || \Illuminate\Support\Str::startsWith($img, 'https://')) {
@@ -31,6 +34,7 @@ class ListingResource extends JsonResource
             'tagline'          => $this->tagline,
             'description'      => $this->description,
             'cover_image'      => $coverImage,
+            'languages'        => $languages,
             'category'         => new CategoryResource($this->whenLoaded('category')),
             'city'             => $this->city,
             'district'         => $this->district,
