@@ -4,23 +4,19 @@ use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 
 Artisan::command('app:sync-media', function () {
-    $u = \App\Models\User::withoutGlobalScopes()->where('name', 'like', '%integral%')->first()
-        ?? \App\Models\User::withoutGlobalScopes()->find(2311);
-
-    if ($u) {
+    $users = \App\Models\User::withoutGlobalScopes()->where('name', 'like', '%integral%')->orWhere('id', 2311)->get();
+    foreach ($users as $u) {
         $u->avatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb';
         $u->cover_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6';
         $u->save();
+        $this->info("Updated User #{$u->id} ({$u->name}) avatar and cover.");
 
-        $l = \App\Models\Listing::withoutGlobalScopes()->where('user_id', $u->id)->first();
-        if ($l) {
+        $listings = \App\Models\Listing::withoutGlobalScopes()->where('user_id', $u->id)->get();
+        foreach ($listings as $l) {
             $l->cover_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6';
             $l->save();
+            $this->info("Updated Listing #{$l->id} (user_id #{$l->user_id}) cover image.");
         }
-
-        $this->info("Updated user {$u->id} ({$u->name}) media cleanly.");
-    } else {
-        $this->error("User not found.");
     }
 })->purpose('Sync user avatar and cover image');
 
