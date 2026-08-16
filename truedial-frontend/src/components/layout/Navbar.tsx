@@ -13,8 +13,13 @@ export default async function Navbar() {
     <header className="bg-white py-3 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm border-b border-border">
       {/* Logo */}
       <div className="flex items-center gap-4 flex-shrink-0">
-        <Link href="/" className="flex items-center gap-2">
-          <img src="/images/logo.png" alt="TrueDial Logo" className="h-10 w-auto" />
+        <Link href="/" className="flex items-center gap-2 group">
+          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-[#E8701A] text-white font-bold text-lg shadow-md group-hover:scale-105 transition-transform">
+            T
+          </div>
+          <span className="text-2xl font-black tracking-tight text-[#1E40AF]">
+            truedial
+          </span>
         </Link>
       </div>
 
