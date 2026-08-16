@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { Search, MapPin, ChevronRight, Mic, ArrowRight, Trophy } from "lucide-react";
+import { Search, MapPin, ChevronRight, ChevronDown, Mic, ArrowRight, Trophy } from "lucide-react";
 import Link from "next/link";
 import { useUserLocation } from "@/context/LocationContext";
 import { TrueDialAPI } from "@/lib/api";
