@@ -112,13 +112,41 @@ class ProfessionalProfileController extends Controller
                     $profile->load(['category', 'gallery']);
                 }
             } elseif ($type === 'worker') {
-                $profile = Worker::where('user_id', $user->id)->first();
+                $profile = Worker::where('user_id', $user->id)->first()
+                    ?? Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
             } elseif ($type === 'supplier') {
-                $profile = Supplier::where('user_id', $user->id)->first();
+                $profile = Supplier::where('user_id', $user->id)->first()
+                    ?? Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
             } elseif ($type === 'builder') {
-                $profile = Builder::where('user_id', $user->id)->first();
+                $profile = Builder::where('user_id', $user->id)->first()
+                    ?? Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
             } else {
-                $type = 'none'; // Homeowner, Customer
+                $profile = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
+                if ($profile) $type = 'listing';
+            }
+
+            // Guarantee a valid profile & slug exists for all professionals/users
+            if (!$profile && $type !== 'none') {
+                $tenantId = null;
+                try {
+                    $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
+                } catch (\Throwable $e) {}
+
+                $profile = Listing::create([
+                    'tenant_id'   => $tenantId ?? 1,
+                    'user_id'     => $user->id,
+                    'category_id' => 1,
+                    'title'       => ($user->name ?? 'Professional') . ' Studio',
+                    'slug'        => Str::slug(($user->name ?? 'pro') . '-studio-' . Str::random(6)),
+                    'description' => 'Professional services.',
+                    'phone'       => $user->phone ?? '9876543210',
+                    'city'        => $user->city ?? 'Patna',
+                    'district'    => $user->district ?? 'Patna',
+                    'state'       => 'Bihar',
+                    'status'      => 'active',
+                ]);
+                $profile->load(['category', 'gallery']);
+                $type = 'listing';
             }
 
             return response()->json([
