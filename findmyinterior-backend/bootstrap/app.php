@@ -25,6 +25,17 @@ return Application::configure(basePath: dirname(__DIR__))
             'cross_auth' => \App\Http\Middleware\CrossPlatformAuth::class,
         ]);
 
+        // Return a clean JSON 401 instead of trying to redirect to a named "login" web route
+        $middleware->redirectGuestsTo(function (\Illuminate\Http\Request $request) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                abort(response()->json([
+                    'success' => false,
+                    'message' => 'Please log in to continue.',
+                ], 401));
+            }
+            return '/login';
+        });
+
         // Allow cross-origin requests from the frontend (Vercel)
         $middleware->api(prepend: [
             \Illuminate\Http\Middleware\HandleCors::class,
