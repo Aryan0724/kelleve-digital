@@ -53,6 +53,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             'version' => '1.0.0',
             'environment' => app()->environment()
         ]);
+    });
+
     Route::get('/debug-media', function() {
         $users = \App\Models\User::withoutGlobalScopes()->whereNotNull('avatar')->orWhereNotNull('cover_image')->get(['id', 'name', 'avatar', 'cover_image']);
         $listings = \App\Models\Listing::withoutGlobalScopes()->whereNotNull('cover_image')->get(['id', 'title', 'cover_image', 'user_id']);
@@ -64,6 +66,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             'user_2311' => $u2311 ? $u2311->only(['id', 'name', 'avatar', 'cover_image']) : null,
             'listing_1635' => $l1635 ? $l1635->only(['id', 'title', 'cover_image', 'user_id']) : null,
         ]);
+    });
+
     Route::get('/seed-user-media', function() {
         $u = \App\Models\User::withoutGlobalScopes()->where('name', 'like', '%integral%')->first()
             ?? \App\Models\User::withoutGlobalScopes()->first();
