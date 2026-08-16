@@ -10,80 +10,62 @@ export default async function Navbar() {
   const token = cookieStore.get("auth_token")?.value;
   const isLoggedIn = !!token;
   return (
-    <>
-      {/* Top Header */}
-      <div className="hidden md:flex bg-navy text-navy-foreground py-2 px-6 justify-between items-center text-sm">
-        <div className="flex gap-6">
-          <span className="flex items-center gap-2">✉ support@truedial.com</span>
-          <span className="flex items-center gap-2">📞 95349 00999</span>
-        </div>
-        <div className="flex gap-6 items-center">
-          <span>Download App ▶ 🍎</span>
-          {isLoggedIn ? (
-            <div className="flex gap-4">
-              <Link href="/dashboard/user" className="hover:text-primary transition flex items-center gap-1"><LayoutDashboard className="w-4 h-4"/> Dashboard</Link>
-              <form action={logout}>
-          <button type="submit" className="hover:text-primary transition flex items-center gap-2">
-            <LogOut className="h-4 w-4" /> Logout
-          </button>
-        </form>
-            </div>
-          ) : (
-            <Link href="/login" className="hover:text-primary transition">Login / Sign Up</Link>
-          )}
-        </div>
+    <header className="bg-white py-3 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm border-b border-border">
+      {/* Logo */}
+      <div className="flex items-center gap-4 flex-shrink-0">
+        <Link href="/" className="flex items-center gap-2">
+          <img src="/images/logo.png" alt="TrueDial Logo" className="h-10 w-auto" />
+        </Link>
       </div>
 
-      {/* Main Navbar */}
-      <header className="bg-background py-4 px-6 md:px-12 flex justify-between items-center sticky top-0 z-50 shadow-sm border-b border-border gap-6">
-        <div className="flex items-center gap-4 flex-shrink-0">
-          <Link href="/" className="flex items-center gap-2">
-            <img src="/images/logo.png" alt="TrueDial Logo" className="h-10 w-auto" />
-          </Link>
-          <div className="hidden md:block w-64 ml-4">
-            <AutocompleteSearch />
-          </div>
+      {/* Navigation Links */}
+      <nav className="hidden xl:flex items-center gap-6 text-[#1E40AF] font-bold text-sm">
+        <Link href="/" className="flex items-center gap-1 hover:text-blue-600 transition border-b-2 border-[#1E40AF] pb-1">
+          <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20"><path d="M10.707 2.293a1 1 0 00-1.414 0l-7 7a1 1 0 001.414 1.414L4 10.414V17a1 1 0 001 1h2a1 1 0 001-1v-2a1 1 0 011-1h2a1 1 0 011 1v2a1 1 0 001 1h2a1 1 0 001-1v-6.586l.293.293a1 1 0 001.414-1.414l-7-7z" /></svg>
+          Home
+        </Link>
+        <Link href="/search" className="hover:text-blue-600 transition text-slate-700">Find Business</Link>
+        <Link href="/privilege-card" className="hover:text-blue-600 transition text-slate-700">Privilege Card</Link>
+        <Link href="/academy" className="hover:text-blue-600 transition text-slate-700">Academy</Link>
+        <Link href="/news" className="hover:text-blue-600 transition text-slate-700">News</Link>
+        <Link href="/podcast" className="hover:text-blue-600 transition text-slate-700">Podcast</Link>
+        <div className="flex items-center gap-1 hover:text-blue-600 transition text-slate-700 cursor-pointer">
+          More <ChevronDown className="w-4 h-4" />
         </div>
+      </nav>
 
-        <nav className="hidden xl:flex items-center gap-5 text-foreground/80 font-medium whitespace-nowrap">
-          <Link href="/" className="text-foreground hover:text-primary transition font-medium">Home</Link>
-          <Link href="/categories" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">
-            Categories
+      {/* Right Side Actions */}
+      <div className="flex items-center gap-4">
+        {!isLoggedIn ? (
+          <Link href="/login">
+            <button className="hidden sm:flex items-center gap-2 bg-blue-50/50 text-[#1E40AF] border border-[#1E40AF]/30 px-5 py-2 rounded-full font-bold text-sm hover:bg-blue-50 transition">
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+              Login / Sign Up
+            </button>
           </Link>
-          <Link href="/offers" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">
-            Offers
-            <span className="px-1.5 py-0.2 bg-red-500 text-white text-[10px] font-bold rounded-full">HOT</span>
-          </Link>
-          <Link href="/dashboard/user" className="text-foreground hover:text-primary transition font-medium flex items-center gap-1">
-            Privilege Card
-            <span className="px-1.5 py-0.2 bg-amber-500 text-navy font-bold text-[10px] rounded-full">VIP</span>
-          </Link>
-          <Link href="/consulting" className="text-foreground hover:text-primary transition font-medium">Consulting</Link>
-          <Link href="/academy" className="text-foreground hover:text-primary transition font-medium">Academy</Link>
-          <Link href="/jobs" className="text-foreground hover:text-primary transition font-medium">Jobs</Link>
-          <Link href="/news" className="text-foreground hover:text-primary transition font-medium">News</Link>
-        </nav>
-        <div className="hidden lg:flex items-center gap-4">
-          {!isLoggedIn ? (
-            <>
-              <Link href="/login" className="text-foreground font-medium hover:text-primary transition">Login</Link>
-              <Link href="/register">
-                <button className="bg-primary text-primary-foreground px-5 py-2 rounded-md font-medium hover:bg-primary/90 transition shadow-sm">
-                  Add Your Business
-                </button>
-              </Link>
-            </>
-          ) : (
-            <div className="flex items-center gap-3">
-              <Link href="/dashboard/user">
-                <button className="bg-[#EA580C] text-white px-5 py-2.5 rounded-md font-bold hover:bg-[#C2410C] transition flex items-center gap-2 shadow-sm">
-                  <LayoutDashboard className="w-4 h-4"/> Go to Dashboard
-                </button>
-              </Link>
-            </div>
-          )}
-        </div>
-      </header>
-    </>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Link href="/dashboard/user">
+              <button className="hidden sm:flex items-center gap-2 bg-blue-50 text-[#1E40AF] border border-[#1E40AF]/30 px-5 py-2 rounded-full font-bold text-sm hover:bg-blue-100 transition">
+                <LayoutDashboard className="w-4 h-4"/> Dashboard
+              </button>
+            </Link>
+            <form action={logout}>
+              <button type="submit" className="text-slate-600 hover:text-red-500 transition p-2">
+                <LogOut className="h-5 w-5" />
+              </button>
+            </form>
+          </div>
+        )}
+        
+        {/* Hamburger Menu */}
+        <button className="text-[#1E40AF] p-1 xl:hidden">
+          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+        <button className="text-[#1E40AF] p-1 hidden xl:block">
+          <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+        </button>
+      </div>
+    </header>
   );
 }

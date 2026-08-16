@@ -69,109 +69,66 @@ export default async function Home() {
         {/* 1. SMART SEARCH & HERO BANNER COMBINED */}
         <HeroSearch />
 
-        {/* 2. QUICK ACTIONS GRID */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 md:gap-6">
-          {quickActions.map((action, i) => (
-            <Link key={i} href={action.route} className="flex flex-col items-center group cursor-pointer">
-              <div className={`w-20 h-20 md:w-24 md:h-24 rounded-full flex items-center justify-center mb-3 ${action.bg} shadow-md border border-slate-100 dark:border-slate-800 group-hover:-translate-y-2 group-hover:shadow-xl transition-all duration-300`}>
-                <action.icon className="w-10 h-10 md:w-12 md:h-12" color={action.color} strokeWidth={1.5} />
-              </div>
-              <span className="text-sm font-bold text-slate-700 dark:text-slate-300 text-center leading-tight group-hover:text-primary transition-colors">{action.name}</span>
-            </Link>
-          ))}
-        </div>
-
-        {/* 3. TOP CATEGORIES */}
-        <div className="bg-white dark:bg-slate-900 rounded-[32px] p-6 sm:p-10 shadow-lg border border-slate-200/60 dark:border-slate-800">
-          <div className="flex justify-between items-end mb-8">
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white">Top Categories</h3>
-            <Link href="/categories" className="text-sm font-bold text-[#1E40AF] hover:underline">View All</Link>
+        {/* 2. POPULAR CATEGORIES */}
+        <div className="pt-10">
+          <div className="flex justify-between items-center mb-6 px-4">
+            <h3 className="text-2xl md:text-3xl font-black text-slate-900 mx-auto text-center w-full relative">
+              Popular Categories
+              <Link href="/categories" className="absolute right-0 top-1/2 -translate-y-1/2 text-sm font-bold text-[#1E40AF] hover:underline flex items-center gap-1 hidden sm:flex">
+                View All <ArrowRight className="w-4 h-4" />
+              </Link>
+            </h3>
           </div>
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-x-6 gap-y-10">
+          <div className="grid grid-cols-3 sm:grid-cols-5 lg:grid-cols-10 gap-x-2 gap-y-8 justify-items-center">
             {topCategories.map((cat, i) => (
               <Link 
                 key={i} 
-                href={cat.name === 'More Categories' ? '/categories' : `/search?category=${encodeURIComponent(cat.name)}`}
-                className="flex flex-col items-center group cursor-pointer"
+                href={`/search?category=${encodeURIComponent(cat.name)}`}
+                className="flex flex-col items-center group cursor-pointer w-full"
               >
-                <div className={`w-20 h-20 rounded-[28px] flex justify-center items-center mb-3 ${cat.bg} shadow-sm group-hover:-translate-y-2 group-hover:shadow-lg transition-all duration-300`}>
-                  <cat.icon className="w-10 h-10" color={cat.color} strokeWidth={1.5} />
+                <div className={`w-16 h-16 sm:w-20 sm:h-20 rounded-3xl flex justify-center items-center mb-3 bg-white shadow-sm border border-gray-100 group-hover:-translate-y-1 group-hover:shadow-md transition-all duration-300`}>
+                  <div className={`w-12 h-12 sm:w-14 sm:h-14 rounded-2xl flex justify-center items-center`} style={{ backgroundColor: cat.color + '15' }}>
+                    <cat.icon className="w-6 h-6 sm:w-7 sm:h-7" color={cat.color} strokeWidth={1.5} />
+                  </div>
                 </div>
-                <span className="text-sm font-bold text-slate-700 dark:text-slate-300 text-center leading-snug group-hover:text-[#1E40AF] transition-colors px-2">{cat.name}</span>
+                <span className="text-xs font-bold text-slate-800 text-center leading-tight max-w-[80px]">{cat.name.split(' & ').join(' &\n')}</span>
               </Link>
             ))}
           </div>
         </div>
 
-        {/* 4. OUR ECOSYSTEM PLATFORM */}
-        <div className="bg-white dark:bg-slate-900 rounded-[32px] p-6 sm:p-10 shadow-lg border border-slate-200/60 dark:border-slate-800">
-          <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-8">Our Ecosystem Platform</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6">
+        {/* 3. HOW TRUEDIAL HELPS YOU GROW */}
+        <div className="pt-10">
+          <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center mb-8">
+            How <span className="text-[#EA580C] italic">TRUEDIAL</span> Helps You Grow
+          </h3>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            {[
+              { title: "Digital Business\nProfile", desc: "Build your trusted online presence", icon: FileText, color: "#2563EB" },
+              { title: "Reach More\nCustomers", desc: "Get genuine business opportunities", icon: Users, color: "#1E40AF" },
+              { title: "Promote Offers", desc: "Increase sales with smart marketing", icon: Megaphone, color: "#4F46E5" },
+              { title: "Privilege Card", desc: "Attract more loyal customers", icon: Trophy, color: "#D97706" },
+              { title: "Digital Marketing", desc: "Grow faster with expert solutions", icon: Presentation, color: "#3B82F6" },
+              { title: "Business Consulting", desc: "Get professional guidance", icon: Briefcase, color: "#1e3a8a" },
+            ].map((feature, i) => (
+              <div key={i} className="bg-white rounded-2xl p-4 sm:p-5 flex flex-col items-center text-center shadow-sm border border-gray-100 hover:shadow-md transition-all">
+                <div className="w-12 h-12 rounded-full flex items-center justify-center mb-3" style={{ backgroundColor: feature.color + '15' }}>
+                  <feature.icon className="w-6 h-6" style={{ color: feature.color }} />
+                </div>
+                <h4 className="font-bold text-slate-900 text-sm mb-2 leading-tight whitespace-pre-line">{feature.title}</h4>
+                <p className="text-xs text-slate-500 font-medium leading-relaxed">{feature.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* 4. OUR ECOSYSTEM */}
+        <div className="pt-10">
+          <h3 className="text-2xl md:text-3xl font-black text-slate-900 text-center mb-8">
+            Our Ecosystem
+          </h3>
+          <div className="grid grid-cols-2 lg:grid-cols-5 gap-4">
             {ecosystemPlatforms.map((platform, i) => (
-              <Link href={platform.name === 'truedial.com' ? '/' : '#'} key={i} className="flex flex-col p-6 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-100 dark:border-slate-800 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all cursor-pointer group">
-                <div className={`w-14 h-14 ${platform.logoBg} rounded-2xl flex items-center justify-center mb-4 text-white shadow-sm group-hover:scale-110 transition-transform`}>
-                  <span className="font-black text-xl">{platform.name.charAt(0)}</span>
-                </div>
-                <h4 className="font-bold text-lg text-slate-900 dark:text-white mb-1" style={{ color: platform.color }}>{platform.name}</h4>
-                <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 leading-snug">{platform.tag}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* 5. PREMIUM SERVICES */}
-        <div className="bg-white dark:bg-slate-900 rounded-[32px] p-6 sm:p-10 shadow-lg border border-slate-200/60 dark:border-slate-800">
-          <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-8">Premium Services</h3>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-6">
-            {premiumServices.map((service, i) => (
-              <Link href="/consulting" key={i} className={`flex flex-col items-center p-6 rounded-3xl ${service.bg} border border-slate-100 dark:border-slate-800 hover:shadow-lg hover:-translate-y-1 transition-all cursor-pointer group text-center`}>
-                <service.icon className="w-12 h-12 mb-4 group-hover:scale-110 transition-transform" color={service.color} strokeWidth={1.5} />
-                <h4 className="font-bold text-sm text-slate-800 dark:text-slate-200 leading-snug">{service.name}</h4>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* 6. LEARNING & INSIGHTS */}
-        <div>
-          <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-6 px-2">Learning & Insights</h3>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {/* Card 1: Academy */}
-            <div className="bg-[#E0E7FF] dark:bg-slate-800 rounded-[32px] p-8 shadow-sm flex flex-col justify-between hover:shadow-xl transition-shadow cursor-pointer border border-blue-100 dark:border-slate-700">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="bg-white p-4 rounded-2xl shadow-sm">
-                  <GraduationCap className="w-10 h-10 text-[#1E40AF]" />
-                </div>
-                <div>
-                  <h4 className="text-lg font-black text-[#1E40AF] dark:text-blue-400">TRUEDIAL ACADEMY</h4>
-                  <p className="text-sm font-bold text-slate-600 dark:text-slate-400">Learn • Grow • Succeed</p>
-                </div>
-              </div>
-              <p className="text-xl font-bold text-slate-800 dark:text-white mt-2 mb-8 leading-snug">Industry Oriented Professional Courses</p>
-              <div className="inline-flex items-center self-start border-b-2 border-[#1E40AF] pb-1 group">
-                <span className="text-sm font-bold text-[#1E40AF] mr-2">Know More</span>
-                <ArrowRight className="w-4 h-4 text-[#1E40AF] group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Card 2: Podcast */}
-            <div className="bg-[#F3E8FF] dark:bg-slate-800 rounded-[32px] p-8 shadow-sm flex flex-col justify-between hover:shadow-xl transition-shadow cursor-pointer border border-purple-100 dark:border-slate-700">
-              <div className="flex items-start gap-4 mb-6">
-                <div className="bg-white p-4 rounded-2xl shadow-sm">
-                  <Mic className="w-10 h-10 text-[#7C3AED]" />
-                </div>
-                <div>
-                  <h4 className="text-lg font-black text-[#7C3AED] dark:text-purple-400">TRUEDIAL PODCAST</h4>
-                  <p className="text-sm font-bold text-slate-600 dark:text-slate-400">Every Business Has a Story</p>
-                </div>
-              </div>
-              <p className="text-xl font-bold text-slate-800 dark:text-white mt-2 mb-8 leading-snug">Founder Insights & Entrepreneurship</p>
-              <div className="inline-flex items-center self-start border-b-2 border-[#7C3AED] pb-1 group">
-                <span className="text-sm font-bold text-[#7C3AED] mr-2">Listen Now</span>
-                <ArrowRight className="w-4 h-4 text-[#7C3AED] group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
             {/* Card 3: News */}
             <div className="bg-[#DBEAFE] dark:bg-slate-800 rounded-[32px] p-8 shadow-sm flex flex-col justify-between hover:shadow-xl transition-shadow cursor-pointer border border-blue-200 dark:border-slate-700">
               <div className="flex items-start gap-4 mb-6">
@@ -188,55 +145,6 @@ export default async function Home() {
                 <span className="text-sm font-bold text-[#2563EB] mr-2">Read More</span>
                 <ArrowRight className="w-4 h-4 text-[#2563EB] group-hover:translate-x-1 transition-transform" />
               </div>
-            </div>
-          </div>
-        </div>
-
-        {/* 7. STATS BANNER & APP PROMO */}
-        <div className="pt-4">
-          <div className="bg-[#0A1C3A] rounded-t-[32px] p-10 shadow-2xl border border-slate-800">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 divide-y md:divide-y-0 md:divide-x divide-slate-800">
-              <div className="flex flex-col items-center justify-center text-center">
-                <p className="text-4xl font-black text-white mb-2">50,000+</p>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Verified Businesses</p>
-              </div>
-              <div className="flex flex-col items-center justify-center text-center pt-8 md:pt-0">
-                <p className="text-4xl font-black text-white mb-2">5 Lakh+</p>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Happy Customers</p>
-              </div>
-              <div className="flex flex-col items-center justify-center text-center pt-8 md:pt-0">
-                <p className="text-4xl font-black text-white mb-2">100+</p>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">Cities Coverage</p>
-              </div>
-              <div className="flex flex-col items-center justify-center text-center pt-8 md:pt-0">
-                <div className="flex items-center justify-center mb-2 gap-2">
-                  <Star className="w-8 h-8 text-[#F59E0B] fill-[#F59E0B]" />
-                  <p className="text-4xl font-black text-white">4.8/5</p>
-                </div>
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">User Rating</p>
-              </div>
-            </div>
-          </div>
-          
-          {/* Download App Banner */}
-          <div className="bg-blue-600 rounded-b-[32px] p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-8 shadow-xl">
-            <div className="text-center md:text-left">
-              <h3 className="text-2xl md:text-3xl font-black text-white mb-2">Download TRUEDIAL App</h3>
-              <p className="text-base text-blue-100 font-medium">Find Businesses | Best Deals | Grow Your Business</p>
-            </div>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <button className="bg-black hover:bg-slate-900 transition-colors py-3 px-6 rounded-xl flex items-center justify-center gap-3">
-                <div className="text-left">
-                  <p className="text-white text-[10px] font-bold uppercase">GET IT ON</p>
-                  <p className="text-white text-base font-black">Google Play</p>
-                </div>
-              </button>
-              <button className="bg-black hover:bg-slate-900 transition-colors py-3 px-6 rounded-xl flex items-center justify-center gap-3">
-                <div className="text-left">
-                  <p className="text-white text-[10px] font-bold uppercase">Download on the</p>
-                  <p className="text-white text-base font-black">App Store</p>
-                </div>
-              </button>
             </div>
           </div>
         </div>

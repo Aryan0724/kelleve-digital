@@ -71,45 +71,92 @@ export default function HeroSearch() {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/20 rounded-full -ml-10 -mb-10 blur-3xl" />
         
         <div className="max-w-4xl mx-auto z-10 relative">
-          {/* Location Bar & Voice */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-4">
-            <button 
-              type="button" 
-              onClick={openLocationModal}
-              className="flex items-center bg-white px-4 sm:px-5 py-3 sm:py-3.5 rounded-2xl sm:rounded-full shadow-sm sm:shadow-md w-full sm:w-auto hover:bg-gray-50 transition border border-transparent hover:border-blue-100"
-            >
-              <div className="bg-blue-50 w-8 h-8 rounded-full flex items-center justify-center shrink-0">
-                <MapPin className="w-4 h-4 text-[#1E40AF]" />
-              </div>
-              <span className="text-sm sm:text-base font-bold text-slate-900 mx-3 truncate max-w-[200px] text-left flex-1">{city || "Select Location"}</span>
-              <ChevronRight className="w-5 h-5 text-slate-400 shrink-0" />
-            </button>
+          {/* Hero Text */}
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 relative z-10 mb-12">
+            <div className="flex-1">
+              <h2 className="text-xl md:text-2xl font-medium text-white mb-2">India's Emerging</h2>
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold text-[#F59E0B] leading-tight md:leading-[1.1]">Business Growth <span className="text-white">Platform</span></h1>
+              <p className="text-xl md:text-2xl text-blue-100 font-medium mt-4 mb-8 italic">
+                Beyond Listing. <span className="text-white not-italic font-bold">We Help Businesses <span className="text-[#F59E0B]">Grow.</span></span>
+              </p>
 
-            <button type="button" className="hidden sm:flex w-12 h-12 rounded-full bg-white items-center justify-center shadow-md hover:bg-gray-50 transition">
-              <Mic className="w-5 h-5 text-[#1E40AF]" />
-            </button>
+              {/* Feature Bullets */}
+              <div className="flex flex-col sm:flex-row gap-6 mt-8">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/10 p-2 rounded-full border border-white/20">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                  </div>
+                  <div>
+                    <p className="text-white font-bold text-sm leading-tight">Find</p>
+                    <p className="text-blue-200 text-xs">Verified Businesses</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/10 p-2 rounded-full border border-white/20">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
+                  </div>
+                  <div>
+                    <p className="text-white font-bold text-sm leading-tight">Get</p>
+                    <p className="text-blue-200 text-xs">Best Deals & Offers</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/10 p-2 rounded-full border border-white/20">
+                    <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                  </div>
+                  <div>
+                    <p className="text-white font-bold text-sm leading-tight">Grow</p>
+                    <p className="text-blue-200 text-xs">Your Business</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Right side floating badge */}
+            <div className="hidden md:flex flex-col bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl items-center text-center shadow-2xl max-w-[200px]">
+              <Trophy className="w-10 h-10 text-[#F59E0B] mb-3" />
+              <p className="text-base font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
+            </div>
           </div>
 
-          {/* Search Bar Input */}
-          <div className="relative w-full mb-8 sm:mb-10 z-20" ref={dropdownRef}>
-            <form onSubmit={handleSearch} className="flex flex-row items-center bg-white rounded-2xl sm:rounded-full p-1.5 sm:pl-6 sm:pr-2 h-14 sm:h-16 shadow-lg w-full hover:shadow-xl transition-shadow duration-300">
-              <Search className="w-5 h-5 text-slate-400 mr-3 hidden sm:block" />
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => {
-                  setQuery(e.target.value);
-                  setShowDropdown(true);
-                }}
-                onFocus={() => {
-                  if (query.trim().length >= 2) setShowDropdown(true);
-                }}
-                className="flex-1 text-slate-900 text-sm sm:text-base font-medium outline-none bg-transparent h-full px-3 sm:px-0 placeholder:text-gray-400"
-                placeholder="Search Business, Service, Product..."
-              />
-              <button type="submit" className="bg-[#1E40AF] hover:bg-blue-800 transition-colors h-11 sm:h-12 w-11 sm:w-auto sm:px-8 rounded-xl sm:rounded-full items-center justify-center flex shadow-md shrink-0">
-                <span className="text-white font-bold hidden sm:inline mr-2">Search</span>
-                <Search className="w-5 h-5 sm:w-4 sm:h-4 text-white" />
+          {/* Unified Search Bar */}
+          <div className="relative w-full -mb-20 z-20" ref={dropdownRef}>
+            <form onSubmit={handleSearch} className="flex flex-col md:flex-row items-center bg-white rounded-2xl md:rounded-[24px] p-2 md:p-2 h-auto md:h-[72px] shadow-2xl w-full border border-gray-100 gap-2 md:gap-0">
+              
+              {/* Location Selector */}
+              <button 
+                type="button" 
+                onClick={openLocationModal}
+                className="flex items-center justify-between w-full md:w-auto px-4 py-3 md:py-0 h-full hover:bg-gray-50 transition rounded-xl md:rounded-l-[20px] md:rounded-r-none border-b md:border-b-0 md:border-r border-gray-200 shrink-0 min-w-[180px]"
+              >
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-5 h-5 text-slate-700" />
+                  <span className="text-base font-medium text-slate-800">{city || "Patna"}</span>
+                </div>
+                <ChevronDown className="w-4 h-4 text-slate-400" />
+              </button>
+
+              {/* Search Input */}
+              <div className="flex-1 flex items-center h-full w-full px-4 py-2 md:py-0">
+                <Search className="w-5 h-5 text-slate-400 mr-3 hidden sm:block shrink-0" />
+                <input
+                  type="text"
+                  value={query}
+                  onChange={(e) => {
+                    setQuery(e.target.value);
+                    setShowDropdown(true);
+                  }}
+                  onFocus={() => {
+                    if (query.trim().length >= 2) setShowDropdown(true);
+                  }}
+                  className="flex-1 text-slate-900 text-base font-medium outline-none bg-transparent h-full placeholder:text-gray-400 w-full"
+                  placeholder="Search for Restaurant, Hospital, School, Hotel, Service..."
+                />
+              </div>
+
+              {/* Search Button */}
+              <button type="submit" className="w-full md:w-auto bg-[#1E40AF] hover:bg-blue-800 transition-colors h-12 md:h-full px-10 rounded-xl md:rounded-[18px] items-center justify-center flex shadow-md shrink-0">
+                <span className="text-white font-bold text-base">Search</span>
               </button>
             </form>
 
@@ -155,30 +202,6 @@ export default function HeroSearch() {
                 )}
               </div>
             )}
-          </div>
-
-          {/* Hero Text */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 relative z-10">
-            <div className="flex-1">
-              <h2 className="text-lg md:text-xl font-semibold text-blue-200 mb-2 uppercase tracking-wide">India's Emerging</h2>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-[#F59E0B] leading-tight md:leading-[1.1]">Business Growth</h1>
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-black text-white leading-tight md:leading-[1.1] mb-4">Platform</h1>
-              <p className="text-lg md:text-xl text-blue-100 font-medium mb-1">Beyond Listing.</p>
-              <p className="text-lg md:text-xl text-blue-100 font-medium mb-8">We Help Businesses Grow.</p>
-
-              <Link href="/search">
-                <button className="bg-[#F59E0B] hover:bg-amber-400 transition-colors py-4 px-8 rounded-full inline-flex items-center shadow-xl group">
-                  <span className="text-base font-black text-slate-900 mr-3 uppercase tracking-wide">Explore Now</span>
-                  <ArrowRight className="w-5 h-5 text-slate-900 group-hover:translate-x-1 transition-transform" />
-                </button>
-              </Link>
-            </div>
-
-            {/* Right side floating badge */}
-            <div className="md:w-48 bg-[#1E40AF]/40 backdrop-blur-md border border-blue-400/30 p-4 md:p-6 rounded-3xl items-center text-center shadow-2xl">
-              <Trophy className="w-12 h-12 text-[#F59E0B] mb-3 mx-auto" />
-              <p className="text-sm font-bold text-white leading-snug">Trusted by Thousands of Businesses Across India</p>
-            </div>
           </div>
         </div>
       </div>
