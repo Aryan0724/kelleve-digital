@@ -12,7 +12,7 @@ export default async function Navbar() {
   return (
     <>
       {/* Top Header */}
-      <div className="bg-navy text-navy-foreground py-2 px-6 flex justify-between items-center text-sm">
+      <div className="hidden md:flex bg-navy text-navy-foreground py-2 px-6 justify-between items-center text-sm">
         <div className="flex gap-6">
           <span className="flex items-center gap-2">✉ support@truedial.com</span>
           <span className="flex items-center gap-2">📞 95349 00999</span>

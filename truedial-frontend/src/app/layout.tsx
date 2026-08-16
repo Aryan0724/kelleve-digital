@@ -26,6 +26,14 @@ export const metadata: Metadata = {
   description: "India's premier B2B directory and ecosystem for interior designers, architects, contractors, and suppliers.",
 };
 
+import type { Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 import { LocationProvider } from "@/context/LocationContext";
 import { AuthProvider } from "@/context/AuthContext";
 import { TenantProvider } from "@/context/TenantContext";
