@@ -9,6 +9,20 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
 import { toast } from "react-toastify";
 
+const loadScript = (src: string) => {
+  return new Promise((resolve) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
 interface UnlockContactModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -21,6 +35,65 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
   const router = useRouter();
   const [loading, setLoading] = useState(false);
 
+  const startRazorpayPayment = async (amountToRecharge: number = 49) => {
+    try {
+      const orderRes = await api.post("/payments/create-order", {
+        purpose: "wallet_recharge",
+        amount: amountToRecharge,
+      });
+      const orderId = orderRes.data.order_id;
+      const amountInPaise = orderRes.data.amount;
+
+      const scriptLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!scriptLoaded) {
+        toast.error("Razorpay SDK failed to load. Please check internet connection.");
+        return;
+      }
+
+      const options = {
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        amount: amountInPaise.toString(),
+        currency: "INR",
+        name: "FindMyInterior",
+        description: `Unlock Contact Details: ₹${amountToRecharge}`,
+        order_id: orderId,
+        handler: async function (response: any) {
+          try {
+            await api.post("/payments/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            toast.success("Payment verified! Unlocking contact...");
+            // Auto unlock contact
+            await api.post(`/listings/${listing.id}/unlock`);
+            toast.success("Contact unlocked! You can now view details.");
+            onUnlockSuccess();
+            onClose();
+          } catch (verErr: any) {
+            toast.error(verErr.response?.data?.message || "Payment verification failed!");
+          }
+        },
+        prefill: {
+          name: user?.name || "Customer",
+          email: user?.email || "",
+          contact: user?.phone || "",
+        },
+        theme: {
+          color: "#ea580c",
+        },
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.on("payment.failed", function (res: any) {
+        toast.error("Payment Failed: " + (res.error?.description || "Transaction cancelled"));
+      });
+      paymentObject.open();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to initiate payment gateway.");
+    }
+  };
+
   const handleUnlock = async () => {
     if (!token) {
       toast.info("Please log in to unlock this contact.");
@@ -32,15 +105,16 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
     try {
       await api.post(`/listings/${listing.id}/unlock`);
       
-      toast.success("Contact unlocked! You can now chat on WhatsApp.");
+      toast.success("Contact unlocked! You can now view details.");
       onUnlockSuccess();
       onClose();
     } catch (err: any) {
-      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
-        toast.error("Insufficient wallet balance. Redirecting to wallet recharge...");
-        router.push("/dashboard?tab=wallet");
+      const msg = err.response?.data?.message || "";
+      if (err.response?.status === 402 || msg.toLowerCase().includes("balance")) {
+        toast.info("Opening Razorpay payment gateway...");
+        await startRazorpayPayment(49);
       } else {
-        toast.error(err.response?.data?.message || "Failed to unlock contact. Please try again.");
+        toast.error(msg || "Failed to unlock contact. Please try again.");
       }
     } finally {
       setLoading(false);
@@ -56,7 +130,7 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
             Unlock Contact Details
           </DialogTitle>
           <DialogDescription>
-            Unlock {listing.title}'s WhatsApp number to chat directly. This requires a ₹49 fee which will be deducted from your wallet.
+            Unlock {listing.title}'s phone and WhatsApp details. This requires a ₹49 fee which will be processed via Razorpay or your wallet balance.
           </DialogDescription>
         </DialogHeader>
         
@@ -73,11 +147,11 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
             className="w-full h-12 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold text-base"
             disabled={loading}
           >
-            {loading ? "Unlocking..." : "Unlock & Chat on WhatsApp"}
+            {loading ? "Processing..." : "Pay ₹49 & Unlock Contact"}
           </Button>
           
           <p className="text-xs text-center text-slate-500">
-            This helps us ensure high-quality leads for our professionals.
+            Secure payment powered by Razorpay.
           </p>
         </div>
       </DialogContent>

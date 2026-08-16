@@ -12,8 +12,17 @@ class ListingResource extends JsonResource
         $ownerUser = $this->relationLoaded('user') ? $this->user : \App\Models\User::find($this->user_id);
         $ownerPlan = $ownerUser?->activeSubscription?->plan;
         
-        $canHaveWebsite = $ownerPlan?->can_add_website ?? false;
-        $canHaveWhatsapp = $ownerPlan?->can_add_whatsapp ?? false;
+        $formatUrl = function($img) {
+            if (empty($img)) return null;
+            if (\Illuminate\Support\Str::startsWith($img, 'http://') || \Illuminate\Support\Str::startsWith($img, 'https://')) {
+                return $img;
+            }
+            return url($img);
+        };
+
+        $coverImage = $formatUrl($this->cover_image ?: $ownerUser?->cover_image);
+        $avatarImage = $formatUrl($ownerUser?->avatar);
+        $languages = $this->languages ?? $ownerUser?->worker?->languages ?? $ownerUser?->builder?->languages ?? $ownerUser?->supplier?->languages ?? [];
 
         return [
             'id'               => $this->id,
@@ -21,7 +30,7 @@ class ListingResource extends JsonResource
             'slug'             => $this->slug,
             'tagline'          => $this->tagline,
             'description'      => $this->description,
-            'cover_image'      => $this->cover_image,
+            'cover_image'      => $coverImage,
             'category'         => new CategoryResource($this->whenLoaded('category')),
             'city'             => $this->city,
             'district'         => $this->district,
@@ -43,10 +52,11 @@ class ListingResource extends JsonResource
             'profile_completion_score' => $this->whenLoaded('user', fn() => $this->user->profile_completion_score),
             'verification_level' => $this->whenLoaded('user', fn() => $this->user->verification_level),
             'user'             => $this->whenLoaded('user', fn() => [
-                'id'     => $this->user->id,
-                'name'   => $this->user->name,
-                'avatar' => $this->user->avatar ?? null,
-                'role'   => $this->user->role ?? null,
+                'id'          => $this->user->id,
+                'name'        => $this->user->name,
+                'avatar'      => $avatarImage,
+                'cover_image' => $coverImage,
+                'role'        => $this->user->role ?? null,
             ]),
             'phone_clicks'     => $this->when($this->isOwner($request), $this->phone_clicks),
             'whatsapp_clicks'  => $this->when($this->isOwner($request), $this->whatsapp_clicks),

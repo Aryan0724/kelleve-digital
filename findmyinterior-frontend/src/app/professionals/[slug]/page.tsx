@@ -64,8 +64,8 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
     <div className="bg-slate-50 min-h-screen pb-20">
       {/* Cover Image Header */}
       <div className="h-64 md:h-96 w-full bg-slate-900 relative">
-        {listing.cover_image && (
-          <img src={listing.cover_image} alt={listing.title} className="w-full h-full object-cover opacity-60" />
+        {(listing.cover_image || listing.user?.cover_image) && (
+          <img src={listing.cover_image || listing.user?.cover_image} alt={listing.title} className="w-full h-full object-cover opacity-60" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
       </div>
@@ -78,9 +78,9 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
             <div className="bg-white rounded-xl shadow-sm border p-6 md:p-8">
               <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
                 <div className="flex flex-col md:flex-row items-start gap-4">
-                  <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 border-orange-100 hidden md:block">
+                  <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 border-orange-100 flex-shrink-0 shadow-md">
                     <AvatarImage src={listing.user?.avatar || listing.cover_image} />
-                    <AvatarFallback className="bg-slate-100 text-slate-400 font-bold text-2xl">{listing.title.charAt(0)}</AvatarFallback>
+                    <AvatarFallback className="bg-orange-100 text-orange-700 font-bold text-2xl">{listing.title.charAt(0)}</AvatarFallback>
                   </Avatar>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
