@@ -170,18 +170,18 @@ class ProfessionalProfileController extends Controller
     public function update(Request $request): JsonResponse
     {
         $user = $request->user();
-        $role = $user->role;
+        $role = $user->role ?? 'interior_designer';
         $profile = null;
         $type = $this->getProfileType($role);
 
-        if ($type === 'listing') {
+        if ($type === 'listing' || $type === 'none') {
             $data = $request->validate([
-                'title'            => ['required', 'string', 'max:255'],
+                'title'            => ['nullable', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
-                'description'      => ['required', 'string', 'max:5000'],
+                'description'      => ['nullable', 'string', 'max:5000'],
                 'phone'            => ['nullable', 'string', 'max:20'],
-                'city'             => ['required', 'string', 'max:100'],
-                'district'         => ['required', 'string', 'max:100'],
+                'city'             => ['nullable', 'string', 'max:100'],
+                'district'         => ['nullable', 'string', 'max:100'],
                 'address'          => ['nullable', 'string'],
                 'website'          => ['nullable', 'url'],
                 'years_experience' => ['nullable', 'integer'],
@@ -189,147 +189,174 @@ class ProfessionalProfileController extends Controller
                 'gst_number'       => ['nullable', 'string', 'max:50'],
                 'pan_number'       => ['nullable', 'string', 'max:50'],
                 'category_id'      => ['nullable', 'exists:categories,id'],
-                'services'         => ['nullable', 'array'],
-                'keywords'         => ['nullable', 'array'],
-                'achievements'     => ['nullable', 'array'],
+                'services'         => ['nullable'],
+                'keywords'         => ['nullable'],
+                'achievements'     => ['nullable'],
                 'availability'     => ['nullable', 'string', 'max:255'],
                 'response_time'    => ['nullable', 'string', 'max:255'],
-                'languages'        => ['nullable', 'array'],
-                'social_links'     => ['nullable', 'array'],
+                'languages'        => ['nullable'],
+                'social_links'     => ['nullable'],
             ]);
 
-            $queryAttr = ['user_id' => $user->id];
-            try {
-                if ($tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId()) {
-                    $queryAttr['tenant_id'] = $tenantId;
-                }
-            } catch (\Throwable $e) {}
-            
-            $profile = Listing::firstOrNew($queryAttr);
-            $profile->fill($data);
-            if (!$profile->exists) {
-                $profile->slug = Str::slug($data['title']) . '-' . Str::random(6);
-                $profile->state = 'Bihar';
-                $profile->status = 'active';
-                if (empty($profile->category_id)) {
-                    $categorySlug = match (true) {
-                        in_array($role, ['architect', 'structural_engineer', 'civil_engineer']) => 'architects',
-                        in_array($role, ['contractor', 'civil_contractor', 'interior_contractor', 'turnkey_contractor', 'renovation_contractor', 'demolition_contractor']) => 'civil-contractors',
-                        default => 'interior-designers',
-                    };
-                    $category = \App\Models\Category::where('slug', $categorySlug)->first();
-                    $profile->category_id = $category ? $category->id : 1;
-                }
+            // Ensure title & description are fallback-populated if missing
+            $data['title'] = $data['title'] ?? $request->input('name') ?? $request->input('company_name') ?? $user->name;
+            $data['description'] = $data['description'] ?? $request->input('bio') ?? $request->input('tagline') ?? 'Professional interior design and architectural services.';
+            $data['phone'] = $data['phone'] ?? $user->phone;
+            $data['city'] = $data['city'] ?? $user->city ?? 'Patna';
+            $data['district'] = $data['district'] ?? $user->district ?? 'Patna';
+
+            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listing->fill(array_filter($data, fn($v) => !is_null($v)));
+            $listing->title = $data['title'];
+            $listing->slug = Str::slug($data['title']) . '-' . Str::random(6);
+            if (!$listing->exists) {
+                $listing->state = 'Bihar';
+                $listing->status = 'active';
+                $listing->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId() ?? 1;
+                $listing->category_id = 1;
             }
-            $profile->save();
+            $listing->save();
+            $profile = $listing;
+            $type = 'listing';
 
         } elseif ($type === 'worker') {
             $data = $request->validate([
-                'name'             => ['required', 'string', 'max:255'],
-                'skill'            => ['required', 'string', 'max:255'],
+                'name'             => ['nullable', 'string', 'max:255'],
+                'skill'            => ['nullable', 'string', 'max:255'],
                 'experience_years' => ['nullable', 'integer'],
                 'daily_rate'       => ['nullable', 'numeric'],
                 'bio'              => ['nullable', 'string'],
                 'phone'            => ['nullable', 'string', 'max:20'],
-                'city'             => ['required', 'string', 'max:100'],
-                'district'         => ['required', 'string', 'max:100'],
+                'city'             => ['nullable', 'string', 'max:100'],
+                'district'         => ['nullable', 'string', 'max:100'],
                 'address'          => ['nullable', 'string'],
-                'services'         => ['nullable', 'array'],
-                'achievements'     => ['nullable', 'array'],
+                'services'         => ['nullable'],
+                'achievements'     => ['nullable'],
                 'availability'     => ['nullable', 'string', 'max:255'],
                 'response_time'    => ['nullable', 'string', 'max:255'],
-                'languages'        => ['nullable', 'array'],
-                'social_links'     => ['nullable', 'array'],
+                'languages'        => ['nullable'],
+                'social_links'     => ['nullable'],
             ]);
 
-            $profile = Worker::firstOrNew(['user_id' => $user->id]);
-            $profile->fill($data);
-            if (!$profile->exists) {
-                $profile->slug = Str::slug($data['name']) . '-' . Str::random(6);
-                $profile->status = 'active';
+            $worker = Worker::firstOrNew(['user_id' => $user->id]);
+            $worker->fill(array_filter($data, fn($v) => !is_null($v)));
+            if (!$worker->exists) {
+                $worker->slug = Str::slug($data['name'] ?? $user->name) . '-' . Str::random(6);
+                $worker->status = 'active';
             }
-            $profile->save();
-            $type = 'worker';
+            $worker->save();
+            $profile = $worker;
 
-        } elseif ($type === 'supplier') {
-            $data = $request->validate([
-                'company_name'     => ['required', 'string', 'max:255'],
-                'tagline'          => ['nullable', 'string', 'max:255'],
-                'phone'            => ['nullable', 'string', 'max:20'],
-                'city'             => ['required', 'string', 'max:100'],
-                'district'         => ['required', 'string', 'max:100'],
-                'address'          => ['nullable', 'string'],
-                'gst_number'       => ['nullable', 'string', 'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i'],
-                'pan_number'       => ['nullable', 'string', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
-                'services'         => ['nullable', 'array'],
-                'achievements'     => ['nullable', 'array'],
-                'availability'     => ['nullable', 'string', 'max:255'],
-                'response_time'    => ['nullable', 'string', 'max:255'],
-                'languages'        => ['nullable', 'array'],
-                'social_links'     => ['nullable', 'array'],
-            ]);
-
-            $profile = Supplier::firstOrNew(['user_id' => $user->id]);
-            $profile->fill($data);
-            if (!$profile->exists) {
-                $profile->slug = Str::slug($data['company_name']) . '-' . Str::random(6);
-                $profile->status = 'active';
-                $profile->email = $user->email;
-            }
-            $profile->save();
-            $type = 'supplier';
-
-        } elseif ($type === 'builder') {
-            $data = $request->validate([
-                'company_name'     => ['required', 'string', 'max:255'],
-                'tagline'          => ['nullable', 'string', 'max:255'],
-                'phone'            => ['nullable', 'string', 'max:20'],
-                'city'             => ['required', 'string', 'max:100'],
-                'district'         => ['required', 'string', 'max:100'],
-                'address'          => ['nullable', 'string'],
-                'gst_number'       => ['nullable', 'string', 'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i'],
-                'pan_number'       => ['nullable', 'string', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
-                'total_projects'   => ['nullable', 'integer'],
-                'services'         => ['nullable', 'array'],
-                'achievements'     => ['nullable', 'array'],
-                'availability'     => ['nullable', 'string', 'max:255'],
-                'response_time'    => ['nullable', 'string', 'max:255'],
-                'languages'        => ['nullable', 'array'],
-                'social_links'     => ['nullable', 'array'],
-            ]);
-
-            $profile = Builder::firstOrNew(['user_id' => $user->id]);
-            $profile->fill($data);
-            if (!$profile->exists) {
-                $profile->slug = Str::slug($data['company_name']) . '-' . Str::random(6);
-                $profile->status = 'active';
-                $profile->email = $user->email;
-            }
-            $profile->save();
-            $type = 'builder';
-
-            // Sync to Listing for search visibility
-            $listingQueryAttr = ['user_id' => $user->id];
-            try {
-                if ($tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId()) {
-                    $listingQueryAttr['tenant_id'] = $tenantId;
-                }
-            } catch (\Throwable $e) {}
-            
-            $listing = Listing::firstOrNew($listingQueryAttr);
-            $listing->title = $data['company_name'] ?? $user->name;
-            $listing->description = $data['tagline'] ?? '';
-            $listing->phone = $data['phone'] ?? null;
-            $listing->city = $data['city'] ?? null;
-            $listing->district = $data['district'] ?? null;
+            // Sync to Listing model for public profile visibility
+            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listing->title = $data['name'] ?? $user->name;
+            $listing->description = $data['bio'] ?? 'Skilled worker profile.';
+            $listing->phone = $data['phone'] ?? $user->phone;
+            $listing->city = $data['city'] ?? $user->city ?? 'Patna';
+            $listing->district = $data['district'] ?? $user->district ?? 'Patna';
+            $listing->address = $data['address'] ?? $user->address;
+            $listing->services = $data['services'] ?? ($data['skill'] ? [$data['skill']] : []);
             $listing->status = 'active';
+            $listing->slug = Str::slug($listing->title) . '-' . Str::random(6);
             if (!$listing->exists) {
-                $listing->slug = $profile->slug;
+                $listing->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId() ?? 1;
+                $listing->category_id = 1;
+                $listing->state = 'Bihar';
             }
             $listing->save();
 
-        } else {
-            $type = 'none';
+        } elseif ($type === 'supplier') {
+            $data = $request->validate([
+                'company_name'     => ['nullable', 'string', 'max:255'],
+                'tagline'          => ['nullable', 'string', 'max:255'],
+                'phone'            => ['nullable', 'string', 'max:20'],
+                'city'             => ['nullable', 'string', 'max:100'],
+                'district'         => ['nullable', 'string', 'max:100'],
+                'address'          => ['nullable', 'string'],
+                'gst_number'       => ['nullable', 'string'],
+                'pan_number'       => ['nullable', 'string'],
+                'services'         => ['nullable'],
+                'achievements'     => ['nullable'],
+                'availability'     => ['nullable', 'string', 'max:255'],
+                'response_time'    => ['nullable', 'string', 'max:255'],
+                'languages'        => ['nullable'],
+                'social_links'     => ['nullable'],
+            ]);
+
+            $supplier = Supplier::firstOrNew(['user_id' => $user->id]);
+            $supplier->fill(array_filter($data, fn($v) => !is_null($v)));
+            if (!$supplier->exists) {
+                $supplier->slug = Str::slug($data['company_name'] ?? $user->name) . '-' . Str::random(6);
+                $supplier->status = 'active';
+                $supplier->email = $user->email;
+            }
+            $supplier->save();
+            $profile = $supplier;
+
+            // Sync to Listing model for public profile visibility
+            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listing->title = $data['company_name'] ?? $user->name;
+            $listing->description = $data['tagline'] ?? 'Material supplier.';
+            $listing->phone = $data['phone'] ?? $user->phone;
+            $listing->city = $data['city'] ?? $user->city ?? 'Patna';
+            $listing->district = $data['district'] ?? $user->district ?? 'Patna';
+            $listing->address = $data['address'] ?? $user->address;
+            $listing->services = $data['services'] ?? [];
+            $listing->status = 'active';
+            $listing->slug = Str::slug($listing->title) . '-' . Str::random(6);
+            if (!$listing->exists) {
+                $listing->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId() ?? 1;
+                $listing->category_id = 1;
+                $listing->state = 'Bihar';
+            }
+            $listing->save();
+
+        } elseif ($type === 'builder') {
+            $data = $request->validate([
+                'company_name'     => ['nullable', 'string', 'max:255'],
+                'tagline'          => ['nullable', 'string', 'max:255'],
+                'phone'            => ['nullable', 'string', 'max:20'],
+                'city'             => ['nullable', 'string', 'max:100'],
+                'district'         => ['nullable', 'string', 'max:100'],
+                'address'          => ['nullable', 'string'],
+                'gst_number'       => ['nullable', 'string'],
+                'pan_number'       => ['nullable', 'string'],
+                'total_projects'   => ['nullable', 'integer'],
+                'services'         => ['nullable'],
+                'achievements'     => ['nullable'],
+                'availability'     => ['nullable', 'string', 'max:255'],
+                'response_time'    => ['nullable', 'string', 'max:255'],
+                'languages'        => ['nullable'],
+                'social_links'     => ['nullable'],
+            ]);
+
+            $builder = Builder::firstOrNew(['user_id' => $user->id]);
+            $builder->fill(array_filter($data, fn($v) => !is_null($v)));
+            if (!$builder->exists) {
+                $builder->slug = Str::slug($data['company_name'] ?? $user->name) . '-' . Str::random(6);
+                $builder->status = 'active';
+                $builder->email = $user->email;
+            }
+            $builder->save();
+            $profile = $builder;
+
+            // Sync to Listing model for public profile visibility
+            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listing->title = $data['company_name'] ?? $user->name;
+            $listing->description = $data['tagline'] ?? 'Real estate developer.';
+            $listing->phone = $data['phone'] ?? $user->phone;
+            $listing->city = $data['city'] ?? $user->city ?? 'Patna';
+            $listing->district = $data['district'] ?? $user->district ?? 'Patna';
+            $listing->address = $data['address'] ?? $user->address;
+            $listing->services = $data['services'] ?? [];
+            $listing->status = 'active';
+            $listing->slug = Str::slug($listing->title) . '-' . Str::random(6);
+            if (!$listing->exists) {
+                $listing->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId() ?? 1;
+                $listing->category_id = 1;
+                $listing->state = 'Bihar';
+            }
+            $listing->save();
         }
 
         // Recalculate trust score after profile update
