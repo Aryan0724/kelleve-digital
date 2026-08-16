@@ -64,6 +64,21 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             'user_2311' => $u2311 ? $u2311->only(['id', 'name', 'avatar', 'cover_image']) : null,
             'listing_1635' => $l1635 ? $l1635->only(['id', 'title', 'cover_image', 'user_id']) : null,
         ]);
+    Route::get('/seed-user-media', function() {
+        $u = \App\Models\User::withoutGlobalScopes()->find(2311);
+        if ($u) {
+            $u->avatar = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb';
+            $u->cover_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6';
+            $u->save();
+            
+            $l = \App\Models\Listing::withoutGlobalScopes()->where('user_id', 2311)->first();
+            if ($l) {
+                $l->cover_image = 'https://images.unsplash.com/photo-1618221195710-dd6b41faaea6';
+                $l->save();
+            }
+            return response()->json(['success' => true, 'user' => $u->only(['id', 'name', 'avatar', 'cover_image']), 'listing' => $l ? $l->only(['id', 'title', 'cover_image']) : null]);
+        }
+        return response()->json(['success' => false, 'message' => 'User not found']);
     });
 
     Route::get('/debug-internal', function (\Illuminate\Http\Request $request) {
