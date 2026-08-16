@@ -54,10 +54,10 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             'environment' => app()->environment()
         ]);
     Route::get('/debug-media', function() {
-        $users = \App\Models\User::whereNotNull('avatar')->orWhereNotNull('cover_image')->get(['id', 'name', 'avatar', 'cover_image']);
-        $listings = \App\Models\Listing::whereNotNull('cover_image')->get(['id', 'title', 'cover_image', 'user_id']);
-        $u2311 = \App\Models\User::find(2311);
-        $l1635 = \App\Models\Listing::find(1635);
+        $users = \App\Models\User::withoutGlobalScopes()->whereNotNull('avatar')->orWhereNotNull('cover_image')->get(['id', 'name', 'avatar', 'cover_image']);
+        $listings = \App\Models\Listing::withoutGlobalScopes()->whereNotNull('cover_image')->get(['id', 'title', 'cover_image', 'user_id']);
+        $u2311 = \App\Models\User::withoutGlobalScopes()->find(2311);
+        $l1635 = \App\Models\Listing::withoutGlobalScopes()->find(1635);
         return response()->json([
             'users_with_media' => $users,
             'listings_with_cover' => $listings,
