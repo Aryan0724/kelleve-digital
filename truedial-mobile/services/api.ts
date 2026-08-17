@@ -8,7 +8,6 @@ const api = axios.create({
   headers: {
     'Accept': 'application/json',
     'X-Platform': APP_PLATFORM_HEADER,
-    'X-Tenant-ID': '2',
   },
   timeout: 60000, // 60 seconds timeout (to accommodate Render cold boot)
 });

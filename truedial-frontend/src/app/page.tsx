@@ -11,7 +11,7 @@ import {
 import Link from "next/link";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
-import PostRequirementButton from "@/components/PostRequirementButton";
+import BusinessEnquiryButton from "@/components/PostRequirementButton";
 import HomeSearchBar from "@/components/home/HomeSearchBar";
 import HomeLocationBanner from "@/components/home/HomeLocationBanner";
 import LiveBusinessesGrid from "@/components/home/LiveBusinessesGrid";
@@ -42,7 +42,7 @@ export default async function Home() {
             Search Across <span className="text-primary bg-gradient-to-r from-orange-500 via-amber-500 to-red-500 bg-clip-text text-transparent">50,000+</span> Verified Businesses &amp; Studios
           </h1>
           <p className="text-gray-600 dark:text-gray-300 mb-8 text-base md:text-lg max-w-2xl mx-auto font-medium">
-            Find verified Interior Designers, Architects, Restaurants, Hotels, Doctors, and B2B Wholesalers in your city with guaranteed reviews &amp; VIP Privilege discounts.
+            Find verified Restaurants, Hotels, Hospitals, Gyms, Salons, and thousands of local businesses in your city. Discover, compare &amp; connect — backed by genuine reviews &amp; exclusive VIP Privilege discounts.
           </p>
 
           {/* Interactive Search Bar Component */}
@@ -51,9 +51,9 @@ export default async function Home() {
           {/* LOCATION & CITY DISPLAY BANNER */}
           <HomeLocationBanner />
 
-          {/* Lead Generation Button */}
+          {/* Business Enquiry CTA */}
           <div className="mt-6 flex justify-center">
-            <PostRequirementButton />
+            <BusinessEnquiryButton />
           </div>
           
           {/* Trending Searches */}
@@ -92,22 +92,22 @@ export default async function Home() {
       {/* 2. PROMOTIONAL FEATURE CARDS / HERO HIGHLIGHTS (SWIPER PARITY) */}
       <section className="py-10 px-6 md:px-12 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          {/* Card 1: Find My Interior Integration */}
+          {/* Card 1: TrueDial Business Discovery */}
           <div className="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-br from-navy via-slate-900 to-slate-950 text-white shadow-xl flex flex-col justify-between border border-slate-700/60 group hover:shadow-2xl hover:shadow-orange-500/10 transition duration-500">
             <div className="absolute -right-10 -bottom-10 w-48 h-48 bg-orange-500/25 rounded-full blur-2xl group-hover:bg-orange-500/40 transition duration-500"></div>
             <div>
               <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/10 backdrop-blur-md text-xs font-bold text-amber-400 mb-4 border border-white/10 shadow-inner">
-                <HardHat className="w-3.5 h-3.5" />
-                <span>Find My Interior Showcase</span>
+                <Store className="w-3.5 h-3.5" />
+                <span>35+ Business Categories</span>
               </div>
-              <h3 className="text-2xl font-extrabold mb-2.5 leading-tight">Verified Interior &amp; Architectural Studios</h3>
+              <h3 className="text-2xl font-extrabold mb-2.5 leading-tight">Discover Verified Local Businesses</h3>
               <p className="text-gray-300 text-sm leading-relaxed mb-6">
-                Explore 3D models, Vastu-compliant designs, and get 3 Free Consultations from certified interior designers.
+                From restaurants and hospitals to gyms, salons, hotels, and digital services — find and connect with trusted businesses in your city.
               </p>
             </div>
-            <Link href="/search?category=Interior+Designers">
+            <Link href="/search">
               <button className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-bold px-6 py-3.5 rounded-xl shadow-lg transition duration-300 text-sm">
-                <span>Explore Studios</span>
+                <span>Explore Businesses</span>
                 <ArrowRight className="w-4 h-4 group-hover:translate-x-1.5 transition-transform" />
               </button>
             </Link>
@@ -301,7 +301,7 @@ export default async function Home() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end mb-8">
           <div>
             <span className="text-xs font-bold text-primary uppercase tracking-wider">Top Rated &amp; Live Near You</span>
-            <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Explore Top Verified Businesses &amp; Studios</h3>
+            <h3 className="text-2xl sm:text-3xl font-extrabold text-navy dark:text-white mt-1">Explore Top Verified Businesses Near You</h3>
           </div>
           <Link href="/search" className="text-primary font-bold hover:underline text-sm flex items-center gap-1 mt-2 sm:mt-0 group">
             <span>View All Verified Listings</span>
@@ -323,9 +323,9 @@ export default async function Home() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             {
-              title: "Home Renovation & Interiors",
-              items: ["Interior Designers", "Modular Kitchens", "Vastu Consultants", "Architectural Studios", "Renovation Contractors"],
-              icon: HardHat,
+              title: "Home & Lifestyle Services",
+              items: ["Packers & Movers", "Home Cleaning & Pest Control", "Plumbing & Electrical", "Furniture & Interior", "CCTV & Security"],
+              icon: Wrench,
               color: "text-orange-500 bg-orange-50 dark:bg-orange-950/40"
             },
             {

@@ -198,35 +198,20 @@ class ConversationController extends Controller
             return response()->json(['message' => 'Target user not found.'], 404);
         }
 
-        $userRole = $user->role;
-        $targetRole = $targetUser->role;
-        $professionalRoles = ['interior-designer', 'builder', 'contractor', 'material-supplier', 'skilled-worker'];
-        
-        $isUserProfessional = in_array($userRole, $professionalRoles);
-        $isTargetProfessional = in_array($targetRole, $professionalRoles);
-
-        if ($isUserProfessional && !$isTargetProfessional) {
-            return response()->json(['message' => 'Professionals cannot initiate unsolicited direct inquiries to customers.'], 403);
-        }
-
         $customerId = $user->id;
         $vendorId = (int)$targetId;
         $projectId = $request->project_id;
 
-        // Search for existing conversation between these 2 users
-        $conversation = Conversation::where(function($q) use ($customerId, $vendorId) {
+        // Search for existing conversation between these 2 users first
+        $existing = Conversation::where(function($q) use ($customerId, $vendorId) {
             $q->where(function($q1) use ($customerId, $vendorId) {
                 $q1->where('customer_id', $customerId)->where('vendor_id', $vendorId);
             })->orWhere(function($q2) use ($customerId, $vendorId) {
                 $q2->where('customer_id', $vendorId)->where('vendor_id', $customerId);
             });
-        });
-
-        if ($projectId) {
-            $conversation->where('project_id', $projectId);
-        }
-
-        $existing = $conversation->first();
+        })->when($projectId, function($q) use ($projectId) {
+            $q->where('project_id', $projectId);
+        })->first();
 
         if ($existing) {
             return response()->json($existing->load(['customer', 'vendor', 'project']), 200);

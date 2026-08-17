@@ -13,6 +13,8 @@ class Media extends Model
 {
     use HasFactory, TenantAwareTrait, SoftDeletes;
 
+    protected $connection = 'truedial';
+
     protected $fillable = [
         'tenant_id',
         'model_type',

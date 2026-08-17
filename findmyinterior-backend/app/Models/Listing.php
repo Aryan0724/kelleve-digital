@@ -13,6 +13,8 @@ class Listing extends Model
 {
     use HasFactory, SoftDeletes, \App\Traits\TenantAwareTrait, \App\Traits\HasMedia;
 
+    protected $connection = 'truedial';
+
     protected $fillable = [
         'user_id', 'category_id', 'city_id', 'district_id',
         'title', 'slug', 'description', 'tagline', 'cover_image',

@@ -83,7 +83,7 @@ export default function ReviewsPage() {
         <div>
           <h1 className="text-2xl font-bold text-navy dark:text-white mb-1">Customer Reviews & Reputation</h1>
           <p className="text-muted-foreground text-sm">
-            Monitor verified client feedback and reply to build trust on TrueDial & Find My Interior.
+            Monitor verified client feedback and reply to build trust on TrueDial.
           </p>
         </div>
         <div className="flex items-center gap-2">

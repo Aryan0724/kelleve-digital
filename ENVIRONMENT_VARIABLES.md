@@ -10,6 +10,20 @@ DB_PORT=3306
 DB_DATABASE=findmyinterior
 DB_USERNAME=root
 DB_PASSWORD=
+
+# (Optional) Dedicated TrueDial Database Configuration
+DB_TRUEDIAL_HOST=127.0.0.1
+DB_TRUEDIAL_PORT=3306
+DB_TRUEDIAL_DATABASE=truedial_db
+DB_TRUEDIAL_USERNAME=root
+DB_TRUEDIAL_PASSWORD=
+
+# (Optional) Dedicated Shared Auth Database Configuration
+DB_AUTH_HOST=127.0.0.1
+DB_AUTH_PORT=3306
+DB_AUTH_DATABASE=findmyinterior
+DB_AUTH_USERNAME=root
+DB_AUTH_PASSWORD=
 ```
 
 ## 2. Application Setup

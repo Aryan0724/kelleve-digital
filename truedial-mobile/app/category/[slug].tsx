@@ -18,15 +18,18 @@ export default function CategoryScreen() {
     const fetchCategoryResults = async () => {
       setLoading(true);
       try {
-        // Use the search endpoint and filter by category_name
-        const res = await api.get(`/truedial/public/search?category_name=${slug.replace(/-/g, ' ')}`);
+        const catQuery = slug ? slug.replace(/-/g, ' ') : '';
+        const res = await api.get(`/truedial/public/businesses?category_name=${encodeURIComponent(catQuery)}`).catch(
+          () => api.get(`/truedial/public/search?category_name=${encodeURIComponent(catQuery)}`)
+        );
         
-        // The search endpoint returns pagination data under res.data.data
-        const data = res.data?.data?.data || res.data?.data || res.data || [];
+        let data = res.data?.data?.data || res.data?.data || res.data || [];
+        if (Array.isArray(data) && data.length === 0) {
+          const fallback = await api.get('/truedial/public/businesses').catch(() => null);
+          data = fallback?.data?.data?.data || fallback?.data?.data || fallback?.data || [];
+        }
         setResults(Array.isArray(data) ? data : []);
-        
-        // Use slug as category name
-        setCategoryName(slug.replace(/-/g, ' '));
+        setCategoryName(catQuery || 'Category');
       } catch {
         setResults([]);
       } finally {
@@ -63,7 +66,7 @@ export default function CategoryScreen() {
         <View style={{ flex: 1, paddingHorizontal: 12 }}>
           <Text style={styles.headerTitle} numberOfLines={1}>{categoryName}</Text>
         </View>
-        <TouchableOpacity style={styles.filterBtn}>
+        <TouchableOpacity style={styles.filterBtn} onPress={() => router.push(`/search?category=${encodeURIComponent(categoryName)}`)}>
           <SlidersHorizontal size={20} color="#1E293B" />
         </TouchableOpacity>
       </View>

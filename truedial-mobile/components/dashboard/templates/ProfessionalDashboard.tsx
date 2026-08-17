@@ -1,10 +1,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { ScrollView, View, Text, RefreshControl, TouchableOpacity } from 'react-native';
 import { 
-  Compass, Trophy, Eye, FileText, Target, 
-  Layers, Image as ImageIcon, Store, Star, 
-  Megaphone, CreditCard, BarChart3, Sparkles,
-  ChevronRight, CheckCircle2
+  Eye, Star, Users, BarChart3, MessageSquare,
+  Store, Megaphone, CreditCard, Sparkles,
+  ChevronRight, CheckCircle2, TrendingUp, Target
 } from 'lucide-react-native';
 import { useRouter } from 'expo-router';
 
@@ -21,59 +20,51 @@ export default function ProfessionalDashboard() {
   const [refreshing, setRefreshing] = useState(false);
 
   const [stats, setStats] = useState({
-    bidsWon: 0,
-    portfolioViews: 0,
-    quotationsSent: 0,
-    bidScore: '92%'
+    profileViews: 0,
+    enquiriesReceived: 0,
+    avgRating: '0.0',
+    profileScore: '85%'
   });
 
-  const [bidCounts, setBidCounts] = useState({
-    new: 0,
-    quoted: 0,
-    won: 0,
-    lost: 0
+  const [enquiryCounts, setEnquiryCounts] = useState({
+    newCount: 0,
+    contacted: 0,
+    converted: 0,
+    closed: 0
   });
 
   const fetchStats = async () => {
     try {
-      const [analyticsRes, bidsRes] = await Promise.all([
+      const [analyticsRes, leadsRes] = await Promise.all([
         api.get('/truedial/vendor/analytics/overview').catch(() => null),
-        api.get('/bids').catch(() => null)
+        api.get('/truedial/vendor/crm/leads').catch(() => null)
       ]);
 
       const analytics = analyticsRes?.data?.data || analyticsRes?.data || {};
-      const bids = bidsRes?.data?.data || bidsRes?.data || [];
+      const leads = leadsRes?.data?.data || leadsRes?.data || [];
 
-      let wonCount = 0;
-      let newCount = 0;
-      let quotedCount = 0;
-      let lostCount = 0;
+      let newC = 0, contactedC = 0, convertedC = 0, closedC = 0;
 
-      if (Array.isArray(bids)) {
-        bids.forEach((b: any) => {
-          const status = (b.status || '').toLowerCase();
-          if (status === 'accepted' || status === 'awarded' || status === 'won') wonCount++;
-          else if (status === 'pending' || status === 'quoted') quotedCount++;
-          else if (status === 'rejected' || status === 'lost') lostCount++;
-          else newCount++;
+      if (Array.isArray(leads)) {
+        leads.forEach((l: any) => {
+          const status = (l.status || '').toLowerCase();
+          if (status === 'converted' || status === 'won') convertedC++;
+          else if (status === 'contacted' || status === 'in_progress') contactedC++;
+          else if (status === 'closed' || status === 'lost') closedC++;
+          else newC++;
         });
       }
 
-      setBidCounts({
-        new: newCount,
-        quoted: quotedCount,
-        won: wonCount,
-        lost: lostCount
-      });
+      setEnquiryCounts({ newCount: newC, contacted: contactedC, converted: convertedC, closed: closedC });
 
       setStats({
-        bidsWon: wonCount || analytics.bids_won || 0,
-        portfolioViews: analytics.profile_views || analytics.portfolio_views || 0,
-        quotationsSent: quotedCount + wonCount || analytics.quotations_count || analytics.total_leads || 0,
-        bidScore: analytics.bid_score ? `${analytics.bid_score}%` : '95%'
+        profileViews: analytics.profile_views || 0,
+        enquiriesReceived: Array.isArray(leads) ? leads.length : (analytics.total_leads || 0),
+        avgRating: analytics.avg_rating ? parseFloat(String(analytics.avg_rating)).toFixed(1) : '0.0',
+        profileScore: analytics.profile_score ? `${analytics.profile_score}%` : '85%'
       });
     } catch (error) {
-      console.error('Error fetching professional stats:', error);
+      console.error('Error fetching business stats:', error);
     }
   };
 
@@ -83,14 +74,12 @@ export default function ProfessionalDashboard() {
     setRefreshing(false);
   }, []);
 
-  useEffect(() => {
-    fetchStats();
-  }, []);
+  useEffect(() => { fetchStats(); }, []);
 
   const actions: QuickAction[] = [
-    { title: 'Bid Pipeline', icon: Layers, color: '#3B82F6', bgClass: 'bg-blue-50 dark:bg-blue-900/30', route: '/dashboard/business/leads' },
-    { title: 'Portfolio', icon: ImageIcon, color: '#8B5CF6', bgClass: 'bg-purple-50 dark:bg-purple-900/30', route: '/dashboard/business/catalog' },
-    { title: 'Quotations', icon: FileText, color: '#10B981', bgClass: 'bg-emerald-50 dark:bg-emerald-900/30', route: '/dashboard/business/offers' },
+    { title: 'Enquiries', icon: MessageSquare, color: '#3B82F6', bgClass: 'bg-blue-50 dark:bg-blue-900/30', route: '/dashboard/business/leads' },
+    { title: 'Catalog', icon: Store, color: '#8B5CF6', bgClass: 'bg-purple-50 dark:bg-purple-900/30', route: '/dashboard/business/catalog' },
+    { title: 'Offers', icon: CreditCard, color: '#10B981', bgClass: 'bg-emerald-50 dark:bg-emerald-900/30', route: '/dashboard/business/offers' },
     { title: 'Edit Profile', icon: Store, color: '#E8701A', bgClass: 'bg-orange-50 dark:bg-orange-900/30', route: '/dashboard/business/profile-edit' },
     { title: 'Reviews', icon: Star, color: '#EAB308', bgClass: 'bg-yellow-50 dark:bg-yellow-900/30', route: '/dashboard/business/reviews' },
     { title: 'Marketing', icon: Megaphone, color: '#06B6D4', bgClass: 'bg-cyan-50 dark:bg-cyan-900/30', route: '/dashboard/business/marketing' },
@@ -107,14 +96,14 @@ export default function ProfessionalDashboard() {
     >
       {/* Hero Banner */}
       <View className="px-4 pt-4 pb-2">
-        <View className="rounded-3xl p-5 shadow-lg shadow-indigo-500/20 bg-indigo-900">
+        <View className="rounded-3xl p-5 shadow-lg" style={{ backgroundColor: '#9a3412' }}>
           <View className="flex-row items-center mb-2">
-            <View className="w-10 h-10 rounded-full bg-white/20 items-center justify-center mr-3">
-              <Compass size={24} color="#FFFFFF" />
+            <View className="w-10 h-10 rounded-full items-center justify-center mr-3" style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}>
+              <TrendingUp size={24} color="#FFFFFF" />
             </View>
             <View className="flex-1">
-              <Text className="text-white text-xl font-bold">Professional Studio</Text>
-              <Text className="text-indigo-100 text-xs mt-0.5">Manage bids, portfolios & client quotations</Text>
+              <Text className="text-white text-xl font-bold">Business Dashboard</Text>
+              <Text className="text-orange-100 text-xs mt-0.5">Manage listings, leads & business growth</Text>
             </View>
           </View>
         </View>
@@ -124,107 +113,105 @@ export default function ProfessionalDashboard() {
       <View className="px-4 py-3 flex-row flex-wrap justify-between">
         <View className="w-[48%] mb-3">
           <StatCard 
-            title="Bids Won" 
-            value={stats.bidsWon} 
-            icon={<Trophy size={18} color="#8B5CF6" />} 
-            iconBgClass="bg-purple-100 dark:bg-purple-900/30" 
-          />
-        </View>
-        <View className="w-[48%] mb-3">
-          <StatCard 
-            title="Portfolio Views" 
-            value={stats.portfolioViews > 999 ? `${(stats.portfolioViews/1000).toFixed(1)}k` : stats.portfolioViews} 
+            title="Profile Views" 
+            value={stats.profileViews > 999 ? `${(stats.profileViews / 1000).toFixed(1)}k` : stats.profileViews} 
             icon={<Eye size={18} color="#3B82F6" />} 
             iconBgClass="bg-blue-100 dark:bg-blue-900/30" 
           />
         </View>
         <View className="w-[48%] mb-3">
           <StatCard 
-            title="Quotations Sent" 
-            value={stats.quotationsSent} 
-            icon={<FileText size={18} color="#10B981" />} 
+            title="Enquiries Received" 
+            value={stats.enquiriesReceived} 
+            icon={<Users size={18} color="#10B981" />} 
             iconBgClass="bg-emerald-100 dark:bg-emerald-900/30" 
           />
         </View>
         <View className="w-[48%] mb-3">
           <StatCard 
-            title="Bid Score" 
-            value={stats.bidScore} 
+            title="Avg Rating" 
+            value={stats.avgRating} 
+            icon={<Star size={18} color="#EAB308" />} 
+            iconBgClass="bg-yellow-100 dark:bg-yellow-900/30" 
+          />
+        </View>
+        <View className="w-[48%] mb-3">
+          <StatCard 
+            title="Profile Score" 
+            value={stats.profileScore} 
             icon={<Target size={18} color="#E8701A" />} 
             iconBgClass="bg-orange-100 dark:bg-orange-900/30" 
           />
         </View>
       </View>
 
-      {/* Active Bid Pipeline */}
+      {/* Enquiry Pipeline */}
       <View className="px-4 my-2">
-        <GlassCard className="p-4 border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/50 dark:bg-indigo-950/20">
+        <GlassCard className="p-4 border-orange-100 dark:border-orange-900/40" style={{ backgroundColor: 'rgba(255, 247, 237, 0.5)' }}>
           <View className="flex-row justify-between items-center mb-3">
-            <Text className="text-sm font-bold text-slate-900 dark:text-white">Active Bid Pipeline</Text>
-            <TouchableOpacity onPress={() => router.push('/dashboard/business/leads')}>
-              <Text className="text-xs font-bold text-indigo-600 dark:text-indigo-400 flex-row items-center">
-                View All <ChevronRight size={12} color="#4F46E5" />
-              </Text>
+            <Text className="text-sm font-bold text-slate-900 dark:text-white">Enquiry Pipeline</Text>
+            <TouchableOpacity onPress={() => router.push('/dashboard/business/leads' as any)}>
+              <Text className="text-xs font-bold text-orange-600 dark:text-orange-400">View All</Text>
             </TouchableOpacity>
           </View>
           
           <View className="flex-row justify-between items-center bg-white dark:bg-slate-900 p-3 rounded-xl border border-slate-100 dark:border-slate-800">
             <View className="items-center flex-1">
               <View className="bg-blue-100 dark:bg-blue-900/40 px-2 py-0.5 rounded-full mb-1">
-                <Text className="text-[10px] font-bold text-blue-600 dark:text-blue-400">{bidCounts.new}</Text>
+                <Text className="text-[10px] font-bold text-blue-600 dark:text-blue-400">{enquiryCounts.newCount}</Text>
               </View>
               <Text className="text-[10px] text-slate-500 dark:text-slate-400">New</Text>
             </View>
             <View className="w-[1px] h-6 bg-slate-200 dark:bg-slate-800" />
             <View className="items-center flex-1">
               <View className="bg-amber-100 dark:bg-amber-900/40 px-2 py-0.5 rounded-full mb-1">
-                <Text className="text-[10px] font-bold text-amber-600 dark:text-amber-400">{bidCounts.quoted}</Text>
+                <Text className="text-[10px] font-bold text-amber-600 dark:text-amber-400">{enquiryCounts.contacted}</Text>
               </View>
-              <Text className="text-[10px] text-slate-500 dark:text-slate-400">Quoted</Text>
+              <Text className="text-[10px] text-slate-500 dark:text-slate-400">Contacted</Text>
             </View>
             <View className="w-[1px] h-6 bg-slate-200 dark:bg-slate-800" />
             <View className="items-center flex-1">
               <View className="bg-emerald-100 dark:bg-emerald-900/40 px-2 py-0.5 rounded-full mb-1">
-                <Text className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{bidCounts.won}</Text>
+                <Text className="text-[10px] font-bold text-emerald-600 dark:text-emerald-400">{enquiryCounts.converted}</Text>
               </View>
-              <Text className="text-[10px] text-slate-500 dark:text-slate-400">Won</Text>
+              <Text className="text-[10px] text-slate-500 dark:text-slate-400">Converted</Text>
             </View>
             <View className="w-[1px] h-6 bg-slate-200 dark:bg-slate-800" />
             <View className="items-center flex-1">
               <View className="bg-rose-100 dark:bg-rose-900/40 px-2 py-0.5 rounded-full mb-1">
-                <Text className="text-[10px] font-bold text-rose-600 dark:text-rose-400">{bidCounts.lost}</Text>
+                <Text className="text-[10px] font-bold text-rose-600 dark:text-rose-400">{enquiryCounts.closed}</Text>
               </View>
-              <Text className="text-[10px] text-slate-500 dark:text-slate-400">Lost</Text>
+              <Text className="text-[10px] text-slate-500 dark:text-slate-400">Closed</Text>
             </View>
           </View>
         </GlassCard>
       </View>
 
-      {/* Verification Badges */}
+      {/* Trust Badges */}
       <View className="px-4 my-1">
         <GlassCard className="p-4 border-slate-200 dark:border-slate-800">
-          <Text className="text-sm font-bold text-slate-900 dark:text-white mb-2">Professional Badges</Text>
+          <Text className="text-sm font-bold text-slate-900 dark:text-white mb-2">Trust Badges</Text>
           <View className="flex-row flex-wrap gap-2 mb-2">
             <View className="bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800 px-2.5 py-1 rounded-lg flex-row items-center">
-              <CheckCircle2 size={12} color="#10B981" className="mr-1" />
-              <Text className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300">Verified Business</Text>
+              <CheckCircle2 size={12} color="#10B981" />
+              <Text className="text-[11px] font-medium text-emerald-700 dark:text-emerald-300 ml-1">Verified Business</Text>
             </View>
             <View className="bg-blue-50 dark:bg-blue-950/30 border border-blue-200 dark:border-blue-800 px-2.5 py-1 rounded-lg flex-row items-center">
-              <CheckCircle2 size={12} color="#3B82F6" className="mr-1" />
-              <Text className="text-[11px] font-medium text-blue-700 dark:text-blue-300">RERA Registered</Text>
+              <CheckCircle2 size={12} color="#3B82F6" />
+              <Text className="text-[11px] font-medium text-blue-700 dark:text-blue-300 ml-1">GST Registered</Text>
             </View>
             <View className="bg-purple-50 dark:bg-purple-950/30 border border-purple-200 dark:border-purple-800 px-2.5 py-1 rounded-lg flex-row items-center">
-              <CheckCircle2 size={12} color="#8B5CF6" className="mr-1" />
-              <Text className="text-[11px] font-medium text-purple-700 dark:text-purple-300">Vastu Certified</Text>
+              <CheckCircle2 size={12} color="#8B5CF6" />
+              <Text className="text-[11px] font-medium text-purple-700 dark:text-purple-300 ml-1">Top Rated</Text>
             </View>
           </View>
-          <Text className="text-[11px] text-slate-500 dark:text-slate-400">Verified badges increase trust by 3x</Text>
+          <Text className="text-[11px] text-slate-500 dark:text-slate-400">Verified badges increase customer trust by 3x</Text>
         </GlassCard>
       </View>
 
       {/* Quick Actions Grid */}
       <View className="px-4 my-3">
-        <Text className="text-sm font-bold text-slate-900 dark:text-white mb-3 ml-1">Studio Tools</Text>
+        <Text className="text-sm font-bold text-slate-900 dark:text-white mb-3 ml-1">Business Tools</Text>
         <QuickActionGrid actions={actions} columns={3} />
       </View>
 

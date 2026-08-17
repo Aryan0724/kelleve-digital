@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Text, 
   View, 
@@ -6,13 +6,16 @@ import {
   TouchableOpacity, 
   KeyboardAvoidingView, 
   Platform, 
-  ScrollView
+  ScrollView,
+  Modal
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { useAuth } from '../../context/auth';
 import GlassCard from '../../components/GlassCard';
 import CustomButton from '../../components/CustomButton';
-import { User, Mail, Phone, Lock, Sparkles } from 'lucide-react-native';
+import CategorySelectorModal from '../../components/CategorySelectorModal';
+import api from '../../services/api';
+import { User, Mail, Phone, Lock, Sparkles, ChevronDown, Tag, Check, X } from 'lucide-react-native';
 
 export default function Register() {
   const router = useRouter();
@@ -25,10 +28,106 @@ export default function Register() {
   const [confirmPassword, setConfirmPassword] = useState('');
   
   const [role, setRole] = useState<'customer' | 'business' | 'builder' | 'supplier' | 'worker'>('customer');
+  const [roleModalVisible, setRoleModalVisible] = useState(false);
+  const [categoryModalVisible, setCategoryModalVisible] = useState(false);
+  
+  const [categories, setCategories] = useState<any[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<any>(null);
+  
   const [agreedTerms, setAgreedTerms] = useState(true);
   
   const [loading, setLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchCategories();
+  }, []);
+
+  const fetchCategories = async () => {
+    try {
+      const res = await api.get('/truedial/public/categories');
+      const data = res.data?.data || res.data || [];
+      if (Array.isArray(data) && data.length > 0) {
+        setCategories(data);
+      } else {
+        setCategories([
+          { id: 1, name: 'Restaurants & Cafes' },
+          { id: 2, name: 'Hotels & Lodging' },
+          { id: 3, name: 'Hospitals & Healthcare' },
+          { id: 4, name: 'Education & Coaching' },
+          { id: 5, name: 'Interior & Architecture' },
+          { id: 6, name: 'Repair & Maintenance' },
+          { id: 7, name: 'Digital Marketing & IT' },
+          { id: 8, name: 'Fitness & Gyms' },
+          { id: 9, name: 'Event Management' },
+          { id: 10, name: 'Salons & Beauty' },
+          { id: 11, name: 'Automobile Services' },
+          { id: 12, name: 'Travel & Tourism' },
+          { id: 13, name: 'Real Estate & Property' },
+          { id: 14, name: 'Legal & Financial Services' },
+          { id: 15, name: 'Grocery & Supermarket' },
+          { id: 16, name: 'Pharmacy & Medical Store' },
+          { id: 17, name: 'Electronics & Gadgets' },
+          { id: 18, name: 'Clothing & Fashion' },
+          { id: 19, name: 'Furniture & Home Decor' },
+          { id: 20, name: 'Photography & Videography' },
+          { id: 21, name: 'Packers & Movers' },
+          { id: 22, name: 'Printing & Advertising' },
+          { id: 23, name: 'Catering & Tiffin Service' },
+          { id: 24, name: 'Pet Services & Veterinary' },
+          { id: 25, name: 'Jewellery & Accessories' },
+          { id: 26, name: 'Banking & Insurance' },
+          { id: 27, name: 'Courier & Delivery' },
+          { id: 28, name: 'Hardware & Building Supplies' },
+          { id: 29, name: 'Books & Stationery' },
+          { id: 30, name: 'Nursery & Garden' },
+          { id: 31, name: 'Security Services' },
+          { id: 32, name: 'Astrology & Vastu' },
+          { id: 33, name: 'Bakery & Sweets' },
+          { id: 34, name: 'Opticals & Eyewear' },
+          { id: 35, name: 'Mobile & Computer Repair' },
+        ]);
+      }
+    } catch {
+      setCategories([
+        { id: 1, name: 'Restaurants & Cafes' },
+        { id: 2, name: 'Hotels & Lodging' },
+        { id: 3, name: 'Hospitals & Healthcare' },
+        { id: 4, name: 'Education & Coaching' },
+        { id: 5, name: 'Interior & Architecture' },
+        { id: 6, name: 'Repair & Maintenance' },
+        { id: 7, name: 'Digital Marketing & IT' },
+        { id: 8, name: 'Fitness & Gyms' },
+        { id: 9, name: 'Event Management' },
+        { id: 10, name: 'Salons & Beauty' },
+        { id: 11, name: 'Automobile Services' },
+        { id: 12, name: 'Travel & Tourism' },
+        { id: 13, name: 'Real Estate & Property' },
+        { id: 14, name: 'Legal & Financial Services' },
+        { id: 15, name: 'Grocery & Supermarket' },
+        { id: 16, name: 'Pharmacy & Medical Store' },
+        { id: 17, name: 'Electronics & Gadgets' },
+        { id: 18, name: 'Clothing & Fashion' },
+        { id: 19, name: 'Furniture & Home Decor' },
+        { id: 20, name: 'Photography & Videography' },
+        { id: 21, name: 'Packers & Movers' },
+        { id: 22, name: 'Printing & Advertising' },
+        { id: 23, name: 'Catering & Tiffin Service' },
+        { id: 24, name: 'Pet Services & Veterinary' },
+        { id: 25, name: 'Jewellery & Accessories' },
+        { id: 26, name: 'Banking & Insurance' },
+        { id: 27, name: 'Courier & Delivery' },
+        { id: 28, name: 'Hardware & Building Supplies' },
+        { id: 29, name: 'Books & Stationery' },
+        { id: 30, name: 'Nursery & Garden' },
+        { id: 31, name: 'Security Services' },
+        { id: 32, name: 'Astrology & Vastu' },
+        { id: 33, name: 'Bakery & Sweets' },
+        { id: 34, name: 'Opticals & Eyewear' },
+        { id: 35, name: 'Mobile & Computer Repair' },
+      ]);
+    }
+  };
 
   const [focusName, setFocusName] = useState(false);
   const [focusEmail, setFocusEmail] = useState(false);
@@ -39,12 +138,12 @@ export default function Register() {
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
   const isPhoneValid = /^[0-9]{10,}$/.test(phone.replace(/\D/g, ''));
 
-  const roleOptions: Array<{ key: 'customer' | 'business' | 'builder' | 'supplier' | 'worker'; label: string }> = [
-    { key: 'customer', label: 'Customer / Homeowner' },
-    { key: 'business', label: 'Business / Interior Designer' },
-    { key: 'builder', label: 'Real Estate Builder' },
-    { key: 'supplier', label: 'Material Supplier' },
-    { key: 'worker', label: 'Skilled Worker / Contractor' },
+  const roleOptions: Array<{ key: 'customer' | 'business' | 'builder' | 'supplier' | 'worker'; label: string; description: string }> = [
+    { key: 'customer', label: 'Explorer / Consumer', description: 'Discover & connect with local businesses' },
+    { key: 'business', label: 'Business Owner', description: 'Restaurant, Hotel, Hospital, Salon, Shop & more' },
+    { key: 'builder', label: 'Real Estate Developer', description: 'Residential & commercial property projects' },
+    { key: 'supplier', label: 'Service Provider', description: 'Digital marketing, IT, B2B & professional services' },
+    { key: 'worker', label: 'Freelancer / Professional', description: 'Offer your individual skill or expertise' },
   ];
 
   const handleRegister = async () => {
@@ -102,7 +201,7 @@ export default function Register() {
         {/* Sign Up Card */}
         <GlassCard className="p-6 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800">
           <Text className="text-[22px] font-bold text-slate-900 dark:text-white mb-1.5">Sign Up</Text>
-          <Text className="text-[13px] font-semibold text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">Create your account to get started with TrueDial</Text>
+          <Text className="text-[13px] font-semibold text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">Join India's Emerging Business Growth Platform</Text>
 
           {errorMsg && (
             <View className="bg-red-50 dark:bg-red-950 border border-red-200 dark:border-red-900 rounded-lg p-3 mb-4">
@@ -110,24 +209,39 @@ export default function Register() {
             </View>
           )}
 
-          {/* Account Role Selector */}
-          <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">I am a...</Text>
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="mb-4 flex-row">
-            {roleOptions.map((opt) => {
-              const isSelected = role === opt.key;
-              return (
-                <TouchableOpacity
-                  key={opt.key}
-                  className={`px-4 py-2 rounded-full border mr-2 ${isSelected ? 'bg-orange-50 dark:bg-slate-800 border-[#E8701A]' : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700'}`}
-                  onPress={() => setRole(opt.key)}
-                >
-                  <Text className={`text-xs ${isSelected ? 'text-[#E8701A] font-bold' : 'text-slate-500 font-semibold'}`}>
-                    {opt.label}
+          {/* Account Role Dropdown Menu Selector */}
+          <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">I am a... (Select Account Role)</Text>
+          <TouchableOpacity 
+            className="flex-row items-center justify-between h-12 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 mb-4"
+            onPress={() => setRoleModalVisible(true)}
+          >
+            <View className="flex-row items-center">
+              <User size={18} color="#E8701A" className="mr-2" />
+              <Text className="text-[14px] font-bold text-slate-900 dark:text-white ml-2">
+                {roleOptions.find(r => r.key === role)?.label || 'Select Account Role'}
+              </Text>
+            </View>
+            <ChevronDown size={18} color="#64748B" />
+          </TouchableOpacity>
+
+          {/* Business Category Dropdown Menu Selector (when registering business or contractor) */}
+          {(role === 'business' || role === 'supplier' || role === 'worker') && (
+            <View className="mb-4">
+              <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Business / Service Category</Text>
+              <TouchableOpacity 
+                className="flex-row items-center justify-between h-12 bg-orange-50/70 dark:bg-slate-800 border border-[#E8701A] rounded-xl px-4"
+                onPress={() => setCategoryModalVisible(true)}
+              >
+                <View className="flex-row items-center">
+                  <Tag size={18} color="#E8701A" className="mr-2" />
+                  <Text className="text-[14px] font-bold text-[#E8701A] ml-2">
+                    {selectedCategory ? selectedCategory.name : 'Select Business Category (Dropdown)...'}
                   </Text>
-                </TouchableOpacity>
-              );
-            })}
-          </ScrollView>
+                </View>
+                <ChevronDown size={18} color="#E8701A" />
+              </TouchableOpacity>
+            </View>
+          )}
 
           {/* Full Name */}
           <Text className="text-[13px] font-bold text-slate-700 dark:text-slate-300 mb-1.5">Full Name</Text>
@@ -251,6 +365,58 @@ export default function Register() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+
+      {/* Account Role Dropdown Menu Modal */}
+      <Modal visible={roleModalVisible} animationType="slide" transparent={true} onRequestClose={() => setRoleModalVisible(false)}>
+        <View style={{ flex: 1, backgroundColor: 'rgba(0,0,0,0.5)', justifyContent: 'flex-end' }}>
+          <View style={{ backgroundColor: '#FFFFFF', borderTopLeftRadius: 24, borderTopRightRadius: 24, padding: 20 }}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+              <Text style={{ fontSize: 18, fontWeight: '800', color: '#0F172A' }}>Who are you on TrueDial?</Text>
+              <TouchableOpacity onPress={() => setRoleModalVisible(false)}>
+                <X size={20} color="#64748B" />
+              </TouchableOpacity>
+            </View>
+
+            {roleOptions.map((opt) => {
+              const isSelected = role === opt.key;
+              return (
+                <TouchableOpacity
+                  key={opt.key}
+                  style={{
+                    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',
+                    paddingVertical: 14, paddingHorizontal: 12, borderRadius: 12,
+                    backgroundColor: isSelected ? '#FFF7ED' : '#F8FAFC',
+                    marginBottom: 8, borderWidth: 1, borderColor: isSelected ? '#E8701A' : '#E2E8F0'
+                  }}
+                  onPress={() => {
+                    setRole(opt.key);
+                    setRoleModalVisible(false);
+                  }}
+                >
+                  <View style={{ flex: 1, paddingRight: 8 }}>
+                    <Text style={{ fontSize: 15, fontWeight: isSelected ? '800' : '700', color: isSelected ? '#E8701A' : '#334155' }}>
+                      {opt.label}
+                    </Text>
+                    <Text style={{ fontSize: 12, fontWeight: '500', color: '#94A3B8', marginTop: 2 }}>
+                      {opt.description}
+                    </Text>
+                  </View>
+                  {isSelected && <Check size={18} color="#E8701A" />}
+                </TouchableOpacity>
+              );
+            })}
+          </View>
+        </View>
+      </Modal>
+
+      {/* Business Category Dropdown Menu Modal */}
+      <CategorySelectorModal
+        visible={categoryModalVisible}
+        categories={categories}
+        selectedCategoryId={selectedCategory ? String(selectedCategory.id) : ''}
+        onClose={() => setCategoryModalVisible(false)}
+        onSelectCategory={(cat) => setSelectedCategory(cat)}
+      />
     </KeyboardAvoidingView>
   );
 }

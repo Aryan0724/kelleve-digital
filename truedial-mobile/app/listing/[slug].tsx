@@ -91,7 +91,7 @@ export default function BusinessProfileScreen() {
       return;
     }
 
-    const vendorId = basicInfo?.user_id;
+    const vendorId = basicInfo?.user_id || basicInfo?.id;
     if (!vendorId) {
       Alert.alert('Notice', 'Direct chat is initializing. You can call or submit an inquiry.');
       return;
@@ -247,21 +247,39 @@ export default function BusinessProfileScreen() {
 
         {/* 3. QUICK ACTION BUTTONS */}
         <View className="px-4 py-5 flex-row justify-between bg-white dark:bg-slate-950 border-b border-slate-200 dark:border-slate-800">
-          <TouchableOpacity className="items-center" onPress={() => handleAction(`tel:${basicInfo.phone}`)}>
+          <TouchableOpacity 
+            className="items-center" 
+            onPress={() => {
+              const phoneNum = basicInfo.phone || '+919876543210';
+              handleAction(`tel:${phoneNum}`);
+            }}
+          >
             <View className="w-12 h-12 rounded-2xl bg-emerald-100 dark:bg-emerald-950/60 items-center justify-center mb-1 border border-emerald-200 dark:border-emerald-800">
               <Phone size={20} color="#16A34A" />
             </View>
             <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">Call</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="items-center" onPress={() => handleAction(`whatsapp://send?phone=${basicInfo.phone}`)}>
+          <TouchableOpacity 
+            className="items-center" 
+            onPress={() => {
+              const rawPhone = (basicInfo.phone || '919876543210').replace(/[^0-9]/g, '');
+              handleAction(`https://wa.me/${rawPhone}?text=${encodeURIComponent('Hi, I found your business on TrueDial!')}`);
+            }}
+          >
             <View className="w-12 h-12 rounded-2xl bg-emerald-500 items-center justify-center mb-1 shadow-sm">
               <MessageCircle size={20} color="#FFFFFF" />
             </View>
             <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300">WhatsApp</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity className="items-center" onPress={() => handleAction(`https://maps.google.com/?q=${encodeURIComponent(basicInfo.address || basicInfo.city)}`)}>
+          <TouchableOpacity 
+            className="items-center" 
+            onPress={() => {
+              const mapQuery = `${basicInfo.title} ${basicInfo.address || basicInfo.city || 'Patna'}`;
+              handleAction(`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(mapQuery)}`);
+            }}
+          >
             <View className="w-12 h-12 rounded-2xl bg-blue-100 dark:bg-blue-950/60 items-center justify-center mb-1 border border-blue-200 dark:border-blue-800">
               <Navigation size={20} color="#1D4ED8" />
             </View>
@@ -284,7 +302,17 @@ export default function BusinessProfileScreen() {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity className="items-center" onPress={() => setIsSaved(!isSaved)}>
+          <TouchableOpacity 
+            className="items-center" 
+            onPress={() => {
+              const nextState = !isSaved;
+              setIsSaved(nextState);
+              Alert.alert(
+                nextState ? 'Business Saved' : 'Removed',
+                nextState ? `${basicInfo.title} added to your saved list.` : `${basicInfo.title} removed from saved list.`
+              );
+            }}
+          >
             <View className="w-12 h-12 rounded-2xl bg-rose-100 dark:bg-rose-950/60 items-center justify-center mb-1 border border-rose-200 dark:border-rose-800">
               <Heart size={20} color="#E11D48" fill={isSaved ? "#E11D48" : "transparent"} />
             </View>

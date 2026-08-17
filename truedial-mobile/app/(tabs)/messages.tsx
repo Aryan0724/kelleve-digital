@@ -21,8 +21,13 @@ export default function MessagesTab() {
   const fetchConversations = async () => {
     try {
       const res = await api.get('/conversations');
-      // Backend returns Laravel paginator: { data: [...], current_page, ... }
-      const raw = res.data?.data ?? res.data;
+      // Laravel paginator: { data: [...items], current_page, ... }
+      // So res.data is the paginator, res.data.data is the items array.
+      let raw = res.data;
+      // Unwrap one level of pagination wrapper if present
+      if (raw && !Array.isArray(raw) && Array.isArray(raw.data)) {
+        raw = raw.data;
+      }
       setConversations(Array.isArray(raw) ? raw : []);
     } catch (err: any) {
       console.warn('Could not fetch conversations:', err?.message || err);

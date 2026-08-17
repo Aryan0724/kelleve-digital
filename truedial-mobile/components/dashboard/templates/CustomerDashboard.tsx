@@ -27,28 +27,26 @@ export default function CustomerDashboard() {
 
   const [budget, setBudget] = useState(100000);
   const [stats, setStats] = useState({
-    requirementsCount: 0,
+    enquiriesCount: 0,
     savedVendorsCount: 0,
-    savedProjectsCount: 0,
     chatsCount: 0
   });
 
   const fetchUserData = async () => {
     try {
-      const [savedVendorsRes, savedProjectsRes, convosRes] = await Promise.all([
-        api.get('/saved-vendors').catch(() => null),
-        api.get('/saved-projects').catch(() => null),
+      const [savedVendorsRes, enquiriesRes, convosRes] = await Promise.all([
+        api.get('/truedial/user/saved-businesses').catch(() => null),
+        api.get('/truedial/inquiries/me').catch(() => null),
         api.get('/conversations').catch(() => null)
       ]);
 
       const vendors = savedVendorsRes?.data?.data || savedVendorsRes?.data || [];
-      const projects = savedProjectsRes?.data?.data || savedProjectsRes?.data || [];
+      const enquiries = enquiriesRes?.data?.data || enquiriesRes?.data || [];
       const convos = convosRes?.data?.data || convosRes?.data || [];
 
       setStats({
-        requirementsCount: Array.isArray(projects) ? projects.length : 0,
+        enquiriesCount: Array.isArray(enquiries) ? enquiries.length : 0,
         savedVendorsCount: Array.isArray(vendors) ? vendors.length : 0,
-        savedProjectsCount: Array.isArray(projects) ? projects.length : 0,
         chatsCount: Array.isArray(convos) ? convos.length : 0
       });
     } catch (error) {
@@ -72,7 +70,7 @@ export default function CustomerDashboard() {
 
   const actions: QuickAction[] = [
     {
-      title: 'My Requirements',
+      title: 'My Enquiries',
       icon: ListTodo,
       color: '#3B82F6',
       bgClass: 'bg-blue-50 dark:bg-blue-900/30',
@@ -164,8 +162,8 @@ export default function CustomerDashboard() {
       <View className="px-4 py-4 flex-row flex-wrap justify-between">
         <View className="w-[48%] mb-3">
           <StatCard 
-            title="Saved Requirements" 
-            value={stats.requirementsCount} 
+            title="My Enquiries" 
+            value={stats.enquiriesCount} 
             icon={<ListTodo size={20} color="#3B82F6" />} 
             iconBgClass="bg-blue-100 dark:bg-blue-900/30" 
           />

@@ -92,8 +92,8 @@ export default function B2BQuoteModal({ isOpen, onClose }: { isOpen: boolean, on
           </button>
 
           <div className="bg-gradient-to-r from-orange-50 to-primary/10 p-8 pb-6 border-b border-orange-100">
-            <h2 className="text-2xl font-bold text-navy">Get Best Quotes Fast</h2>
-            <p className="text-gray-600 mt-1">Tell us what you need, and we'll connect you with top vendors.</p>
+            <h2 className="text-2xl font-bold text-navy">Send Business Enquiry</h2>
+            <p className="text-gray-600 mt-1">Send a message or enquiry directly to this business.</p>
           </div>
 
           <div className="p-8">
@@ -106,13 +106,13 @@ export default function B2BQuoteModal({ isOpen, onClose }: { isOpen: boolean, on
             {step === 1 && (
               <div className="space-y-6">
                 <div className="space-y-2">
-                  <label className="text-sm font-semibold text-gray-700">What are you looking for?</label>
+                  <label className="text-sm font-semibold text-gray-700">Your message or enquiry</label>
                   <div className="relative">
                     <MessageSquare className="absolute left-3 top-3.5 w-5 h-5 text-gray-400" />
                     <Input 
                       value={requirement}
                       onChange={e => setRequirement(e.target.value)}
-                      placeholder="e.g., Commercial Interior Designers"
+                      placeholder="e.g., I would like to know more about your services."
                       className="pl-10 h-12 bg-gray-50 border-transparent focus:bg-white"
                       autoFocus
                     />
@@ -207,8 +207,8 @@ export default function B2BQuoteModal({ isOpen, onClose }: { isOpen: boolean, on
                 <div className="w-20 h-20 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
                   <CheckCircle className="w-10 h-10" />
                 </div>
-                <h3 className="text-2xl font-bold text-navy mb-2">Requirement Submitted!</h3>
-                <p className="text-gray-500 mb-8">Top rated vendors will contact you shortly with their best quotes.</p>
+                <h3 className="text-2xl font-bold text-navy mb-2">Enquiry Sent!</h3>
+                <p className="text-gray-500 mb-8">The business will contact you shortly regarding your enquiry.</p>
                 <Button onClick={onClose} className="w-full h-12">
                   Done
                 </Button>

@@ -32,7 +32,7 @@ export default function MyRequirementsScreen() {
   const renderItem = ({ item }: { item: any }) => (
     <View style={styles.card}>
       <View style={styles.cardHeader}>
-        <Text style={styles.reqName}>{item.requirement || 'Service Inquiry'}</Text>
+        <Text style={styles.reqName}>{item.title || item.subject || item.message?.substring(0, 60) || 'Service Enquiry'}</Text>
         <View style={styles.statusBadge}>
           <Text style={styles.statusText}>{item.status || 'Pending'}</Text>
         </View>
@@ -68,23 +68,23 @@ export default function MyRequirementsScreen() {
         <TouchableOpacity onPress={() => router.back()} style={styles.backBtn}>
           <ArrowLeft size={22} color="#1E293B" />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>My Requirements</Text>
+        <Text style={styles.headerTitle}>My Enquiries</Text>
         <View style={{ width: 40 }} />
       </View>
 
       {loading ? (
-        <ActivityIndicator size="large" color="#2563EB" style={{ marginTop: 40 }} />
+        <ActivityIndicator size="large" color="#E8701A" style={{ marginTop: 40 }} />
       ) : (
         <FlatList
           data={inquiries}
           keyExtractor={(item) => String(item.id || Math.random())}
           renderItem={renderItem}
           contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
-          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#2563EB" />}
+          refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#E8701A" />}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <ListTodo size={48} color="#CBD5E1" />
-              <Text style={styles.emptyText}>You haven't requested any services yet.</Text>
+              <Text style={styles.emptyText}>You haven't sent any enquiries yet.</Text>
             </View>
           }
         />
@@ -107,8 +107,8 @@ const styles = StyleSheet.create({
   card: { backgroundColor: '#FFFFFF', borderRadius: 16, padding: 16, marginBottom: 12, elevation: 2, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8 },
   cardHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 12 },
   reqName: { fontSize: 16, fontWeight: '700', color: '#1E293B', flex: 1, paddingRight: 12 },
-  statusBadge: { backgroundColor: '#DBEAFE', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
-  statusText: { fontSize: 11, fontWeight: '700', color: '#2563EB' },
+  statusBadge: { backgroundColor: '#FFF7ED', paddingHorizontal: 10, paddingVertical: 4, borderRadius: 12 },
+  statusText: { fontSize: 11, fontWeight: '700', color: '#E8701A' },
   infoRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 16, marginBottom: 12 },
   infoItem: { flexDirection: 'row', alignItems: 'center' },
   infoText: { fontSize: 13, color: '#64748B', fontWeight: '500' },

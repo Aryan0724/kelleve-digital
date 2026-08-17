@@ -65,7 +65,8 @@ class ProfileController extends Controller
         $data = $request->validate([
             'name'   => ['sometimes', 'required', 'string', 'max:255'],
             'phone'  => ['sometimes', 'nullable', 'string', 'max:20'],
-            'avatar' => ['sometimes', 'nullable', 'url'],
+            'city'   => ['sometimes', 'nullable', 'string', 'max:100'],
+            'avatar' => ['sometimes', 'nullable', 'string'],
         ]);
 
         $user->update($data);

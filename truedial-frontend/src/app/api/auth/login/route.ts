@@ -30,7 +30,6 @@ export async function POST(request: Request) {
         "Content-Type": "application/json",
         Accept: "application/json",
         "X-Platform": "truedial",
-        "X-Tenant-ID": "2",
       },
       body: JSON.stringify(body),
     });

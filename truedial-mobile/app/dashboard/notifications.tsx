@@ -33,7 +33,7 @@ export default function NotificationsScreen() {
   const getNotifIcon = (type: string) => {
     if (type.includes('lead') || type.includes('inquiry')) return '📩';
     if (type.includes('review')) return '⭐';
-    if (type.includes('bid')) return '💰';
+    if (type.includes('message') || type.includes('chat')) return '💬';
     if (type.includes('offer')) return '🎁';
     return '🔔';
   };

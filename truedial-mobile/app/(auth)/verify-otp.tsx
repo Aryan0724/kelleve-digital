@@ -5,6 +5,7 @@ import {
 } from 'react-native';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { ArrowLeft } from 'lucide-react-native';
+import { API_BASE_URL } from '../../constants/config';
 
 export default function VerifyOtpScreen() {
   const router = useRouter();
@@ -41,7 +42,7 @@ export default function VerifyOtpScreen() {
     try {
       // Import api at the top if not already there, but we can fetch natively or via the context.
       // Let's assume we have an endpoint for OTP verification in the backend.
-      const response = await fetch('http://187.127.164.142:8000/api/v1/auth/reset-password', {
+      const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
         body: JSON.stringify({ token: fullCode, email: contact })

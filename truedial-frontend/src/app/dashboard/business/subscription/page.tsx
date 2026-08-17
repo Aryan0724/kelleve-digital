@@ -37,7 +37,7 @@ export default function SubscriptionPage() {
         "0% commission on inquiries",
         "SMS & Email marketing automation",
         "Privilege Card VIP member promotions",
-        "Priority ranking on TrueDial & Find My Interior"
+        "Priority ranking on TrueDial search results"
       ],
       current: currentPlan === "Professional VIP"
     },

@@ -148,7 +148,7 @@ export default function UserDashboard() {
             </div>
             <h3 className="font-bold text-base text-foreground mb-1">Explore & Visit Partners</h3>
             <p className="text-xs text-muted-foreground leading-relaxed">
-              Find verified interior studios, architectural firms, and home service providers with the "VIP Offer" badge on TrueDial or Find My Interior.
+              Find restaurants, hotels, hospitals, salons, and thousands of verified partners with the 'VIP Offer' badge anywhere on TrueDial.
             </p>
           </div>
 
@@ -196,7 +196,7 @@ export default function UserDashboard() {
               <Percent className="w-5 h-5 text-primary" /> VIP Savings Calculator
             </h3>
             <p className="text-xs text-muted-foreground">
-              See how much you save on average across home renovations, modular kitchens, and woodwork.
+              Estimate your savings when dining, booking hotels, visiting salons, hospitals, and service businesses with your Privilege Card.
             </p>
           </div>
           <Badge className="bg-green-500/20 text-green-600 border-green-200 text-xs">
@@ -209,7 +209,7 @@ export default function UserDashboard() {
             <div>
               <div className="flex justify-between items-center mb-2">
                 <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
-                  Your Estimated Project Budget
+                  Your Estimated Annual Spend
                 </label>
                 <span className="font-bold text-lg text-primary">₹{estimatedBudget.toLocaleString()}</span>
               </div>
@@ -269,7 +269,7 @@ export default function UserDashboard() {
         </Link>
         <Link href="/search">
           <Button className="flex items-center gap-2 font-semibold shadow-sm px-6">
-            Explore Partner Studios <ArrowRight className="w-4 h-4" />
+            Explore Partner Businesses <ArrowRight className="w-4 h-4" />
           </Button>
         </Link>
       </div>

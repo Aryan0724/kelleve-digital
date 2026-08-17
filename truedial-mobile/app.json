@@ -1,9 +1,10 @@
 {
   "expo": {
     "name": "TrueDial",
-    "slug": "find-my-interior",
-    "owner": "integrals",
+    "slug": "truedial-mobile",
+    "owner": "tanuj007",
     "version": "1.0.0",
+    "runtimeVersion": "1.0.0",
     "orientation": "portrait",
     "userInterfaceStyle": "dark",
     "ios": {
@@ -11,10 +12,7 @@
     },
     "android": {
       "package": "com.truedial.app",
-      "compileSdkVersion": 33,
-      "targetSdkVersion": 33,
       "softwareKeyboardLayoutMode": "pan",
-      "usesCleartextTraffic": true,
       "adaptiveIcon": {
         "backgroundColor": "#0a1c3a"
       },
@@ -24,30 +22,32 @@
         "READ_EXTERNAL_STORAGE",
         "WRITE_EXTERNAL_STORAGE",
         "ACCESS_FINE_LOCATION",
-        "ACCESS_COARSE_LOCATION",
-        "POST_NOTIFICATIONS",
-        "CAMERA",
-        "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE",
-        "ACCESS_FINE_LOCATION",
         "ACCESS_COARSE_LOCATION"
       ]
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "compileSdkVersion": 35,
+            "targetSdkVersion": 35,
+            "buildToolsVersion": "35.0.0",
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "scheme": "truedial",
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "d7ade934-8a7f-4b52-9a34-a214a7dbe814"
+        "projectId": "8fc7f4cc-a79f-4fee-960c-2aba8f7d270b"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
     "updates": {
-      "url": "https://u.expo.dev/d7ade934-8a7f-4b52-9a34-a214a7dbe814"
+      "url": "https://u.expo.dev/8fc7f4cc-a79f-4fee-960c-2aba8f7d270b"
     }
   }
 }

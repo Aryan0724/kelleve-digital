@@ -9,6 +9,8 @@ class ConsultingLead extends Model
 {
     use HasFactory;
 
+    protected $connection = 'truedial';
+
     protected $fillable = [
         'name',
         'phone',

@@ -136,7 +136,7 @@ export default function BusinessProfilePage() {
         <div>
           <h1 className="text-2xl font-bold text-navy dark:text-white mb-1">Business Profile & Details</h1>
           <p className="text-muted-foreground text-sm">
-            Complete your listing information to match TrueDial & Find My Interior search rankings.
+            Complete your listing information to rank higher in TrueDial search results.
           </p>
         </div>
         <div className="flex items-center gap-2">

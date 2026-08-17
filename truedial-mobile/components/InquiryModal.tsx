@@ -19,7 +19,7 @@ interface InquiryModalProps {
   visible: boolean;
   onClose: () => void;
   targetTitle?: string;
-  targetType?: 'business' | 'worker' | 'supplier' | 'builder' | 'product' | 'requirement';
+  targetType?: 'business' | 'product' | 'service';
   targetId?: number | string;
 }
 
@@ -140,7 +140,7 @@ export default function InquiryModal({ visible, onClose, targetTitle = 'Business
               />
             </View>
 
-            <Text style={styles.label}>YOUR MESSAGE / REQUIREMENT</Text>
+            <Text style={styles.label}>YOUR MESSAGE OR ENQUIRY</Text>
             <View style={[styles.inputWrapper, { height: 90, alignItems: 'flex-start', paddingTop: 10 }]}>
               <TextInput
                 style={[styles.input, { textAlignVertical: 'top' }]}

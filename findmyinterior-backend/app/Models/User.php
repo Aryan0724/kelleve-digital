@@ -16,6 +16,8 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
+    protected $connection = 'auth';
+
     protected $fillable = [
         'name',
         'email',

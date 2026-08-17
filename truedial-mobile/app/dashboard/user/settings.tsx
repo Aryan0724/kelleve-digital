@@ -60,7 +60,23 @@ export default function SettingsScreen() {
           <SettingRow title="Activity Status" subtitle="Show when you are online" value={settings.showActivity} onToggle={() => toggle('showActivity')} icon={<Lock size={18} color="#06B6D4" />} />
         </View>
 
-        <TouchableOpacity style={styles.dangerZone}>
+        <TouchableOpacity 
+          style={styles.dangerZone}
+          onPress={() => {
+            Alert.alert(
+              'Delete Account',
+              'Are you sure you want to permanently delete your TrueDial account and all listed business data?',
+              [
+                { text: 'Cancel', style: 'cancel' },
+                { 
+                  text: 'Delete Account', 
+                  style: 'destructive', 
+                  onPress: () => Alert.alert('Request Submitted', 'Your account deletion request has been submitted to TrueDial support.') 
+                }
+              ]
+            );
+          }}
+        >
           <Text style={styles.dangerText}>Delete Account</Text>
         </TouchableOpacity>
       </ScrollView>

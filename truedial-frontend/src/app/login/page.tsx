@@ -43,7 +43,7 @@ function LoginForm() {
         const roleSlugs = (data.roles || (data.role ? [data.role] : [])).map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
         
         const isVendor = roleSlugs.some((r: string) => 
-          ['business', 'builder', 'supplier', 'worker', 'contractor', 'architect', 'interior_designer', 'skilled_worker', 'material_supplier', 'doctor', 'hospital', 'clinic', 'dentist', 'restaurant', 'cafe', 'bakery', 'food', 'plumber', 'electrician', 'mechanic', 'cleaner'].includes(r)
+          ['business', 'vendor', 'business_owner'].includes(r)
         );
         const isAdmin = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
         

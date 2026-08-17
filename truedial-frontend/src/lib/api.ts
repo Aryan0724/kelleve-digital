@@ -1,5 +1,5 @@
 // TrueDial API Connector
-// Connects to the central findmyinterior-backend Laravel instance
+// Connects to the dedicated TrueDial backend API
 
 const isServer = typeof window === "undefined";
 
@@ -96,8 +96,7 @@ export class TrueDialAPI {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "X-Platform": "truedial",
-          "X-Tenant-ID": "2"
+          "X-Platform": "truedial"
         },
         body: JSON.stringify(credentials)
       });
@@ -115,8 +114,7 @@ export class TrueDialAPI {
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
-          "X-Platform": "truedial",
-          "X-Tenant-ID": "2"
+          "X-Platform": "truedial"
         },
         body: JSON.stringify(data)
       });
@@ -532,6 +530,40 @@ export class TrueDialAPI {
     } catch (err) {
       console.error(err);
       return { success: false };
+    }
+  }
+
+  // ─── Generic authenticated client-side methods ────────────────────────────
+  // Route through /api-proxy which adds the auth token server-side
+
+  static async get(path: string): Promise<any> {
+    try {
+      const res = await fetch(`/api-proxy${path}`, {
+        headers: { 'Accept': 'application/json' },
+        cache: 'no-store',
+      });
+      return await res.json();
+    } catch (error) {
+      console.error('[TrueDialAPI.get] Error:', error);
+      return { success: false, data: null, message: 'Network error' };
+    }
+  }
+
+  static async post(path: string, body: Record<string, any> = {}): Promise<any> {
+    try {
+      const res = await fetch(`/api-proxy${path}`, {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(body),
+        cache: 'no-store',
+      });
+      return await res.json();
+    } catch (error) {
+      console.error('[TrueDialAPI.post] Error:', error);
+      return { success: false, data: null, message: 'Network error' };
     }
   }
 }

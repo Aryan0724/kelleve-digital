@@ -8,6 +8,7 @@ import InquiryForm from "@/components/forms/InquiryForm";
 import ReviewSection from "@/components/reviews/ReviewSection";
 import Link from "next/link";
 import TrackedLink from "@/components/shared/TrackedLink";
+import MessageBusinessButton from "@/components/messaging/MessageBusinessButton";
 
 export default async function BusinessProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
@@ -265,7 +266,13 @@ export default async function BusinessProfilePage({ params }: { params: Promise<
                 )}
               </div>
 
-              <div className="pt-6 border-t border-border">
+              <div className="pt-6 border-t border-border space-y-4">
+                {businessDTO.basicInfo.user_id && (
+                  <MessageBusinessButton
+                    vendorUserId={businessDTO.basicInfo.user_id}
+                    businessName={businessDTO.basicInfo.title}
+                  />
+                )}
                 <h3 className="font-bold text-navy dark:text-white mb-4">Send an Inquiry</h3>
                 <InquiryForm listingId={businessDTO.basicInfo.id} />
               </div>

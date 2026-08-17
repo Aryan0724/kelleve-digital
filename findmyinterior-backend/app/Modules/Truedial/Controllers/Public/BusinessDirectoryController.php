@@ -51,9 +51,17 @@ class BusinessDirectoryController extends Controller
             $query->byCategory($request->category_id);
         } elseif ($request->filled('category_name') || $request->filled('category')) {
             $cat = $request->query('category_name') ?? $request->query('category');
-            $query->whereHas('category', function($q) use ($cat) {
+            $cleanCat = trim(str_replace(['&', 'and'], '', $cat));
+            $words = array_filter(explode(' ', $cleanCat));
+            $query->whereHas('category', function($q) use ($cat, $words) {
                 $q->where('name', 'LIKE', "%{$cat}%")
                   ->orWhere('slug', 'LIKE', "%{$cat}%");
+                foreach ($words as $word) {
+                    if (strlen($word) > 2) {
+                        $q->orWhere('name', 'LIKE', "%{$word}%")
+                          ->orWhere('slug', 'LIKE', "%{$word}%");
+                    }
+                }
             });
         }
 

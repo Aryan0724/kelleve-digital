@@ -18,10 +18,11 @@ import {
   Utensils, HeartPulse, Building, GraduationCap, HardHat, Car, 
   Smartphone, Shirt, Grid, ArrowRight, ShieldCheck, Star, 
   Briefcase, Megaphone, Globe, Sparkles, Trophy, Award, Radio, 
-  Newspaper, Layers, Tag, CreditCard, PlusCircle, Bookmark
+  Newspaper, Layers, Tag, CreditCard, Bookmark
 } from 'lucide-react-native';
 import api from '../../services/api';
 import { useNotifications } from '../../context/notifications';
+import LocationSelectorModal from '../../components/LocationSelectorModal';
 
 const { width } = Dimensions.get('window');
 
@@ -45,18 +46,19 @@ export default function SearchIndex() {
   const { unreadCount } = useNotifications();
   
   const [query, setQuery] = useState('');
-  const [city, setCity] = useState('Patna, Bihar');
+  const [city, setCity] = useState('Patna');
+  const [locationModalVisible, setLocationModalVisible] = useState(false);
   const [listings, setListings] = useState<Listing[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetchHomeData();
+    fetchHomeData(city);
   }, []);
 
-  const fetchHomeData = async () => {
+  const fetchHomeData = async (targetCity = city) => {
     setLoading(true);
     try {
-      const res = await api.get(`/truedial/public/businesses?city=Patna`).catch(() => null);
+      const res = await api.get(`/truedial/public/businesses?city=${encodeURIComponent(targetCity)}`).catch(() => null);
       let lData = res?.data?.data?.data || res?.data?.data || res?.data || [];
       if (Array.isArray(lData) && lData.length === 0) {
         const fallbackRes = await api.get(`/truedial/public/businesses`).catch(() => null);
@@ -80,7 +82,7 @@ export default function SearchIndex() {
     { name: "Find Business", icon: Search, color: "#1D4ED8", bg: "bg-blue-100 dark:bg-blue-950/60", route: "/search" },
     { name: "Best Deals & Offers", icon: Tag, color: "#16A34A", bg: "bg-emerald-100 dark:bg-emerald-950/60", route: "/offers" },
     { name: "Privilege Card", icon: CreditCard, color: "#9333EA", bg: "bg-purple-100 dark:bg-purple-950/60", route: "/offers" },
-    { name: "Post Requirement", icon: PlusCircle, color: "#EA580C", bg: "bg-orange-100 dark:bg-orange-950/60", route: "/(tabs)/post" },
+    { name: "List Business", icon: Bookmark, color: "#EA580C", bg: "bg-orange-100 dark:bg-orange-950/60", route: "/list-business" },
     { name: "Truedial Academy", icon: GraduationCap, color: "#2563EB", bg: "bg-sky-100 dark:bg-sky-950/60", route: "/category" }
   ];
 
@@ -119,12 +121,12 @@ export default function SearchIndex() {
 
       {/* 1. TOP BAR */}
       <View className="flex-row items-center justify-between px-4 py-2.5 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 z-20">
-        <TouchableOpacity className="p-1">
+        <TouchableOpacity className="p-1" onPress={() => router.push('/dashboard/user/account')}>
           <Menu size={24} color="#1E293B" className="dark:text-white" />
         </TouchableOpacity>
 
         {/* Brand Logo */}
-        <View className="items-center">
+        <TouchableOpacity className="items-center" onPress={() => router.push('/(tabs)')}>
           <View className="flex-row items-center">
             <View className="w-6 h-6 rounded-full bg-[#E8701A] items-center justify-center mr-1">
               <Text className="text-white text-[13px] font-black">P</Text>
@@ -137,7 +139,7 @@ export default function SearchIndex() {
             <ShieldCheck size={10} color="#1E40AF" />
             <Text className="text-[9px] font-bold text-[#1E40AF] ml-0.5 uppercase tracking-wider">100% Verified</Text>
           </View>
-        </View>
+        </TouchableOpacity>
 
         {/* Right Icons */}
         <View className="flex-row items-center gap-3">
@@ -161,13 +163,16 @@ export default function SearchIndex() {
         <View className="px-4 pt-3 pb-4 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
           {/* Location Bar & Voice */}
           <View className="flex-row items-center justify-between mb-3">
-            <TouchableOpacity className="flex-row items-center bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700">
+            <TouchableOpacity 
+              className="flex-row items-center bg-slate-100 dark:bg-slate-800 px-3 py-1.5 rounded-full border border-slate-200 dark:border-slate-700"
+              onPress={() => setLocationModalVisible(true)}
+            >
               <MapPin size={14} color="#1E40AF" />
               <Text className="text-[13px] font-bold text-slate-800 dark:text-slate-200 mx-1.5">{city}</Text>
               <ChevronDown size={14} color="#64748B" />
             </TouchableOpacity>
 
-            <TouchableOpacity className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center border border-slate-200 dark:border-slate-700">
+            <TouchableOpacity className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 items-center justify-center border border-slate-200 dark:border-slate-700" onPress={() => setLocationModalVisible(true)}>
               <Mic size={16} color="#1E40AF" />
             </TouchableOpacity>
           </View>
@@ -263,18 +268,21 @@ export default function SearchIndex() {
           </View>
 
           <View className="flex-row flex-wrap justify-between">
-            {topCategories.map((cat, i) => (
-              <TouchableOpacity 
-                key={i} 
-                className="w-[18%] items-center mb-4"
-                onPress={() => cat.name === 'More Categories' ? router.push('/category') : router.push(`/search?category=${encodeURIComponent(cat.name)}`)}
-              >
-                <View className={`w-12 h-12 rounded-2xl justify-center items-center mb-1 ${cat.bg} border border-slate-100 dark:border-slate-800 shadow-sm`}>
-                  <cat.icon size={20} color={cat.color} />
-                </View>
-                <Text className="text-[10px] font-bold text-slate-700 dark:text-slate-300 text-center leading-tight" numberOfLines={2}>{cat.name}</Text>
-              </TouchableOpacity>
-            ))}
+            {topCategories.map((cat, i) => {
+              const categoryKeyword = cat.name.split(' ')[0];
+              return (
+                <TouchableOpacity 
+                  key={i} 
+                  className="w-[18%] items-center mb-4"
+                  onPress={() => cat.name === 'More Categories' ? router.push('/category') : router.push(`/search?category=${encodeURIComponent(categoryKeyword)}&city=${encodeURIComponent(city)}`)}
+                >
+                  <View className={`w-12 h-12 rounded-2xl justify-center items-center mb-1 ${cat.bg} border border-slate-100 dark:border-slate-800 shadow-sm`}>
+                    <cat.icon size={20} color={cat.color} />
+                  </View>
+                  <Text className="text-[10px] font-bold text-slate-700 dark:text-slate-300 text-center leading-tight" numberOfLines={2}>{cat.name}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 
@@ -292,9 +300,10 @@ export default function SearchIndex() {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
             {ecosystemPlatforms.map((plat, i) => (
-              <View 
+              <TouchableOpacity 
                 key={i}
                 className="w-48 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-3.5 shadow-sm justify-between"
+                onPress={() => router.push(`/search?q=${encodeURIComponent(plat.name)}&city=${encodeURIComponent(city)}`)}
               >
                 <View className="flex-row items-center mb-2">
                   <View className={`w-8 h-8 rounded-xl ${plat.logoBg} items-center justify-center mr-2.5`}>
@@ -303,11 +312,11 @@ export default function SearchIndex() {
                   <Text className="text-sm font-black text-slate-900 dark:text-white" numberOfLines={1}>{plat.name}</Text>
                 </View>
                 <Text className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 mb-3">{plat.tag}</Text>
-                <TouchableOpacity className="bg-slate-100 dark:bg-slate-800 py-1.5 px-3 rounded-lg flex-row items-center justify-between">
+                <View className="bg-slate-100 dark:bg-slate-800 py-1.5 px-3 rounded-lg flex-row items-center justify-between">
                   <Text className="text-[11px] font-bold text-[#1E40AF]">Explore</Text>
                   <ArrowRight size={12} color="#1E40AF" />
-                </TouchableOpacity>
-              </View>
+                </View>
+              </TouchableOpacity>
             ))}
           </ScrollView>
         </View>
@@ -329,6 +338,7 @@ export default function SearchIndex() {
               <TouchableOpacity 
                 key={i}
                 className="w-36 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl p-3.5 items-center justify-center shadow-sm"
+                onPress={() => router.push(`/search?category=${encodeURIComponent(serv.name.split(' ')[0])}&city=${encodeURIComponent(city)}`)}
               >
                 <View className={`w-12 h-12 rounded-2xl justify-center items-center mb-2 ${serv.bg}`}>
                   <serv.icon size={22} color={serv.color} />
@@ -346,7 +356,10 @@ export default function SearchIndex() {
 
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={{ gap: 12 }}>
             {/* Card 1: Academy */}
-            <View className="w-64 bg-amber-500 rounded-3xl p-4 border border-amber-400 shadow-sm justify-between">
+            <TouchableOpacity 
+              className="w-64 bg-amber-500 rounded-3xl p-4 border border-amber-400 shadow-sm justify-between"
+              onPress={() => router.push('/category')}
+            >
               <View>
                 <View className="bg-white/20 self-start px-2 py-0.5 rounded-md mb-2 flex-row items-center">
                   <GraduationCap size={12} color="#FFF" />
@@ -355,14 +368,17 @@ export default function SearchIndex() {
                 <Text className="text-xs font-bold text-amber-100">Learn • Grow • Succeed</Text>
                 <Text className="text-sm font-extrabold text-white mt-1 mb-3">Industry Oriented Professional Courses</Text>
               </View>
-              <TouchableOpacity className="bg-white py-1.5 px-3 rounded-lg self-start flex-row items-center">
+              <View className="bg-white py-1.5 px-3 rounded-lg self-start flex-row items-center">
                 <Text className="text-xs font-extrabold text-slate-900 mr-1">Know More</Text>
                 <ArrowRight size={12} color="#0F172A" />
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
 
             {/* Card 2: Podcast */}
-            <View className="w-64 bg-indigo-700 rounded-3xl p-4 border border-indigo-600 shadow-sm justify-between">
+            <TouchableOpacity 
+              className="w-64 bg-indigo-700 rounded-3xl p-4 border border-indigo-600 shadow-sm justify-between"
+              onPress={() => router.push('/search?q=Podcast')}
+            >
               <View>
                 <View className="bg-white/20 self-start px-2 py-0.5 rounded-md mb-2 flex-row items-center">
                   <Radio size={12} color="#FFF" />
@@ -371,14 +387,17 @@ export default function SearchIndex() {
                 <Text className="text-xs font-bold text-indigo-200">Every Business Has a Story</Text>
                 <Text className="text-sm font-extrabold text-white mt-1 mb-3">Founder Insights & Entrepreneurship</Text>
               </View>
-              <TouchableOpacity className="bg-white py-1.5 px-3 rounded-lg self-start flex-row items-center">
+              <View className="bg-white py-1.5 px-3 rounded-lg self-start flex-row items-center">
                 <Text className="text-xs font-extrabold text-slate-900 mr-1">Listen Now</Text>
                 <ArrowRight size={12} color="#0F172A" />
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
 
             {/* Card 3: News */}
-            <View className="w-64 bg-blue-800 rounded-3xl p-4 border border-blue-700 shadow-sm justify-between">
+            <TouchableOpacity 
+              className="w-64 bg-blue-800 rounded-3xl p-4 border border-blue-700 shadow-sm justify-between"
+              onPress={() => router.push('/search?q=News')}
+            >
               <View>
                 <View className="bg-white/20 self-start px-2 py-0.5 rounded-md mb-2 flex-row items-center">
                   <Newspaper size={12} color="#FFF" />
@@ -387,11 +406,11 @@ export default function SearchIndex() {
                 <Text className="text-xs font-bold text-blue-200">Business News That Matters</Text>
                 <Text className="text-sm font-extrabold text-white mt-1 mb-3">Market Trends & Trade Reports</Text>
               </View>
-              <TouchableOpacity className="bg-white py-1.5 px-3 rounded-lg self-start flex-row items-center">
+              <View className="bg-white py-1.5 px-3 rounded-lg self-start flex-row items-center">
                 <Text className="text-xs font-extrabold text-slate-900 mr-1">Read More</Text>
                 <ArrowRight size={12} color="#0F172A" />
-              </TouchableOpacity>
-            </View>
+              </View>
+            </TouchableOpacity>
           </ScrollView>
         </View>
 
@@ -476,6 +495,17 @@ export default function SearchIndex() {
         </View>
 
       </ScrollView>
+
+      {/* Location Selector Modal */}
+      <LocationSelectorModal
+        visible={locationModalVisible}
+        currentCity={city}
+        onClose={() => setLocationModalVisible(false)}
+        onSelectCity={(selectedCity) => {
+          setCity(selectedCity);
+          fetchHomeData(selectedCity);
+        }}
+      />
     </View>
   );
 }

@@ -1,0 +1,8 @@
+# EAS Build ignore rules
+android/
+ios/
+.expo/
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

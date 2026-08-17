@@ -25,11 +25,9 @@ interface Conversation {
   vendor_id: number;
   customer?: { id: number; name: string };
   vendor?: { id: number; name: string };
-  project?: {
+  enquiry?: {
     id: number;
     title: string;
-    budget_min?: string;
-    budget_max?: string;
     status?: string;
   };
 }
@@ -55,8 +53,13 @@ export default function ChatDetailScreen() {
       const msgs = res.data?.data || res.data || [];
       if (Array.isArray(msgs)) {
         setMessages(prev => {
-          if (isPolling && prev.length === msgs.length) {
-            return prev;
+          if (isPolling && prev.length > 0 && msgs.length > 0) {
+            const prevLastId = prev[prev.length - 1]?.id;
+            const newLastId = msgs[msgs.length - 1]?.id;
+            // Skip update only if the last message is identical (same count AND same last ID)
+            if (prev.length === msgs.length && prevLastId === newLastId) {
+              return prev;
+            }
           }
           return msgs;
         });
@@ -74,7 +77,7 @@ export default function ChatDetailScreen() {
         setConversation(convo);
         const isVendor = user?.id === convo.vendor_id;
         const participant = isVendor ? convo.customer : convo.vendor;
-        setParticipantName(participant?.name || convo.project?.title || 'Chat');
+        setParticipantName(participant?.name || convo.enquiry?.title || 'Chat');
       }
     } catch (err) {
       console.warn('Failed to load conversation details:', err);
@@ -88,7 +91,7 @@ export default function ChatDetailScreen() {
     fetchConversationDetails();
     fetchMessages();
 
-    // 5-second polling interval for real-time chat updates (matching FindMyInterior)
+    // 5-second polling interval for real-time chat updates
     pollingInterval.current = setInterval(() => {
       fetchMessages(true);
     }, 5000);
@@ -166,19 +169,14 @@ export default function ChatDetailScreen() {
         </View>
       </View>
 
-      {/* ── Project / Requirement Info Banner ── */}
-      {conversation?.project && (
+      {/* ── Enquiry Info Banner ── */}
+      {conversation?.enquiry && (
         <View style={styles.projectBanner}>
           <Info size={16} color="#E8701A" style={{ marginTop: 2, marginRight: 8 }} />
           <View style={{ flex: 1 }}>
             <Text style={styles.projectTitle} numberOfLines={1}>
-              {conversation.project.title}
+              {conversation.enquiry.title}
             </Text>
-            {conversation.project.budget_min && (
-              <Text style={styles.projectSub}>
-                Budget: ₹{conversation.project.budget_min} - ₹{conversation.project.budget_max || conversation.project.budget_min}
-              </Text>
-            )}
           </View>
         </View>
       )}
@@ -208,7 +206,7 @@ export default function ChatDetailScreen() {
                   <MessageSquare size={28} color="#E8701A" />
                 </View>
                 <Text style={styles.emptyTitle}>Start the Conversation</Text>
-                <Text style={styles.emptyText}>Send a message to discuss requirements & services 👋</Text>
+                <Text style={styles.emptyText}>Send a message to connect with this business 👋</Text>
               </View>
             }
             renderItem={({ item }) => {

@@ -4,7 +4,7 @@ import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
 // TrueDial API Connector
-// Connects to the central findmyinterior-backend Laravel instance
+// Connects to the dedicated TrueDial backend API
 
 function getServerApiBase(): string {
   if (process.env.INTERNAL_API_URL && process.env.INTERNAL_API_URL.startsWith("http")) {

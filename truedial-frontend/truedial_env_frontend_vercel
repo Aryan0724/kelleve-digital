@@ -12,8 +12,8 @@ NEXT_PUBLIC_API_URL=/api-proxy
 
 # 2. SERVER-SIDE API URL (Used by Next.js serverless functions on Vercel)
 # IMPORTANT: Must use HTTPS public URL - Vercel cannot reach VPS port 8000 directly (firewalled)
-INTERNAL_API_URL=https://findmyinterior.com/api/v1
+INTERNAL_API_URL=https://truedial.in/api/v1
 
 # 3. VPS BACKEND TARGET FOR NEXT.JS REWRITES (Used by next.config.ts for /api-proxy & /storage)
 # IMPORTANT: Must use HTTPS - Vercel cannot reach VPS port 8000 directly (firewalled)
-VPS_BACKEND_URL=https://findmyinterior.com
+VPS_BACKEND_URL=https://truedial.in

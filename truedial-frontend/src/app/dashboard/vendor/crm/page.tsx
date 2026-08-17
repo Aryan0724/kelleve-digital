@@ -44,10 +44,10 @@ const MOCK_SERVICE_REQUESTS = [
 ];
 
 const MOCK_LEADS = [
-  { id: 1, name: "Rajesh Kumar", project: "3BHK Full Interior", budget: "₹15L – ₹20L", date: "2 hrs ago", stage: "New Lead", phone: "9812345678" },
-  { id: 2, name: "Sunita Gupta", project: "Office Renovation", budget: "₹50L+", date: "5 hrs ago", stage: "Site Visit Scheduled", phone: "9812345679" },
-  { id: 3, name: "Kunal Shah", project: "Modular Kitchen", budget: "₹5L – ₹8L", date: "Yesterday", stage: "Quotation Sent", phone: "9812345680" },
-  { id: 4, name: "Farida Malik", project: "2BHK Interior", budget: "₹10L – ₹15L", date: "2 days ago", stage: "Follow-up Needed", phone: "9812345681" },
+  { id: 1, name: "Rajesh Kumar", project: "Digital Marketing Package", budget: "₹25,000/mo", date: "2 hrs ago", stage: "New Lead", phone: "9812345678" },
+  { id: 2, name: "Sunita Gupta", project: "Corporate Catering Contract", budget: "₹1.5L/month", date: "5 hrs ago", stage: "Visit Scheduled", phone: "9812345679" },
+  { id: 3, name: "Kunal Shah", project: "Website & SEO Package", budget: "₹40,000", date: "Yesterday", stage: "Quotation Sent", phone: "9812345680" },
+  { id: 4, name: "Farida Malik", project: "Premium Branding Service", budget: "₹60,000", date: "2 days ago", stage: "Follow-up Needed", phone: "9812345681" },
 ];
 
 const MOCK_INQUIRIES = [
@@ -66,7 +66,7 @@ function StatusBadge({ status }: { status: string }) {
     "Confirmed": "bg-blue-500/10 text-blue-600 border-blue-500/20",
     "Accepted": "bg-blue-500/10 text-blue-600 border-blue-500/20",
     "Preparing": "bg-blue-500/10 text-blue-600 border-blue-500/20",
-    "Site Visit Scheduled": "bg-blue-500/10 text-blue-600 border-blue-500/20",
+    "Visit Scheduled": "bg-blue-500/10 text-blue-600 border-blue-500/20",
     "Priority": "bg-red-500/10 text-red-600 border-red-500/20",
     "Completed": "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
     "Closed": "bg-emerald-500/10 text-emerald-600 border-emerald-500/20",
@@ -394,11 +394,11 @@ function ServiceRequestsView() {
 }
 
 // ─── Leads Pipeline View (Real Estate) ────────────────────────────────────────
-const STAGES = ["New Lead", "Contacted", "Site Visit Scheduled", "Quotation Sent", "Won", "Lost"];
+const STAGES = ["New Lead", "Contacted", "Visit Scheduled", "Quotation Sent", "Won", "Lost"];
 const STAGE_COLORS: Record<string, string> = {
   "New Lead": "bg-blue-500",
   "Contacted": "bg-amber-500",
-  "Site Visit Scheduled": "bg-purple-500",
+  "Visit Scheduled": "bg-purple-500",
   "Quotation Sent": "bg-indigo-500",
   "Won": "bg-emerald-500",
   "Lost": "bg-red-500"

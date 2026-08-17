@@ -10,7 +10,7 @@ It features a Privilege Card system, robust business discovery, and B2B growth s
 - **Framework:** Next.js (App Router)
 - **Styling:** Tailwind CSS (v4)
 - **Components:** shadcn/ui & Lucide React Icons
-- **Backend:** Central Laravel API (`findmyinterior-backend`)
+- **Backend:** Dedicated TrueDial Laravel API ('truedial-backend') running at https://truedial.in/api/v1
 
 ## 3. Premium Design Language
 The UI must feel world-class, trusted, and highly dynamic.

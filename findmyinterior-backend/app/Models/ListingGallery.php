@@ -7,6 +7,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ListingGallery extends Model
 {
+    protected $connection = 'truedial';
+
     protected $fillable = ['listing_id', 'image_url', 'caption', 'sort_order'];
 
     public function listing(): BelongsTo

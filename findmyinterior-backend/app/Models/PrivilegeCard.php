@@ -9,6 +9,8 @@ class PrivilegeCard extends Model
 {
     use HasFactory, \App\Traits\TenantAwareTrait;
 
+    protected $connection = 'truedial';
+
     protected $fillable = [
         'tenant_id',
         'user_id',

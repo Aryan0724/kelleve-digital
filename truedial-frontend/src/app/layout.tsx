@@ -21,9 +21,8 @@ const inter = Inter({
   display: "swap",
 });
 
-export const metadata: Metadata = {
-  title: "TrueDial | B2B Interior & Architectural Marketplace",
-  description: "India's premier B2B directory and ecosystem for interior designers, architects, contractors, and suppliers.",
+  title: "TrueDial — India's Business Discovery Platform",
+  description: "Discover and connect with trusted local businesses across India. TrueDial is India's emerging business discovery and growth platform.",
 };
 
 import { LocationProvider } from "@/context/LocationContext";

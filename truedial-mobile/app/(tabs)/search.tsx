@@ -6,9 +6,10 @@ import {
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import api from '../../services/api';
+import LocationSelectorModal from '../../components/LocationSelectorModal';
 import { 
   ArrowLeft, Search as SearchIcon, Filter, MapPin, 
-  Star, Building2, ShieldCheck, CheckSquare, Square, X 
+  Star, Building2, ShieldCheck, CheckSquare, Square, X, ChevronDown
 } from 'lucide-react-native';
 
 export default function SearchResultsScreen() {
@@ -25,8 +26,12 @@ export default function SearchResultsScreen() {
   const [results, setResults] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [filterVisible, setFilterVisible] = useState(false);
+  const [locationModalVisible, setLocationModalVisible] = useState(false);
 
   useEffect(() => {
+    if (initialCategory) setCategory(initialCategory);
+    if (initialCity) setCity(initialCity);
+    if (q) setQuery(q);
     fetchResults();
   }, [q, initialCity, initialCategory]);
 
@@ -174,13 +179,16 @@ export default function SearchResultsScreen() {
 
             <ScrollView showsVerticalScrollIndicator={false}>
               <Text className="text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">City</Text>
-              <TextInput 
-                className="h-12 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 text-[15px] text-slate-900 dark:text-white mb-5 font-medium"
-                value={city}
-                onChangeText={setCity}
-                placeholder="e.g. Mumbai"
-                placeholderTextColor="#94A3B8"
-              />
+              <TouchableOpacity 
+                className="h-12 bg-slate-50 dark:bg-slate-800 border border-slate-300 dark:border-slate-700 rounded-xl px-4 flex-row items-center justify-between mb-5"
+                onPress={() => setLocationModalVisible(true)}
+              >
+                <View className="flex-row items-center">
+                  <MapPin size={16} color="#1E40AF" style={{ marginRight: 8 }} />
+                  <Text className="text-[15px] font-bold text-slate-900 dark:text-white">{city || 'Select City'}</Text>
+                </View>
+                <ChevronDown size={18} color="#64748B" />
+              </TouchableOpacity>
 
               <Text className="text-[12px] font-extrabold text-slate-500 uppercase tracking-wider mb-2">Category</Text>
               <TextInput 
@@ -235,6 +243,15 @@ export default function SearchResultsScreen() {
           </View>
         </View>
       </Modal>
+
+      <LocationSelectorModal
+        visible={locationModalVisible}
+        currentCity={city}
+        onClose={() => setLocationModalVisible(false)}
+        onSelectCity={(selectedCity) => {
+          setCity(selectedCity);
+        }}
+      />
     </SafeAreaView>
   );
 }

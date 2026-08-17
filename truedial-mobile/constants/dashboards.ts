@@ -102,8 +102,8 @@ export function resolveDashboardTemplate(
   hasListing?: boolean,
   businessCategory?: string
 ): DashboardTemplate {
-  // Customer users
-  if (!hasListing && role !== 'business' && role !== 'vendor' && role !== 'supplier' && role !== 'builder') {
+  // Customer users (Explorers)
+  if (!hasListing && role !== 'business' && role !== 'vendor' && role !== 'supplier' && role !== 'builder' && role !== 'worker') {
     return 'customer';
   }
 

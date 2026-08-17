@@ -20,7 +20,7 @@ export default function BusinessOverviewScreen() {
         api.get('/truedial/vendor/analytics/overview').catch(() => ({ data: { data: null } })),
         api.get('/truedial/vendor/crm/leads').catch(() => ({ data: { data: [] } }))
       ]);
-      setStats(statRes.data?.data || statRes.data || { profile_views: 0, leads_generated: 0, avg_rating: 0, bid_score: 0 });
+      setStats(statRes.data?.data || statRes.data || { profile_views: 0, leads_generated: 0, avg_rating: 0 });
       const leadsData = leadRes.data?.data || leadRes.data || [];
       setLeads(Array.isArray(leadsData) ? leadsData.slice(0, 5) : []);
     } catch {
@@ -66,11 +66,11 @@ export default function BusinessOverviewScreen() {
             <View className="flex-row flex-wrap justify-between gap-y-3 mb-6">
               <StatCard title="Profile Views" value={stats?.profile_views || '0'} 
                 icon={<Eye size={20} color="#3B82F6" />} iconBgClass="bg-blue-100 dark:bg-blue-900/30" bgClass="" />
-              <StatCard title="Leads Gen." value={stats?.leads_generated || '0'} 
+              <StatCard title="Enquiries" value={stats?.leads_generated || stats?.enquiries || '0'} 
                 icon={<Users size={20} color="#10B981" />} iconBgClass="bg-emerald-100 dark:bg-emerald-900/30" bgClass="" />
               <StatCard title="Avg Rating" value={stats?.avg_rating || '0.0'} 
                 icon={<Star size={20} color="#EAB308" />} iconBgClass="bg-yellow-100 dark:bg-yellow-900/30" bgClass="" />
-              <StatCard title="Bid Score" value={stats?.bid_score || '0'} 
+              <StatCard title="This Month" value={stats?.monthly_views || stats?.profile_views || '0'} 
                 icon={<Trophy size={20} color="#8B5CF6" />} iconBgClass="bg-purple-100 dark:bg-purple-900/30" bgClass="" />
             </View>
 
@@ -78,7 +78,7 @@ export default function BusinessOverviewScreen() {
             <Text className="text-[18px] font-bold text-slate-900 dark:text-white mb-3 mt-2">Quick Actions</Text>
             <View className="flex-row flex-wrap justify-between mb-6">
               {[
-                { title: 'CRM Leads', icon: Users, color: '#10B981', bg: 'bg-emerald-50 dark:bg-emerald-900/30', route: '/dashboard/business/leads' },
+                { title: 'Enquiries', icon: Users, color: '#10B981', bg: 'bg-emerald-50 dark:bg-emerald-900/30', route: '/dashboard/business/leads' },
                 { title: 'Catalog', icon: Trophy, color: '#8B5CF6', bg: 'bg-purple-50 dark:bg-purple-900/30', route: '/dashboard/business/catalog' },
                 { title: 'Offers', icon: Star, color: '#F59E0B', bg: 'bg-yellow-50 dark:bg-yellow-900/30', route: '/dashboard/business/offers' },
                 { title: 'Marketing', icon: Eye, color: '#3B82F6', bg: 'bg-blue-50 dark:bg-blue-900/30', route: '/dashboard/business/marketing' },

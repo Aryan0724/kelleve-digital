@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDown, LayoutDashboard, LogOut } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, MessageSquare } from "lucide-react";
 import AutocompleteSearch from "@/components/shared/AutocompleteSearch";
 import NavbarLocationPill from "@/components/shared/NavbarLocationPill";
 import { cookies } from "next/headers";
@@ -22,6 +22,7 @@ export default async function Navbar() {
           {isLoggedIn ? (
             <div className="flex gap-4">
               <Link href="/dashboard/user" className="hover:text-primary transition flex items-center gap-1"><LayoutDashboard className="w-4 h-4"/> Dashboard</Link>
+              <Link href="/messages" className="hover:text-primary transition flex items-center gap-1"><MessageSquare className="w-4 h-4"/> Messages</Link>
               <form action={logout}>
           <button type="submit" className="hover:text-primary transition flex items-center gap-2">
             <LogOut className="h-4 w-4" /> Logout

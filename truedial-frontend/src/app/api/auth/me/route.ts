@@ -35,7 +35,6 @@ export async function GET() {
         Authorization: `Bearer ${token}`,
         Accept: "application/json",
         "X-Platform": "truedial",
-        "X-Tenant-ID": "2",
       },
       cache: "no-store",
     });
