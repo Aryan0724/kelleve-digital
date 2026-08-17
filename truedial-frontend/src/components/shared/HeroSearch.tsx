@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { Search, MapPin, ChevronRight, ChevronDown, Mic, ArrowRight, Trophy } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useUserLocation } from "@/context/LocationContext";
 import { TrueDialAPI } from "@/lib/api";
 import { useDebounce } from "@/hooks/useDebounce";
@@ -180,10 +181,24 @@ export default function HeroSearch() {
               </div>
             </div>
 
-            {/* Right side floating badge (Desktop only) */}
-            <div className="hidden md:flex flex-col bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl items-center text-center shadow-2xl max-w-[200px]">
-              <Trophy className="w-10 h-10 text-[#F59E0B] mb-3" />
-              <p className="text-base font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
+            {/* Right side: Hero Image & Floating Badge (Desktop only) */}
+            <div className="hidden md:flex relative w-1/2 justify-end items-end h-[300px]">
+              {/* Hero Image */}
+              <div className="relative w-full h-[120%] max-w-[450px] -mt-10 mr-12 z-0 pointer-events-none">
+                <Image 
+                  src="/images/hero-family.png"
+                  alt="Business Growth"
+                  fill
+                  className="object-contain object-bottom drop-shadow-2xl"
+                  priority
+                />
+              </div>
+              
+              {/* Floating Badge */}
+              <div className="absolute right-0 top-10 flex flex-col bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl items-center text-center shadow-2xl max-w-[180px] z-10">
+                <Trophy className="w-10 h-10 text-[#F59E0B] mb-3" />
+                <p className="text-base font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
+              </div>
             </div>
           </div>
         </div>
