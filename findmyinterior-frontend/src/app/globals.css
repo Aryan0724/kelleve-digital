@@ -4,99 +4,99 @@
 @tailwind utilities;
 
 :root {
-  --background: 0.0 0.0% 100.0%;
-  --foreground: 222.9 84.0% 4.9%;
-  --card: 0.0 0.0% 100.0%;
-  --card-foreground: 222.9 84.0% 4.9%;
-  --popover: 0.0 0.0% 100.0%;
-  --popover-foreground: 222.9 84.0% 4.9%;
+  --background: #ffffff;
+  --foreground: #020817;
+  --card: #ffffff;
+  --card-foreground: #020817;
+  --popover: #ffffff;
+  --popover-foreground: #020817;
   
   /* Brand Navy - #0a1c3a */
-  --primary: 217.5 70.6% 13.3%;
-  --primary-foreground: 0.0 0.0% 100.0%;
+  --primary: #0a1c3a;
+  --primary-foreground: #ffffff;
   
   /* Brand Orange - #E8701A */
-  --secondary: 25.0 81.7% 50.6%;
-  --secondary-foreground: 0.0 0.0% 100.0%;
+  --secondary: #e8701a;
+  --secondary-foreground: #ffffff;
   
-  --muted: 210.0 40.0% 96.1%;
-  --muted-foreground: 215.4 16.3% 46.9%;
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
   
-  --accent: 210.0 40.0% 96.1%;
-  --accent-foreground: 217.5 70.6% 13.3%;
+  --accent: #f1f5f9;
+  --accent-foreground: #0a1c3a;
   
-  --destructive: 0.0 84.2% 60.2%;
-  --destructive-foreground: 0.0 0.0% 100.0%;
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
   
-  --border: 214.3 31.8% 91.4%;
-  --input: 214.3 31.8% 91.4%;
-  --ring: 25.0 81.7% 50.6%;
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #e8701a; /* Orange ring */
   
-  --chart-1: 25.0 95.0% 53.3%;
-  --chart-2: 198.6 93.2% 46.1%;
-  --chart-3: 159.6 84.3% 39.4%;
-  --chart-4: 258.3 89.6% 66.3%;
-  --chart-5: 349.7 89.2% 60.2%;
+  --chart-1: #f97316;
+  --chart-2: #0ea5e9;
+  --chart-3: #10b981;
+  --chart-4: #8b5cf6;
+  --chart-5: #f43f5e;
   
   --radius: 0.75rem; /* Slightly softer borders */
   
-  --sidebar: 0.0 0.0% 100.0%;
-  --sidebar-foreground: 222.9 84.0% 4.9%;
-  --sidebar-primary: 217.5 70.6% 13.3%;
-  --sidebar-primary-foreground: 0.0 0.0% 100.0%;
-  --sidebar-accent: 210.0 40.0% 96.1%;
-  --sidebar-accent-foreground: 217.5 70.6% 13.3%;
-  --sidebar-border: 214.3 31.8% 91.4%;
-  --sidebar-ring: 25.0 81.7% 50.6%;
+  --sidebar: #ffffff;
+  --sidebar-foreground: #020817;
+  --sidebar-primary: #0a1c3a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0a1c3a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #e8701a;
 }
 
 .dark {
   /* Rich Navy Background */
-  --background: 222.9 84.0% 4.9%;
-  --foreground: 210.0 40.0% 98.0%;
+  --background: #020817;
+  --foreground: #f8fafc;
   
   /* Elevated Cards */
-  --card: 222.9 47.4% 11.2%;
-  --card-foreground: 210.0 40.0% 98.0%;
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
   
-  --popover: 222.9 47.4% 11.2%;
-  --popover-foreground: 210.0 40.0% 98.0%;
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
   
   /* Brand Navy (lighter for dark mode) or stay with white for contrast */
-  --primary: 0.0 0.0% 100.0%;
-  --primary-foreground: 222.9 84.0% 4.9%;
+  --primary: #ffffff;
+  --primary-foreground: #020817;
   
   /* Brand Orange remains strong */
-  --secondary: 25.0 81.7% 50.6%;
-  --secondary-foreground: 0.0 0.0% 100.0%;
+  --secondary: #e8701a;
+  --secondary-foreground: #ffffff;
   
-  --muted: 217.2 32.6% 17.5%;
-  --muted-foreground: 215.0 20.2% 65.1%;
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
   
-  --accent: 217.2 32.6% 17.5%;
-  --accent-foreground: 0.0 0.0% 100.0%;
+  --accent: #1e293b;
+  --accent-foreground: #ffffff;
   
-  --destructive: 0.0 62.8% 30.6%;
-  --destructive-foreground: 0.0 0.0% 100.0%;
+  --destructive: #7f1d1d;
+  --destructive-foreground: #ffffff;
   
-  --border: 217.2 32.6% 17.5%;
-  --input: 217.2 32.6% 17.5%;
-  --ring: 25.0 81.7% 50.6%;
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #e8701a;
   
-  --chart-1: 20.5 90.2% 43.9%;
-  --chart-2: 200.4 98.0% 39.4%;
-  --chart-3: 160.1 84.1% 30.4%;
-  --chart-4: 262.1 83.3% 57.8%;
-  --chart-5: 346.8 77.2% 49.8%;
+  --chart-1: #ea580c;
+  --chart-2: #0284c7;
+  --chart-3: #059669;
+  --chart-4: #7c3aed;
+  --chart-5: #e11d48;
   
-  --sidebar: 222.9 47.4% 11.2%;
-  --sidebar-foreground: 210.0 40.0% 98.0%;
-  --sidebar-primary: 25.0 81.7% 50.6%;
-  --sidebar-primary-foreground: 0.0 0.0% 100.0%;
-  --sidebar-accent: 217.2 32.6% 17.5%;
-  --sidebar-accent-foreground: 210.0 40.0% 98.0%;
-  --sidebar-border: 217.2 32.6% 17.5%;
-  --sidebar-ring: 25.0 81.7% 50.6%;
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #e8701a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #e8701a;
 }
 
 @layer base {
