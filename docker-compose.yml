@@ -58,6 +58,7 @@ services:
     environment:
       NEXT_PUBLIC_API_URL: https://findmyinterior.com/api/v1
       NEXT_PRIVATE_API_URL: http://backend:80/api/v1
+      NODE_OPTIONS: "--max-old-space-size=512"
     networks:
       - fmi-network
 
