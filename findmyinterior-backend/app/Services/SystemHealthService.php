@@ -46,15 +46,16 @@ class SystemHealthService
             
             // Check pending migrations
             $migrator = app('migrator');
-            $migrator->repositoryExists() ? $migrator->getRepository()->getRan() : [];
-            $pending = count($migrator->pending());
+            $files = $migrator->getMigrationFiles($migrator->paths());
+            $ran = $migrator->repositoryExists() ? $migrator->getRepository()->getRan() : [];
+            $pending = count(array_diff(array_keys($files), $ran));
 
             return [
                 'status' => 'healthy',
                 'connection' => 'connected',
                 'pending_migrations' => $pending,
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return [
                 'status' => 'critical',
                 'error' => $e->getMessage()
