@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { useAuthStore } from './store/useAuthStore';
+import { toast } from 'react-toastify';
 
 const getBaseUrl = () => {
   if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost')) {
@@ -42,6 +43,17 @@ let isLoggingOut = false;
 api.interceptors.response.use(
   (response) => response,
   (error) => {
+    // Handle 500+ Internal Server Errors and Network Errors gracefully
+    if (!error.response) {
+      if (typeof window !== 'undefined') {
+        toast.error('Unable to connect to the server. Please check your internet connection.', { toastId: 'network-error' });
+      }
+    } else if (error.response.status >= 500) {
+      if (typeof window !== 'undefined') {
+        toast.error('Our servers are experiencing high traffic. Please try again in a moment.', { toastId: 'server-error' });
+      }
+    }
+
     if (error.response?.status === 401) {
       if (typeof window !== 'undefined') {
         const { token, logout } = useAuthStore.getState();
