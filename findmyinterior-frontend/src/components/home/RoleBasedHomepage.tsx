@@ -526,7 +526,7 @@ export function RoleBasedHomepage() {
             </div>
             <h2 className="text-2xl md:text-4xl font-extrabold leading-tight mb-3 tracking-tight">
               {config.greeting === "Welcome back"
-                ? `Welcome back, ${firstName}! 👋`
+                ? `Welcome back, ${firstName}!`
                 : config.greeting}
             </h2>
             <p className="text-white/80 text-sm md:text-base max-w-xl leading-relaxed mb-6">{config.tagline}</p>

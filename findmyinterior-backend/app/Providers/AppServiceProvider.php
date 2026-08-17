@@ -40,6 +40,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        if (config('database.default') === 'sqlite') {
+            $connection = \Illuminate\Support\Facades\DB::connection();
+            if ($connection instanceof \Illuminate\Database\SQLiteConnection) {
+                $pdo = $connection->getPdo();
+                $pdo->sqliteCreateFunction('acos', 'acos', 1);
+                $pdo->sqliteCreateFunction('cos', 'cos', 1);
+                $pdo->sqliteCreateFunction('sin', 'sin', 1);
+                $pdo->sqliteCreateFunction('radians', 'deg2rad', 1);
+            }
+        }
         // Enforce explicit morph mapping for polymorphic relations
         // This decouples the database "type" column from our internal fully qualified class names.
         Relation::enforceMorphMap([
