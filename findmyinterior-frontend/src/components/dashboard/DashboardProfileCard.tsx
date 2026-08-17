@@ -96,9 +96,9 @@ export function DashboardProfileCard({
           <img src={user.cover_image} alt="Cover" className="w-full h-full object-cover" />
         )}
         <div className="absolute inset-0 bg-black/10"></div>
-        <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFileSelect(e, 'cover', 16/5)} />
+        <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFileSelect(e, 'cover', 16/5)} onClick={(e) => e.stopPropagation()} />
         <button
-          onClick={() => coverFileRef.current?.click()}
+          onClick={(e) => { e.stopPropagation(); coverFileRef.current?.click(); }}
           className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all shadow-md z-20 flex items-center gap-1 text-xs"
           disabled={uploadingCover}
           title="Upload Background Image"
@@ -116,7 +116,7 @@ export function DashboardProfileCard({
           <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             {uploadingAvatar ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : <Camera className="w-6 h-6 text-white" />}
           </div>
-          <input ref={avatarFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFileSelect(e, 'avatar', 1)} />
+          <input ref={avatarFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFileSelect(e, 'avatar', 1)} onClick={(e) => e.stopPropagation()} />
         </div>
         <h3 className="font-bold text-xl">{user?.name}</h3>
         <div className="flex flex-col gap-2 items-center justify-center mt-2 mb-2">

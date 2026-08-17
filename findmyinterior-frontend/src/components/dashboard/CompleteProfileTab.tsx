@@ -15,6 +15,7 @@ import {
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { toast } from "react-toastify";
+import { ImageCropperModal } from "@/components/ui/ImageCropperModal";
 
 const SERVICE_OPTIONS = [
   "Modular Kitchen", "False Ceiling", "Wardrobes", "Plumbing", 
@@ -107,6 +108,8 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentAvatar);
   const [success, setSuccess] = useState(false);
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [cropperImageSrc, setCropperImageSrc] = useState("");
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let file = e.target.files?.[0];
@@ -117,15 +120,21 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
     }
 
     const reader = new FileReader();
-    reader.onload = (ev) => setPreview(ev.target?.result as string);
+    reader.onload = (ev) => {
+      setCropperImageSrc(ev.target?.result as string);
+      setCropperOpen(true);
+    };
     reader.readAsDataURL(file);
+    if (e.target) e.target.value = "";
+  };
 
+  const handleCropComplete = async (croppedBlob: Blob) => {
     setUploading(true);
     setSuccess(false);
 
     try {
       const form = new FormData();
-      form.append("avatar", file);
+      form.append("avatar", croppedBlob, "avatar.jpg");
       const res = await api.post("/user/avatar", form, {
         headers: { "Content-Type": "multipart/form-data" },
       });
@@ -134,11 +143,10 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
-      alert(err.response?.data?.message || "Upload failed. Please try again.");
+      toast.error(err.response?.data?.message || "Upload failed. Please try again.");
       setPreview(currentAvatar);
     } finally {
       setUploading(false);
-      if (e.target) e.target.value = "";
     }
   };
 
@@ -185,7 +193,14 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
           </div>
         )}
       </div>
-      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleFileChange} />
+      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleFileChange} onClick={(e) => e.stopPropagation()} />
+      <ImageCropperModal
+        open={cropperOpen}
+        onOpenChange={setCropperOpen}
+        imageSrc={cropperImageSrc}
+        aspectRatio={1}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 }
@@ -197,6 +212,8 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
   const [uploading, setUploading] = useState(false);
   const [preview, setPreview] = useState<string | null>(currentCover);
   const [success, setSuccess] = useState(false);
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [cropperImageSrc, setCropperImageSrc] = useState("");
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let file = e.target.files?.[0];
@@ -207,15 +224,21 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
     }
 
     const reader = new FileReader();
-    reader.onload = (ev) => setPreview(ev.target?.result as string);
+    reader.onload = (ev) => {
+      setCropperImageSrc(ev.target?.result as string);
+      setCropperOpen(true);
+    };
     reader.readAsDataURL(file);
+    if (e.target) e.target.value = "";
+  };
 
+  const handleCropComplete = async (croppedBlob: Blob) => {
     setUploading(true);
     setSuccess(false);
 
     try {
       const form = new FormData();
-      form.append("cover_image", file);
+      form.append("cover_image", croppedBlob, "cover.jpg");
       
       let endpoint = `/user/cover`;
       if (listingId) {
@@ -226,6 +249,10 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
         headers: { "Content-Type": "multipart/form-data" },
       });
       setPreview(res.data.cover_image);
+      // Ensure the auth store user object also updates so the global avatar/cover updates
+      const meRes = await api.get('/auth/me');
+      if (meRes.data?.data) useAuthStore.getState().updateUser(meRes.data.data);
+
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
@@ -233,7 +260,6 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
       setPreview(currentCover);
     } finally {
       setUploading(false);
-      if (e.target) e.target.value = "";
     }
   };
 
@@ -272,7 +298,14 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
           <CheckCircle2 className="w-4 h-4" /> Uploaded
         </div>
       )}
-      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleFileChange} />
+      <input ref={fileRef} type="file" accept="image/jpeg,image/png,image/webp" className="hidden" onChange={handleFileChange} onClick={(e) => e.stopPropagation()} />
+      <ImageCropperModal
+        open={cropperOpen}
+        onOpenChange={setCropperOpen}
+        imageSrc={cropperImageSrc}
+        aspectRatio={16/5}
+        onCropComplete={handleCropComplete}
+      />
     </div>
   );
 }

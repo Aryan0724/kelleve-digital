@@ -86,20 +86,24 @@ export default function AdminDashboard() {
   const isAdmin = user?.isAdmin || user?.role === "admin";
 
   const fetchDashboard = useCallback(async () => {
-    const res = await api.get("/admin/dashboard");
-    setDashboard(res.data.data);
+    try {
+      const res = await api.get("/admin/dashboard");
+      setDashboard(res.data.data);
+    } catch (e) { console.error("Error fetching dashboard:", e); }
   }, []);
 
   const fetchUsers = useCallback(async () => {
-    const res = await api.get("/admin/users", {
-      params: {
-        page: userPage,
-        search: search || undefined,
-        filter: userFilter !== "all" ? userFilter : undefined,
-      },
-    });
-    setUsers(res.data.data || []);
-    setUsersMeta(res.data.meta || {});
+    try {
+      const res = await api.get("/admin/users", {
+        params: {
+          page: userPage,
+          search: search || undefined,
+          filter: userFilter !== "all" ? userFilter : undefined,
+        },
+      });
+      setUsers(res.data.data || []);
+      setUsersMeta(res.data.meta || {});
+    } catch (e) { console.error("Error fetching users:", e); }
   }, [search, userFilter, userPage]);
 
   const fetchListings = useCallback(async () => {
@@ -110,18 +114,24 @@ export default function AdminDashboard() {
   }, []);
 
   const fetchRequirements = useCallback(async () => {
-    const res = await api.get("/admin/requirements");
-    setRequirements(res.data.data || []);
+    try {
+      const res = await api.get("/admin/requirements");
+      setRequirements(res.data.data || []);
+    } catch (e) { console.error("Error fetching requirements:", e); }
   }, []);
 
   const fetchReviews = useCallback(async () => {
-    const res = await api.get("/admin/reviews/pending");
-    setReviews(res.data.data || []);
+    try {
+      const res = await api.get("/admin/reviews/pending");
+      setReviews(res.data.data || []);
+    } catch (e) { console.error("Error fetching reviews:", e); }
   }, []);
 
   const fetchPayments = useCallback(async () => {
-    const res = await api.get("/admin/payments");
-    setPayments(res.data.data || []);
+    try {
+      const res = await api.get("/admin/payments");
+      setPayments(res.data.data || []);
+    } catch (e) { console.error("Error fetching payments:", e); }
   }, []);
 
   const fetchDbTables = useCallback(async () => {
@@ -163,6 +173,8 @@ export default function AdminDashboard() {
   const refreshAll = useCallback(async () => {
     try {
       await Promise.all([fetchDashboard(), fetchUsers(), fetchListings(), fetchRequirements(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchBlogs(), fetchPlans(), fetchCategories()]);
+    } catch (e) {
+      console.error("Error in refreshAll:", e);
     } finally {
       setLoading(false);
     }

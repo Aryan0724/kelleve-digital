@@ -85,7 +85,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
           <div className="lg:col-span-1 space-y-4">
             <DashboardProfileCard
               fetchDashboard={fetchDashboard}
-              roleLabel="Skilled Worker" onEditProfile={() => setActiveTab("business_profile")}
+              roleLabel="Skilled Worker" onEditProfile={() => setActiveTab("profile")}
             />
 
             <div className="bg-white border rounded-xl overflow-hidden w-full">

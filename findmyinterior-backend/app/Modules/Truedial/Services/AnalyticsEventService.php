@@ -50,7 +50,7 @@ class AnalyticsEventService
      * Track an analytics event.
      * Ensures "exact once" tracking per session per event type per entity.
      */
-    public static function track(int $tenantId, string $eventType, string $entityType, int $entityId, ?int $userId = null, ?string $sessionId = null, array $metadata = []): void
+    public static function track(?int $tenantId, string $eventType, string $entityType, int $entityId, ?int $userId = null, ?string $sessionId = null, array $metadata = []): void
     {
         if (!in_array($eventType, self::getValidEvents())) {
             throw ValidationException::withMessages(['event_type' => 'Invalid analytics event type.']);

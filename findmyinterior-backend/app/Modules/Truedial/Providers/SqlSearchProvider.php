@@ -92,7 +92,7 @@ class SqlSearchProvider implements SearchProviderInterface
             // SQLite does not have native trigonometric functions (acos, cos, sin).
             // For local development on SQLite, we bypass the math and return a dummy distance.
             // In production (MySQL/PgSQL), we use the actual Haversine formula.
-            if (DB::connection()->getDriverName() === 'sqlite') {
+            if ($query->getConnection()->getDriverName() === 'sqlite') {
                 $query->selectRaw("0 AS distance");
             } else {
                 $query->selectRaw(
@@ -102,7 +102,7 @@ class SqlSearchProvider implements SearchProviderInterface
             }
             
             // If distance filter is applied (Only works effectively on non-sqlite or if pre-calculated)
-            if (!empty($filters['max_distance']) && DB::connection()->getDriverName() !== 'sqlite') {
+            if (!empty($filters['max_distance']) && $query->getConnection()->getDriverName() !== 'sqlite') {
                 $query->having('distance', '<=', (float) $filters['max_distance']);
             }
             

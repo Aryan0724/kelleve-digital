@@ -39,10 +39,25 @@ api.interceptors.request.use((config) => {
 // Prevent multiple simultaneous 401s from all triggering logout (race condition guard)
 let isLoggingOut = false;
 
-// Response Interceptor: Handle 401s — only logout if user actually has a token
+// Response Interceptor: Handle 401s, 500s, and automatic retries
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
+    const config = error.config;
+    
+    // Automatic Retry Logic for Network Errors or 5xx server errors (only for GET requests)
+    if (!config || !config.retryCount) {
+      if (config) config.retryCount = 0;
+    }
+    
+    const shouldRetry = config && config.method?.toLowerCase() === 'get' && config.retryCount < 2 && (!error.response || error.response.status >= 500);
+    
+    if (shouldRetry) {
+      config.retryCount += 1;
+      const delay = Math.min(1000 * (2 ** config.retryCount), 5000); // Exponential backoff
+      await new Promise(resolve => setTimeout(resolve, delay));
+      return api(config);
+    }
     // Handle 500+ Internal Server Errors and Network Errors gracefully
     if (!error.response) {
       if (typeof window !== 'undefined') {

@@ -92,7 +92,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
           <div className="lg:col-span-1 space-y-4">
             <DashboardProfileCard
               fetchDashboard={fetchDashboard}
-              roleLabel="Material Supplier" onEditProfile={() => setActiveTab("business_profile")}
+              roleLabel="Material Supplier" onEditProfile={() => setActiveTab("profile")}
               extraContent={
                 <div className="w-full space-y-2 mt-2">
                   <div className="w-full bg-orange-50 border border-orange-100 rounded-lg p-3 text-left flex justify-between items-center">
