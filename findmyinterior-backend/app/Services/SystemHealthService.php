@@ -72,7 +72,7 @@ class SystemHealthService
                 'status' => $val === 'ok' ? 'healthy' : 'warning',
                 'driver' => config('cache.default')
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return [
                 'status' => 'critical',
                 'error' => $e->getMessage()
@@ -90,7 +90,7 @@ class SystemHealthService
                 'failed_jobs' => $failed,
                 'driver' => config('queue.default')
             ];
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return [
                 'status' => 'critical',
                 'error' => $e->getMessage()
