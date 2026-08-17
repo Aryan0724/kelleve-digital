@@ -259,8 +259,16 @@ class ProfessionalProfileController extends Controller
 
             $worker = Worker::firstOrNew(['user_id' => $user->id]);
             $worker->fill(array_filter($data, fn($v) => !is_null($v)));
+            
+            // Provide defaults for required fields to prevent PDO exceptions
+            $worker->name = $data['name'] ?? $worker->name ?? $user->name ?? 'Professional Worker';
+            $worker->phone = $data['phone'] ?? $worker->phone ?? $user->phone ?? '0000000000';
+            $worker->city = $data['city'] ?? $worker->city ?? $user->city ?? 'Patna';
+            $worker->district = $data['district'] ?? $worker->district ?? $user->district ?? 'Patna';
+            $worker->skill = $data['skill'] ?? $worker->skill ?? 'Unspecified';
+            
             if (!$worker->exists) {
-                $worker->slug = Str::slug($data['name'] ?? $user->name) . '-' . Str::random(6);
+                $worker->slug = Str::slug($worker->name) . '-' . Str::random(6);
                 $worker->status = 'active';
             }
             $worker->save();
@@ -268,13 +276,13 @@ class ProfessionalProfileController extends Controller
 
             // Sync to Listing model for public profile visibility
             $listing = Listing::firstOrNew(['user_id' => $user->id]);
-            $listing->title = $data['name'] ?? $user->name;
+            $listing->title = $worker->name;
             $listing->description = $data['bio'] ?? 'Skilled worker profile.';
-            $listing->phone = $data['phone'] ?? $user->phone;
-            $listing->city = $data['city'] ?? $user->city ?? 'Patna';
-            $listing->district = $data['district'] ?? $user->district ?? 'Patna';
+            $listing->phone = $worker->phone;
+            $listing->city = $worker->city;
+            $listing->district = $worker->district;
             $listing->address = $data['address'] ?? $user->address;
-            $listing->services = $data['services'] ?? ($data['skill'] ? [$data['skill']] : []);
+            $listing->services = $data['services'] ?? (!empty($data['skill']) ? [$data['skill']] : []);
             $listing->status = 'active';
             $listing->slug = Str::slug($listing->title) . '-' . Str::random(6);
             if (!$listing->exists) {
