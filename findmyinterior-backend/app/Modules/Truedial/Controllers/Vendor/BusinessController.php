@@ -42,6 +42,14 @@ class BusinessController extends Controller
             return $this->error('You already have a business listing', 400);
         }
 
+        // Default missing required fields for TrueDial
+        $data = $request->all();
+        if (!isset($data['category_id'])) $data['category_id'] = \App\Models\Category::first()->id ?? 1;
+        if (!isset($data['city_id'])) $data['city_id'] = \App\Models\City::first()->id ?? 1;
+        if (!isset($data['district'])) $data['district'] = 'N/A';
+        if (!isset($data['state'])) $data['state'] = 'N/A';
+        $request->merge($data);
+
         $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'city_id' => 'required|exists:cities,id',
@@ -52,12 +60,23 @@ class BusinessController extends Controller
             'district' => 'required|string|max:100',
             'state' => 'required|string|max:100',
             'website' => 'nullable|url',
+            'availability' => 'nullable|string',
+            'response_time' => 'nullable|string',
+            'social_links' => 'nullable|array',
+            'services' => 'nullable|array',
+            'professional_type' => 'nullable|string',
         ]);
 
+        $tenantId = $this->tenantContext->getTenantId();
         $validated['tenant_id'] = $tenantId;
         $validated['user_id'] = Auth::id();
         $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . time();
-        $validated['status'] = 'pending'; // Requires admin approval
+        $validated['status'] = 'active'; // Set active by default so it appears in search
+
+        if (isset($validated['professional_type'])) {
+            Auth::user()->update(['professional_type' => $validated['professional_type']]);
+            unset($validated['professional_type']);
+        }
 
         $business = Listing::create($validated);
 
@@ -80,10 +99,21 @@ class BusinessController extends Controller
             'district' => 'sometimes|required|string|max:100',
             'state' => 'sometimes|required|string|max:100',
             'website' => 'nullable|url',
+            'availability' => 'nullable|string',
+            'response_time' => 'nullable|string',
+            'social_links' => 'nullable|array',
+            'services' => 'nullable|array',
+            'professional_type' => 'nullable|string',
         ]);
 
         if (isset($validated['title']) && $validated['title'] !== $business->title) {
             $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . time();
+        }
+
+        // Update professional_type on user if provided
+        if (isset($validated['professional_type'])) {
+            $business->user->update(['professional_type' => $validated['professional_type']]);
+            unset($validated['professional_type']);
         }
 
         $business->update($validated);

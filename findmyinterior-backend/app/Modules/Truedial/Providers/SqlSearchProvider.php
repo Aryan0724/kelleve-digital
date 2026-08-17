@@ -46,11 +46,16 @@ class SqlSearchProvider implements SearchProviderInterface
         }
 
         if (!empty($filters['offers'])) {
-            $query->whereHas('offers', function($q) {
+            $query->whereHas('offers', function($q) use ($filters) {
                 $q->where('status', 'active')
                   ->where(function($sub) {
                       $sub->whereNull('valid_until')->orWhere('valid_until', '>', now());
                   });
+                
+                // If the user is filtering by a specific privilege card type
+                if (!empty($filters['card_type'])) {
+                    $q->whereIn('eligible_card_type', ['all', $filters['card_type']]);
+                }
             });
         }
 
@@ -62,7 +67,13 @@ class SqlSearchProvider implements SearchProviderInterface
         // In SQLite testing, boolean might be 0/1, in MySQL it's tinyint.
         
         $scoreRaw = "
-            (IFNULL(is_premium, 0) * 40) +
+            (CASE 
+                WHEN subscription_plan = 'elite' THEN 50 
+                WHEN subscription_plan = 'professional' THEN 30 
+                WHEN subscription_plan = 'growth' THEN 10 
+                WHEN is_premium = 1 THEN 10
+                ELSE 0 
+            END) +
             (IFNULL(is_featured, 0) * 20) +
             (IFNULL(is_verified, 0) * 15) +
             (IFNULL(avg_rating, 0) * 10) +
@@ -77,13 +88,21 @@ class SqlSearchProvider implements SearchProviderInterface
         if ($hasLocation) {
             $lat = (float) $filters['lat'];
             $lng = (float) $filters['lng'];
-            $query->selectRaw(
-                "(6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat)))) AS distance",
-                [$lat, $lng, $lat]
-            );
             
-            // If distance filter is applied
-            if (!empty($filters['max_distance'])) {
+            // SQLite does not have native trigonometric functions (acos, cos, sin).
+            // For local development on SQLite, we bypass the math and return a dummy distance.
+            // In production (MySQL/PgSQL), we use the actual Haversine formula.
+            if (DB::connection()->getDriverName() === 'sqlite') {
+                $query->selectRaw("0 AS distance");
+            } else {
+                $query->selectRaw(
+                    "(6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat)))) AS distance",
+                    [$lat, $lng, $lat]
+                );
+            }
+            
+            // If distance filter is applied (Only works effectively on non-sqlite or if pre-calculated)
+            if (!empty($filters['max_distance']) && DB::connection()->getDriverName() !== 'sqlite') {
                 $query->having('distance', '<=', (float) $filters['max_distance']);
             }
             

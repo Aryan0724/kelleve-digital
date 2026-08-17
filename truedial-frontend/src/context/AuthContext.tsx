@@ -9,9 +9,11 @@ export interface AuthUser {
   phone: string | null;
   avatar: string | null;
   role: string;
-  roles?: string[];
+  roles?: any[];
+  categories?: string[];
   verification_level?: string;
   is_active?: boolean;
+  professional_type?: string;
 }
 
 interface AuthContextType {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Bell, Check, Loader2 } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
@@ -21,6 +21,7 @@ export function NotificationDropdown() {
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const fetchNotifications = async () => {
     if (!token) return;
@@ -41,6 +42,22 @@ export function NotificationDropdown() {
     }
   }, [token, user]);
 
+  // Close on click outside (works on desktop mouse & mobile touchscreens)
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleClickOutside = (e: MouseEvent | TouchEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("touchstart", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("touchstart", handleClickOutside);
+    };
+  }, [isOpen]);
+
   const markAsRead = async (id: string) => {
     try {
       await api.patch(`/notifications/${id}/read`);
@@ -55,7 +72,7 @@ export function NotificationDropdown() {
   if (!user) return null;
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => {
           setIsOpen(!isOpen);
@@ -81,7 +98,13 @@ export function NotificationDropdown() {
             {loading ? (
               <div className="flex justify-center p-8"><Loader2 className="w-6 h-6 animate-spin text-orange-500" /></div>
             ) : notifications.length === 0 ? (
-              <div className="p-8 text-center text-slate-500 text-sm">No notifications yet.</div>
+              <div className="p-10 text-center flex flex-col items-center">
+                <div className="w-12 h-12 bg-slate-100 rounded-full flex items-center justify-center mb-3">
+                  <Bell className="w-5 h-5 text-slate-400" />
+                </div>
+                <h4 className="text-sm font-semibold text-slate-700 mb-1">No notifications yet</h4>
+                <p className="text-xs text-slate-500">We'll let you know when something arrives.</p>
+              </div>
             ) : (
               <div className="divide-y divide-slate-100">
                 {notifications.map((notif) => (

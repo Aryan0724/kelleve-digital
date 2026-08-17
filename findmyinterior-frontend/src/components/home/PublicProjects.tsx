@@ -24,11 +24,11 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
           </Link>
         </div>
 
-        <div className="flex overflow-x-auto gap-4 pb-4 snap-x no-scrollbar">
+        <div className="flex overflow-x-auto xl:grid xl:grid-cols-3 2xl:grid-cols-4 gap-4 pb-4 xl:pb-0 snap-x xl:snap-none no-scrollbar">
           {projects.map((project: any, index: number) => (
             <div 
               key={project.id || index}
-              className="min-w-[280px] md:min-w-[320px] max-w-[320px] bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col overflow-hidden snap-center group hover:shadow-lg transition-all"
+              className="min-w-[280px] md:min-w-[300px] xl:min-w-0 max-w-[320px] xl:max-w-none w-full bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 flex flex-col overflow-hidden snap-center xl:snap-align-none group hover:shadow-lg transition-all"
             >
               {/* Image Section */}
               <div className="relative h-44 w-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
@@ -36,6 +36,7 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
                   src={`https://images.unsplash.com/photo-${type === 'job' ? '1504307651254-35680f35eadf' : type === 'rfq' ? '1589939705384-5185137a7f0f' : '1600585154340-be6161a56a0c'}?q=80&w=600&auto=format&fit=crop`}
                   alt={project.title || "Project"}
                   fill
+                  unoptimized
                   className="object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute top-3 right-3 bg-white dark:bg-slate-800 px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
@@ -50,6 +51,7 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
                       src={`https://ui-avatars.com/api/?name=${encodeURIComponent(project.category?.name || 'User')}&background=random`}
                       alt="Avatar"
                       fill
+                      unoptimized
                     />
                   </div>
                 </div>

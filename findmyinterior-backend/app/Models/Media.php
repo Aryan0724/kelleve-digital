@@ -33,6 +33,12 @@ class Media extends Model
         'is_cover',
     ];
 
+    public function getUrlAttribute(): string
+    {
+        // Media files are stored in the 'media' directory
+        return \Illuminate\Support\Facades\Storage::disk($this->disk)->url('media/' . $this->file_name);
+    }
+
     public function model(): MorphTo
     {
         return $this->morphTo();

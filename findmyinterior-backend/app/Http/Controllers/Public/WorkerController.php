@@ -41,6 +41,7 @@ class WorkerController extends Controller
             ->orderByDesc('is_featured')
             ->orderByDesc('is_available')
             ->orderByDesc('avg_rating')
+            ->orderByDesc('id')
             ->paginate($request->get('per_page', 12));
 
         return response()->json([
@@ -64,6 +65,10 @@ class WorkerController extends Controller
             ->where('slug', $slug)
             ->with(['approvedReviews.reviewer'])
             ->firstOrFail();
+
+        if ($worker->user_id !== $request->user()?->id) {
+            $worker->increment('views_count');
+        }
 
         return response()->json([
             'success' => true,

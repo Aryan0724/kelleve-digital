@@ -12,7 +12,7 @@ services:
       MYSQL_USER: ${DB_USERNAME:-fmi_user}
       MYSQL_PASSWORD: ${DB_PASSWORD:-secret}
     ports:
-      - "3306:3306"
+      - "127.0.0.1:3307:3306"
     volumes:
       - dbdata:/var/lib/mysql
     networks:
@@ -37,7 +37,8 @@ services:
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis
     volumes:
-      - ./findmyinterior-backend:/var/www/html
+      - storage_data:/var/www/html/storage/app/public
+      - backups_data:/var/www/backups
     networks:
       - fmi-network
 
@@ -46,16 +47,16 @@ services:
     build:
       context: ./findmyinterior-frontend
       dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: https://findmyinterior.com/api/v1
+        CACHE_BUST: ${CACHE_BUST:-1}
     container_name: fmi_frontend
     restart: unless-stopped
     ports:
       - "3000:3000"
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000/api/v1
-    volumes:
-      - ./findmyinterior-frontend:/app
-      - /app/node_modules
-      - /app/.next
+      NEXT_PUBLIC_API_URL: https://findmyinterior.com/api/v1
+      NEXT_PRIVATE_API_URL: http://backend:80/api/v1
     networks:
       - fmi-network
 
@@ -64,12 +65,14 @@ services:
     image: redis:alpine
     container_name: fmi_redis
     ports:
-      - "6379:6379"
+      - "127.0.0.1:6380:6379"
     networks:
       - fmi-network
 
 volumes:
   dbdata:
+  storage_data:
+  backups_data:
 
 networks:
   fmi-network:

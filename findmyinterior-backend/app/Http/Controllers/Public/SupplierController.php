@@ -35,6 +35,7 @@ class SupplierController extends Controller
             ->orderByDesc('is_verified')
             ->orderByDesc('is_featured')
             ->orderByDesc('avg_rating')
+            ->orderByDesc('id')
             ->paginate($request->get('per_page', 12));
 
         return response()->json([
@@ -58,6 +59,10 @@ class SupplierController extends Controller
             ->where('slug', $slug)
             ->with(['activeProducts.images', 'approvedReviews.reviewer'])
             ->firstOrFail();
+
+        if ($supplier->user_id !== $request->user()?->id) {
+            $supplier->increment('views_count');
+        }
 
         return response()->json([
             'success' => true,

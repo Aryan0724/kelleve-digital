@@ -1,18 +1,32 @@
 import axios from 'axios';
 import { useAuthStore } from './store/useAuthStore';
 
+const getBaseUrl = () => {
+  if (process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes('localhost')) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  if (typeof window !== 'undefined') {
+    return `${window.location.origin}/api/v1`;
+  }
+  return process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+};
+
 const api = axios.create({
-  baseURL: 'https://findmyinterior.com/api/v1',
-  timeout: 120000, // 2 minutes to accommodate Render free tier cold starts
+  baseURL: getBaseUrl(),
+  timeout: 120000, // 2 minutes to accommodate cold starts
   headers: {
     'Accept': 'application/json',
   },
   withCredentials: false,
 });
 
-// Request Interceptor: Attach token from Zustand store for client-side requests
+// Request Interceptor: Attach token & dynamically enforce client origin for browser requests
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {
+    // Direct browser requests to the current domain origin so API calls never fail with localhost/cors errors
+    if (!config.baseURL || config.baseURL.includes('localhost')) {
+      config.baseURL = `${window.location.origin}/api/v1`;
+    }
     const token = useAuthStore.getState().token;
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;

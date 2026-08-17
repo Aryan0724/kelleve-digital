@@ -1,7 +1,8 @@
 import { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowRight, Star, CheckCircle, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Star, CheckCircle, ShieldCheck, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import Script from 'next/script';
 import { notFound } from 'next/navigation';
 
 interface Props {
@@ -15,14 +16,20 @@ const validCategories: Record<string, { title: string, searchParam: string, icon
   'interior-designers': { title: 'Interior Designers', searchParam: 'Interior Designer', icon: 'Sofa' },
   'architects': { title: 'Architects', searchParam: 'Architect', icon: 'Building2' },
   'contractors': { title: 'Contractors', searchParam: 'Contractor', icon: 'HardHat' },
-  'builders': { title: 'Builders', searchParam: 'Builder', icon: 'Building' }
+  'builders': { title: 'Builders', searchParam: 'Builder', icon: 'Building' },
+  'carpenters': { title: 'Carpenters', searchParam: 'Carpenter', icon: 'Hammer' },
+  'electricians': { title: 'Electricians', searchParam: 'Electrician', icon: 'Zap' },
+  'plumbers': { title: 'Plumbers', searchParam: 'Plumber', icon: 'Droplet' },
+  'material-suppliers': { title: 'Material Suppliers', searchParam: 'Material Supplier', icon: 'Package' },
+  'painters': { title: 'Painters', searchParam: 'Painter', icon: 'Paintbrush' }
 };
 
 
 
-export function generateMetadata({ params }: Props): Metadata {
-  const cat = params.category.toLowerCase();
-  const city = params.city.toLowerCase();
+export async function generateMetadata({ params }: { params: Promise<Props['params']> }): Promise<Metadata> {
+  const resolvedParams = await params;
+  const cat = resolvedParams.category.toLowerCase();
+  const city = resolvedParams.city.toLowerCase();
 
   if (!validCategories[cat]) return {};
 
@@ -40,13 +47,29 @@ export function generateMetadata({ params }: Props): Metadata {
       title: `Top ${catName} in ${cityName} | FindMyInterior`,
       description: `Connect with verified ${catName.toLowerCase()} in ${cityName}. Compare and hire today.`,
       url: `https://findmyinterior.com/${cat}/${city}`,
+      images: [
+        {
+          url: "/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: `${catName} in ${cityName} - FindMyInterior`,
+        },
+      ],
+      type: 'website',
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `Top ${catName} in ${cityName} | FindMyInterior`,
+      description: `Find the best and verified ${catName.toLowerCase()} in ${cityName}, Bihar. Compare portfolios, read reviews, and get free quotes.`,
+      images: ["/og-image.jpg"],
     }
   };
 }
 
-export default function CategoryCityLandingPage({ params }: Props) {
-  const cat = params.category.toLowerCase();
-  const city = params.city.toLowerCase();
+export default async function CategoryCityLandingPage({ params }: { params: Promise<Props['params']> }) {
+  const resolvedParams = await params;
+  const cat = resolvedParams.category.toLowerCase();
+  const city = resolvedParams.city.toLowerCase();
 
   if (!validCategories[cat]) {
     notFound();
@@ -55,12 +78,68 @@ export default function CategoryCityLandingPage({ params }: Props) {
   const catData = validCategories[cat];
   const cityName = city.charAt(0).toUpperCase() + city.slice(1);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "BreadcrumbList",
+        "itemListElement": [
+          {
+            "@type": "ListItem",
+            "position": 1,
+            "name": "Home",
+            "item": "https://findmyinterior.com"
+          },
+          {
+            "@type": "ListItem",
+            "position": 2,
+            "name": catData.title,
+            "item": `https://findmyinterior.com/professionals?search=${catData.searchParam}`
+          },
+          {
+            "@type": "ListItem",
+            "position": 3,
+            "name": `${catData.title} in ${cityName}`,
+            "item": `https://findmyinterior.com/${cat}/${city}`
+          }
+        ]
+      },
+      {
+        "@type": "Service",
+        "serviceType": catData.title,
+        "provider": {
+          "@type": "Organization",
+          "name": "FindMyInterior",
+          "url": "https://findmyinterior.com"
+        },
+        "areaServed": {
+          "@type": "City",
+          "name": cityName
+        },
+        "description": `Connect with verified ${catData.title.toLowerCase()} in ${cityName}.`
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-slate-50">
+      <Script
+        id={`json-ld-${cat}-${city}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       {/* Hero Section */}
       <section className="bg-[#0a1c3a] text-white py-24 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10"></div>
         <div className="container mx-auto px-4 relative z-10 text-center max-w-4xl">
+          <nav className="flex items-center justify-center text-sm text-slate-400 mb-8 font-medium">
+            <Link href="/" className="hover:text-white transition-colors">Home</Link>
+            <ChevronRight className="w-4 h-4 mx-2" />
+            <span className="hover:text-white transition-colors cursor-default">{catData.title}</span>
+            <ChevronRight className="w-4 h-4 mx-2" />
+            <span className="text-white">{cityName}</span>
+          </nav>
+          
           <div className="inline-block bg-white/10 px-4 py-1.5 rounded-full mb-6 border border-white/20 text-sm font-medium">
             Verified Professionals in {cityName}
           </div>

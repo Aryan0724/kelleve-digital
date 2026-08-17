@@ -68,7 +68,11 @@ class JobController extends Controller
             'status' => 'open'
         ]);
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('images')) {
+            $file = $request->file('images')[0];
+            $job->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
+            $job->save();
+        } elseif ($request->hasFile('image')) {
             $file = $request->file('image');
             $job->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
             $job->save();
@@ -122,6 +126,12 @@ class JobController extends Controller
 
         $job->is_unlocked = $job->isUnlockedBy($user);
         $job->has_bid = $job->bids()->where('professional_id', $user->id)->exists();
+
+        if (!$job->is_unlocked) {
+            $job->phone = substr($job->phone, 0, 2) . '********';
+            $job->email = '********';
+            $job->name = '***';
+        }
 
         return $this->success($job);
     }

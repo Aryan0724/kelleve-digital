@@ -15,23 +15,23 @@ class OpportunityTypeSeeder extends Seeder
         $types = [
             [
                 'type' => 'HOME_INTERIOR',
-                'creator_roles' => json_encode(['homeowner', 'builder']),
-                'target_roles' => json_encode(['designer', 'contractor', 'architect']),
+                'creator_roles' => ['homeowner', 'builder'],
+                'target_roles' => ['interior_designer', 'contractor', 'architect'],
             ],
             [
                 'type' => 'MATERIAL_REQUEST',
-                'creator_roles' => json_encode(['contractor', 'designer', 'builder', 'homeowner']),
-                'target_roles' => json_encode(['supplier']),
+                'creator_roles' => ['contractor', 'interior_designer', 'builder', 'homeowner'],
+                'target_roles' => ['supplier'],
             ],
             [
                 'type' => 'LABOUR_REQUEST',
-                'creator_roles' => json_encode(['contractor', 'builder']),
-                'target_roles' => json_encode(['worker']),
+                'creator_roles' => ['contractor', 'builder'],
+                'target_roles' => ['worker'],
             ],
             [
                 'type' => 'SUBCONTRACT_REQUEST',
-                'creator_roles' => json_encode(['contractor', 'builder']),
-                'target_roles' => json_encode(['contractor']),
+                'creator_roles' => ['contractor', 'builder'],
+                'target_roles' => ['contractor'],
             ],
         ];
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserDocument;
 use App\Services\TrustScoreService;
+use App\Notifications\AccountVerifiedNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -84,6 +85,10 @@ class VerificationController extends Controller
 
         $this->trustScoreService->recalculateForUser($document->user);
 
+        if ($document->user->is_verified_business) {
+            $document->user->notify(new AccountVerifiedNotification());
+        }
+
         return response()->json([
             'status' => 'success',
             'message' => 'Document approved successfully.',
@@ -127,6 +132,8 @@ class VerificationController extends Controller
         ]);
 
         $this->trustScoreService->recalculateForUser($user);
+
+        $user->notify(new AccountVerifiedNotification());
 
         return response()->json([
             'status' => 'success',

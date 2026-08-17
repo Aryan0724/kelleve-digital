@@ -236,6 +236,41 @@ export default function MarketingCampaignsPage() {
           </div>
         )}
       </div>
+
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-navy dark:text-white mb-6">More Ways to Grow</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <Card className="border border-border shadow-sm bg-card hover:border-[#E8701A]/50 transition cursor-pointer">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <div className="p-2 bg-[#E8701A]/10 text-[#E8701A] rounded-lg">
+                  <Megaphone className="w-5 h-5" />
+                </div>
+                TrueDial Promoted Listings
+              </CardTitle>
+              <CardDescription>Boost your business to the top of search results in your city.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button className="w-full bg-[#E8701A] hover:bg-[#E8701A]/90 text-white font-bold">Start Promoting</Button>
+            </CardContent>
+          </Card>
+          
+          <Card className="border border-border shadow-sm bg-card hover:border-blue-500/50 transition cursor-pointer">
+            <CardHeader>
+              <CardTitle className="text-lg flex items-center gap-2">
+                <div className="p-2 bg-blue-500/10 text-blue-500 rounded-lg">
+                  <Users className="w-5 h-5" />
+                </div>
+                Customer Loyalty Program
+              </CardTitle>
+              <CardDescription>Reward repeat customers with points and special discounts.</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <Button variant="outline" className="w-full border-blue-500/20 text-blue-600 font-bold hover:bg-blue-500/10">Configure Loyalty</Button>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
     </div>
   );
 }

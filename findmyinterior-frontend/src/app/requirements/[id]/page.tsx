@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
 import { 
@@ -13,12 +14,13 @@ import { AdvancedBidForm } from "@/components/bids/AdvancedBidForm";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { BidComparisonMatrix } from "@/components/bids/BidComparisonMatrix";
+import { BookmarkButton } from "@/components/common/BookmarkButton";
 
 export default function RequirementDetail() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, token } = useAuthStore();
+  const { user, token, setShowLoginModal } = useAuthStore();
   
   const [requirement, setRequirement] = useState<any>(null);
   const [bids, setBids] = useState<any[]>([]);
@@ -40,18 +42,19 @@ export default function RequirementDetail() {
     return base + suffix;
   };
 
+  const fetchReq = async () => {
+    try {
+      const res = await api.get(getEndpoint(params.id as string));
+      setRequirement(res.data.data);
+      setIsUnlocked(res.data.data?.is_unlocked || false);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchReq = async () => {
-      try {
-        const res = await api.get(getEndpoint(params.id as string));
-        setRequirement(res.data.data);
-        setIsUnlocked(res.data.data?.is_unlocked || false);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
     fetchReq();
   }, [params.id, reqType]);
 
@@ -73,11 +76,16 @@ export default function RequirementDetail() {
   const handleAwardBid = async (bidId: number) => {
     try {
       await api.patch(`/bids/${bidId}/award`);
-      alert("Project awarded successfully!");
-      // Refresh the page
-      window.location.reload();
+      toast.success("Project awarded successfully!");
+      // Refresh the data without full page reload
+      fetchReq();
+      if (user?.id === requirement?.user_id || user?.role === 'admin') {
+        const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+        const bidsRes = await api.get(`/requirements/${params.id}/bids${typeStr}`);
+        setBids(bidsRes.data.data || bidsRes.data || []);
+      }
     } catch (e) {
-      alert("Failed to award project.");
+      toast.error("Failed to award project.");
     }
   };
 
@@ -85,16 +93,16 @@ export default function RequirementDetail() {
     try {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
       await api.post(`/requirements/${params.id}/invite-vendor${typeStr}`, { vendor_id: vendorId });
-      alert("Vendor invited successfully!");
+      toast.success("Vendor invited successfully!");
       setRecommendations(prev => prev.map(r => r.vendor_id === vendorId ? { ...r, invited_at: new Date().toISOString() } : r));
     } catch (e) {
-      alert("Failed to invite vendor.");
+      toast.error("Failed to invite vendor.");
     }
   };
 
   const handleUnlockContact = async () => {
     if (!token) {
-      router.push("/login");
+      setShowLoginModal(true, window.location.pathname);
       return;
     }
     setUnlockLoading(true);
@@ -102,17 +110,17 @@ export default function RequirementDetail() {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
       await api.post(`/requirements/${params.id}/unlock${typeStr}`);
       setIsUnlocked(true);
-      alert("Contact unlocked successfully!");
+      toast.success("Contact unlocked successfully!");
       setShowUnlockModal(false);
       // Refresh to get the actual contact details
       const res = await api.get(getEndpoint(params.id as string));
       setRequirement(res.data.data);
     } catch (err: any) {
-      if (err.response?.status === 402 || err.response?.data?.message?.includes('balance')) {
-        alert("Insufficient wallet balance. Please recharge your wallet.");
-        router.push("/dashboard/wallet/recharge");
+      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
+        toast.error("Insufficient wallet balance. Redirecting to wallet recharge...");
+        router.push("/dashboard?tab=wallet");
       } else {
-        alert(err.response?.data?.message || "Failed to unlock contact.");
+        toast.error(err.response?.data?.message || "Failed to unlock contact.");
       }
     } finally {
       setUnlockLoading(false);
@@ -161,6 +169,7 @@ export default function RequirementDetail() {
               <h1 className="text-3xl font-extrabold text-slate-900 flex items-center gap-2 flex-wrap">
                 {requirement.title}
                 <ShieldCheck className="w-6 h-6 text-[#ff6b00]" fill="#ff6b00" stroke="white" />
+                <BookmarkButton id={requirement.id} type={reqType === 'Project' ? 'Project' : 'Requirement'} className="ml-2" />
                 {isOwner && requirement.status === 'open' && (
                   <Button 
                     size="sm" 
@@ -267,13 +276,16 @@ export default function RequirementDetail() {
             {/* Left Column (Images & Details) */}
             <div className="lg:col-span-2 space-y-6">
               
-              {(() => {
+              {reqType !== 'job' && (() => {
                 const displayImages = [];
                 if (requirement.images && requirement.images.length > 0) {
                   displayImages.push(...requirement.images.map((img: any) => img.image_url || img));
                 }
                 if (requirement.image) {
                   displayImages.push(requirement.image);
+                }
+                if (displayImages.length === 0) {
+                  displayImages.push("https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=500&q=80");
                 }
 
                 return (
@@ -479,7 +491,7 @@ export default function RequirementDetail() {
             </div>
 
             {/* Right Column (Actions) */}
-            <div className="space-y-4">
+            <div className="space-y-4 sticky top-24 h-fit">
               
               {/* Unlock Contact Block */}
               {!isOwner && (
@@ -507,7 +519,12 @@ export default function RequirementDetail() {
                           <div className="text-sm text-slate-600 font-medium">{requirement.email || "No email provided"}</div>
                         </>
                       ) : (
-                        <div className="text-sm text-slate-600 font-medium mb-2">Phone number hidden. Message to discuss further.</div>
+                        <div className="text-center mb-2">
+                          <div className="text-2xl font-black text-slate-900 tracking-wider mb-1 opacity-70">
+                            {requirement.phone || "99********"}
+                          </div>
+                          <div className="text-sm text-slate-600 font-medium">Phone number hidden. Message to discuss further.</div>
+                        </div>
                       )}
                       <div className="mt-3 text-xs font-bold text-green-700 bg-green-100 py-1.5 rounded flex items-center justify-center gap-1">
                         <CheckCircle className="w-4 h-4" /> {isUnlocked || user?.role === 'admin' ? "Contact Unlocked" : "Messaging Unlocked"}
@@ -532,9 +549,14 @@ export default function RequirementDetail() {
                     </div>
                   ) : (
                     <>
-                      <div className="mt-4 mb-2 flex items-baseline">
-                        <span className="text-4xl font-black text-[#16a34a]">{displayUnlockPrice}</span>
-                        {!isWorker && <span className="text-slate-600 font-bold ml-1">/unlock</span>}
+                      <div className="mt-4 mb-4 flex flex-col items-center">
+                        <div className="text-3xl font-black text-slate-900 tracking-wider mb-3 opacity-60">
+                          {requirement.phone || "99********"}
+                        </div>
+                        <div className="flex items-baseline">
+                          <span className="text-4xl font-black text-[#16a34a]">{displayUnlockPrice}</span>
+                          {!isWorker && <span className="text-slate-600 font-bold ml-1">/unlock</span>}
+                        </div>
                       </div>
                       
                       <p className="text-sm text-slate-700 mb-5 leading-relaxed">
@@ -762,7 +784,7 @@ export default function RequirementDetail() {
                             onClick={() => setShowBidForm(true)}
                             className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-bold h-12 text-base rounded-md flex gap-2 shadow-md"
                           >
-                            <Upload className="w-4 h-4" /> PLACE BID NOW
+                            <Upload className="w-4 h-4" /> {reqType === 'job' ? 'APPLY FOR JOB' : 'APPLY NOW'}
                           </Button>
                         </>
                       )}

@@ -41,9 +41,11 @@ class DashboardController extends Controller
                     'unread_messages_count' => $unreadCustomer + $unreadVendor,
                     'has_pending_verification' => \App\Models\UserDocument::where('user_id', $user->id)->where('status', 'pending')->exists(),
                 ],
-                'recent_blogs' => \App\Http\Resources\BlogResource::collection(
-                    \App\Models\Blog::published()->with(['author', 'tags'])->latest()->take(3)->get()
-                ),
+                'recent_blogs' => \Illuminate\Support\Facades\Cache::remember('dashboard_recent_blogs', 3600, function() {
+                    return \App\Http\Resources\BlogResource::collection(
+                        \App\Models\Blog::published()->with(['author', 'tags'])->latest()->take(3)->get()
+                    );
+                }),
             ];
 
             $userRoles = $user->roles->pluck('slug')->toArray();
@@ -151,7 +153,7 @@ class DashboardController extends Controller
                             $requirementTypeLabel = 'RFQ';
                         } elseif (in_array($bid->requirement_type, ['WorkerJob', 'App\Models\WorkerJob'])) {
                             $requirementTitle = $workerJobs[$bid->requirement_id] ?? $requirementTitle;
-                            $requirementTypeLabel = 'Skilled Labour Job';
+                            $requirementTypeLabel = 'Skilled Worker Job';
                         }
 
                         // Get worker/professional profile for extra info
@@ -212,8 +214,29 @@ class DashboardController extends Controller
                     $data['phone_clicks']    = $user->listings()->sum('phone_clicks');
                     $data['whatsapp_clicks'] = $user->listings()->sum('whatsapp_clicks');
                     $data['website_clicks']  = $user->listings()->sum('website_clicks');
+                    
+                    // Recent profile viewers (logged-in users only)
+                    $listingIds = $user->listings()->pluck('id');
+                    $data['recent_visitors'] = \Illuminate\Support\Facades\DB::table('analytics_events')
+                        ->join('users', 'users.id', '=', 'analytics_events.user_id')
+                        ->where('analytics_events.event_type', 'view')
+                        ->where('analytics_events.entity_type', 'listing')
+                        ->whereIn('analytics_events.entity_id', $listingIds)
+                        ->whereNotNull('analytics_events.user_id')
+                        ->where('analytics_events.user_id', '!=', $user->id)
+                        ->select(
+                            'users.id',
+                            'users.name',
+                            'users.avatar',
+                            
+                            'analytics_events.created_at as viewed_at'
+                        )
+                        ->orderByDesc('analytics_events.created_at')
+                        ->limit(10)
+                        ->get();
                 } else {
                     $data['total_views']     = $entity?->views_count ?? 0;
+                    $data['recent_visitors'] = [];
                 }
 
                 $data['recent_inquiries'] = $entity?->inquiries()
@@ -283,17 +306,90 @@ class DashboardController extends Controller
                         ->take(10)
                         ->pluck('requirement_id');
 
-                    if ($recommendedIds->isEmpty()) {
-                        $data['recommended_leads'] = \App\Models\Requirement::where('status', 'open')
-                            ->latest()
-                            ->take(10)
-                            ->get();
+                    $query = \App\Models\Requirement::where('status', 'open')
+                        ->where(function($q) {
+                            $q->whereNull('opportunity_type')
+                              ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
+                        })
+                        ->whereDoesntHave('category', function($q) {
+                            $q->where('slug', 'workers');
+                        });
+                    
+                    $validReqTypes = ['Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project'];
+                    $profType = $user->professional_type;
+
+                    if (in_array('interior_designer', $userRoles) || in_array('interior_company', $userRoles) || in_array($profType, ['interior_designer', 'interior_company'])) {
+                        $validReqTypes = array_merge($validReqTypes, ['INTERIOR_DESIGN', 'Interior Design', 'FURNITURE', 'Furniture']);
+                    }
+                    if (in_array('architect', $userRoles) || in_array($profType, ['architect', 'architecture_firm'])) {
+                        $validReqTypes = array_merge($validReqTypes, ['ARCHITECTURE', 'Architecture']);
+                    }
+                    if (in_array('contractor', $userRoles) || in_array($profType, ['contractor', 'civil_contractor', 'turnkey_contractor'])) {
+                        $validReqTypes = array_merge($validReqTypes, ['CONSTRUCTION', 'Construction']);
+                    }
+                    if (in_array('builder', $userRoles) || in_array($profType, ['builder', 'real_estate_developer'])) {
+                        $validReqTypes = array_merge($validReqTypes, ['BUILDER_PROJECT', 'Builder Project']);
+                    }
+
+                    if (count($validReqTypes) > 4) { // 4 is the base array length
+                        $query->whereIn('requirement_type', $validReqTypes);
                     } else {
-                        $data['recommended_leads'] = \App\Models\Requirement::whereIn('id', $recommendedIds)
-                            ->where('status', 'open')
-                            ->get();
+                        // Fallback for all other professional roles (e.g. pest_control, modular_kitchen_designer)
+                        $listingCategoryIds = $user->listings()->pluck('category_id')->toArray();
+                        $roleSlugs = array_map(fn($r) => str_replace('_', '-', $r), $userRoles);
+                        
+                        $query->where(function($q) use ($listingCategoryIds, $roleSlugs) {
+                            if (!empty($listingCategoryIds)) {
+                                $q->whereIn('category_id', $listingCategoryIds);
+                            } else {
+                                $q->whereHas('category', function($q2) use ($roleSlugs) {
+                                    $q2->whereIn('slug', $roleSlugs);
+                                });
+                            }
+                        });
+                    }
+
+                    if ($recommendedIds->isEmpty()) {
+                        $data['recommended_leads'] = (clone $query)->latest()->take(10)->get();
+                    } else {
+                        $data['recommended_leads'] = (clone $query)->whereIn('id', $recommendedIds)->get();
+                        if ($data['recommended_leads']->isEmpty()) {
+                            $data['recommended_leads'] = (clone $query)->latest()->take(10)->get();
+                        }
                     }
                 }
+            }
+
+            if (isset($data['recommended_leads']) && $data['recommended_leads']->isNotEmpty()) {
+                $data['recommended_leads'] = $data['recommended_leads']->map(function($lead) use ($user) {
+                    $hasBid = false;
+                    if ($lead instanceof \App\Models\Requirement) {
+                        $hasBid = \App\Models\Bid::where('requirement_id', $lead->id)
+                            ->where('professional_id', $user->id)
+                            ->exists();
+                    }
+                    
+                    $canSeeContact = clone $user;
+                    $canSeeContact = $canSeeContact && (
+                        $canSeeContact->id === $lead->user_id ||
+                        $canSeeContact->isAdmin() || 
+                        $canSeeContact->hasPremiumSubscription() || 
+                        $canSeeContact->hasUnlockedRequirement($lead->id) ||
+                        $hasBid
+                    );
+                    
+                    // Mask phone if not allowed
+                    if (!$canSeeContact && !empty($lead->phone)) {
+                        $lead->phone = substr($lead->phone, 0, 2) . '********';
+                    }
+                    if (!$canSeeContact && !empty($lead->email)) {
+                        $lead->email = null;
+                    }
+                    
+                    $lead->is_unlocked = $canSeeContact;
+                    
+                    return $lead;
+                });
             }
 
             return $this->success($data);

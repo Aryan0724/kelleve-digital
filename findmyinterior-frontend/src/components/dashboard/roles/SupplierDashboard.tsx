@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Gavel, CheckCircle2, MessageSquare, Wallet, User, LogOut, Package, ShieldCheck, LayoutDashboard } from "lucide-react";
+import { Search, Gavel, CheckCircle2, MessageSquare, Wallet, User, LogOut, Package, ShieldCheck, LayoutDashboard , Star } from "lucide-react";
+import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
@@ -18,13 +19,37 @@ import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirementsTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
+import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
+import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
+import { Paintbrush } from "lucide-react";
 
 export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
   const isUnverified = user && !["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
-  const [activeTab, setActiveTab] = useState("available_leads");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || "available_leads");
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  useEffect(() => {
+    // Auto-scroll to content area on mobile when tab changes
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        const contentArea = document.getElementById('dashboard-content-area');
+        if (contentArea) {
+          const y = contentArea.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [activeTab]);
   const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = async () => {
@@ -65,26 +90,17 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
-                  <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                  {user?.avatar && (
-                    <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                  )}
-                </div>
-                <h3 className="font-bold text-lg">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="default">Material Supplier</Badge>
-                
+            <DashboardProfileCard
+              fetchDashboard={fetchDashboard}
+              roleLabel="Material Supplier" onEditProfile={() => setActiveTab("business_profile")}
+              extraContent={
                 <div className="w-full space-y-2 mt-2">
                   <div className="w-full bg-orange-50 border border-orange-100 rounded-lg p-3 text-left flex justify-between items-center">
                     <div>
                       <div className="text-xs text-orange-600 font-medium">Subscription</div>
                       <div className="font-bold text-slate-900">{data?.user?.subscription || "Free Plan"}</div>
                     </div>
-                    <Link href="/pricing">
-                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200">Upgrade</Button>
-                    </Link>
+                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
                   </div>
                   
                   <div className="w-full bg-green-50 border border-green-100 rounded-lg p-3 text-left flex justify-between items-center">
@@ -95,8 +111,8 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                     <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-green-700 border-green-200" onClick={() => setActiveTab("wallet")}>Add</Button>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+              }
+            />
 
             <div className="bg-white border rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
@@ -104,6 +120,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Submitted Quotes")}
                 {renderSidebarButton("orders", <CheckCircle2 className="h-5 w-5" />, "Orders")}
                 {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
+                {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
                 {renderSidebarButton("catalogue", <Package className="h-5 w-5" />, "Catalogue")}
                 {renderSidebarButton("products", <Package className="h-5 w-5" />, "Products")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
@@ -111,11 +128,12 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
+                {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
+          <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
 
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
@@ -164,6 +182,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
             {activeTab === 'business_profile' && <CompleteProfileTab />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
+            {activeTab === 'portfolio' && <PortfolioTab />}
 
             {activeTab === 'messages' && (
               <Card>
@@ -193,3 +212,9 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
     </div>
   );
 }
+
+
+
+
+
+

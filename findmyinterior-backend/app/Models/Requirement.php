@@ -72,6 +72,11 @@ class Requirement extends Model
         return $this->belongsTo(Category::class);
     }
 
+    public function images(): HasMany
+    {
+        return $this->hasMany(RequirementImage::class, 'requirement_id');
+    }
+
     public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
@@ -82,10 +87,6 @@ class Requirement extends Model
         return $this->belongsTo(District::class);
     }
 
-    public function images(): HasMany
-    {
-        return $this->hasMany(RequirementImage::class);
-    }
 
     public function contactUnlocks(): HasMany
     {

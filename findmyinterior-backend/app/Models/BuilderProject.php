@@ -36,6 +36,11 @@ class BuilderProject extends Model
         return $this->hasMany(BuilderProjectImage::class)->orderBy('sort_order');
     }
 
+    public function getUserAttribute()
+    {
+        return $this->builder?->user;
+    }
+
     // ─── Scopes ───────────────────────────────────────────────────────────────
 
     public function scopePossessionReady($query)

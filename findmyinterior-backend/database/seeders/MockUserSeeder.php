@@ -224,7 +224,7 @@ class MockUserSeeder extends Seeder
             $nameData = $this->randomName();
             $city     = $this->randomCity();
             $district = $this->randomDistrict($city);
-            $email    = strtolower(Str::slug($nameData['first']) . '.' . Str::slug($nameData['last']) . rand(1, 999) . '@gmail.com');
+            $email    = strtolower(Str::slug($nameData['first']) . '.' . Str::slug($nameData['last']) . rand(10000, 99999) . '@gmail.com');
             $seed     = rand(1000, 9999);
 
             // Top 20% are verified
@@ -250,6 +250,7 @@ class MockUserSeeder extends Seeder
             $yearsExp = rand(2, 15);
             $listing  = Listing::create([
                 'user_id'          => $user->id,
+                'tenant_id'        => 1,
                 'category_id'      => $categoryId,
                 'title'            => $nameData['name'] . ' ' . $profession . ' Services',
                 'slug'             => Str::slug($nameData['name'] . '-' . $profession . '-' . $city) . '-' . Str::random(4),
@@ -261,7 +262,7 @@ class MockUserSeeder extends Seeder
                 'city'             => $city,
                 'district'         => $district,
                 'state'            => 'State',
-                'address'          => 'Plot ' . rand(1, 999) . ', ' . $city,
+                'address'          => 'Plot ' . rand(100000, 999999) . ', ' . $city,
                 'years_experience' => $yearsExp,
                 'budget_tier'      => ['Under ₹50,000', '₹50,000 - ₹2 Lakhs', '₹2 Lakhs - ₹10 Lakhs', '₹10 Lakhs+'][rand(0, 3)],
                 'team_size'        => rand(2, 25),
@@ -289,7 +290,7 @@ class MockUserSeeder extends Seeder
             $nameData = $this->randomName();
             $city     = $this->randomCity();
             $skill    = $skills[array_rand($skills)];
-            $email    = strtolower(Str::slug($nameData['first']) . rand(1, 999) . '@gmail.com');
+            $email    = strtolower(Str::slug($nameData['first']) . rand(100000, 999999) . '@gmail.com');
             $seed     = rand(1000, 9999);
             $isVerified = ($i < ($count * 0.2));
 
@@ -343,7 +344,7 @@ class MockUserSeeder extends Seeder
             $nameData     = $this->randomName();
             $city         = $this->randomCity();
             $material     = $materialTypes[array_rand($materialTypes)];
-            $email        = strtolower(Str::slug($nameData['first']) . '.supplier' . rand(1, 999) . '@gmail.com');
+            $email        = strtolower(Str::slug($nameData['first']) . '.supplier' . rand(100000, 999999) . '@gmail.com');
             $seed         = rand(1000, 9999);
             $isVerified   = ($i < ($count * 0.3));
 
@@ -392,7 +393,7 @@ class MockUserSeeder extends Seeder
             $nameData   = $this->randomName();
             $city       = $this->randomCity();
             $projType   = $projectTypes[array_rand($projectTypes)];
-            $email      = strtolower(Str::slug($nameData['first']) . '.builders' . rand(1, 999) . '@gmail.com');
+            $email      = strtolower(Str::slug($nameData['first']) . '.builders' . rand(100000, 999999) . '@gmail.com');
             $seed       = rand(1000, 9999);
             $isVerified = true; // All builders are verified
 

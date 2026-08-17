@@ -16,7 +16,7 @@ function getServerApiBase(): string {
   if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  const vps = process.env.VPS_BACKEND_URL || "http://187.127.164.142:8000";
+  const vps = process.env.VPS_BACKEND_URL || "https://findmyinterior.com";
   return `${vps}/api/v1`;
 }
 
@@ -63,6 +63,7 @@ export async function GET() {
       roles: rawUser.roles?.map((r: any) => r.slug || r.name || r) || [],
       verification_level: rawUser.verification_level || "unverified",
       is_active: rawUser.is_active ?? true,
+      professional_type: rawUser.professional_type || null,
     };
 
     return NextResponse.json({ success: true, user });

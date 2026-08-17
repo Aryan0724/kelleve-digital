@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 
-export function InquiryForm({ type, id, title }: { type: 'Listing' | 'BuilderProject' | 'Supplier' | 'Worker', id: number, title: string }) {
+export function InquiryForm({ type, id, title, buttonText = "Contact Now" }: { type: 'Listing' | 'BuilderProject' | 'Supplier' | 'Worker', id: number, title: string, buttonText?: string }) {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const user = useAuthStore((state) => state.user);
@@ -40,8 +40,11 @@ export function InquiryForm({ type, id, title }: { type: 'Listing' | 'BuilderPro
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button size="lg" className="w-full bg-orange-600 hover:bg-orange-700" />}>
-        Contact Now
+      {/* @ts-expect-error asChild is not in types but works with some UI variants */}
+      <DialogTrigger asChild>
+        <Button size="lg" className="w-full bg-orange-600 hover:bg-orange-700">
+          {buttonText}
+        </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>

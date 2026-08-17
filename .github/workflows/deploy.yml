@@ -1,4 +1,4 @@
-name: Deploy FindMyInterior
+name: Deploy to Production VPS
 
 on:
   push:
@@ -6,54 +6,91 @@ on:
       - main
 
 jobs:
-  deploy-backend:
+  deploy:
+    name: SSH Deploy to Hostinger VPS
     runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: '8.3'
-      - name: Install Composer Dependencies
-        working-directory: ./findmyinterior-backend
-        run: composer install --no-dev --optimize-autoloader
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
-          script: |
-            cd /var/www/findmyinterior/backend
-            git pull origin main
-            composer install --no-dev --optimize-autoloader
-            php artisan migrate --force
-            php artisan config:cache
-            php artisan route:cache
 
-  deploy-frontend:
-    runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Setup Node
-        uses: actions/setup-node@v3
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Deploy to VPS via SSH
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          node-version: '20'
-      - name: Install dependencies & Build
-        working-directory: ./findmyinterior-frontend
-        run: |
-          npm ci
-          npm run build
-      - name: Deploy to Vercel/AWS
-        # Assuming AWS amplify or standard server deployment
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USER }}
-          key: ${{ secrets.SERVER_SSH_KEY }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          timeout: 600s
           script: |
-            cd /var/www/findmyinterior/frontend
-            git pull origin main
-            npm install
-            npm run build
-            pm2 restart findmyinterior-frontend
+            export PATH=$PATH:/usr/local/bin:/usr/bin:/bin
+
+            echo "=== Ensuring /docker/find-my-interior links to /var/www/find-my-interior ==="
+            if [ -d "/docker/find-my-interior" ] && [ ! -L "/docker/find-my-interior" ]; then
+              rsync -a /docker/find-my-interior/ /var/www/find-my-interior/ 2>/dev/null || cp -rn /docker/find-my-interior/* /var/www/find-my-interior/ 2>/dev/null || true
+              rm -rf /docker/find-my-interior
+              ln -s /var/www/find-my-interior /docker/find-my-interior
+            elif [ ! -e "/docker/find-my-interior" ]; then
+              mkdir -p /docker
+              ln -s /var/www/find-my-interior /docker/find-my-interior
+            fi
+
+            echo "=== Navigating to project directory ==="
+            cd /var/www/find-my-interior
+
+            echo "=== Pulling latest code ==="
+            git fetch origin
+            git reset --hard origin/main
+
+            echo "=== Clearing Laravel cache files ==="
+            rm -f findmyinterior-backend/bootstrap/cache/*.php || true
+
+            echo "=== Disk usage before build ==="
+            df -h / | tail -1
+
+            echo "=== Pruning unused Docker images to free space ==="
+            docker image prune -f || true
+
+            echo "=== Building all services (CACHE_BUST invalidates frontend npm run build layer) ==="
+            CACHE_BUST=$(date +%s)
+            
+            # Use docker compose (V2) or docker-compose (V1)
+            if command -v docker-compose &> /dev/null; then
+              DOCKER_CMD="docker-compose"
+            else
+              DOCKER_CMD="docker compose"
+            fi
+            
+            $DOCKER_CMD build --build-arg CACHE_BUST=$CACHE_BUST > build.log 2>&1
+            BUILD_EXIT=$?
+            
+            echo "=== Starting all containers ==="
+            $DOCKER_CMD up -d
+            
+            echo "=== RUNNING INTERNAL CURL DIAGNOSTIC ===" >> build.log
+            docker exec fmi_backend curl -s "http://localhost:80/api/v1/listings?search=Interior+Designer" >> build.log
+            echo -e "\n=== END DIAGNOSTIC ===" >> build.log
+            
+            cp build.log findmyinterior-backend/public/build-log.txt || true
+            
+            echo "Build exit code: $BUILD_EXIT"
+            if [ $BUILD_EXIT -ne 0 ]; then
+              echo "ERROR: Frontend build failed!"
+              tail -n 50 build.log
+              exit 1
+            fi
+
+            echo "=== Starting all containers ==="
+            $DOCKER_CMD up -d
+
+            echo "=== Waiting for backend to start ==="
+            sleep 15
+
+            echo "=== Clearing Laravel caches ==="
+            docker exec fmi_backend php artisan route:clear || true
+            docker exec fmi_backend php artisan config:clear || true
+            docker exec fmi_backend php artisan cache:clear || true
+
+            echo "=== Container Status ==="
+            docker compose ps
+
+            echo "=== Deploy complete! ==="

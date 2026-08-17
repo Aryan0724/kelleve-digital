@@ -9,23 +9,27 @@ export function TrustFooter() {
     "Zero Degree", "Red Leaf"
   ];
 
-  const phone = "+919304355011";
-  const phoneDisplay = "+91 93043 55011";
+  const phone = "+919534900999";
+  const phoneDisplay = "+91 95349 00999";
 
   return (
     <section className="w-full flex flex-col font-sans">
       {/* Ecosystem Banner */}
-      <div className="w-full bg-[#f8f9fa] dark:bg-background py-6 border-b border-gray-200 dark:border-slate-800 transition-colors duration-300">
+      <div className="w-full bg-gradient-to-b from-white to-[#f8f9fa] dark:from-slate-900/50 dark:to-background py-8 border-b border-slate-200/50 dark:border-slate-800 transition-colors duration-300">
         <div className="container mx-auto px-4">
-          <h4 className="text-[10px] font-extrabold text-gray-500 tracking-widest uppercase mb-4">
-            POWERED BY KLEVE ECOSYSTEM
-          </h4>
-          <div className="flex flex-wrap items-center gap-4 md:gap-8 justify-center lg:justify-start">
-            {brands.map((brand, idx) => (
-              <div key={idx} className="flex items-center text-sm font-bold text-gray-600 dark:text-gray-400 grayscale hover:grayscale-0 transition-all cursor-pointer">
-                {brand}
-              </div>
-            ))}
+          <div className="flex flex-col items-center justify-center text-center">
+            <h4 className="text-[11px] font-extrabold text-slate-400 dark:text-slate-500 tracking-widest uppercase mb-6 flex items-center gap-4 w-full md:w-auto">
+              <span className="hidden md:block h-px w-12 bg-slate-200 dark:bg-slate-700"></span>
+              POWERED BY KLEVE ECOSYSTEM
+              <span className="hidden md:block h-px w-12 bg-slate-200 dark:bg-slate-700"></span>
+            </h4>
+            <div className="flex flex-wrap items-center gap-4 md:gap-x-10 md:gap-y-6 justify-center max-w-5xl">
+              {brands.map((brand, idx) => (
+                <div key={idx} className="flex items-center text-sm md:text-[15px] font-extrabold text-slate-400 dark:text-slate-600 hover:text-[#0a1c3a] dark:hover:text-white hover:scale-105 transition-all duration-300 cursor-pointer">
+                  {brand}
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>

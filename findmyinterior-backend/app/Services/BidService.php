@@ -57,6 +57,29 @@ class BidService
      */
     public function submitBid(int $vendorId, array $data): Bid
     {
+        $modelClass = $data['requirement_type_class'] ?? 'App\\Models\\Requirement';
+        $requirement = $modelClass::find($data['requirement_id']);
+        
+        if (!$requirement) {
+            throw new \Exception('Requirement not found.');
+        }
+
+        if ($requirement->status !== 'open' && $requirement->status !== 'bidding' && $requirement->status !== 'receiving_quotes' && $requirement->status !== 'receiving_applications') {
+            throw new \Exception('This requirement is no longer accepting bids.');
+        }
+
+        if ($requirement->expires_at && now()->isAfter($requirement->expires_at)) {
+            throw new \Exception('This requirement has expired.');
+        }
+
+        $bidsCount = Bid::where('requirement_id', $requirement->id)
+            ->where('requirement_type', class_basename($requirement))
+            ->count();
+            
+        if ($bidsCount >= ($requirement->max_bids ?? 20)) {
+            throw new \Exception('This requirement has reached its maximum number of bids.');
+        }
+
         $data['professional_id'] = $vendorId;
         if (isset($data['estimated_cost'])) {
             $data['amount'] = $data['estimated_cost'];

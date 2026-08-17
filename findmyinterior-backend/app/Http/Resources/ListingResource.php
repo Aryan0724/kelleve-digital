@@ -9,13 +9,42 @@ class ListingResource extends JsonResource
 {
     public function toArray(Request $request): array
     {
+        $ownerUser = $this->relationLoaded('user') ? $this->user : \App\Models\User::withoutGlobalScopes()->find($this->user_id);
+        $ownerPlan = $ownerUser?->activeSubscription?->plan;
+        
+        $canHaveWebsite = $ownerPlan?->can_add_website ?? false;
+        $canHaveWhatsapp = $ownerPlan?->can_add_whatsapp ?? false;
+
+        $formatUrl = function($img) {
+            if (empty($img)) return null;
+            if (\Illuminate\Support\Str::startsWith($img, 'data:')) {
+                return $img;
+            }
+            if (\Illuminate\Support\Str::startsWith($img, 'http://findmyinterior.com')) {
+                $img = str_replace('http://', 'https://', $img);
+            }
+            if (\Illuminate\Support\Str::startsWith($img, 'http://') || \Illuminate\Support\Str::startsWith($img, 'https://')) {
+                return $img;
+            }
+            $url = url($img);
+            if (config('app.env') === 'production' || str_contains($url, 'findmyinterior.com') || str_contains($url, 'localhost')) {
+                return 'https://findmyinterior.com' . $img;
+            }
+            return $url;
+        };
+
+        $coverImage = $formatUrl($this->cover_image ?: $ownerUser?->cover_image);
+        $avatarImage = $formatUrl($ownerUser?->avatar);
+        $languages = $this->languages ?? $ownerUser?->worker?->languages ?? $ownerUser?->builder?->languages ?? $ownerUser?->supplier?->languages ?? [];
+
         return [
             'id'               => $this->id,
             'title'            => $this->title,
             'slug'             => $this->slug,
             'tagline'          => $this->tagline,
             'description'      => $this->description,
-            'cover_image'      => $this->cover_image,
+            'cover_image'      => $coverImage,
+            'languages'        => $languages,
             'category'         => new CategoryResource($this->whenLoaded('category')),
             'city'             => $this->city,
             'district'         => $this->district,
@@ -23,24 +52,28 @@ class ListingResource extends JsonResource
             'address'          => $this->address,
             'years_experience' => $this->years_experience,
             'team_size'        => $this->team_size,
+            'gst_number'       => $this->gst_number,
+            'pan_number'       => $this->pan_number,
             'avg_rating'       => (float) $this->avg_rating,
             'review_count'     => $this->review_count,
             'is_verified'      => (bool) $this->is_verified,
             'is_featured'      => (bool) $this->is_featured,
             'is_premium'       => (bool) $this->is_premium,
+            'is_gold_verified' => (bool) ($ownerPlan?->is_gold_verified ?? false),
             'is_sponsored'     => $this->sponsored_until && $this->sponsored_until->isFuture(),
             'is_top_rated'     => $this->avg_rating >= 4.5 && $this->review_count >= 5,
             'status'           => $this->status,
             'views_count'      => $this->views_count,
-            'trust_score'      => $this->whenLoaded('user', fn() => $this->user->trust_score),
-            'profile_completion_score' => $this->whenLoaded('user', fn() => $this->user->profile_completion_score),
-            'verification_level' => $this->whenLoaded('user', fn() => $this->user->verification_level),
-            'user'             => $this->whenLoaded('user', fn() => [
-                'id'     => $this->user->id,
-                'name'   => $this->user->name,
-                'avatar' => $this->user->avatar ?? null,
-                'role'   => $this->user->role ?? null,
-            ]),
+            'trust_score'      => $this->trust_score ?? $ownerUser?->trust_score ?? 0,
+            'profile_completion_score' => $this->profile_completion_score ?? $ownerUser?->profile_completion_score ?? 0,
+            'verification_level' => $this->verification_level ?? $ownerUser?->verification_level ?? 'unverified',
+            'user'             => $ownerUser ? [
+                'id'          => $ownerUser->id,
+                'name'        => $ownerUser->name,
+                'avatar'      => $avatarImage,
+                'cover_image' => $coverImage,
+                'role'        => $ownerUser->role ?? null,
+            ] : null,
             'phone_clicks'     => $this->when($this->isOwner($request), $this->phone_clicks),
             'whatsapp_clicks'  => $this->when($this->isOwner($request), $this->whatsapp_clicks),
             'website_clicks'   => $this->when($this->isOwner($request), $this->website_clicks),
@@ -50,15 +83,23 @@ class ListingResource extends JsonResource
                 $this->phone
             ),
             'whatsapp'         => $this->when(
-                $this->shouldShowContact($request),
+                $canHaveWhatsapp && $this->shouldShowContact($request),
                 $this->whatsapp
             ),
             'email'            => $this->when(
                 $this->shouldShowContact($request),
                 $this->email
             ),
-            'website'          => $this->website,
+            'website'          => $canHaveWebsite ? $this->website : null,
             'gallery'          => ListingGalleryResource::collection($this->whenLoaded('gallery')),
+            'gallery_count'    => $this->gallery_count ?? 0,
+            'services'         => $this->services ?? [],
+            'products'         => $this->products ?? [],
+            'achievements'     => $this->achievements ?? [],
+            'languages'        => $this->languages ?? [],
+            'social_links'     => $this->social_links ?? [],
+            'availability'     => $this->availability,
+            'response_time'    => $this->response_time,
             'reviews'          => ReviewResource::collection($this->whenLoaded('approvedReviews')),
             'created_at'       => $this->created_at?->toDateString(),
         ];
@@ -73,7 +114,16 @@ class ListingResource extends JsonResource
         // Admin always sees
         if ($user->isAdmin()) return true;
         // Premium subscriber sees
-        return $user->hasPremiumSubscription();
+        if ($user->hasPremiumSubscription()) return true;
+
+        // Check if unlocked explicitly
+        $unlocked = \Illuminate\Support\Facades\DB::table('contact_unlocks')
+            ->where('user_id', $user->id)
+            ->where('requirement_id', $this->id)
+            ->where('requirement_type', get_class($this->resource))
+            ->exists();
+
+        return $unlocked;
     }
 
     private function isOwner(Request $request): bool

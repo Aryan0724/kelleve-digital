@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
 
 export function ChatModal({ professionalId, professionalName, isOpen, onClose }: { professionalId: number, professionalName: string, isOpen: boolean, onClose: () => void }) {
   const [message, setMessage] = useState("");
@@ -50,9 +51,9 @@ export function ChatModal({ professionalId, professionalName, isOpen, onClose }:
     } catch (err: any) {
       console.error("Failed to send message", err);
       if (err.response?.status === 403) {
-        alert(err.response?.data?.message || "You are not authorized to send a message.");
+        toast.error(err.response?.data?.message || "You are not authorized to send a message.");
       } else {
-        alert("Failed to send message. Please try again.");
+        toast.error("Failed to send message. Please try again.");
       }
     } finally {
       setSending(false);
@@ -60,7 +61,7 @@ export function ChatModal({ professionalId, professionalName, isOpen, onClose }:
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/50 p-4 sm:p-0">
+    <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 p-4 sm:p-0">
       <div className="bg-white dark:bg-slate-900 w-full max-w-md rounded-t-2xl sm:rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]">
         <div className="p-4 border-b dark:border-slate-800 flex justify-between items-center bg-slate-50 dark:bg-slate-800/50">
           <h3 className="font-bold text-slate-900 dark:text-white">Chat with {professionalName}</h3>

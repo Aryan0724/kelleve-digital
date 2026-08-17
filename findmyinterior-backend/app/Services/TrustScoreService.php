@@ -23,12 +23,28 @@ class TrustScoreService
         // (Profile Completion = 25%, Verification Level = 25%, Reviews = 25%, Project Success = 25%)
         $trustScore = $this->calculateTrustScore($user, $completionScore, $verificationLevel);
 
+        $isVerifiedBusiness = in_array($verificationLevel, ['business_verified', 'site_verified']);
+
         $user->update([
             'profile_completion_score' => $completionScore,
             'verification_level' => $verificationLevel,
             'trust_score' => $trustScore,
-            'is_verified_business' => in_array($verificationLevel, ['business_verified', 'site_verified'])
+            'is_verified_business' => $isVerifiedBusiness
         ]);
+
+        // Sync verification status to all associated profiles
+        $profiles = [
+            $user->listing,
+            $user->worker,
+            $user->builder,
+            $user->supplier
+        ];
+
+        foreach ($profiles as $profile) {
+            if ($profile) {
+                $profile->update(['is_verified' => $isVerifiedBusiness]);
+            }
+        }
     }
 
     private function calculateProfileCompletion(User $user): int
@@ -117,6 +133,11 @@ class TrustScoreService
 
     private function determineVerificationLevel(User $user): string
     {
+        $minimumLevel = 'unverified';
+        if ($user->is_verified_business && in_array($user->verification_level, ['business_verified', 'site_verified'])) {
+            $minimumLevel = 'business_verified';
+        }
+
         // Default level
         $level = 'unverified';
 
@@ -173,6 +194,10 @@ class TrustScoreService
             if ($profile && $reviewCount >= 5 && $avgRating >= 4.0) {
                 $level = 'site_verified'; // Cap at site_verified since DB doesn't support elite_professional
             }
+        }
+
+        if ($minimumLevel === 'business_verified' && in_array($level, ['unverified', 'mobile_verified', 'basic_member'])) {
+            $level = $user->verification_level;
         }
 
         return $level;

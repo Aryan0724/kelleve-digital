@@ -3,7 +3,7 @@ import { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = 'https://findmyinterior.com';
   
-  return [
+  const baseRoutes: MetadataRoute.Sitemap = [
     {
       url: baseUrl,
       lastModified: new Date(),
@@ -34,17 +34,35 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: 'monthly',
       priority: 0.7,
     },
-    {
-      url: `${baseUrl}/interior-designers/patna`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
-    {
-      url: `${baseUrl}/architect/patna`,
-      lastModified: new Date(),
-      changeFrequency: 'weekly',
-      priority: 0.9,
-    },
   ];
+
+  // Dynamic SEO Local Pages
+  const categories = [
+    'interior-designers',
+    'architects',
+    'contractors',
+    'builders',
+    'carpenters',
+    'electricians',
+    'plumbers',
+    'material-suppliers',
+    'painters'
+  ];
+  
+  const cities = ['patna']; // Expandable list of cities
+
+  const dynamicRoutes: MetadataRoute.Sitemap = [];
+  
+  cities.forEach(city => {
+    categories.forEach(category => {
+      dynamicRoutes.push({
+        url: `${baseUrl}/${category}/${city}`,
+        lastModified: new Date(),
+        changeFrequency: 'weekly',
+        priority: 0.9,
+      });
+    });
+  });
+
+  return [...baseRoutes, ...dynamicRoutes];
 }

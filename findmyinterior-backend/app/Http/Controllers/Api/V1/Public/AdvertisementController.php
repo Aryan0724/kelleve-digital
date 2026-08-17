@@ -42,7 +42,10 @@ class AdvertisementController extends Controller
 
         if ($request->filled('target_role')) {
             $query->where(function ($q) use ($request) {
-                $q->whereNull('target_role')->orWhere('target_role', $request->query('target_role'));
+                $role = $request->query('target_role');
+                $q->whereNull('target_role')
+                  ->orWhere('target_role', $role)
+                  ->orWhere('target_role', 'like', '%"' . $role . '"%');
             });
         }
 

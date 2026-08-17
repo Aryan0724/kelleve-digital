@@ -10,10 +10,94 @@ import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Camera, CheckCircle2, Loader2, ShieldCheck, Star, Upload,
-  User, Building2, MapPin, Phone, Globe, Briefcase, Users, Hash, Check, Lock, AlertCircle, XCircle, ShieldAlert, UploadCloud, ArrowRight, UserCircle2
+  User, Building2, MapPin, Phone, Globe, Briefcase, Users, Hash, Check, Lock, AlertCircle, XCircle, ShieldAlert, UploadCloud, ArrowRight, UserCircle2, ChevronRight, Info, FileText, PlayCircle, Settings2, Mail
 } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { toast } from "react-toastify";
+
+const SERVICE_OPTIONS = [
+  "Modular Kitchen", "False Ceiling", "Wardrobes", "Plumbing", 
+  "Electrical", "Flooring", "Painting", "Civil Work", 
+  "Furniture", "Turnkey Projects", "3D Rendering", "Space Planning",
+  "Commercial Design", "Residential Design", "Renovation", "Landscaping", "Vastu Consultation",
+  "Carpentry", "Masonry", "HVAC"
+];
+
+const LANGUAGE_OPTIONS = [
+  "Hindi", "English", "Marathi", "Gujarati", "Bengali", 
+  "Tamil", "Telugu", "Kannada", "Malayalam", "Punjabi", 
+  "Odia", "Bhojpuri", "Urdu", "Maithili", "Assamese"
+];
+
+function MultiSelectCheckboxes({ options, selectedString, onChange, name }: { options: string[], selectedString: string, onChange: (name: string, val: string) => void, name: string }) {
+  const selected = selectedString ? selectedString.split(',').map(s => s.trim()).filter(Boolean) : [];
+  
+  const handleToggle = (opt: string, checked: boolean) => {
+    let newSelected;
+    if (checked) {
+      newSelected = [...selected, opt];
+    } else {
+      newSelected = selected.filter(s => s !== opt);
+    }
+    onChange(name, newSelected.join(', '));
+  };
+
+  return (
+    <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 p-3 bg-white border border-slate-200 rounded-md">
+      {options.map(opt => (
+        <label key={opt} className="flex items-center space-x-2 text-sm text-slate-700 cursor-pointer">
+          <input 
+            type="checkbox" 
+            checked={selected.includes(opt)}
+            onChange={(e) => handleToggle(opt, e.target.checked)}
+            className="rounded border-slate-300 text-orange-600 focus:ring-orange-500 h-4 w-4"
+          />
+          <span>{opt}</span>
+        </label>
+      ))}
+    </div>
+  );
+}
+
+const resizeImage = (file: File, maxWidth = 1920, maxHeight = 1080): Promise<File> => {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onload = () => {
+        const canvas = document.createElement("canvas");
+        let { width, height } = img;
+        if (width > height) {
+          if (width > maxWidth) {
+            height = Math.round((height * maxWidth) / width);
+            width = maxWidth;
+          }
+        } else {
+          if (height > maxHeight) {
+            width = Math.round((width * maxHeight) / height);
+            height = maxHeight;
+          }
+        }
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext("2d");
+        ctx?.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) {
+            resolve(new File([blob], file.name, { type: "image/jpeg", lastModified: Date.now() }));
+          } else {
+            resolve(file); // fallback to original
+          }
+        }, "image/jpeg", 0.85);
+      };
+      img.onerror = () => resolve(file);
+      img.src = e.target?.result as string;
+    };
+    reader.onerror = () => resolve(file);
+    reader.readAsDataURL(file);
+  });
+};
 
 // ─── Avatar Uploader ─────────────────────────────────────────────────────────
 
@@ -25,12 +109,11 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
   const [success, setSuccess] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 4 * 1024 * 1024) {
-      alert("Photo must be less than 4MB.");
-      return;
+    if (file.size > 1.5 * 1024 * 1024) {
+      file = await resizeImage(file, 800, 800);
     }
 
     const reader = new FileReader();
@@ -43,7 +126,9 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
     try {
       const form = new FormData();
       form.append("avatar", file);
-      const res = await api.post("/user/avatar", form);
+      const res = await api.post("/user/avatar", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       if (user) updateUser({ ...user, avatar: res.data.avatar });
       setPreview(res.data.avatar);
       setSuccess(true);
@@ -71,8 +156,9 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
           )}
         </div>
         <button
+          type="button"
           onClick={() => fileRef.current?.click()}
-          className="absolute inset-0 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 cursor-pointer"
+          className="absolute inset-0 z-20 rounded-full bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 cursor-pointer"
           disabled={uploading}
         >
           {uploading ? (
@@ -83,6 +169,15 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
           <span className="text-white text-[10px] font-medium">
             {uploading ? "Uploading…" : "Change"}
           </span>
+        </button>
+        {/* Persistent edit button for mobile/desktop */}
+        <button
+          type="button"
+          onClick={() => fileRef.current?.click()}
+          className="absolute z-20 bottom-0 right-0 w-8 h-8 rounded-full bg-white text-slate-700 border border-slate-200 shadow-md flex items-center justify-center hover:bg-slate-50 transition-colors cursor-pointer"
+          disabled={uploading}
+        >
+          <Camera className="w-4 h-4" />
         </button>
         {success && (
           <div className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-green-500 flex items-center justify-center shadow">
@@ -104,12 +199,11 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
   const [success, setSuccess] = useState(false);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
+    let file = e.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 5 * 1024 * 1024) {
-      alert("Cover image must be less than 5MB.");
-      return;
+    if (file.size > 1.5 * 1024 * 1024) {
+      file = await resizeImage(file, 1920, 1080);
     }
 
     const reader = new FileReader();
@@ -123,16 +217,19 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
       const form = new FormData();
       form.append("cover_image", file);
       
-      if (!listingId) {
-        throw new Error("Listing ID not found. Please save your profile first.");
+      let endpoint = `/user/cover`;
+      if (listingId) {
+        endpoint = `/user/listings/${listingId}/cover`;
       }
       
-      const res = await api.post(`/user/listings/${listingId}/cover`, form);
+      const res = await api.post(endpoint, form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
       setPreview(res.data.cover_image);
       setSuccess(true);
       setTimeout(() => setSuccess(false), 3000);
     } catch (err: any) {
-      alert(err.response?.data?.message || err.message || "Upload failed. Please try again.");
+      toast.error(err.response?.data?.message || err.message || "Upload failed. Please try again.");
       setPreview(currentCover);
     } finally {
       setUploading(false);
@@ -159,6 +256,16 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
         <span className="text-white text-xs font-semibold">
           {uploading ? "Uploading…" : "Change Cover Image (Max 5MB)"}
         </span>
+      </button>
+      
+      {/* Persistent edit button for cover image on mobile/desktop */}
+      <button
+        onClick={() => fileRef.current?.click()}
+        className="absolute bottom-4 right-4 bg-white/90 hover:bg-white text-slate-700 px-3 py-1.5 rounded-full text-xs font-semibold shadow-md flex items-center gap-1.5 transition-colors"
+        disabled={uploading}
+        type="button"
+      >
+        <Camera className="w-4 h-4" /> Change Cover
       </button>
       {success && (
         <div className="absolute top-4 right-4 bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow flex items-center gap-1">
@@ -276,6 +383,8 @@ export function CompleteProfileTab() {
   const [locations, setLocations] = useState<any[]>([]);
   const [currentCover, setCurrentCover] = useState<string | null>(null);
   const [listingId, setListingId] = useState<string | null>(null);
+  const [listingSlug, setListingSlug] = useState<string | null>(null);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const role = user?.role || 'homeowner';
   const isBusiness = ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business'].includes(role);
@@ -312,8 +421,9 @@ export function CompleteProfileTab() {
 
       if (data) {
         setListingId(data.id || null);
+        setListingSlug(data.slug || null);
         setCurrentCover(data.cover_image || null);
-        setFormData({
+        let newFormData = {
           // Base
           phone: user?.phone || data.phone || "",
           city: data.city || "",
@@ -351,15 +461,25 @@ export function CompleteProfileTab() {
           facebook: data.social_links?.facebook || "",
           instagram: data.social_links?.instagram || "",
           linkedin: data.social_links?.linkedin || "",
-        });
+          youtube: data.social_links?.youtube || "",
+        };
+        
+        try {
+          const draft = localStorage.getItem('profileDraft');
+          if (draft) {
+            newFormData = { ...newFormData, ...JSON.parse(draft) };
+          }
+        } catch(e) {}
+        
+        setFormData(newFormData);
       } else {
         setFormData({ 
           phone: user?.phone || "",
-          city: "", district: "", address: "",
+          city: user?.city || "", district: user?.district || "", address: user?.address || "",
           title: "", company_name: "", tagline: "", description: "", website: "", years_experience: "", team_size: "",
           gst_number: "", pan_number: "",
           skill: "", experience_years: "", daily_rate: "", bio: "", total_projects: "",
-          services: "", achievements: "", availability: "", response_time: "", languages: "", facebook: "", instagram: "", linkedin: ""
+          services: "", achievements: "", availability: "", response_time: "", languages: "", facebook: "", instagram: "", linkedin: "", youtube: ""
         });
       }
     } catch (e) {
@@ -369,8 +489,50 @@ export function CompleteProfileTab() {
     }
   };
 
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+          );
+          const data = await res.json();
+          const city = data.address.city || data.address.town || data.address.village || data.address.county || "";
+          const district = data.address.state_district || data.address.county || "";
+          const formattedAddress = data.display_name || "";
+          
+          setFormData((prev: any) => ({
+            ...prev,
+            city,
+            district,
+            address: formattedAddress,
+          }));
+        } catch (e) {
+          toast.error("Failed to detect location.");
+        } finally {
+          setLocationLoading(false);
+        }
+      },
+      () => {
+        toast.error("Permission denied or location unavailable.");
+        setLocationLoading(false);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
+
+  const initializedRef = useRef(false);
+
   useEffect(() => { 
-    fetchData(); 
+    if (!initializedRef.current) {
+      initializedRef.current = true;
+      fetchData();
+    }
     api.get("/locations?active_only=1").then(res => {
       if(res.data?.data) {
         setLocations(res.data.data);
@@ -379,41 +541,51 @@ export function CompleteProfileTab() {
   }, []);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const updated = { ...formData, [e.target.name]: e.target.value };
+    setFormData(updated);
+    try {
+      localStorage.setItem('profileDraft', JSON.stringify(updated));
+    } catch(err) {}
   };
 
     const handleSave = async () => {
       if (isBusiness) {
         if (formData.gst_number && !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i.test(formData.gst_number)) {
-          alert("Invalid GST Number format.");
+          toast.error("Invalid GST Number format.");
           return;
         }
         if (formData.pan_number && !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i.test(formData.pan_number)) {
-          alert("Invalid PAN Number format.");
+          toast.error("Invalid PAN Number format.");
           return;
         }
       }
       setSaving(true);
       setSaved(false);
       try {
-        // First update base user data if needed
-        if (formData.phone !== user?.phone) {
-        const userRes = await api.put("/user/profile", { phone: formData.phone, name: user?.name });
+        // Always update base user data (phone + location)
+        const userPayload: any = { 
+          phone: formData.phone, 
+          name: formData.name || user?.name,
+          city: formData.city,
+          district: formData.district,
+          address: formData.address,
+        };
+        const userRes = await api.put("/user/profile", userPayload);
         if (user) updateUser(userRes.data.data);
-      }
 
       // Then update professional profile if applicable
       if (isBusiness || isWorker) {
         const payload = {
           ...formData,
           name: user?.name || "Professional",
-          services: formData.services ? formData.services.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
-          achievements: formData.achievements ? formData.achievements.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
+          services: typeof formData.services === 'string' ? formData.services.split(',').map((s: string) => s.trim()) : formData.services,
+          achievements: typeof formData.achievements === 'string' ? formData.achievements.split(',').map((s: string) => s.trim()) : formData.achievements,
           languages: formData.languages ? formData.languages.split(",").map((s: string) => s.trim()).filter(Boolean) : [],
           social_links: {
             facebook: formData.facebook,
             instagram: formData.instagram,
             linkedin: formData.linkedin,
+            youtube: formData.youtube,
           }
         };
         await api.put(`/user/professional-profile`, payload);
@@ -424,13 +596,16 @@ export function CompleteProfileTab() {
       
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
+      try {
+        localStorage.removeItem('profileDraft');
+      } catch(e) {}
       fetchData();
     } catch (e: any) {
       if (e.response?.data?.errors) {
         const msgs = Object.values(e.response.data.errors).flat().join("\n");
-        alert(`Validation Error:\n${msgs}`);
+        toast.error(`Validation Error:\n${msgs}`);
       } else {
-        alert(e.response?.data?.message || "Failed to update profile.");
+        toast.error(e.response?.data?.message || "Failed to update profile.");
       }
     } finally {
       setSaving(false);
@@ -442,7 +617,7 @@ export function CompleteProfileTab() {
     if (!file) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      alert("File size must be less than 10MB");
+      toast.error("File size must be less than 10MB");
       return;
     }
 
@@ -452,14 +627,27 @@ export function CompleteProfileTab() {
     form.append("document_type", docType);
 
     try {
-      await api.post("/verification/upload", form);
-      alert("Document uploaded successfully and is pending review.");
+      await api.post("/verification/upload", form, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      toast.success("Document uploaded successfully and is pending review.");
       fetchData();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Failed to upload document");
+      toast.error(err.response?.data?.message || "Failed to upload document");
     } finally {
       setUploadingDoc(null);
       if (e.target) e.target.value = '';
+    }
+  };
+
+  const handleDocDelete = async (docId: number) => {
+    if (!confirm("Are you sure you want to remove this document?")) return;
+    try {
+      await api.delete(`/verification/document/${docId}`);
+      fetchData();
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to delete document");
     }
   };
 
@@ -483,7 +671,7 @@ export function CompleteProfileTab() {
         {isBusiness || isWorker ? (
           <CoverUploader currentCover={currentCover} listingId={listingId} />
         ) : (
-          <div className="h-20 bg-gradient-to-r from-[#0a1c3a] to-indigo-900" />
+          <CoverUploader currentCover={user?.cover_image ?? null} listingId={null} />
         )}
         <CardContent className="pt-0 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12">
@@ -494,7 +682,7 @@ export function CompleteProfileTab() {
               <TrustBadge level={user?.verification_level ?? "basic"} score={user?.trust_score} />
               {(isBusiness || isWorker) && (
                 <div className="mt-3">
-                  <Button variant="outline" size="sm" onClick={() => window.open(`/professionals/${user?.id}`, '_blank')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+                  <Button variant="outline" size="sm" onClick={() => window.open(`/professionals/${listingSlug || user?.id}?t=${Date.now()}`, '_blank')} className="border-indigo-200 text-indigo-700 hover:bg-indigo-50">
                     <Globe className="w-4 h-4 mr-2" /> View Public Listing
                   </Button>
                 </div>
@@ -534,16 +722,27 @@ export function CompleteProfileTab() {
               
               {/* Homeowner / General Info */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <Field label="Full Name (View Only)" icon={User}>
-                  <Input value={user?.name} disabled className="bg-slate-50" />
+                <Field label="Full Name" icon={User}>
+                  <Input name="name" value={formData.name ?? user?.name ?? ''} onChange={handleChange} placeholder="e.g. John Doe" />
                 </Field>
                 <Field label="Phone Number" icon={Phone}>
                   <Input name="phone" value={formData.phone} onChange={handleChange} placeholder="e.g. 9876543210" />
                 </Field>
                 <div>
-                  <Label className="flex items-center gap-1.5 text-sm font-medium text-slate-700 mb-1.5">
-                    <MapPin className="w-3.5 h-3.5 text-slate-400" /> City *
-                  </Label>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <Label className="flex items-center gap-1.5 text-sm font-medium text-slate-700">
+                      <MapPin className="w-3.5 h-3.5 text-slate-400" /> City *
+                    </Label>
+                    <button
+                      type="button"
+                      onClick={detectLocation}
+                      disabled={locationLoading}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                    >
+                      {locationLoading ? <Loader2 className="w-3 h-3 animate-spin" /> : <MapPin className="w-3 h-3" />}
+                      Use Current
+                    </button>
+                  </div>
                   <Select required value={formData.city} onValueChange={(val) => setFormData({ ...formData, city: val || "" })}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select City" />
@@ -660,9 +859,16 @@ export function CompleteProfileTab() {
                   <h4 className="text-sm font-bold text-slate-900 mb-2">Advanced Details</h4>
                   
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Field label="Services Offered (comma separated)" icon={Briefcase}>
-                      <Input name="services" value={formData.services} onChange={handleChange} placeholder="e.g. Modular Kitchen, False Ceiling" />
-                    </Field>
+                    <div className="col-span-1 md:col-span-2">
+                      <Label className="text-sm font-bold text-slate-900 mb-1 block">Services Offered</Label>
+                      <MultiSelectCheckboxes 
+                        name="services" 
+                        options={SERVICE_OPTIONS} 
+                        selectedString={formData.services || ""} 
+                        onChange={(n, v) => setFormData((p: any) => ({...p, [n]: v}))} 
+                      />
+                      <div className="mt-2 text-xs text-slate-500">Selected: {formData.services || "None"}</div>
+                    </div>
                     <Field label="Key Achievements (comma separated)" icon={Star}>
                       <Input name="achievements" value={formData.achievements} onChange={handleChange} placeholder="e.g. 50+ Projects Completed, Award Winning" />
                     </Field>
@@ -685,12 +891,19 @@ export function CompleteProfileTab() {
                       </select>
                     </Field>
                     
-                    <Field label="Languages Spoken (comma separated)" icon={Globe}>
-                      <Input name="languages" value={formData.languages} onChange={handleChange} placeholder="e.g. English, Hindi, Marathi" />
-                    </Field>
+                    <div className="col-span-1 md:col-span-2 mt-4">
+                      <Label className="text-sm font-bold text-slate-900 mb-1 block">Languages Spoken</Label>
+                      <MultiSelectCheckboxes 
+                        name="languages" 
+                        options={LANGUAGE_OPTIONS} 
+                        selectedString={formData.languages || ""} 
+                        onChange={(n, v) => setFormData((p: any) => ({...p, [n]: v}))} 
+                      />
+                      <div className="mt-2 text-xs text-slate-500">Selected: {formData.languages || "None"}</div>
+                    </div>
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 bg-slate-50 p-4 rounded-lg">
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-6 bg-slate-50 p-4 rounded-lg">
                     <Field label="Facebook Link" icon={Globe}>
                       <Input name="facebook" value={formData.facebook} onChange={handleChange} placeholder="https://facebook.com/..." />
                     </Field>
@@ -699,6 +912,9 @@ export function CompleteProfileTab() {
                     </Field>
                     <Field label="LinkedIn Link" icon={Globe}>
                       <Input name="linkedin" value={formData.linkedin} onChange={handleChange} placeholder="https://linkedin.com/..." />
+                    </Field>
+                    <Field label="YouTube Channel Link" icon={Globe}>
+                      <Input name="youtube" value={formData.youtube} onChange={handleChange} placeholder="https://youtube.com/@yourchannel" />
                     </Field>
                   </div>
                 </div>
@@ -728,60 +944,20 @@ export function CompleteProfileTab() {
                 <CardDescription>Upload official documents to get the Verified Badge.</CardDescription>
               </CardHeader>
               <CardContent>
-                {!isProfileComplete && (
+                {!isProfileComplete ? (
                   <div className="absolute inset-0 z-10 flex items-center justify-center bg-slate-50/50 rounded-lg backdrop-blur-[1px]">
                     <div className="bg-white px-6 py-3 rounded-full shadow border flex items-center text-slate-500 font-medium">
                       <Lock className="w-4 h-4 mr-2" /> Complete Step 1 First
                     </div>
                   </div>
+                ) : (
+                  <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-lg flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                      <h4 className="font-semibold text-indigo-900 flex items-center"><ShieldCheck className="w-4 h-4 mr-2" /> Ready for Verification</h4>
+                      <p className="text-sm text-indigo-800 mt-1">Please head over to the <strong>Verification</strong> section from your sidebar menu to upload your official documents and get verified.</p>
+                    </div>
+                  </div>
                 )}
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {requiredDocs.map(doc => {
-                    const currentDoc = getDocStatus(doc.id);
-                    return (
-                      <div key={doc.id} className={`border rounded-lg p-4 flex flex-col justify-between ${currentDoc?.status === 'approved' ? 'bg-green-50/50 border-green-200' : ''}`}>
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h4 className="font-semibold text-slate-900">{doc.label}</h4>
-                          </div>
-                          {currentDoc?.status === "approved" && <CheckCircle2 className="h-6 w-6 text-green-500" />}
-                          {currentDoc?.status === "pending" && <AlertCircle className="h-6 w-6 text-yellow-500" />}
-                          {currentDoc?.status === "rejected" && <XCircle className="h-6 w-6 text-red-500" />}
-                          {!currentDoc && <ShieldAlert className="h-6 w-6 text-slate-300" />}
-                        </div>
-
-                        {currentDoc?.status === "rejected" && (
-                          <div className="bg-red-50 text-red-700 p-2 text-xs rounded-md mb-3 border border-red-100">
-                            <strong>Rejected:</strong> {currentDoc.rejection_reason}
-                          </div>
-                        )}
-
-                        <div className="mt-auto">
-                          {currentDoc?.status === "approved" ? (
-                            <div className="text-sm text-green-600 font-medium flex items-center">
-                              <CheckCircle2 className="h-4 w-4 mr-1" /> Document Verified
-                            </div>
-                          ) : (
-                            <div className="relative">
-                              <input
-                                type="file" accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={(e) => handleDocUpload(e, doc.id)}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                                disabled={uploadingDoc === doc.id || currentDoc?.status === 'pending'}
-                              />
-                              <Button variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
-                                className={`w-full ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
-                                disabled={uploadingDoc === doc.id || currentDoc?.status === 'pending'}>
-                                {uploadingDoc === doc.id ? "Uploading..." : currentDoc?.status === 'pending' ? "Pending Review" : <><UploadCloud className="h-4 w-4 mr-2" /> Upload</>}
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
               </CardContent>
             </Card>
           </div>

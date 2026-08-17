@@ -1,14 +1,36 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { Home, Briefcase, Plus, MessageCircle, User, LogIn } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import api from "@/lib/api";
 
 export function MobileBottomNav() {
   const pathname = usePathname();
   const router = useRouter();
-  const { user } = useAuthStore();
+  const { user, token } = useAuthStore();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    if (!user || !token) return;
+    const fetchUnread = async () => {
+      try {
+        const res = await api.get("/conversations");
+        const convs = res.data.data || res.data;
+        const isCustomer = user.role === 'customer' || user.role === 'homeowner';
+        let count = 0;
+        convs.forEach((c: any) => {
+          count += isCustomer ? (c.customer_unread_count || 0) : (c.vendor_unread_count || 0);
+        });
+        setUnreadCount(count);
+      } catch (e) {
+        // fail silently
+      }
+    };
+    fetchUnread();
+  }, [user, token]);
 
   // Highlight active path
   const isActive = (path: string) => pathname === path || pathname?.startsWith(path + '/');
@@ -37,16 +59,18 @@ export function MobileBottomNav() {
           <span className="text-[10px] font-medium">Projects</span>
         </Link>
         
-        {/* Floating Action Button for Post Project */}
-        <div className="relative -top-5 flex justify-center w-16">
-          <Link 
-            href="/post-requirement" 
-            className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-[#E8701A] to-[#f08535] rounded-full shadow-lg shadow-orange-500/30 text-white transform hover:scale-105 transition-transform border-4 border-white dark:border-slate-900"
-          >
-            <Plus className="w-6 h-6" strokeWidth={2.5} />
-          </Link>
-          <span className="absolute -bottom-5 text-[10px] font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap mt-1">Post Project</span>
-        </div>
+        {/* Floating Action Button for Post Requirement */}
+        {(!user || user?.role === 'customer') && (
+          <div className="relative -top-5 flex justify-center w-16">
+            <Link 
+              href="/post-requirement" 
+              className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-[#E8701A] to-[#f08535] rounded-full shadow-lg shadow-orange-500/30 text-white transform hover:scale-105 transition-transform border-4 border-white dark:border-slate-900"
+            >
+              <Plus className="w-6 h-6" strokeWidth={2.5} />
+            </Link>
+            <span className="absolute -bottom-5 text-[10px] font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap mt-1">Post Requirement</span>
+          </div>
+        )}
         
         <Link 
           href="/messages" 
@@ -54,8 +78,10 @@ export function MobileBottomNav() {
         >
           <div className="relative">
             <MessageCircle className={`w-5 h-5 mb-1 ${isActive('/messages') ? 'fill-[#E8701A]/20' : ''}`} />
-            {user && (
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-[#E8701A] rounded-full border-2 border-white dark:border-slate-900"></span>
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-4 h-4 text-[10px] font-bold text-white flex items-center justify-center bg-[#E8701A] rounded-full border-2 border-white dark:border-slate-900">
+                {unreadCount > 9 ? '9+' : unreadCount}
+              </span>
             )}
           </div>
           <span className="text-[10px] font-medium">Messages</span>

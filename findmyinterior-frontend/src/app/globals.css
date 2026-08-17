@@ -1,153 +1,107 @@
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-@plugin "@tailwindcss/typography";
 
-@custom-variant dark (&:where(.dark, .dark *));
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-sans);
-  --font-mono: var(--font-geist-mono);
-  --font-heading: var(--font-sans);
-  --color-sidebar-ring: var(--sidebar-ring);
-  --color-sidebar-border: var(--sidebar-border);
-  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-  --color-sidebar-accent: var(--sidebar-accent);
-  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-  --color-sidebar-primary: var(--sidebar-primary);
-  --color-sidebar-foreground: var(--sidebar-foreground);
-  --color-sidebar: var(--sidebar);
-  --color-chart-5: var(--chart-5);
-  --color-chart-4: var(--chart-4);
-  --color-chart-3: var(--chart-3);
-  --color-chart-2: var(--chart-2);
-  --color-chart-1: var(--chart-1);
-  --color-ring: var(--ring);
-  --color-input: var(--input);
-  --color-border: var(--border);
-  --color-destructive: var(--destructive);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-accent: var(--accent);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-muted: var(--muted);
-  --color-secondary-foreground: var(--secondary-foreground);
-  --color-secondary: var(--secondary);
-  --color-primary-foreground: var(--primary-foreground);
-  --color-primary: var(--primary);
-  --color-popover-foreground: var(--popover-foreground);
-  --color-popover: var(--popover);
-  --color-card-foreground: var(--card-foreground);
-  --color-card: var(--card);
-  --radius-sm: calc(var(--radius) * 0.6);
-  --radius-md: calc(var(--radius) * 0.8);
-  --radius-lg: var(--radius);
-  --radius-xl: calc(var(--radius) * 1.4);
-  --radius-2xl: calc(var(--radius) * 1.8);
-  --radius-3xl: calc(var(--radius) * 2.2);
-  --radius-4xl: calc(var(--radius) * 2.6);
-}
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --background: oklch(0.99 0 0);
-  --foreground: oklch(0.15 0.02 260);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.15 0.02 260);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.15 0.02 260);
+  --background: #ffffff;
+  --foreground: #020817;
+  --card: #ffffff;
+  --card-foreground: #020817;
+  --popover: #ffffff;
+  --popover-foreground: #020817;
   
   /* Brand Navy - #0a1c3a */
-  --primary: oklch(0.24 0.06 260);
-  --primary-foreground: oklch(0.98 0 0);
+  --primary: #0a1c3a;
+  --primary-foreground: #ffffff;
   
   /* Brand Orange - #E8701A */
-  --secondary: oklch(0.65 0.18 45);
-  --secondary-foreground: oklch(0.98 0 0);
+  --secondary: #e8701a;
+  --secondary-foreground: #ffffff;
   
-  --muted: oklch(0.96 0.01 260);
-  --muted-foreground: oklch(0.55 0.02 260);
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
   
-  --accent: oklch(0.96 0.01 260);
-  --accent-foreground: oklch(0.24 0.06 260);
+  --accent: #f1f5f9;
+  --accent-foreground: #0a1c3a;
   
-  --destructive: oklch(0.6 0.18 20);
-  --destructive-foreground: oklch(0.98 0 0);
+  --destructive: #ef4444;
+  --destructive-foreground: #ffffff;
   
-  --border: oklch(0.92 0.01 260);
-  --input: oklch(0.92 0.01 260);
-  --ring: oklch(0.65 0.18 45); /* Orange ring */
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #e8701a; /* Orange ring */
   
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: #f97316;
+  --chart-2: #0ea5e9;
+  --chart-3: #10b981;
+  --chart-4: #8b5cf6;
+  --chart-5: #f43f5e;
   
   --radius: 0.75rem; /* Slightly softer borders */
   
-  --sidebar: oklch(0.98 0 0);
-  --sidebar-foreground: oklch(0.15 0.02 260);
-  --sidebar-primary: oklch(0.24 0.06 260);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.96 0.01 260);
-  --sidebar-accent-foreground: oklch(0.24 0.06 260);
-  --sidebar-border: oklch(0.92 0.01 260);
-  --sidebar-ring: oklch(0.65 0.18 45);
+  --sidebar: #ffffff;
+  --sidebar-foreground: #020817;
+  --sidebar-primary: #0a1c3a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f1f5f9;
+  --sidebar-accent-foreground: #0a1c3a;
+  --sidebar-border: #e2e8f0;
+  --sidebar-ring: #e8701a;
 }
 
 .dark {
   /* Rich Navy Background */
-  --background: oklch(0.16 0.03 260);
-  --foreground: oklch(0.96 0.01 260);
+  --background: #020817;
+  --foreground: #f8fafc;
   
   /* Elevated Cards */
-  --card: oklch(0.20 0.04 260);
-  --card-foreground: oklch(0.96 0.01 260);
+  --card: #0f172a;
+  --card-foreground: #f8fafc;
   
-  --popover: oklch(0.20 0.04 260);
-  --popover-foreground: oklch(0.96 0.01 260);
+  --popover: #0f172a;
+  --popover-foreground: #f8fafc;
   
   /* Brand Navy (lighter for dark mode) or stay with white for contrast */
-  --primary: oklch(0.98 0 0);
-  --primary-foreground: oklch(0.16 0.03 260);
+  --primary: #ffffff;
+  --primary-foreground: #020817;
   
   /* Brand Orange remains strong */
-  --secondary: oklch(0.65 0.18 45);
-  --secondary-foreground: oklch(0.98 0 0);
+  --secondary: #e8701a;
+  --secondary-foreground: #ffffff;
   
-  --muted: oklch(0.24 0.05 260);
-  --muted-foreground: oklch(0.70 0.02 260);
+  --muted: #1e293b;
+  --muted-foreground: #94a3b8;
   
-  --accent: oklch(0.24 0.05 260);
-  --accent-foreground: oklch(0.98 0 0);
+  --accent: #1e293b;
+  --accent-foreground: #ffffff;
   
-  --destructive: oklch(0.7 0.18 20);
-  --destructive-foreground: oklch(0.98 0 0);
+  --destructive: #7f1d1d;
+  --destructive-foreground: #ffffff;
   
-  --border: oklch(0.28 0.06 260);
-  --input: oklch(0.28 0.06 260);
-  --ring: oklch(0.65 0.18 45);
+  --border: #1e293b;
+  --input: #1e293b;
+  --ring: #e8701a;
   
-  --chart-1: oklch(0.87 0 0);
-  --chart-2: oklch(0.556 0 0);
-  --chart-3: oklch(0.439 0 0);
-  --chart-4: oklch(0.371 0 0);
-  --chart-5: oklch(0.269 0 0);
+  --chart-1: #ea580c;
+  --chart-2: #0284c7;
+  --chart-3: #059669;
+  --chart-4: #7c3aed;
+  --chart-5: #e11d48;
   
-  --sidebar: oklch(0.18 0.04 260);
-  --sidebar-foreground: oklch(0.96 0.01 260);
-  --sidebar-primary: oklch(0.65 0.18 45);
-  --sidebar-primary-foreground: oklch(0.98 0 0);
-  --sidebar-accent: oklch(0.24 0.05 260);
-  --sidebar-accent-foreground: oklch(0.96 0.01 260);
-  --sidebar-border: oklch(0.28 0.06 260);
-  --sidebar-ring: oklch(0.65 0.18 45);
+  --sidebar: #0f172a;
+  --sidebar-foreground: #f8fafc;
+  --sidebar-primary: #e8701a;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #1e293b;
+  --sidebar-accent-foreground: #f8fafc;
+  --sidebar-border: #1e293b;
+  --sidebar-ring: #e8701a;
 }
 
 @layer base {
   * {
-    @apply border-border outline-ring/50;
+    @apply border-border outline-ring;
   }
   body {
     @apply bg-background text-foreground overflow-x-hidden;
@@ -158,6 +112,9 @@
 }
 
 @layer utilities {
+  /* ============================================================
+     CONTAINER — supports 320px (phone) → 4K TV (3840px)
+  ============================================================ */
   .container {
     width: 100%;
     margin-right: auto;
@@ -165,32 +122,70 @@
     padding-right: 1rem;
     padding-left: 1rem;
   }
+  @media (min-width: 375px) {
+    .container { max-width: 375px; padding-right: 1rem; padding-left: 1rem; }
+  }
   @media (min-width: 640px) {
-    .container {
-      max-width: 640px;
-    }
+    .container { max-width: 640px; padding-right: 1.5rem; padding-left: 1.5rem; }
   }
   @media (min-width: 768px) {
-    .container {
-      max-width: 768px;
-    }
+    .container { max-width: 768px; }
   }
   @media (min-width: 1024px) {
-    .container {
-      max-width: 1024px;
-    }
+    .container { max-width: 1024px; padding-right: 2rem; padding-left: 2rem; }
   }
   @media (min-width: 1280px) {
-    .container {
-      max-width: 1280px;
-    }
+    .container { max-width: 1280px; }
   }
   @media (min-width: 1536px) {
-    .container {
-      max-width: 1536px;
-    }
+    .container { max-width: 1536px; }
   }
-  
+  /* TV / Ultrawide breakpoints */
+  @media (min-width: 1920px) {
+    .container { max-width: 1700px; padding-right: 2.5rem; padding-left: 2.5rem; }
+  }
+  @media (min-width: 2560px) {
+    .container { max-width: 2100px; }
+  }
+  @media (min-width: 3840px) {
+    .container { max-width: 2800px; }
+  }
+
+  /* ============================================================
+     SCROLLBAR UTILITIES — used widely across the app
+  ============================================================ */
+  .no-scrollbar::-webkit-scrollbar,
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar,
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+  .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+  .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 9999px; }
+  .dark .custom-scrollbar::-webkit-scrollbar-thumb { background-color: #475569; }
+
+  /* ============================================================
+     TV / LARGE SCREEN FONT SCALING
+     Browsers on Smart TVs often render at 100% zoom but on a
+     1920px+ canvas — scale up base font for readability.
+  ============================================================ */
+  @media (min-width: 1920px) {
+    :root { font-size: 17px; }
+  }
+  @media (min-width: 2560px) {
+    :root { font-size: 18px; }
+  }
+  @media (min-width: 3840px) {
+    :root { font-size: 20px; }
+  }
+
+  /* ============================================================
+     ANIMATIONS
+  ============================================================ */
   .animate-fade-in {
     animation: fadeIn 0.8s ease-out forwards;
   }
@@ -200,15 +195,13 @@
   .animate-fade-in-right {
     animation: fadeInRight 0.8s ease-out forwards;
   }
-  .delay-100 {
-    animation-delay: 100ms;
-  }
-  .delay-200 {
-    animation-delay: 200ms;
-  }
-  .delay-300 {
-    animation-delay: 300ms;
-  }
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+
+  /* ============================================================
+     GLASS & CARD UTILITIES
+  ============================================================ */
   .glass-panel {
     @apply bg-white/70 backdrop-blur-md border border-white/20 shadow-lg;
   }

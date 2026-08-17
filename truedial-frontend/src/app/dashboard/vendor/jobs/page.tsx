@@ -1,161 +1,180 @@
 "use client";
 
 import React, { useState } from "react";
+import { 
+  Briefcase, MapPin, Clock, CheckCircle, 
+  Wallet, Phone, Map, AlertCircle, ArrowRight
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Briefcase, User, Search, MapPin, Clock, MoreVertical, FileText, CalendarCheck, CheckCircle2 } from "lucide-react";
-import { Input } from "@/components/ui/input";
 
-export default function JobsATSPage() {
-  const [activeJob, setActiveJob] = useState(1);
-  const [applicants, setApplicants] = useState([
-    { id: 101, jobId: 1, name: "Rahul Verma", role: "Frontend Developer", status: "new", applied_on: "2 days ago", match: 92 },
-    { id: 102, jobId: 1, name: "Sneha Gupta", role: "Frontend Developer", status: "interview", applied_on: "4 days ago", match: 85 },
-    { id: 103, jobId: 2, name: "Amit Singh", role: "Marketing Intern", status: "hired", applied_on: "1 week ago", match: 98 },
-  ]);
+const MOCK_JOBS = [
+  {
+    id: "JB-771",
+    title: "Complete Home Plumbing Repair",
+    customer: "Vikram R.",
+    location: "Malad West, Mumbai",
+    distance: "4.2 km",
+    date: "Today",
+    time: "02:00 PM",
+    estPayout: "₹1,200",
+    status: "Accepted"
+  },
+  {
+    id: "JB-772",
+    title: "Kitchen Sink Installation",
+    customer: "Priya S.",
+    location: "Borivali East, Mumbai",
+    distance: "1.5 km",
+    date: "Tomorrow",
+    time: "10:00 AM",
+    estPayout: "₹800",
+    status: "New Lead"
+  },
+  {
+    id: "JB-765",
+    title: "Bathroom Leakage Fix",
+    customer: "Amit D.",
+    location: "Andheri West, Mumbai",
+    distance: "7.8 km",
+    date: "Yesterday",
+    time: "11:00 AM",
+    estPayout: "₹1,500",
+    status: "Completed"
+  }
+];
 
-  const jobs = [
-    { id: 1, title: "Frontend Developer (Next.js)", type: "Full-time", location: "Remote", applicants: 12 },
-    { id: 2, title: "Marketing Intern", type: "Internship", location: "Mumbai", applicants: 45 },
-    { id: 3, title: "Sales Executive", type: "Full-time", location: "Delhi", applicants: 8 },
-  ];
+export default function JobBoardPage() {
+  const [jobs, setJobs] = useState(MOCK_JOBS);
 
-  const updateStatus = (id: number, newStatus: string) => {
-    setApplicants(applicants.map(app => app.id === id ? { ...app, status: newStatus } : app));
-  };
-
-  const getStatusBadge = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'new': return <Badge variant="secondary" className="bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400">New</Badge>;
-      case 'interview': return <Badge variant="secondary" className="bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400">Interview</Badge>;
-      case 'hired': return <Badge variant="default" className="bg-green-500 hover:bg-green-600 text-white">Hired</Badge>;
-      case 'rejected': return <Badge variant="outline" className="text-slate-500 border-slate-300 dark:border-slate-700">Rejected</Badge>;
-      default: return null;
+      case 'New Lead': return "bg-blue-500/10 text-blue-600 border-blue-500/20";
+      case 'Accepted': return "bg-amber-500/10 text-amber-600 border-amber-500/20";
+      case 'Completed': return "bg-emerald-500/10 text-emerald-600 border-emerald-500/20";
+      default: return "bg-slate-500/10 text-slate-600 border-slate-500/20";
     }
   };
 
-  const filteredApplicants = applicants.filter(app => app.jobId === activeJob);
+  const acceptJob = (id: string) => {
+    setJobs(prev => prev.map(j => j.id === id ? { ...j, status: 'Accepted' } : j));
+  };
+
+  const markCompleted = (id: string) => {
+    setJobs(prev => prev.map(j => j.id === id ? { ...j, status: 'Completed' } : j));
+  };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white">Applicant Tracking</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-3">
+            <Briefcase className="w-8 h-8 text-[#E8701A]" />
+            Job Board & Dispatch
+          </h1>
           <p className="text-muted-foreground mt-2">
-            Manage your job postings and review incoming applications.
+            Find new service requests nearby, accept jobs, and track your daily payout.
           </p>
         </div>
-        <Button className="bg-[#E8701A] hover:bg-[#c95d13] text-white">
-          <Briefcase className="mr-2 h-4 w-4" />
-          Post New Job
-        </Button>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-semibold text-slate-500">My Status:</span>
+          <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white border-0 px-3 py-1 text-sm font-bold shadow-md shadow-emerald-500/20">
+            <div className="w-2 h-2 rounded-full bg-white mr-2 animate-pulse"></div>
+            Online & Available
+          </Badge>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-        {/* Left Column: Job Listings */}
-        <div className="space-y-4">
-          <div className="relative">
-            <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
-            <Input placeholder="Search jobs..." className="pl-9 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800" />
-          </div>
-          
-          <div className="space-y-2">
-            {jobs.map(job => (
-              <div 
-                key={job.id}
-                onClick={() => setActiveJob(job.id)}
-                className={`p-4 rounded-xl border cursor-pointer transition-all ${activeJob === job.id ? 'bg-blue-50 dark:bg-[#0a1c3a]/50 border-blue-200 dark:border-blue-500/30 shadow-sm' : 'bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 hover:border-blue-300 dark:hover:border-slate-700'}`}
-              >
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className={`font-semibold text-sm ${activeJob === job.id ? 'text-blue-900 dark:text-blue-100' : 'text-slate-900 dark:text-white'}`}>
-                    {job.title}
-                  </h3>
-                </div>
-                <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 mb-3 space-x-3">
-                  <span className="flex items-center"><MapPin className="h-3 w-3 mr-1" /> {job.location}</span>
-                  <span className="flex items-center"><Clock className="h-3 w-3 mr-1" /> {job.type}</span>
-                </div>
-                <Badge variant="outline" className={`text-xs ${activeJob === job.id ? 'bg-blue-100 border-blue-200 text-blue-700 dark:bg-blue-900/30 dark:border-blue-800 dark:text-blue-300' : 'bg-slate-50 border-slate-200 dark:bg-slate-800 dark:border-slate-700'}`}>
-                  {job.applicants} Applicants
-                </Badge>
-              </div>
-            ))}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white dark:bg-[#0a1c3a]/70 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Total Earned (Week)</div>
+          <div className="text-3xl font-bold text-emerald-500">₹8,450</div>
+        </div>
+        <div className="bg-white dark:bg-[#0a1c3a]/70 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Jobs Completed</div>
+          <div className="text-3xl font-bold text-slate-900 dark:text-white">{jobs.filter(j => j.status === 'Completed').length}</div>
+        </div>
+        <div className="bg-white dark:bg-[#0a1c3a]/70 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
+          <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Active Jobs</div>
+          <div className="text-3xl font-bold text-amber-500">{jobs.filter(j => j.status === 'Accepted').length}</div>
+        </div>
+        <div className="bg-white dark:bg-[#0a1c3a]/70 rounded-xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm bg-blue-50 dark:bg-blue-900/10 border-blue-200 dark:border-blue-900/50">
+          <div className="text-xs font-bold text-blue-600 dark:text-blue-400 uppercase tracking-wider mb-1">New Leads Nearby</div>
+          <div className="text-3xl font-bold text-blue-600 dark:text-blue-400 flex items-center">
+            {jobs.filter(j => j.status === 'New Lead').length}
+            <span className="flex h-3 w-3 rounded-full bg-blue-500 ml-3 animate-ping"></span>
           </div>
         </div>
+      </div>
 
-        {/* Right Column: Applicants for Selected Job */}
-        <div className="lg:col-span-3">
-          <Card className="bg-white dark:bg-[#0a1c3a]/30 border-slate-200 dark:border-white/10 shadow-lg backdrop-blur-sm min-h-[600px]">
-            <div className="p-6 border-b border-slate-200 dark:border-white/10 flex justify-between items-center">
-              <div>
-                <h2 className="text-xl font-bold text-slate-900 dark:text-white">
-                  {jobs.find(j => j.id === activeJob)?.title}
-                </h2>
-                <p className="text-sm text-slate-500 dark:text-slate-400">Reviewing {filteredApplicants.length} applicants</p>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {jobs.map(job => (
+          <div key={job.id} className="bg-white dark:bg-[#0a1c3a]/70 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition flex flex-col overflow-hidden">
+            <div className={`p-5 flex-1 ${job.status === 'New Lead' ? 'bg-blue-50/50 dark:bg-blue-900/10' : ''}`}>
+              <div className="flex justify-between items-start mb-4">
+                <Badge className={`px-2 py-0.5 border-0 ${getStatusColor(job.status)}`}>
+                  {job.status === 'New Lead' && <AlertCircle className="w-3 h-3 mr-1" />}
+                  {job.status}
+                </Badge>
+                <div className="font-bold text-emerald-600 dark:text-emerald-400 flex items-center bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded-lg">
+                  <Wallet className="w-4 h-4 mr-1.5" /> {job.estPayout}
+                </div>
               </div>
-              <div className="flex space-x-2">
-                <Button variant="outline" size="sm" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">Filter</Button>
-                <Button variant="outline" size="sm" className="bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700">Export</Button>
+              
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 line-clamp-2">{job.title}</h3>
+              
+              <div className="space-y-3">
+                <div className="flex items-start text-sm text-slate-600 dark:text-slate-300">
+                  <MapPin className="w-4 h-4 mr-3 text-slate-400 mt-0.5 shrink-0" />
+                  <div>
+                    <span className="font-medium">{job.location}</span>
+                    <div className="text-xs text-blue-500 font-bold mt-0.5 flex items-center">
+                      <Map className="w-3 h-3 mr-1" /> {job.distance} away
+                    </div>
+                  </div>
+                </div>
+                <div className="flex items-center text-sm text-slate-600 dark:text-slate-300">
+                  <Clock className="w-4 h-4 mr-3 text-slate-400" />
+                  <span><span className="font-semibold text-slate-900 dark:text-white">{job.date}</span> at {job.time}</span>
+                </div>
+                {job.status !== 'New Lead' && (
+                  <div className="flex items-center text-sm text-slate-600 dark:text-slate-300">
+                    <Phone className="w-4 h-4 mr-3 text-slate-400" />
+                    <span>Customer: <strong className="text-slate-900 dark:text-white">{job.customer}</strong></span>
+                  </div>
+                )}
               </div>
             </div>
-
-            <CardContent className="p-0">
-              {filteredApplicants.length > 0 ? (
-                <div className="divide-y divide-slate-100 dark:divide-white/5">
-                  {filteredApplicants.map(applicant => (
-                    <div key={applicant.id} className="p-6 hover:bg-slate-50 dark:hover:bg-slate-900/30 transition-colors flex items-center justify-between">
-                      <div className="flex items-center space-x-4">
-                        <div className="h-12 w-12 rounded-full bg-slate-200 dark:bg-slate-800 flex items-center justify-center border border-white/10">
-                          <User className="h-6 w-6 text-slate-500" />
-                        </div>
-                        <div>
-                          <div className="flex items-center space-x-3 mb-1">
-                            <h3 className="text-base font-semibold text-slate-900 dark:text-white">{applicant.name}</h3>
-                            {getStatusBadge(applicant.status)}
-                          </div>
-                          <div className="flex items-center text-sm text-slate-500 space-x-4">
-                            <span className="flex items-center"><FileText className="h-3 w-3 mr-1" /> Resume.pdf</span>
-                            <span className="flex items-center"><Clock className="h-3 w-3 mr-1" /> Applied {applicant.applied_on}</span>
-                            <span className="text-green-500 font-medium">Match: {applicant.match}%</span>
-                          </div>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-2">
-                        {applicant.status === 'new' && (
-                          <>
-                            <Button size="sm" variant="outline" onClick={() => updateStatus(applicant.id, 'interview')} className="border-purple-200 text-purple-600 hover:bg-purple-50 dark:border-purple-800 dark:text-purple-400 dark:hover:bg-purple-900/20">
-                              <CalendarCheck className="mr-1 h-3 w-3" /> Interview
-                            </Button>
-                            <Button size="sm" variant="outline" onClick={() => updateStatus(applicant.id, 'rejected')} className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-800 dark:text-red-400 dark:hover:bg-red-900/20">
-                              Reject
-                            </Button>
-                          </>
-                        )}
-                        {applicant.status === 'interview' && (
-                          <Button size="sm" onClick={() => updateStatus(applicant.id, 'hired')} className="bg-green-500 hover:bg-green-600 text-white">
-                            <CheckCircle2 className="mr-1 h-3 w-3" /> Hire Candidate
-                          </Button>
-                        )}
-                        
-                        <Button size="icon" variant="ghost" className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-24">
-                  <User className="mx-auto h-12 w-12 text-slate-300 dark:text-slate-700 mb-4" />
-                  <h3 className="text-lg font-medium text-slate-900 dark:text-white">No applicants yet</h3>
-                  <p className="text-slate-500 mt-1">Check back later for new applications.</p>
+            
+            <div className="border-t border-slate-100 dark:border-slate-800 p-4 bg-slate-50 dark:bg-slate-900/50">
+              {job.status === 'New Lead' && (
+                <div className="flex gap-2">
+                  <Button onClick={() => acceptJob(job.id)} className="flex-1 bg-blue-500 hover:bg-blue-600 text-white font-bold shadow-md shadow-blue-500/20">
+                    Accept Job
+                  </Button>
+                  <Button variant="outline" className="text-slate-500 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10">Pass</Button>
                 </div>
               )}
-            </CardContent>
-          </Card>
-        </div>
+              
+              {job.status === 'Accepted' && (
+                <div className="flex gap-2">
+                  <Button variant="outline" className="flex-1 bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 shadow-sm">
+                    <Map className="w-4 h-4 mr-2" /> Navigate
+                  </Button>
+                  <Button onClick={() => markCompleted(job.id)} className="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold shadow-md shadow-emerald-500/20">
+                    Finish <ArrowRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </div>
+              )}
+              
+              {job.status === 'Completed' && (
+                <div className="w-full h-10 flex items-center justify-center font-bold text-emerald-600 bg-emerald-500/10 rounded-md">
+                  <CheckCircle className="w-5 h-5 mr-2" /> Payment Received
+                </div>
+              )}
+            </div>
+          </div>
+        ))}
       </div>
     </div>
   );

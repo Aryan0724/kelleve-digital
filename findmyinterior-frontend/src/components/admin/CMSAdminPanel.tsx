@@ -23,6 +23,7 @@ export function CMSAdminPanel() {
     status: "published",
     cover_image: "",
     tags: "",
+    target_audience: [] as string[],
   });
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export function CMSAdminPanel() {
   };
 
   const resetForm = () => {
-    setFormData({ id: null, title: "", excerpt: "", content: "", category: "Tips", status: "published", cover_image: "", tags: "" });
+    setFormData({ id: null, title: "", excerpt: "", content: "", category: "Tips", status: "published", cover_image: "", tags: "", target_audience: [] });
   };
 
   if (loading && !blogs.length) return <div className="text-center p-8">Loading CMS...</div>;
@@ -116,6 +117,28 @@ export function CMSAdminPanel() {
                   <SelectItem value="News">News</SelectItem>
                 </SelectContent>
               </Select>
+              <div className="flex-1 border rounded-md p-2 flex flex-col gap-1 min-w-[200px] text-sm">
+                <span className="text-xs text-slate-500 font-medium">Target Audience</span>
+                <div className="flex flex-wrap gap-2">
+                  {['interior_designer', 'interior_company', 'contractor', 'architect', 'builder', 'supplier', 'material_supplier', 'worker', 'skilled_worker', 'homeowner', 'customer', 'business'].map(role => (
+                    <label key={role} className="flex items-center gap-1 cursor-pointer">
+                      <input 
+                        type="checkbox" 
+                        checked={formData.target_audience?.includes(role) || false}
+                        onChange={(e) => {
+                          const current = formData.target_audience || [];
+                          if (e.target.checked) {
+                            setFormData({ ...formData, target_audience: [...current, role] });
+                          } else {
+                            setFormData({ ...formData, target_audience: current.filter((r: string) => r !== role) });
+                          }
+                        }}
+                      />
+                      <span className="capitalize">{role.replace(/_/g, ' ')}</span>
+                    </label>
+                  ))}
+                </div>
+              </div>
               <Select value={formData.status} onValueChange={(val) => setFormData({ ...formData, status: val || "" })}>
                 <SelectTrigger className="w-[200px]"><SelectValue placeholder="Status" /></SelectTrigger>
                 <SelectContent>
@@ -172,7 +195,8 @@ export function CMSAdminPanel() {
                         setFormData({
                           ...blog,
                           cover_image: blog.cover_image || "",
-                          tags: blog.tags ? blog.tags.map((t: any) => t.tag || t).join(", ") : ""
+                          tags: blog.tags ? blog.tags.map((t: any) => t.tag || t).join(", ") : "",
+                          target_audience: blog.target_audience || []
                         }); 
                         setIsEditing(true); 
                       }}>

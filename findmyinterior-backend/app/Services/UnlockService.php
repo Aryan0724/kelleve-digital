@@ -37,18 +37,28 @@ class UnlockService
                 'success' => true,
                 'message' => 'Contact already unlocked',
                 'contact' => [
-                    'name' => $requirement->name ?? $requirement->user->name ?? 'Customer',
-                    'phone' => $requirement->phone ?? $requirement->user->phone ?? null,
-                    'email' => $requirement->email ?? $requirement->user->email ?? null,
+                    'name' => $requirement->user->name ?? $requirement->name ?? 'Customer',
+                    'phone' => $requirement->user->phone ?? $requirement->phone ?? null,
+                    'email' => $requirement->user->email ?? $requirement->email ?? null,
                 ]
             ];
         }
 
-        // 2. Fetch the fee from requirement or configuration
-        $fee = $requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00);
+        // 1.5 Check max unlocks
+        $unlocksCount = DB::table('contact_unlocks')
+            ->where('requirement_id', $requirement->id)
+            ->where('requirement_type', $requirementType)
+            ->count();
+            
+        if ($unlocksCount >= ($requirement->max_unlocks ?? 10)) {
+            throw new Exception('This requirement has reached its maximum number of contact unlocks.');
+        }
 
-        // Workers and Skilled Workers can unlock any requirement for free
-        if ($vendor->hasRole('worker') || $vendor->hasRole('skilled_worker')) {
+        // 2. Fetch the fee from requirement or configuration (default ₹49)
+        $fee = (float) ($requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00));
+
+        // Only the actual owner of the listing/requirement gets their own contact for free
+        if ($vendor->id === ($requirement->user_id ?? null)) {
             $fee = 0;
         }
 
@@ -104,10 +114,11 @@ class UnlockService
             return [
                 'success' => true,
                 'message' => 'Contact unlocked successfully',
+                'wallet_balance' => $this->walletService->getBalance($vendor),
                 'contact' => [
-                    'name' => $requirement->name ?? $requirement->user->name ?? 'Customer',
-                    'phone' => $requirement->phone ?? $requirement->user->phone ?? null,
-                    'email' => $requirement->email ?? $requirement->user->email ?? null,
+                    'name' => $requirement->user->name ?? $requirement->name ?? 'Customer',
+                    'phone' => $requirement->user->phone ?? $requirement->phone ?? null,
+                    'email' => $requirement->user->email ?? $requirement->email ?? null,
                 ]
             ];
         });

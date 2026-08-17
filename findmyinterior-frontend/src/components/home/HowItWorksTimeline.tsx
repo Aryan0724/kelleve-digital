@@ -45,6 +45,9 @@ export function HowItWorksTimeline() {
         <h2 className="text-[1.15rem] font-black text-[#1A1A1A] dark:text-white mb-6 lg:hidden">
           How It Works
         </h2>
+        <p className="text-xs md:text-sm text-slate-500 dark:text-slate-400 mb-6 text-center">
+          Simple steps to get your work done
+        </p>
         
         {/* Mobile Vertical View */}
         <div className="relative pl-3 lg:hidden">

@@ -92,7 +92,9 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
       <CardContent>
         {unlockedContacts && unlockedContacts.length > 0 ? (
           <div className="space-y-4">
-            {unlockedContacts.map((unlock: any) => (
+            {unlockedContacts.map((unlock: any) => {
+              const isJob = unlock.requirement_type === 'App\\Models\\WorkerJob';
+              return (
               <div key={unlock.id} className="p-4 border rounded-lg bg-white shadow-sm">
                 <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
                   <div className="flex-1">
@@ -124,7 +126,7 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                   </div>
 
                   <div className="flex flex-col gap-2 md:w-48 shrink-0">
-                    <Link href={`/requirements/${unlock.requirement?.id}`}>
+                    <Link href={`/requirements/${unlock.requirement?.id}?type=${unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project')}`}>
                       <Button variant="outline" className="w-full">
                         <ExternalLink className="w-4 h-4 mr-2" /> View Details
                       </Button>
@@ -135,7 +137,7 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                         className="bg-orange-600 hover:bg-orange-700 w-full"
                       >
                         <Send className="w-4 h-4 mr-2" /> 
-                        {biddingId === unlock.requirement.id ? "Cancel Bid" : "Submit Bid"}
+                        {biddingId === unlock.requirement.id ? (isJob ? "Cancel Application" : "Cancel Bid") : (isJob ? "Apply for Job" : "Submit Bid")}
                       </Button>
                     )}
                     {/* DEBUG INFO */}
@@ -170,13 +172,13 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                 {/* Inline Bid Form */}
                 {biddingId === unlock.requirement?.id && (
                   <div className="mt-4 border-t pt-4">
-                    <h5 className="font-bold text-slate-800 mb-3">Submit your bid</h5>
+                    <h5 className="font-bold text-slate-800 mb-3">{isJob ? "Submit your application" : "Submit your bid"}</h5>
                     <div className="bg-indigo-50 border border-indigo-100 text-indigo-700 p-3 rounded-lg text-sm mb-4">
-                      <strong>Pro tip:</strong> Clients are 3x more likely to accept bids from professionals with a complete profile. Don't forget to upload your portfolio and previous work in the <strong>Profile</strong> section!
+                      <strong>Pro tip:</strong> Clients are 3x more likely to accept {isJob ? "applications" : "bids"} from professionals with a complete profile. Don't forget to upload your portfolio and previous work in the <strong>Profile</strong> section!
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                       <div>
-                        <label className="block text-xs font-medium text-slate-500 mb-1">Bid Amount (₹)</label>
+                        <label className="block text-xs font-medium text-slate-500 mb-1">{isJob ? "Expected Rate (₹)" : "Bid Amount (₹)"}</label>
                         <input 
                           type="number" 
                           value={amount}
@@ -209,13 +211,14 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" onClick={() => setBiddingId(null)}>Cancel</Button>
                       <Button onClick={() => handleSubmitBid(unlock.requirement.id)} className="bg-orange-600 hover:bg-orange-700" disabled={submitting}>
-                        {submitting ? "Placing Bid..." : "Submit Bid"}
+                        {submitting ? (isJob ? "Applying..." : "Placing Bid...") : (isJob ? "Apply for Job" : "Submit Bid")}
                       </Button>
                     </div>
                   </div>
                 )}
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-16 px-4 border border-dashed rounded-xl bg-slate-50">

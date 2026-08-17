@@ -9,11 +9,14 @@ import {
   Store, Ticket, LineChart
 } from "lucide-react";
 import { useAuth } from "@/context/AuthContext";
+import { useRole } from "@/context/RoleContext";
 import ProtectedRoute from "@/components/shared/ProtectedRoute";
+import DashboardSidebarContent from "@/components/dashboard/sidebar/DashboardSidebarContent";
 
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const { user, isLoggedIn, role, clearUser } = useAuth();
+  const { user, isLoggedIn, clearUser } = useAuth();
+  const { activeRole, isAdmin, isVendor, isCustomer, availableRoles, switchRole } = useRole();
   const router = useRouter();
   const pathname = usePathname();
 
@@ -44,8 +47,6 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     setMessages(messages.map(m => ({ ...m, unread: false })));
   };
 
-  const rawRoles = user?.roles || (user?.role ? [user.role] : []);
-  const roleSlugs = rawRoles.map((r: any) => typeof r === 'string' ? r : (r.slug || r.name || '')).map((s: string) => s.toLowerCase());
 
   const hasAdminRole = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
   const hasVendorRole = roleSlugs.includes('business') || roleSlugs.some((r: string) => ['vendor', 'business_owner'].includes(r));
@@ -117,9 +118,40 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             <ArrowLeft className="w-5 h-5 shrink-0" /> Back to Homepage
           </Link>
 
-          {links.map((link) => (
-            <NavLink key={link.href} item={link} />
-          ))}
+          <DashboardSidebarContent />
+
+          {/* Role Switcher */}
+          {availableRoles.length > 1 && (
+            <div className="mt-6 px-3">
+              <p className="text-xs font-semibold text-white/50 uppercase tracking-wider mb-2">Switch View</p>
+              <div className="flex bg-white/5 rounded-lg p-1">
+                {availableRoles.includes('customer') && (
+                  <button
+                    onClick={() => switchRole('customer')}
+                    className={`flex-1 text-xs py-1.5 rounded-md transition ${activeRole === 'customer' ? 'bg-primary text-white font-medium shadow' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+                  >
+                    User
+                  </button>
+                )}
+                {availableRoles.includes('vendor') && (
+                  <button
+                    onClick={() => switchRole('vendor')}
+                    className={`flex-1 text-xs py-1.5 rounded-md transition ${activeRole === 'vendor' ? 'bg-primary text-white font-medium shadow' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+                  >
+                    Business
+                  </button>
+                )}
+                {availableRoles.includes('admin') && (
+                  <button
+                    onClick={() => switchRole('admin')}
+                    className={`flex-1 text-xs py-1.5 rounded-md transition ${activeRole === 'admin' ? 'bg-primary text-white font-medium shadow' : 'text-white/60 hover:text-white hover:bg-white/10'}`}
+                  >
+                    Admin
+                  </button>
+                )}
+              </div>
+            </div>
+          )}
         </nav>
         
         <div className="p-4 border-t border-white/10">
@@ -142,7 +174,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         {/* Topbar */}
         <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0 z-30 relative">
           <div className="flex items-center gap-4">
-            <h2 className="font-semibold text-foreground">Business Dashboard</h2>
+            <h2 className="font-semibold text-foreground">{user?.name ? `${user.name} Dashboard` : isAdmin ? 'Admin Console' : isVendor ? 'Business Dashboard' : 'User Dashboard'}</h2>
             <Link 
               href="/" 
               className="hidden sm:flex items-center gap-1.5 text-xs font-bold text-primary hover:text-primary/80 transition px-3 py-1.5 bg-primary/10 hover:bg-primary/20 rounded-full border border-primary/20"

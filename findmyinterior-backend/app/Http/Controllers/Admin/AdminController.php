@@ -15,6 +15,8 @@ use App\Models\Supplier;
 use App\Models\User;
 use App\Models\UserSubscription;
 use App\Models\Worker;
+use App\Services\TrustScoreService;
+use App\Notifications\AccountVerifiedNotification;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -61,7 +63,7 @@ class AdminController extends Controller
                     'total_requirements'    => Requirement::count(),
                     'total_bids'            => \App\Models\Bid::count(),
                     'open_requirements'     => Requirement::open()->count(),
-                    'pending_reviews'       => Review::where('is_approved', false)->count(),
+                    'pending_reviews'       => Review::where('status', 'pending')->count(),
                     'pending_listings'      => Listing::where('is_verified', false)->count(),
                     'total_revenue'         => $totalRevenue,
                     'unlock_revenue'        => $unlockRevenue,
@@ -220,7 +222,7 @@ class AdminController extends Controller
      */
     public function pendingReviews(): JsonResponse
     {
-        $reviews = Review::where('is_approved', false)
+        $reviews = Review::where('status', 'pending')
             ->with(['reviewer:id,name', 'reviewedUser:id,name', 'project:id,title'])
             ->latest()
             ->get();
@@ -265,6 +267,8 @@ class AdminController extends Controller
             'status'      => ['in:draft,published'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['string', 'max:100'],
+            'target_audience'   => ['nullable', 'array'],
+            'target_audience.*' => ['string'],
         ]);
 
         $blog = Blog::create([
@@ -277,6 +281,7 @@ class AdminController extends Controller
             'category'     => $data['category'] ?? 'General',
             'status'       => $data['status'] ?? 'draft',
             'published_at' => ($data['status'] ?? 'draft') === 'published' ? now() : null,
+            'target_audience' => $data['target_audience'] ?? null,
         ]);
 
         if (!empty($data['tags'])) {
@@ -304,6 +309,8 @@ class AdminController extends Controller
             'status'      => ['in:draft,published'],
             'tags'        => ['nullable', 'array'],
             'tags.*'      => ['string', 'max:100'],
+            'target_audience'   => ['nullable', 'array'],
+            'target_audience.*' => ['string'],
         ]);
 
         if (isset($data['title'])) {
@@ -519,8 +526,16 @@ class AdminController extends Controller
 
         $user->update([
             'is_verified' => $nextVerified,
+            'is_verified_business' => $nextVerified,
             'verification_level' => $data['verification_level'] ?? ($nextVerified ? 'business_verified' : 'unverified'),
         ]);
+
+        // Recalculate trust score using TrustScoreService
+        app(TrustScoreService::class)->recalculateForUser($user);
+
+        if ($nextVerified) {
+            $user->notify(new AccountVerifiedNotification());
+        }
 
         return response()->json([
             'success' => true,

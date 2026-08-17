@@ -25,9 +25,22 @@ const inter = Inter({
   description: "Discover and connect with trusted local businesses across India. TrueDial is India's emerging business discovery and growth platform.",
 };
 
+import type { Viewport } from 'next';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+};
+
 import { LocationProvider } from "@/context/LocationContext";
 import { AuthProvider } from "@/context/AuthContext";
+import { TenantProvider } from "@/context/TenantContext";
+import { RoleProvider } from "@/context/RoleContext";
 import LocationSelectorModal from "@/components/shared/LocationSelectorModal";
+import MobileNav from "@/components/layout/MobileNav";
+import { TopRibbonAd } from "@/components/shared/AdPlacements/TopRibbonAd";
+import { PopupAd } from "@/components/shared/AdPlacements/PopupAd";
 
 export default function RootLayout({
   children,
@@ -40,12 +53,19 @@ export default function RootLayout({
       className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col font-sans bg-background text-foreground antialiased selection:bg-primary/20 selection:text-primary">
-        <AuthProvider>
-          <LocationProvider>
-            {children}
-            <LocationSelectorModal />
-          </LocationProvider>
-        </AuthProvider>
+        <TenantProvider>
+          <AuthProvider>
+            <RoleProvider>
+              <LocationProvider>
+                <TopRibbonAd />
+                <PopupAd />
+                {children}
+                <MobileNav />
+                <LocationSelectorModal />
+              </LocationProvider>
+            </RoleProvider>
+          </AuthProvider>
+        </TenantProvider>
       </body>
     </html>
   );

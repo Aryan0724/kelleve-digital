@@ -1,23 +1,28 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { toast } from "react-toastify";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Star, Gavel, LogOut, User, Camera, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
+import api from "@/lib/api";
 import { SettingsTab } from "@/components/dashboard/SettingsTab";
-import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import Link from "next/link";
 
+import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
+import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
+
 export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { user, logout } = useAuthStore();
+  const { user, logout, updateUser } = useAuthStore();
+
   
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabParam || "dashboard");
@@ -27,6 +32,19 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
       setActiveTab(tabParam);
     }
   }, [tabParam]);
+
+  useEffect(() => {
+    // Auto-scroll to content area on mobile when tab changes
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        const contentArea = document.getElementById('dashboard-content-area');
+        if (contentArea) {
+          const y = contentArea.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [activeTab]);
 
   const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
@@ -38,12 +56,12 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   const renderSidebarButton = (id: string, icon: React.ReactNode, label: string) => (
     <button 
       onClick={() => setActiveTab(id)}
-      className={`flex items-center p-3 md:p-4 border-b md:border-r-0 border-r dark:border-slate-800 text-left font-medium text-xs sm:text-sm md:text-base transition-colors w-full h-full ${activeTab === id ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-500' : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}
+      className={`flex items-center shrink-0 snap-start p-3 md:p-4 border-b md:border-b dark:border-slate-800 text-left font-medium text-sm md:text-base transition-colors md:w-full ${activeTab === id ? 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-500 border-b-2 border-b-orange-600 md:border-b-slate-100 md:dark:border-b-slate-800 md:border-l-4 md:border-l-orange-600' : 'hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300'}`}
     >
       <div className={`mr-3 shrink-0 ${activeTab === id ? 'text-orange-600' : 'text-slate-400 dark:text-slate-500'}`}>
         {icon}
       </div>
-      {label}
+      <span className="whitespace-nowrap">{label}</span>
     </button>
   );
 
@@ -67,65 +85,54 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 dark:ring-orange-900/30 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 dark:text-slate-500 shadow">
-                  <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                  {user?.avatar && (
-                    <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                  )}
-                </div>
-                <h3 className="font-bold text-lg">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="secondary">Homeowner</Badge>
-              </CardContent>
-            </Card>
+              <DashboardProfileCard
+                fetchDashboard={fetchDashboard}
+                roleLabel="Homeowner"
+                description="Managing projects and seeking professionals."
+                onEditProfile={() => setActiveTab('profile')}
+              />
 
             <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
+              <div className="flex overflow-x-auto snap-x snap-mandatory md:flex-col w-full no-scrollbar md:overflow-x-hidden md:overflow-y-auto">
                 {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
-                {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Bids")}
+                {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
+                {renderSidebarButton("bids", <Gavel className="h-5 w-5" />, "Received Quotes")}
                 {renderSidebarButton("shortlisted", <Star className="h-5 w-5" />, "Shortlisted Professionals")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
                 {renderSidebarButton("profile", <User className="h-5 w-5" />, "Profile")}
                 {renderSidebarButton("settings", <User className="h-5 w-5" />, "Settings")}
               </div>
             </div>
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
+          <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
+            
+            {activeTab === 'bookmarks' && (
+              <SavedBookmarksTab />
+            )}
+            
             {activeTab === 'dashboard' && (
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Active Projects</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'in_progress').length || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Open Requirements</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'open').length || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Received Bids</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.received_bids?.length || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Unread Messages</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.unread_messages || 0}</div>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                    <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Completed Projects</div>
-                    <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'completed').length || 0}</div>
-                  </CardContent>
-                </Card>
+              <div className="flex flex-wrap gap-3 mb-6">
+                <div onClick={() => setActiveTab('dashboard')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Active</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'in_progress').length || 0}</div>
+                </div>
+                <div onClick={() => setActiveTab('dashboard')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Open Reqs</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'open').length || 0}</div>
+                </div>
+                <div onClick={() => setActiveTab('bids')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Bids</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.received_bids?.length || 0}</div>
+                </div>
+                <div onClick={() => setActiveTab('messages')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Messages</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.unread_messages || 0}</div>
+                </div>
+                <div onClick={() => setActiveTab('dashboard')} className="flex-1 min-w-[110px] bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-lg p-3 flex flex-col items-center justify-center cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm">
+                  <div className="text-[10px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-0.5">Completed</div>
+                  <div className="text-lg font-bold text-slate-900 dark:text-white">{data?.projects?.filter((p:any) => p.status === 'completed').length || 0}</div>
+                </div>
               </div>
             )}
 
@@ -141,12 +148,18 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                       {((data?.projects || []).concat(data?.rfqs || []).concat(data?.jobs || [])).map((req: any) => (
                         <div key={req.id + (req.material_type ? '-rfq' : req.skill_required ? '-job' : '-proj')} className="flex flex-col md:flex-row justify-between p-4 border dark:border-slate-700 rounded-xl hover:shadow-md transition-shadow bg-white dark:bg-slate-800">
                             <div className="flex-1 mb-4 md:mb-0">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h4 className="font-semibold text-lg text-slate-900 dark:text-white">{req.title || req.material_type || req.skill_required}</h4>
-                                <Badge variant="outline" className="bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">{req.status}</Badge>
-                                {req.material_type && <Badge variant="secondary">Material RFQ</Badge>}
-                                {req.skill_required && <Badge variant="secondary">Worker Job</Badge>}
-                              </div>
+                                <div className="flex items-center gap-2 mb-1">
+                                  <h4 className="font-semibold text-lg text-slate-900 dark:text-white">{req.title || req.material_type || req.skill_required}</h4>
+                                  <Badge variant="outline" className="bg-slate-100 dark:bg-slate-700 dark:text-slate-300 dark:border-slate-600">{req.status}</Badge>
+                                  {req.bids_count > 0 && (
+                                    <Badge variant="default" className="bg-orange-100 text-orange-700 hover:bg-orange-200 border-none flex items-center gap-1">
+                                      <Gavel className="w-3 h-3" />
+                                      {req.bids_count} Bid{req.bids_count !== 1 ? 's' : ''}
+                                    </Badge>
+                                  )}
+                                  {req.material_type && <Badge variant="secondary">Material RFQ</Badge>}
+                                  {req.skill_required && <Badge variant="secondary">Worker Job</Badge>}
+                                </div>
                               <div className="text-sm text-slate-500 dark:text-slate-400 mb-2 flex items-center gap-4">
                                 <span>{req.city}</span>
                                 <span>•</span>
@@ -246,7 +259,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
             {activeTab === 'bids' && (
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-xl font-bold text-slate-900">Received Bids</h2>
+                  <h2 className="text-xl font-bold text-slate-900">Received Quotes</h2>
                   <span className="text-sm text-slate-500">{data?.received_bids?.length || 0} total</span>
                 </div>
                 {data?.received_bids && data.received_bids.length > 0 ? (
@@ -257,7 +270,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                         <div className="px-5 py-3 bg-slate-50 border-b flex items-center justify-between gap-2 flex-wrap">
                           <div className="flex items-center gap-2">
                             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                              bid.requirement_type === 'Skilled Labour Job'
+                              bid.requirement_type === 'Skilled Worker Job'
                                 ? 'bg-orange-100 text-orange-700'
                                 : bid.requirement_type === 'RFQ'
                                   ? 'bg-blue-100 text-blue-700'
@@ -319,7 +332,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                           {/* Stats row */}
                           <div className="mt-4 flex flex-wrap gap-4 pt-4 border-t">
                             <div className="text-center">
-                              <div className="text-xs text-slate-500 mb-0.5">Bid Amount</div>
+                              <div className="text-xs text-slate-500 mb-0.5">{bid.requirement_type === 'Skilled Worker Job' ? 'Expected Rate' : 'Bid Amount'}</div>
                               <div className="text-lg font-bold text-orange-600">₹{Number(bid.amount || 0).toLocaleString('en-IN')}</div>
                             </div>
                             {bid.timeline_days && (
@@ -393,8 +406,8 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 ) : (
                   <div className="text-center py-16 px-4 border rounded-xl border-dashed bg-slate-50">
                     <Gavel className="h-12 w-12 text-slate-300 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-slate-900 mb-2">No Bids Yet</h3>
-                    <p className="text-slate-500 text-sm">When professionals apply for your jobs, their bids will appear here.</p>
+                    <h3 className="text-lg font-medium text-slate-900 mb-2">No Quotes or Applications Yet</h3>
+                    <p className="text-slate-500 text-sm">When professionals apply for your jobs or submit quotes, they will appear here.</p>
                   </div>
                 )}
               </div>
@@ -485,3 +498,4 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
     </div>
   );
 }
+

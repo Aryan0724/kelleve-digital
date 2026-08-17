@@ -15,6 +15,11 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   const [locations, setLocations] = useState<string[]>([]);
   const [selectedLocation, setSelectedLocation] = useState<string>("Patna");
   const [isLocating, setIsLocating] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  
+  useEffect(() => {
+    setSelectedIndex(-1);
+  }, [searchQuery, showSuggestions]);
   
   const containerRef = useRef<HTMLDivElement>(null);
   const locationRef = useRef<HTMLDivElement>(null);
@@ -77,12 +82,12 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
         alert("Unable to retrieve your location. Please check browser permissions.");
         setIsLocating(false);
       },
-      { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+      { enableHighAccuracy: true, timeout: 5000, maximumAge: 0 }
     );
   };
 
   useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
+    const handleClickOutside = (event: Event) => {
       if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
         setShowSuggestions(false);
       }
@@ -90,8 +95,13 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
         setShowLocationDropdown(false);
       }
     };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("mousedown", handleClickOutside, { capture: true });
+    document.addEventListener("touchstart", handleClickOutside, { capture: true });
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside, { capture: true });
+      document.removeEventListener("touchstart", handleClickOutside, { capture: true });
+    };
   }, []);
 
   const handleSearch = (e?: React.FormEvent, term?: string, href?: string) => {
@@ -123,24 +133,40 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
   };
 
   const getSuggestions = (query: string) => {
-    const q = debouncedQuery.toLowerCase();
-    if (!q) return [];
+    const q = query.trim().toLowerCase();
     
-    let newSuggestions: any[] = [];
+    const ALL_SERVICES = [
+      "Interior Designer",
+      "Interior Company",
+      "Interior Decorator",
+      "Architect",
+      "Building Contractor",
+      "Civil Contractor",
+      "Skilled Workers",
+      "Modular Kitchen",
+      "False Ceiling Contractor",
+      "Furniture Supplier",
+      "Material Supplier",
+      "Painter",
+      "Plumber",
+      "Electrician",
+      "Carpenter"
+    ];
     
-    // Basic match for services
-    const matchedServices = [
-      "Interior Designer", "Modular Kitchen", "False Ceiling", 
-      "Painter", "Carpenter", "Architect", "Plumber", "Electrician", "Contractor"
-    ].filter(s => s.toLowerCase().includes(q)).slice(0, 3);
+    let matchedServices: string[] = [];
     
-    newSuggestions = matchedServices.map(s => ({
+    if (!q) {
+      matchedServices = ["Interior Designer", "Architect", "Modular Kitchen", "Building Contractor", "Skilled Workers"];
+    } else {
+      matchedServices = ALL_SERVICES.filter(s => s.toLowerCase().includes(q)).slice(0, 5);
+    }
+    
+    const newSuggestions: any[] = matchedServices.map(s => ({
       type: "service",
       text: s,
       href: `/professionals?search=${encodeURIComponent(s)}`
     }));
 
-    // Combine with locations
     if (matchedServices.length > 0 && selectedLocation) {
       newSuggestions.push({
         type: "service_in_city",
@@ -211,7 +237,7 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
         </div>
 
         {/* Search Input */}
-        <div ref={containerRef} className="flex-1 px-4 relative">
+        <div ref={containerRef} className={`flex-1 relative min-w-[150px] ${compact ? 'px-2' : 'px-4'}`}>
             <input 
               type="text" 
               value={searchQuery}
@@ -219,16 +245,34 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
                 setSearchQuery(e.target.value);
                 setShowSuggestions(true);
               }}
-              onFocus={() => {
-                if (searchQuery.trim()) setShowSuggestions(true);
+              onFocus={() => setShowSuggestions(true)}
+              onKeyDown={(e) => {
+                if (showSuggestions && suggestions.length > 0) {
+                  if (e.key === "ArrowDown") {
+                    e.preventDefault();
+                    setSelectedIndex(prev => (prev < suggestions.length - 1 ? prev + 1 : prev));
+                  } else if (e.key === "ArrowUp") {
+                    e.preventDefault();
+                    setSelectedIndex(prev => (prev > 0 ? prev - 1 : -1));
+                  } else if (e.key === "Enter" && selectedIndex >= 0) {
+                    e.preventDefault();
+                    const suggestion = suggestions[selectedIndex];
+                    if (suggestion) {
+                      setSearchQuery(suggestion.text);
+                      handleSearch(undefined, suggestion.text, suggestion.href);
+                      setShowSuggestions(false);
+                    }
+                  } else if (e.key === "Escape") {
+                    setShowSuggestions(false);
+                  }
+                }
               }}
-              placeholder="Search services, professionals, projects, suppliers..." 
-              className="w-full bg-transparent text-sm font-medium outline-none text-gray-800 dark:text-white placeholder:text-gray-400 placeholder:font-normal"
+              placeholder={compact ? "Search..." : "Search services, professionals, projects, suppliers..."} 
+              className={`w-full bg-transparent font-medium outline-none text-gray-800 dark:text-white placeholder:text-gray-400 placeholder:font-normal ${compact ? 'text-[13px] py-1.5' : 'text-sm py-2'}`}
             />
 
-            {/* Dropdown Suggestions */}
             {showSuggestions && suggestions.length > 0 && (
-              <div className="absolute top-full left-0 w-[calc(100%+2rem)] sm:w-full min-w-[300px] mt-3 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-50">
+              <div className="absolute top-full left-0 right-0 w-full mt-3 bg-white dark:bg-slate-800 border-2 border-orange-200 dark:border-slate-700 rounded-xl shadow-2xl overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200 z-[9999]">
                 <ul className="py-2">
                   {suggestions.map((suggestion, idx) => (
                     <li key={idx}>
@@ -238,9 +282,13 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
                           setSearchQuery(suggestion.text);
                           handleSearch(undefined, suggestion.text, suggestion.href);
                         }}
-                        className="w-full text-left px-5 py-2.5 text-sm text-slate-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-500 flex items-center transition-colors overflow-hidden"
+                        className={`w-full text-left px-5 py-2.5 text-sm flex items-center transition-colors overflow-hidden ${
+                          selectedIndex === idx
+                            ? 'bg-orange-100 dark:bg-slate-600 text-orange-700 dark:text-orange-400'
+                            : 'text-slate-700 dark:text-gray-200 hover:bg-orange-50 dark:hover:bg-slate-700 hover:text-orange-700 dark:hover:text-orange-500'
+                        }`}
                       >
-                        <Search className="w-4 h-4 mr-3 text-slate-400 group-hover:text-orange-500 shrink-0" />
+                        <Search className={`w-4 h-4 mr-3 shrink-0 ${selectedIndex === idx ? 'text-orange-500' : 'text-slate-400 group-hover:text-orange-500'}`} />
                         <span className="truncate flex-1">{suggestion.text}</span>
                       </button>
                     </li>
@@ -250,10 +298,10 @@ export function SmartSearch({ compact = false }: { compact?: boolean }) {
             )}
         </div>
 
-        <button type="submit" className="flex items-center px-2 sm:px-4 border-l border-transparent min-w-[48px] sm:min-w-[120px] cursor-pointer bg-gradient-to-r from-[#0a1c3a] to-[#1a2c4a] hover:from-[#E8701A] hover:to-[#c25a12] text-white rounded-lg py-2 transition-all duration-300 transform shadow-sm hover:shadow-md">
-          <div className="flex items-center justify-center w-full">
-            <Search className="w-4 h-4 sm:mr-2" />
-            <span className="hidden sm:inline text-sm font-bold tracking-wide">SEARCH</span>
+        <button type="submit" className={`flex items-center justify-center cursor-pointer bg-gradient-to-r from-[#E8701A] to-[#c25a12] hover:from-[#c25a12] hover:to-[#E8701A] text-white transition-all duration-300 shadow-sm hover:shadow-md ${compact ? 'w-8 h-8 rounded-full' : 'px-4 min-w-[48px] sm:min-w-[120px] rounded-lg py-2.5 ml-2 mr-1'}`}>
+          <div className="flex items-center justify-center gap-2">
+            <Search className="w-4 h-4 shrink-0" />
+            {!compact && <span className="hidden sm:inline text-sm font-bold tracking-wide">SEARCH</span>}
           </div>
         </button>
       </form>

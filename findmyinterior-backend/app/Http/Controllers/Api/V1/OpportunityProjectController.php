@@ -14,7 +14,38 @@ class OpportunityProjectController extends Controller
 
     public function index()
     {
-        return $this->success(Requirement::latest()->get());
+        $projects = Requirement::where(function($q) {
+                $q->whereNull('opportunity_type')
+                  ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
+            })
+            ->whereDoesntHave('category', function($q) {
+                $q->where('slug', 'workers');
+            })
+            ->latest()
+            ->get();
+
+        $user = Auth::guard('sanctum')->user();
+        $isAdmin = $user && in_array('admin', $user->roles->pluck('slug')->toArray());
+
+        $projects->transform(function ($req) use ($user, $isAdmin) {
+            $req->is_unlocked = $user ? $req->isUnlockedBy($user) : false;
+            
+            if ($user && $user->id === $req->user_id) {
+                $req->is_unlocked = true;
+            }
+            if ($isAdmin) {
+                $req->is_unlocked = true;
+            }
+
+            if (!$req->is_unlocked) {
+                $req->phone = $req->phone ? substr($req->phone, 0, 2) . '********' : null;
+                $req->email = '********';
+                $req->name = '***';
+            }
+            return $req;
+        });
+            
+        return $this->success($projects);
     }
 
     public function store(Request $request)
@@ -31,6 +62,8 @@ class OpportunityProjectController extends Controller
             'budget_max'       => 'nullable|numeric',
             'budget'           => 'nullable|string',
             'image'            => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048',
+            'images'           => 'nullable|array|max:5',
+            'images.*'         => 'image|mimes:jpeg,png,jpg,webp|max:2048',
         ]);
 
         $user = Auth::user();
@@ -54,33 +87,56 @@ class OpportunityProjectController extends Controller
             }
         }
 
-        $requirement = Requirement::create([
-            'user_id'          => $user->id,
-            'category_id'      => 1, // Default; no category picker in wizard yet
-            'title'            => $validated['title'],
-            'description'      => $validated['description'],
-            'city'             => $validated['city'],
-            'district'         => $validated['district'],
-            'project_type'     => $validated['project_category'] ?? 'general',
-            'name'             => $user->name,
-            'phone'            => $user->phone ?? '0000000000',
-            'email'            => $user->email,
-            'opportunity_type' => $validated['opportunity_type'],
-            'requirement_type' => $validated['requirement_type'],
-            'project_category' => $validated['project_category'] ?? null,
-            'budget_min'       => $budgetMin,
-            'budget_max'       => $budgetMax,
-            'creator_role'     => $creatorRole,
-            'target_roles'     => $oppType ? $oppType->target_roles : ['interior_designer', 'contractor', 'builder'],
-            'status'           => 'open',
-        ]);
+        $requirement = \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $user, $budgetMin, $budgetMax, $creatorRole, $oppType, $request) {
+            $req = Requirement::create([
+                'user_id'          => $user->id,
+                'category_id'      => 1, // Default; no category picker in wizard yet
+                'title'            => $validated['title'],
+                'description'      => $validated['description'],
+                'city'             => $validated['city'],
+                'district'         => $validated['district'],
+                'project_type'     => $validated['project_category'] ?? 'general',
+                'name'             => $user->name,
+                'phone'            => $user->phone ?? '0000000000',
+                'email'            => $user->email,
+                'opportunity_type' => $validated['opportunity_type'],
+                'requirement_type' => $validated['requirement_type'],
+                'project_category' => $validated['project_category'] ?? null,
+                'budget_min'       => $budgetMin,
+                'budget_max'       => $budgetMax,
+                'creator_role'     => $creatorRole,
+                'target_roles'     => $oppType ? $oppType->target_roles : ['interior_designer', 'contractor', 'builder'],
+                'status'           => 'open',
+            ]);
 
-        if ($request->hasFile('image')) {
-            $file = $request->file('image');
-            $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
-            $requirement->image = $dataUri;
-            $requirement->save();
-        }
+            if ($request->hasFile('images')) {
+                foreach ($request->file('images') as $index => $file) {
+                    $path = \App\Helpers\ImageHelper::toStoragePath($file, 'requirements');
+                    
+                    if ($index === 0) {
+                        $req->image = $path;
+                        $req->save();
+                    }
+                    
+                    \App\Models\RequirementImage::create([
+                        'requirement_id' => $req->id,
+                        'image_url' => $path,
+                    ]);
+                }
+            } elseif ($request->hasFile('image')) {
+                $file = $request->file('image');
+                $path = \App\Helpers\ImageHelper::toStoragePath($file, 'requirements');
+                $req->image = $path;
+                $req->save();
+
+                \App\Models\RequirementImage::create([
+                    'requirement_id' => $req->id,
+                    'image_url' => $path,
+                ]);
+            }
+
+            return $req;
+        });
 
         return $this->success($requirement, 'Requirement created successfully', 201);
     }
@@ -102,7 +158,7 @@ class OpportunityProjectController extends Controller
         $isCreator = $requirement->user_id === $user->id;
         $isAdmin   = in_array('admin', $userRoles);
 
-        if (!$isCreator && !$isAdmin) {
+        if (!$isAdmin) {
             $requirement->increment('views_count');
             $requirement->views_count = $requirement->views_count + 1;
         }
@@ -131,6 +187,12 @@ class OpportunityProjectController extends Controller
 
         $requirement->is_unlocked = $requirement->isUnlockedBy($user);
         $requirement->has_bid = $requirement->bids()->where('professional_id', $user->id)->exists();
+
+        if (!$requirement->is_unlocked) {
+            $requirement->phone = substr($requirement->phone, 0, 2) . '********';
+            $requirement->email = '********';
+            $requirement->name = '***';
+        }
 
         return $this->success($requirement);
     }

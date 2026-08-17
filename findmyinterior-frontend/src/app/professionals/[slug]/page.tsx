@@ -11,6 +11,8 @@ import { notFound } from "next/navigation";
 import { Metadata } from "next";
 import { getServerApiUrl } from "@/lib/serverApi";
 
+export const dynamic = 'force-dynamic';
+
 async function getProfessional(slug: string) {
   try {
     const res = await fetch(`${getServerApiUrl()}/listings/${slug}`, {
@@ -51,6 +53,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   };
 }
 
+import { BookmarkButton } from "@/components/common/BookmarkButton";
+
 export default async function ProfessionalProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const listing = await getProfessional(slug);
@@ -59,9 +63,15 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
   return (
     <div className="bg-slate-50 min-h-screen pb-20">
       {/* Cover Image Header */}
-      <div className="h-64 md:h-96 w-full bg-slate-900 relative">
-        {listing.cover_image && (
-          <img src={listing.cover_image} alt={listing.title} className="w-full h-full object-cover opacity-60" />
+      <div className="h-64 md:h-96 w-full bg-slate-900 relative overflow-hidden">
+        {(listing.cover_image || listing.user?.cover_image) ? (
+          <img 
+            src={listing.cover_image || listing.user?.cover_image} 
+            alt={listing.title} 
+            className="w-full h-full object-cover opacity-60" 
+          />
+        ) : (
+          <div className="w-full h-full bg-gradient-to-r from-slate-900 via-slate-800 to-orange-950 opacity-90" />
         )}
         <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-transparent to-transparent" />
       </div>
@@ -74,19 +84,36 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
             <div className="bg-white rounded-xl shadow-sm border p-6 md:p-8">
               <div className="flex flex-col md:flex-row justify-between items-start gap-4 mb-6">
                 <div className="flex flex-col md:flex-row items-start gap-4">
-                  <Avatar className="w-16 h-16 md:w-20 md:h-20 border-2 border-orange-100 hidden md:block">
-                    <AvatarImage src={listing.user?.avatar || listing.cover_image} />
-                    <AvatarFallback className="bg-slate-100 text-slate-400 font-bold text-2xl">{listing.title.charAt(0)}</AvatarFallback>
-                  </Avatar>
+                  <div className="w-16 h-16 md:w-20 md:h-20 rounded-full border-2 border-orange-100 flex-shrink-0 shadow-md bg-white overflow-hidden relative">
+                    {(listing.user?.avatar || listing.avatar) ? (
+                      <img 
+                        src={listing.user?.avatar || listing.avatar} 
+                        alt={listing.title} 
+                        className="w-full h-full object-cover" 
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-orange-100 text-orange-700 font-bold text-2xl flex items-center justify-center">
+                        {listing.title.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
                   <div>
                     <div className="flex items-center gap-2 mb-1">
                       <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>
+                      <BookmarkButton id={listing.id} type="Listing" />
                       {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 ml-2" title="Elite Professional">Elite</Badge>}
                       {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 ml-2" title="Trusted Professional">Trusted</Badge>}
                       {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business" className="flex-shrink-0 ml-2"><ShieldCheck className="h-8 w-8 text-green-500" /></span>}
+                      {listing.is_premium && <Badge className="bg-orange-500 hover:bg-orange-600 ml-2" title="Premium Professional">Premium</Badge>}
+                      {listing.response_time && (listing.response_time.toLowerCase().includes('hour') || listing.response_time.toLowerCase().includes('minutes')) && (
+                        <Badge className="bg-emerald-500 hover:bg-emerald-600 ml-2 text-white" title="Fast Responder">⚡ Fast Responder</Badge>
+                      )}
                     </div>
                     {listing.user?.name && (
-                      <p className="text-lg text-slate-700 font-medium mb-2">{listing.user.name}</p>
+                      <p className="text-lg text-slate-700 font-medium mb-1">{listing.user.name}</p>
+                    )}
+                    {listing.tagline && (
+                      <p className="text-base text-slate-600 italic mb-2">{listing.tagline}</p>
                     )}
                     <div className="flex items-center text-slate-500 mb-2">
                       <MapPin className="h-4 w-4 mr-1" /> {[listing.address, listing.city, listing.district, 'Bihar', 'India'].filter(Boolean).join(', ')}
@@ -130,7 +157,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                 <h3 className="text-sm font-semibold text-slate-900 mb-3">Contact Business</h3>
                 <ContactButtons listing={listing} />
                 <div className="space-y-3 mt-3">
-                  <InquiryForm type="Listing" id={listing.id} title={listing.title} />
+                  <InquiryForm type="Listing" id={listing.id} title={listing.title} buttonText="Request Quote" />
                   {listing.user && (
                     <MessageProfessionalButton 
                       professionalId={listing.user.id} 
@@ -244,18 +271,41 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
               <div className="bg-white rounded-xl shadow-sm border p-6 md:p-8">
                 <h3 className="text-lg font-semibold text-slate-900 border-b pb-2 mb-4">Project Portfolio</h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-                  {listing.gallery.map((img: any) => (
-                    <div key={img.id} className="aspect-square rounded-lg overflow-hidden border">
-                      {img.type === 'video' ? (
-                        <a href={img.video_url} target="_blank" rel="noreferrer" className="w-full h-full flex flex-col items-center justify-center bg-slate-900 hover:bg-slate-800 transition-colors text-white group relative">
-                           <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 group-hover:scale-110 transition-transform">PLAY VIDEO</span>
-                           <span className="text-sm px-4 text-center line-clamp-2 text-slate-300">{img.video_url}</span>
-                        </a>
-                      ) : (
-                        <img src={img.image_url} alt="Portfolio item" className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
-                      )}
-                    </div>
-                  ))}
+                  {listing.gallery.map((img: any) => {
+                    const isYouTube = img.video_url && (img.video_url.includes('youtube.com') || img.video_url.includes('youtu.be'));
+                    let embedUrl = img.video_url;
+                    if (isYouTube) {
+                      const videoId = img.video_url.split('v=')[1] || img.video_url.split('/').pop();
+                      embedUrl = `https://www.youtube.com/embed/${videoId?.split('&')[0]}`;
+                    }
+
+                    return (
+                      <div key={img.id} className="aspect-square rounded-lg overflow-hidden border relative group">
+                        {img.is_before_after && (
+                          <div className="absolute top-2 left-2 bg-indigo-600 text-white text-xs font-bold px-2 py-1 rounded shadow-md z-10">
+                            Before & After
+                          </div>
+                        )}
+                        {img.type === 'video' ? (
+                          isYouTube ? (
+                            <iframe 
+                              src={embedUrl} 
+                              className="w-full h-full object-cover" 
+                              allowFullScreen 
+                              title={img.caption || "Video"}
+                            />
+                          ) : (
+                            <a href={img.video_url} target="_blank" rel="noreferrer" className="w-full h-full flex flex-col items-center justify-center bg-slate-900 hover:bg-slate-800 transition-colors text-white group relative">
+                              <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded mb-2 group-hover:scale-110 transition-transform">PLAY VIDEO</span>
+                              <span className="text-sm px-4 text-center line-clamp-2 text-slate-300">{img.video_url}</span>
+                            </a>
+                          )
+                        ) : (
+                          <img src={img.image_url} alt="Portfolio item" className="w-full h-full object-cover hover:scale-110 transition-transform duration-300" />
+                        )}
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             )}
@@ -272,7 +322,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
               <ContactButtons listing={listing} />
 
               <div className="space-y-3">
-                <InquiryForm type="Listing" id={listing.id} title={listing.title} />
+                <InquiryForm type="Listing" id={listing.id} title={listing.title} buttonText="Request Quote" />
                 
                 {listing.user && (
                   <MessageProfessionalButton 

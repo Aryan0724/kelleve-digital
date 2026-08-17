@@ -101,7 +101,7 @@ export function PostedRequirementsTab({ data, fetchDashboard, onReviewClick }: {
                     <div className="flex items-center justify-between mb-3">
                       <h5 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
                         <Gavel className="w-4 h-4 text-orange-500" /> 
-                        Received Bids ({reqBids.length})
+                        {req._type === 'job' || req.opportunity_type === 'JOB' ? `Applications (${reqBids.length})` : `Received Bids (${reqBids.length})`}
                       </h5>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -109,7 +109,7 @@ export function PostedRequirementsTab({ data, fetchDashboard, onReviewClick }: {
                         <div key={bid.id} className="bg-slate-50 rounded-lg p-3 border border-slate-100 flex items-center justify-between hover:bg-orange-50 transition-colors cursor-pointer" onClick={() => router.push(`/requirements/${req.id}?type=${req._type || 'project'}`)}>
                           <div>
                             <div className="font-semibold text-sm text-slate-900">{bid.professional?.name || 'Professional'}</div>
-                            <div className="text-xs text-slate-500 font-medium mt-0.5">Bid: ₹{bid.amount || bid.proposed_amount || bid.price || 'N/A'}</div>
+                            <div className="text-xs text-slate-500 font-medium mt-0.5">{req._type === 'job' || req.opportunity_type === 'JOB' ? 'Rate' : 'Bid'}: ₹{bid.amount || bid.proposed_amount || bid.price || 'N/A'}</div>
                           </div>
                           {bid.is_awarded || bid.status === 'accepted' ? (
                             <Badge className="bg-green-500 border-0">Awarded</Badge>
@@ -122,7 +122,7 @@ export function PostedRequirementsTab({ data, fetchDashboard, onReviewClick }: {
                     {reqBids.length > 4 && (
                       <div className="mt-3 text-center">
                         <Button variant="link" size="sm" className="text-orange-600 h-auto p-0" onClick={() => router.push(`/requirements/${req.id}?type=${req._type || 'project'}`)}>
-                          View all {reqBids.length} bids
+                          View all {reqBids.length} {req._type === 'job' || req.opportunity_type === 'JOB' ? 'applications' : 'bids'}
                         </Button>
                       </div>
                     )}

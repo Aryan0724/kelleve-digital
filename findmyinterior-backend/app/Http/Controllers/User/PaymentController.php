@@ -25,10 +25,11 @@ class PaymentController extends Controller
     public function createOrder(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'purpose'               => ['required', 'in:subscription,lead_unlock'],
+            'purpose'               => ['required', 'in:subscription,lead_unlock,wallet_recharge'],
             'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
             'billing_cycle'         => ['required_if:purpose,subscription', 'in:monthly,yearly'],
             'requirement_id'        => ['required_if:purpose,lead_unlock', 'exists:projects,id'],
+            'amount'                => ['required_if:purpose,wallet_recharge', 'numeric', 'min:100'],
         ]);
 
         $user = $request->user();
@@ -38,23 +39,33 @@ class PaymentController extends Controller
             $amount = $data['billing_cycle'] === 'yearly'
                 ? $plan->price_yearly
                 : $plan->price_monthly;
+        } else if ($data['purpose'] === 'wallet_recharge') {
+            $amount = $data['amount'];
         } else {
             // lead_unlock: flat ₹49 per contact
             $amount = 49.00;
         }
 
-        if (empty(config('services.razorpay.key')) || config('app.env') === 'local' && empty(config('services.razorpay.key'))) {
-            // Mock response for local environment testing when keys are missing
+        if (empty(config('services.razorpay.key')) || config('app.env') === 'local') {
+            // Mock response for local environment testing when keys are missing or invalid
             $razorpayOrder = ['id' => 'order_mock_' . time()];
         } else {
             $api  = new RazorpayApi(config('services.razorpay.key'), config('services.razorpay.secret'));
             // Razorpay expects paise (INR * 100)
-            $razorpayOrder = $api->order->create([
-                'amount'          => (int) ($amount * 100),
-                'currency'        => 'INR',
-                'receipt'         => 'fmi_' . $user->id . '_' . time(),
-                'payment_capture' => 1,
-            ]);
+            try {
+                $razorpayOrder = $api->order->create([
+                    'amount'          => (int) ($amount * 100),
+                    'currency'        => 'INR',
+                    'receipt'         => 'fmi_' . $user->id . '_' . time(),
+                    'payment_capture' => 1,
+                ]);
+            } catch (\Exception $e) {
+                Log::error("Razorpay order creation failed: " . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Payment Gateway Error: ' . $e->getMessage(),
+                ], 422);
+            }
         }
 
         // Pre-create payment record in pending state
@@ -78,6 +89,79 @@ class PaymentController extends Controller
     }
 
     /**
+     * POST /api/v1/payments/pay-with-wallet
+     * Pays for a subscription directly using the user's wallet balance.
+     */
+    public function payWithWallet(Request $request): JsonResponse
+    {
+        $data = $request->validate([
+            'purpose'               => ['required', 'in:subscription'],
+            'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
+            'billing_cycle'         => ['required_if:purpose,subscription', 'in:monthly,yearly'],
+        ]);
+
+        $user = $request->user();
+
+        if ($data['purpose'] === 'subscription') {
+            $plan = SubscriptionPlan::findOrFail($data['subscription_plan_id']);
+            $amount = $data['billing_cycle'] === 'yearly'
+                ? $plan->price_yearly
+                : $plan->price_monthly;
+        } else {
+            return response()->json(['success' => false, 'message' => 'Invalid purpose for wallet payment.'], 400);
+        }
+
+        $walletService = app(\App\Services\WalletService::class);
+        $balance = $walletService->getBalance($user);
+
+        if ($balance < $amount) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient wallet balance. You need ₹' . $amount . ' but you have ₹' . $balance,
+                'required' => $amount,
+                'balance' => $balance
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            // 1. Deduct from wallet
+            $walletService->deduct($user, $amount, "Subscription Upgrade: {$plan->name}");
+
+            // 2. Create a mock payment record for tracking
+            $payment = Payment::create([
+                'user_id'          => $user->id,
+                'razorpay_order_id' => 'wallet_txn_' . uniqid(),
+                'amount'           => $amount,
+                'currency'         => 'INR',
+                'purpose'          => $data['purpose'],
+                'status'           => 'success',
+                'meta'             => $data,
+                'razorpay_payment_id' => 'paid_via_wallet',
+                'razorpay_signature'  => 'valid_wallet_txn',
+            ]);
+
+            // 3. Fulfill the payment (Creates subscription)
+            $this->fulfillPayment($payment);
+
+            DB::commit();
+
+            return response()->json([
+                'success'  => true,
+                'message'  => 'Successfully subscribed using wallet balance!',
+                'data'     => new PaymentResource($payment->fresh()),
+            ]);
+        } catch (\Exception $e) {
+            DB::rollBack();
+            Log::error("Wallet payment failed for user {$user->id}: " . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Transaction failed. Please try again or contact support.',
+            ], 500);
+        }
+    }
+
+    /**
      * POST /api/v1/payments/verify
      * Verifies Razorpay signature and fulfills the purchase.
      */
@@ -89,7 +173,7 @@ class PaymentController extends Controller
             'razorpay_signature'  => ['required', 'string'],
         ]);
 
-        if (empty(config('services.razorpay.key'))) {
+        if (empty(config('services.razorpay.key')) || config('app.env') === 'local') {
             // Mock verification for local/testing
             if ($data['razorpay_signature'] !== 'mock_signature') {
                 return response()->json([
@@ -164,16 +248,35 @@ class PaymentController extends Controller
 
             // Sync is_premium flag to the entity for directory queries
             $user = $payment->user;
-            if ($user->hasRole('builder') && $user->builder) {
-                $user->builder->update(['is_premium' => true]);
-            } elseif ($user->hasRole('supplier') && $user->supplier) {
-                $user->supplier->update(['is_premium' => true]);
-            } elseif ($user->hasRole('worker') && $user->worker) {
-                $user->worker->update(['is_premium' => true]);
-            } elseif ($user->hasRole('business') && $user->listing) {
-                $user->listing->update(['is_premium' => true]);
+            
+            $updateData = [
+                'is_premium' => true,
+            ];
+            
+            // Sync is_featured and is_verified flags based on subscription plan promises
+            if ($plan->is_featured_listing) {
+                $updateData['is_featured'] = true;
+            }
+            if ($plan->price_yearly > 0 || $plan->price_monthly > 0) {
+                $updateData['is_verified'] = true;
             }
 
+            if ($user->hasRole('builder') && $user->builder) {
+                $user->builder->update($updateData);
+            } elseif ($user->hasRole('supplier') && $user->supplier) {
+                $user->supplier->update($updateData);
+            } elseif ($user->hasRole('worker') && $user->worker) {
+                $user->worker->update($updateData);
+            } elseif ($user->hasRole('business') && $user->listing) {
+                $user->listing->update($updateData);
+            }
+
+            // Send notification
+            $user->notify(new \App\Notifications\SystemNotification(
+                "Your {$plan->name} subscription is now active! Enjoy your premium benefits.",
+                'subscription_success',
+                'high'
+            ));
         } elseif ($payment->purpose === 'lead_unlock') {
             ContactUnlock::firstOrCreate([
                 'user_id'        => $payment->user_id,
@@ -181,6 +284,12 @@ class PaymentController extends Controller
             ], [
                 'payment_id' => $payment->id,
             ]);
+        } elseif ($payment->purpose === 'wallet_recharge') {
+            app(\App\Services\WalletService::class)->addFunds(
+                $payment->user,
+                $payment->amount,
+                "Wallet Recharge (Order: {$payment->razorpay_order_id})"
+            );
         }
     }
 

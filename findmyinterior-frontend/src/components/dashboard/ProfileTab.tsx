@@ -116,9 +116,88 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
         disabled={uploading}
       >
         <Upload className="w-3 h-3" />
-        {uploading ? "Uploading..." : "Upload Photo"}
+        {uploading ? "Uploading..." : (preview ? "Change Photo" : "Upload Photo")}
       </button>
       <p className="text-xs text-slate-400">JPG, PNG or WebP · Max 4MB</p>
+    </div>
+  );
+}
+
+// ─── Cover Banner Uploader ───────────────────────────────────────────────────
+
+function CoverBanner({ currentCover }: { currentCover: string | null }) {
+  const { user, updateUser } = useAuthStore();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState<string | null>(currentCover);
+  const [success, setSuccess] = useState(false);
+
+  useEffect(() => {
+    setPreview(currentCover);
+  }, [currentCover]);
+
+  const handleCoverUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      alert("Cover image must be smaller than 10MB");
+      return;
+    }
+
+    setUploading(true);
+    setSuccess(false);
+
+    try {
+      const form = new FormData();
+      form.append("cover_image", file);
+      const res = await api.post("/user/cover", form, {
+        headers: { "Content-Type": "multipart/form-data" },
+      });
+      const newCover = res.data.cover_image || res.data.data?.cover_image;
+      if (user && newCover) updateUser({ ...user, cover_image: newCover });
+      setPreview(newCover);
+      setSuccess(true);
+      setTimeout(() => setSuccess(false), 3000);
+    } catch (err: any) {
+      alert(err.response?.data?.message || err.message || "Upload failed. Please try again.");
+      setPreview(currentCover);
+    } finally {
+      setUploading(false);
+      if (e.target) e.target.value = "";
+    }
+  };
+
+  return (
+    <div className="h-32 sm:h-40 w-full bg-gradient-to-r from-orange-500 to-amber-600 relative group overflow-hidden">
+      {preview ? (
+        <img src={preview} alt="Cover" className="w-full h-full object-cover" />
+      ) : null}
+      <div className="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition-colors" />
+      
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        className="hidden"
+        onChange={handleCoverUpload}
+      />
+
+      <button
+        onClick={() => fileRef.current?.click()}
+        disabled={uploading}
+        className="absolute top-3 right-3 px-3 py-1.5 bg-black/50 hover:bg-black/75 text-white rounded-lg transition-all text-xs font-medium flex items-center gap-1.5 shadow-md backdrop-blur-sm z-10"
+        title="Change Background Image"
+      >
+        {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
+        <span>{uploading ? "Uploading..." : "Change Cover"}</span>
+      </button>
+
+      {success && (
+        <div className="absolute bottom-3 right-3 px-3 py-1 bg-green-600 text-white rounded-full text-xs font-medium flex items-center gap-1 shadow-md z-10">
+          <CheckCircle2 className="w-3.5 h-3.5" /> Cover Saved
+        </div>
+      )}
     </div>
   );
 }
@@ -165,7 +244,7 @@ function Field({ label, icon: Icon, children }: { label: string; icon: any; chil
 // ─── Main Component ───────────────────────────────────────────────────────────
 
 export function ProfileTab() {
-  const { user } = useAuthStore();
+  const { user, updateUser } = useAuthStore();
   const [listing, setListing] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -233,11 +312,24 @@ export function ProfileTab() {
     setSaving(true);
     setSaved(false);
     try {
+      const userRes = await api.put("/user/profile", {
+        name: formData.title || user?.name,
+        phone: formData.phone,
+        city: formData.city,
+        district: formData.district,
+        address: formData.address,
+      });
+
+      if (userRes.data?.data && user) {
+        updateUser({ ...user, ...userRes.data.data });
+      }
+
       if (listing) {
         await api.put(`/user/listings/${listing.id}`, formData);
-      } else {
+      } else if (['business', 'builder', 'supplier', 'worker', 'skilled_worker', 'interior_designer', 'interior_company', 'contractor', 'architect', 'material_supplier'].includes(user?.role || '')) {
         await api.post(`/user/listings`, formData);
       }
+
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
       fetchData();
@@ -266,7 +358,7 @@ export function ProfileTab() {
 
       {/* ─── Header card: avatar + trust ──────────────────────── */}
       <Card className="overflow-hidden">
-        <div className="h-20 bg-gradient-to-r from-[#0a1c3a] to-indigo-900" />
+        <CoverBanner currentCover={user?.cover_image ?? null} />
         <CardContent className="pt-0 pb-6">
           <div className="flex flex-col sm:flex-row sm:items-end gap-4 -mt-12">
             <AvatarUploader currentAvatar={user?.avatar ?? null} userName={user?.name ?? ""} />

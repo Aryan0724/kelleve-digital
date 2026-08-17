@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ShieldAlert, ShieldCheck, UploadCloud, XCircle, AlertCircle, ArrowRight, Lock, Check } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { Undo2 } from "lucide-react";
 
 const getRequiredDocsForRole = (role: string) => {
   switch (role) {
@@ -53,6 +54,12 @@ const getRequiredDocsForRole = (role: string) => {
         { id: "self_photo", label: "Self Photograph" },
         { id: "skill_photo", label: "Skill Photograph" },
       ];
+    case 'customer':
+    case 'homeowner':
+      return [
+        { id: "aadhaar", label: "Aadhaar Card" },
+        { id: "pan_card", label: "PAN Card" },
+      ];
     default:
       return [
         { id: "gst_certificate", label: "GST Certificate" },
@@ -70,8 +77,10 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState<string | null>(null);
+  const [textInputs, setTextInputs] = useState<Record<string, string>>({});
   const { user } = useAuthStore();
   const currentRole = user?.role || 'homeowner';
+  const isHomeowner = ['customer', 'homeowner'].includes(currentRole);
   const isBusiness = ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business'].includes(currentRole);
   const isWorker = ['worker', 'skilled_worker'].includes(currentRole);
 
@@ -87,19 +96,24 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
 
       const pData = profileRes.data?.data;
 
-      let fieldsToCheck = [user?.phone];
-      if (pData) {
-        fieldsToCheck = [user?.phone || pData.phone, pData.city, pData.district, pData.address];
-        if (isBusiness) {
-          fieldsToCheck.push(pData.title || pData.company_name, pData.description || pData.tagline);
+      let score = 0;
+      if (!isHomeowner && !pData) {
+        score = 0;
+      } else {
+        let fieldsToCheck = [user?.phone];
+        if (pData) {
+          fieldsToCheck = [user?.phone || pData.phone, pData.city, pData.district, pData.address];
+          if (isBusiness) {
+            fieldsToCheck.push(pData.title || pData.company_name, pData.description || pData.tagline);
+          }
+          if (isWorker) {
+            fieldsToCheck.push(pData.skill, pData.experience_years, pData.daily_rate);
+          }
         }
-        if (isWorker) {
-          fieldsToCheck.push(pData.skill, pData.experience_years, pData.daily_rate);
-        }
+        
+        const filledFields = fieldsToCheck.filter((v) => v && String(v).trim().length > 0).length;
+        score = fieldsToCheck.length === 0 ? 100 : Math.min(100, Math.round((filledFields / fieldsToCheck.length) * 100));
       }
-      
-      const filledFields = fieldsToCheck.filter((v) => v && String(v).trim().length > 0).length;
-      const score = fieldsToCheck.length === 0 ? 100 : Math.min(100, Math.round((filledFields / fieldsToCheck.length) * 100));
       setProfileCompletion(score);
     } catch (e) {
       console.error(e);
@@ -127,7 +141,9 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
     formData.append("document_type", docType);
 
     try {
-      await api.post("/verification/upload", formData);
+      await api.post("/verification/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
       alert("Document uploaded successfully and is pending review.");
       fetchStatus();
     } catch (err: any) {
@@ -138,23 +154,59 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
     }
   };
 
-  if (loading) return <div className="py-10 text-center text-slate-500">Loading Application Status...</div>;
+  const handleTextSubmit = async (docType: string) => {
+    const textVal = textInputs[docType];
+    if (!textVal || textVal.trim() === '') return;
+    
+    setUploading(docType);
+    const formData = new FormData();
+    formData.append("text_value", textVal.trim());
+    formData.append("document_type", docType);
 
-  const docs = data?.documents || [];
-  const getDocStatus = (type: string) => docs.find((d: any) => d.document_type === type);
+    try {
+      await api.post("/verification/upload", formData, {
+        headers: { "Content-Type": "multipart/form-data" }
+      });
+      alert("Information submitted successfully and is pending review.");
+      fetchStatus();
+    } catch (err: any) {
+      alert(err.response?.data?.message || "Failed to submit information");
+    } finally {
+      setUploading(null);
+    }
+  };
 
-  // Profile Validation Check
-  const completionPercentage = profileCompletion;
-  const isProfileComplete = completionPercentage >= 50;
+  const handleDeleteDoc = async (id: number) => {
+    if (!confirm("Are you sure you want to delete this document?")) return;
+    try {
+      await api.delete(`/verification/document/${id}`);
+      fetchStatus();
+    } catch (err: any) {
+      alert("Failed to delete document");
+    }
+  };
 
-  const role = user?.role || 'homeowner';
-  const requiredDocs = getRequiredDocsForRole(role);
+  const requiredDocs = getRequiredDocsForRole(currentRole);
+  const userDocs = data?.documents || [];
+
+  const getDocStatus = (docType: string) => {
+    return userDocs.find((d: any) => d.document_type === docType);
+  };
+
+  const isProfileComplete = isHomeowner || profileCompletion >= 50;
   const requiredDocsSubmitted = requiredDocs.every(doc => {
     const status = getDocStatus(doc.id)?.status;
-    return status === 'pending' || status === 'approved';
+    return status === "approved" || status === "pending";
   });
 
-  const isVerifiedBusiness = data?.verification_level === 'verified_business' || data?.verification_level === 'trusted_professional' || data?.verification_level === 'elite_professional';
+  const isVerifiedBusiness =
+    data?.is_verified_business ||
+    data?.verification_level === 'business_verified' ||
+    data?.verification_level === 'site_verified';
+
+  const completionPercentage = profileCompletion;
+
+  if (loading) return <div className="py-10 text-center text-slate-500">Loading Application Status...</div>;
 
   return (
     <div className="space-y-8 max-w-4xl mx-auto">
@@ -163,11 +215,14 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
       <div className="text-center bg-gradient-to-br from-[#0a1c3a] to-indigo-900 rounded-xl p-8 text-white shadow-lg">
         <ShieldCheck className="w-16 h-16 mx-auto mb-4 text-green-400" />
         <h2 className="text-3xl font-bold mb-2">
-          {isBusiness ? "Formal Business Verification" : "Professional Verification"}
+          {isHomeowner ? "Homeowner Identity Verification" : isBusiness ? "Formal Business Verification" : "Professional Verification"}
         </h2>
         <p className="text-indigo-100 max-w-xl mx-auto">
-          Applying for verification is the best way to build trust with customers. 
-          {isBusiness ? " Verified businesses" : " Verified professionals"} rank higher in search results and receive a dedicated badge.
+          {isHomeowner
+            ? "Upload your Aadhaar Card and PAN Card for identity verification to build trust with professionals and get quick responses to your requirements."
+            : isBusiness
+            ? "Applying for verification is the best way to build trust with customers. Verified businesses rank higher in search results and receive a dedicated badge."
+            : "Applying for verification is the best way to build trust with customers."}
         </p>
         
         <div className="mt-6 flex justify-center gap-4">
@@ -197,7 +252,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
                 <span>Profile Completion ({Math.round(completionPercentage)}%)</span>
                 {isProfileComplete && <Badge className="bg-green-500">Completed</Badge>}
               </CardTitle>
-              <CardDescription>We need basic details about your business before you can apply.</CardDescription>
+              <CardDescription>{isHomeowner ? "Basic account profile is ready for verification." : "We need basic details about your business before you can apply."}</CardDescription>
             </CardHeader>
             <CardContent>
               {!isProfileComplete ? (
@@ -214,7 +269,7 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
                 </div>
               ) : (
                 <div className="text-green-700 flex items-center font-medium bg-green-50 p-3 rounded-lg border border-green-100">
-                  <CheckCircle2 className="w-5 h-5 mr-2" /> Your core business profile is ready.
+                  <CheckCircle2 className="w-5 h-5 mr-2" /> {isHomeowner ? "Your homeowner account is ready for identity verification." : "Your core business profile is ready."}
                 </div>
               )}
             </CardContent>
@@ -228,8 +283,8 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
           </div>
           <Card className={!isProfileComplete ? "opacity-50 pointer-events-none" : requiredDocsSubmitted ? "border-green-100 bg-green-50/30" : "border-indigo-200 shadow-md"}>
             <CardHeader className="pb-3">
-              <CardTitle className="text-xl">Submit Official Documents</CardTitle>
-              <CardDescription>Upload the following documents for our admin team to review.</CardDescription>
+              <CardTitle className="text-xl">{isHomeowner ? "Submit Identity Documents (Aadhaar & PAN Card)" : "Submit Official Documents"}</CardTitle>
+              <CardDescription>{isHomeowner ? "Upload your Aadhaar Card and PAN Card to apply for homeowner identity verification." : "Upload the following documents for our admin team to review."}</CardDescription>
             </CardHeader>
             <CardContent>
               
@@ -268,28 +323,67 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
                           <div className="text-sm text-green-600 font-medium flex items-center">
                             <CheckCircle2 className="h-4 w-4 mr-1" /> Document Verified
                           </div>
-                        ) : (
-                          <div className="relative">
+                        ) : (doc.id === 'pan_card' || doc.id === 'gst_certificate') ? (
+                          <div className="relative flex flex-col gap-2">
                             <input
-                              type="file"
-                              accept=".pdf,.jpg,.jpeg,.png"
-                              onChange={(e) => handleFileUpload(e, doc.id)}
-                              className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                              type="text"
+                              placeholder={`Enter ${doc.label} Number`}
+                              value={textInputs[doc.id] || ''}
+                              onChange={(e) => setTextInputs({ ...textInputs, [doc.id]: e.target.value })}
+                              className="w-full px-3 py-2 border border-slate-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 uppercase"
                               disabled={uploading === doc.id || currentDoc?.status === 'pending'}
                             />
-                            <Button 
-                              variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
-                              className={`w-full ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
-                              disabled={uploading === doc.id || currentDoc?.status === 'pending'}
-                            >
-                              {uploading === doc.id ? (
-                                "Uploading..."
-                              ) : currentDoc?.status === 'pending' ? (
-                                "Pending Admin Review"
-                              ) : (
-                                <><UploadCloud className="h-4 w-4 mr-2" /> {currentDoc?.status === 'rejected' ? 'Re-upload Document' : 'Upload File'}</>
+                            <div className="flex gap-2">
+                              <Button 
+                                onClick={() => handleTextSubmit(doc.id)}
+                                variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
+                                className={`flex-1 ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
+                                disabled={uploading === doc.id || currentDoc?.status === 'pending' || !textInputs[doc.id]}
+                              >
+                                {uploading === doc.id ? (
+                                  "Submitting..."
+                                ) : currentDoc?.status === 'pending' ? (
+                                  "Pending Admin Review"
+                                ) : (
+                                  <><UploadCloud className="h-4 w-4 mr-2" /> Submit {doc.label}</>
+                                )}
+                              </Button>
+                              {currentDoc && (currentDoc.status === 'pending' || currentDoc.status === 'rejected') && (
+                                 <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-slate-100 px-3 z-20 shrink-0" onClick={() => handleDeleteDoc(currentDoc.id)} title="Undo Submit">
+                                   <Undo2 className="h-4 w-4 mr-1" /> Undo
+                                 </Button>
                               )}
-                            </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="relative flex gap-2">
+                            <div className="relative flex-1">
+                              <input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png"
+                                onChange={(e) => handleFileUpload(e, doc.id)}
+                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed z-10"
+                                disabled={uploading === doc.id || currentDoc?.status === 'pending'}
+                              />
+                              <Button 
+                                variant={currentDoc?.status === 'rejected' ? 'destructive' : 'outline'} 
+                                className={`w-full ${!currentDoc ? 'bg-indigo-50 hover:bg-indigo-100 border-indigo-200 text-indigo-700' : ''}`}
+                                disabled={uploading === doc.id || currentDoc?.status === 'pending'}
+                              >
+                                {uploading === doc.id ? (
+                                  "Uploading..."
+                                ) : currentDoc?.status === 'pending' ? (
+                                  "Pending Admin Review"
+                                ) : (
+                                  <><UploadCloud className="h-4 w-4 mr-2" /> {currentDoc?.status === 'rejected' ? 'Re-upload Document' : 'Upload File'}</>
+                                )}
+                              </Button>
+                            </div>
+                            {currentDoc && (currentDoc.status === 'pending' || currentDoc.status === 'rejected') && (
+                               <Button variant="outline" className="border-slate-200 text-slate-600 hover:bg-slate-100 px-3 z-20 shrink-0" onClick={() => handleDeleteDoc(currentDoc.id)} title="Undo Upload">
+                                 <Undo2 className="h-4 w-4 mr-1" /> Undo
+                               </Button>
+                            )}
                           </div>
                         )}
                       </div>
@@ -299,47 +393,49 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
               </div>
 
               {/* Optional Trusted Docs */}
-              <div className="mt-6 pt-6 border-t border-dashed border-slate-200">
-                <h4 className="font-semibold text-slate-800 mb-2">Optional: Become a Trusted Professional</h4>
-                <p className="text-sm text-slate-500 mb-4">Upload your portfolio to unlock the Trusted badge and rank even higher.</p>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {OPTIONAL_DOCS.map(doc => {
-                    const currentDoc = getDocStatus(doc.id);
-                    return (
-                      <div key={doc.id} className="border rounded-lg p-4 flex flex-col justify-between bg-slate-50">
-                        <div className="flex justify-between items-start mb-4">
-                          <div>
-                            <h4 className="font-semibold text-slate-900">{doc.label}</h4>
-                            <Badge variant="outline" className="text-xs mt-1 bg-white">Optional</Badge>
+              {!isHomeowner && (
+                <div className="mt-6 pt-6 border-t border-dashed border-slate-200">
+                  <h4 className="font-semibold text-slate-800 mb-2">Optional: Become a Trusted Professional</h4>
+                  <p className="text-sm text-slate-500 mb-4">Upload your portfolio to unlock the Trusted badge and rank even higher.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {OPTIONAL_DOCS.map(doc => {
+                      const currentDoc = getDocStatus(doc.id);
+                      return (
+                        <div key={doc.id} className="border rounded-lg p-4 flex flex-col justify-between bg-slate-50">
+                          <div className="flex justify-between items-start mb-4">
+                            <div>
+                              <h4 className="font-semibold text-slate-900">{doc.label}</h4>
+                              <Badge variant="outline" className="text-xs mt-1 bg-white">Optional</Badge>
+                            </div>
+                            {currentDoc?.status === "approved" && <CheckCircle2 className="h-6 w-6 text-blue-500" />}
+                            {currentDoc?.status === "pending" && <AlertCircle className="h-6 w-6 text-yellow-500" />}
                           </div>
-                          {currentDoc?.status === "approved" && <CheckCircle2 className="h-6 w-6 text-blue-500" />}
-                          {currentDoc?.status === "pending" && <AlertCircle className="h-6 w-6 text-yellow-500" />}
+                          <div className="mt-auto">
+                            {currentDoc?.status === "approved" ? (
+                              <div className="text-sm text-blue-600 font-medium flex items-center">
+                                <CheckCircle2 className="h-4 w-4 mr-1" /> Verified
+                              </div>
+                            ) : (
+                              <div className="relative">
+                                <input
+                                  type="file"
+                                  accept=".pdf,.jpg,.jpeg,.png"
+                                  onChange={(e) => handleFileUpload(e, doc.id)}
+                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
+                                  disabled={uploading === doc.id || currentDoc?.status === 'pending'}
+                                />
+                                <Button variant="outline" className="w-full bg-white" disabled={uploading === doc.id || currentDoc?.status === 'pending'}>
+                                  {currentDoc?.status === 'pending' ? "Pending Review" : "Upload Portfolio"}
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                         </div>
-                        <div className="mt-auto">
-                          {currentDoc?.status === "approved" ? (
-                            <div className="text-sm text-blue-600 font-medium flex items-center">
-                              <CheckCircle2 className="h-4 w-4 mr-1" /> Verified
-                            </div>
-                          ) : (
-                            <div className="relative">
-                              <input
-                                type="file"
-                                accept=".pdf,.jpg,.jpeg,.png"
-                                onChange={(e) => handleFileUpload(e, doc.id)}
-                                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer disabled:cursor-not-allowed"
-                                disabled={uploading === doc.id || currentDoc?.status === 'pending'}
-                              />
-                              <Button variant="outline" className="w-full bg-white" disabled={uploading === doc.id || currentDoc?.status === 'pending'}>
-                                {currentDoc?.status === 'pending' ? "Pending Review" : "Upload Portfolio"}
-                              </Button>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-                    );
-                  })}
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
+              )}
             </CardContent>
           </Card>
         </div>

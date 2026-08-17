@@ -46,6 +46,8 @@ export default function OffersPage() {
     validUntil: "2026-12-31",
     description: "",
     discountValue: "20",
+    discountType: "percentage",
+    eligibleCardType: "all",
     status: "active"
   });
 
@@ -57,6 +59,8 @@ export default function OffersPage() {
       validUntil: "2026-12-31",
       description: "",
       discountValue: "20",
+      discountType: "percentage",
+      eligibleCardType: "all",
       status: "active"
     });
     setIsModalOpen(true);
@@ -70,6 +74,8 @@ export default function OffersPage() {
       validUntil: offer.valid_until ? new Date(offer.valid_until).toISOString().split('T')[0] : offer.validUntil || "2026-12-31",
       description: offer.description || "",
       discountValue: offer.discount_value || offer.discountValue || "20",
+      discountType: offer.discount_type || offer.discountType || "percentage",
+      eligibleCardType: offer.eligible_card_type || offer.eligibleCardType || "all",
       status: offer.status || (offer.is_active ? "active" : "expired")
     });
     setIsModalOpen(true);
@@ -88,6 +94,8 @@ export default function OffersPage() {
       promo_code: form.code,
       description: form.description,
       discount_value: form.discountValue,
+      discount_type: form.discountType,
+      eligible_card_type: form.eligibleCardType,
       valid_until: form.validUntil,
       status: form.status === "Active" ? "active" : "paused"
     };
@@ -304,6 +312,39 @@ export default function OffersPage() {
                     value={form.discountValue}
                     onChange={(e) => setForm({ ...form, discountValue: e.target.value })}
                   />
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Discount Type
+                  </label>
+                  <select
+                    value={form.discountType}
+                    onChange={(e) => setForm({ ...form, discountType: e.target.value })}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="percentage">Percentage (%)</option>
+                    <option value="fixed">Fixed Amount (₹)</option>
+                    <option value="buy_one_get_one">Buy 1 Get 1</option>
+                    <option value="free_service">Free Add-on Service</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold uppercase tracking-wider text-muted-foreground block mb-1">
+                    Eligible Card Type
+                  </label>
+                  <select
+                    value={form.eligibleCardType}
+                    onChange={(e) => setForm({ ...form, eligibleCardType: e.target.value })}
+                    className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="all">All Privilege Cards</option>
+                    <option value="free">First Year Free Only</option>
+                    <option value="city">City Card Only</option>
+                    <option value="multi-city">Multi-City Card Only</option>
+                  </select>
                 </div>
               </div>
 

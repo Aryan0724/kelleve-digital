@@ -11,6 +11,7 @@ import {
   ArrowLeft, Search as SearchIcon, Filter, MapPin, 
   Star, Building2, ShieldCheck, CheckSquare, Square, X, ChevronDown
 } from 'lucide-react-native';
+import InlineListAd from '../../components/ads/InlineListAd';
 
 export default function SearchResultsScreen() {
   const router = useRouter();
@@ -62,54 +63,61 @@ export default function SearchResultsScreen() {
     }
   };
 
-  const renderItem = ({ item }: { item: any }) => (
-    <TouchableOpacity onPress={() => router.push(`/listing/${item.slug}`)} activeOpacity={0.9} className="bg-white dark:bg-slate-900 rounded-2xl mb-4 shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
-      <View className="p-4">
-        <View className="flex-row items-start mb-3">
-          <View className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center mr-3 overflow-hidden">
-            {item.cover_image || item.media?.[0]?.url ? (
-              <View className="w-full h-full bg-slate-200" /> 
-            ) : (
-              <Building2 size={24} color="#94A3B8" />
-            )}
-          </View>
-          <View className="flex-1 pr-2">
-            <View className="flex-row items-center mb-1">
-              <Text className="text-[16px] font-extrabold text-slate-900 dark:text-white flex-1" numberOfLines={1}>{item.title}</Text>
-              {item.is_verified || item.verified ? (
-                <ShieldCheck size={14} color="#10B981" className="ml-1" />
-              ) : null}
+  const renderItem = ({ item, index }: { item: any; index: number }) => (
+    <React.Fragment>
+      <TouchableOpacity onPress={() => router.push(`/listing/${item.slug}`)} activeOpacity={0.9} className="bg-white dark:bg-slate-900 rounded-2xl mb-4 shadow-sm border border-slate-200 dark:border-slate-800 overflow-hidden">
+        <View className="p-4">
+          <View className="flex-row items-start mb-3">
+            <View className="w-16 h-16 rounded-xl bg-slate-100 dark:bg-slate-800 items-center justify-center mr-3 overflow-hidden">
+              {item.cover_image || item.media?.[0]?.url ? (
+                <View className="w-full h-full bg-slate-200" /> 
+              ) : (
+                <Building2 size={24} color="#94A3B8" />
+              )}
             </View>
-            <View className="flex-row items-center mb-1">
-              <Text className="text-[12px] font-bold text-[#E8701A] bg-orange-50 dark:bg-orange-950 px-2 py-0.5 rounded">
-                {item.category?.name || item.category || 'Business'}
-              </Text>
+            <View className="flex-1 pr-2">
+              <View className="flex-row items-center mb-1">
+                <Text className="text-[16px] font-extrabold text-slate-900 dark:text-white flex-1" numberOfLines={1}>{item.title}</Text>
+                {item.is_verified || item.verified ? (
+                  <ShieldCheck size={14} color="#10B981" className="ml-1" />
+                ) : null}
+              </View>
+              <View className="flex-row items-center mb-1">
+                <Text className="text-[12px] font-bold text-[#E8701A] bg-orange-50 dark:bg-orange-950 px-2 py-0.5 rounded">
+                  {item.category?.name || item.category || 'Business'}
+                </Text>
+              </View>
+              <View className="flex-row items-center mt-1">
+                <MapPin size={12} color="#64748B" />
+                <Text className="text-[12px] font-medium text-slate-500 ml-1">{item.address || item.city || item.locality}</Text>
+              </View>
             </View>
-            <View className="flex-row items-center mt-1">
-              <MapPin size={12} color="#64748B" />
-              <Text className="text-[12px] font-medium text-slate-500 ml-1">{item.address || item.city || item.locality}</Text>
-            </View>
-          </View>
-        </View>
-        
-        {item.description ? (
-          <Text className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed mb-3" numberOfLines={2}>
-            {item.description}
-          </Text>
-        ) : null}
-
-        <View className="flex-row justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-3">
-          <View className="flex-row items-center bg-amber-50 dark:bg-amber-950 px-2 py-1 rounded-md border border-amber-200 dark:border-amber-900">
-            <Star size={12} color="#F59E0B" fill="#F59E0B" className="mr-1" />
-            <Text className="text-[12px] font-bold text-amber-600">{item.avg_rating || item.reviews_avg_rating || '4.5'}</Text>
           </View>
           
-          <TouchableOpacity className="bg-[#E8701A] px-4 py-2 rounded-lg">
-            <Text className="text-white text-[12px] font-bold">View Details</Text>
-          </TouchableOpacity>
+          {item.description ? (
+            <Text className="text-[13px] text-slate-600 dark:text-slate-400 leading-relaxed mb-3" numberOfLines={2}>
+              {item.description}
+            </Text>
+          ) : null}
+
+          <View className="flex-row justify-between items-center border-t border-slate-100 dark:border-slate-800 pt-3">
+            <View className="flex-row items-center bg-amber-50 dark:bg-amber-950 px-2 py-1 rounded-md border border-amber-200 dark:border-amber-900">
+              <Star size={12} color="#F59E0B" fill="#F59E0B" className="mr-1" />
+              <Text className="text-[12px] font-bold text-amber-600">{item.avg_rating || item.reviews_avg_rating || '4.5'}</Text>
+            </View>
+            
+            <TouchableOpacity className="bg-[#E8701A] px-4 py-2 rounded-lg">
+              <Text className="text-white text-[12px] font-bold">View Details</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </TouchableOpacity>
+      </TouchableOpacity>
+      
+      {/* Show an inline ad after every 4th item (index 3, 7, 11...) */}
+      {(index + 1) % 4 === 0 && (
+        <InlineListAd targetCity={city} />
+      )}
+    </React.Fragment>
   );
 
   return (

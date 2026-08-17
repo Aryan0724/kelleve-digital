@@ -49,30 +49,8 @@ export default function OffersScreen() {
       const data = response.data.data || response.data;
       setOffers(Array.isArray(data) ? data : data.data || []);
     } catch (error) {
-      console.warn('Failed to load offers from server, using fallback');
-      setOffers([
-        {
-          id: 1,
-          title: "Flat 25% Off on OPD Services",
-          discount_percentage: 25,
-          valid_until: "2026-12-31",
-          business_name: "Apex Multi-Specialty Hospital"
-        },
-        {
-          id: 2,
-          title: "Buy 1 Get 1 Free on Pizzas",
-          discount_percentage: 50,
-          valid_until: "2026-11-15",
-          business_name: "The Grand Royal Restaurant"
-        },
-        {
-          id: 3,
-          title: "15% Off Deluxe Suite Booking",
-          discount_percentage: 15,
-          valid_until: "2026-10-31",
-          business_name: "Blue Horizon Luxury Hotel"
-        }
-      ]);
+      console.warn('Failed to load offers from server');
+      setOffers([]);
     } finally {
       setLoading(false);
     }

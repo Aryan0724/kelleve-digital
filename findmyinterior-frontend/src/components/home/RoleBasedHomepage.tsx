@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
-  MapPin, Briefcase, ShieldCheck, Wallet, ChevronRight,
+  MapPin, Briefcase, Wallet, ChevronRight,
   FileText, Search, HardHat, Truck, Building, Paintbrush,
   ArrowRight, Star, IndianRupee, Clock, Users, TrendingUp,
   MessageSquare, PenTool, Home, LayoutDashboard, ClipboardList
 } from "lucide-react";
+import { EducationalBlogsFeed } from "@/components/shared/EducationalBlogsFeed";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
 
@@ -58,7 +59,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-violet-900 to-indigo-900",
     ctas: [
       { label: "Browse Projects", href: "/projects", primary: true },
-      { label: "Update Portfolio", href: "/dashboard" },
+      { label: "Update Portfolio", href: "/dashboard?tab=portfolio" },
     ],
     quickCards: [
       { label: "Available Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
@@ -76,7 +77,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-violet-900 to-indigo-900",
     ctas: [
       { label: "Browse Projects", href: "/projects", primary: true },
-      { label: "Update Portfolio", href: "/dashboard" },
+      { label: "Update Portfolio", href: "/dashboard?tab=portfolio" },
     ],
     quickCards: [
       { label: "Available Projects", key: "recommended_leads_count", icon: Search, href: "/projects" },
@@ -150,7 +151,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-green-900 to-emerald-800",
     ctas: [
       { label: "Browse Open RFQs", href: "/rfqs", primary: true },
-      { label: "Upload Product", href: "/dashboard" },
+      { label: "Upload Product", href: "/dashboard?tab=portfolio" },
     ],
     quickCards: [
       { label: "Open RFQs", key: "recommended_leads_count", icon: Search, href: "/rfqs" },
@@ -168,7 +169,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-green-900 to-emerald-800",
     ctas: [
       { label: "Browse Open RFQs", href: "/rfqs", primary: true },
-      { label: "Upload Product", href: "/dashboard" },
+      { label: "Upload Product", href: "/dashboard?tab=portfolio" },
     ],
     quickCards: [
       { label: "Open RFQs", key: "recommended_leads_count", icon: Search, href: "/rfqs" },
@@ -186,7 +187,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-rose-900 to-red-800",
     ctas: [
       { label: "Browse Jobs", href: "/jobs", primary: true },
-      { label: "Update Availability", href: "/dashboard" },
+      { label: "Update Availability", href: "/dashboard?tab=profile" },
     ],
     quickCards: [
       { label: "Nearby Jobs", key: "recommended_leads_count", icon: Search, href: "/jobs" },
@@ -204,7 +205,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-rose-900 to-red-800",
     ctas: [
       { label: "Browse Jobs", href: "/jobs", primary: true },
-      { label: "Update Availability", href: "/dashboard" },
+      { label: "Update Availability", href: "/dashboard?tab=profile" },
     ],
     quickCards: [
       { label: "Nearby Jobs", key: "recommended_leads_count", icon: Search, href: "/jobs" },
@@ -222,7 +223,7 @@ const ROLE_CONFIG: Record<string, any> = {
     color: "from-slate-900 to-slate-800",
     ctas: [
       { label: "Go to Dashboard", href: "/dashboard", primary: true },
-      { label: "Update Profile", href: "/dashboard" },
+      { label: "Update Profile", href: "/dashboard?tab=business_profile" },
     ],
     quickCards: [
       { label: "Available Leads", key: "recommended_leads_count", icon: Search, href: "/projects" },
@@ -235,55 +236,129 @@ const ROLE_CONFIG: Record<string, any> = {
   }
 };
 
+// ─── Ads Banner ───────────────────────────────────────────────────────────────
+
+function AdsBanner({ role, location }: { role: string; location: string }) {
+  const [ads, setAds] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchAds = async () => {
+      try {
+        const res = await api.get(`/advertisements?location=${location}&target_role=${role}`);
+        if (res.data?.data) {
+          setAds(res.data.data);
+          // Track impressions
+          res.data.data.forEach((ad: any) => {
+            api.post(`/advertisements/${ad.id}/impression`).catch(() => {});
+          });
+        }
+      } catch (err) {
+        console.error("Failed to load ads", err);
+      }
+    };
+    fetchAds();
+  }, [role, location]);
+
+  if (ads.length === 0) return null;
+
+  return (
+    <div className="w-full mb-10 space-y-4">
+      {ads.map((ad) => (
+        <a 
+          key={ad.id} 
+          href={ad.link || "#"} 
+          target="_blank" 
+          rel="noreferrer"
+          className="block w-full rounded-2xl overflow-hidden relative group shadow-sm hover:shadow-xl transition-all"
+          onClick={() => {
+            api.post(`/advertisements/${ad.id}/click`).catch(() => {});
+          }}
+        >
+          {ad.media_type === 'image' && ad.banner_url ? (
+            <div className="w-full h-32 md:h-48 relative">
+              <img src={ad.banner_url} alt={ad.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+              <div className="absolute bottom-4 left-6 right-6">
+                <span className="bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow mb-2 inline-block">Sponsored</span>
+                <h4 className="text-white font-bold text-lg md:text-xl drop-shadow-md">{ad.title}</h4>
+              </div>
+            </div>
+          ) : (
+            <div className="w-full p-6 bg-gradient-to-r from-orange-50 to-orange-100 dark:from-slate-800 dark:to-slate-900 border border-orange-200 dark:border-slate-700 rounded-2xl flex items-center justify-between">
+              <div>
+                <span className="text-orange-500 text-[10px] font-bold uppercase tracking-wider mb-1 block">Sponsored</span>
+                <h4 className="text-slate-900 dark:text-white font-bold text-lg md:text-xl">{ad.title}</h4>
+              </div>
+              <ChevronRight className="w-6 h-6 text-orange-500" />
+            </div>
+          )}
+        </a>
+      ))}
+    </div>
+  );
+}
+
 // ─── Feed Card ────────────────────────────────────────────────────────────────
 
 function LeadCard({ item, role }: { item: any; role: string }) {
   const isWorkerJob = role === "worker" || role === "skilled_worker";
   return (
-    <div className="premium-card rounded-xl p-4 group">
-      <div className="flex justify-between items-start gap-3">
-        <div className="flex-1 min-w-0">
-          <h4 className="font-semibold text-slate-900 dark:text-white text-sm line-clamp-1 group-hover:text-orange-600 transition-colors">
-            {item.title}
-          </h4>
-          <p className="text-xs text-slate-500 mt-1 line-clamp-2">{item.description}</p>
-        </div>
-        {(item.budget_min || item.budget_max || item.daily_rate || item.budget) && (
-          <div className="shrink-0 text-right">
-            <div className="text-xs text-slate-400">Budget</div>
-            <div className="text-sm font-bold text-orange-600">
-              {isWorkerJob
-                ? `₹${item.daily_rate ?? "?"}/day`
-                : item.budget_min
-                ? `₹${(item.budget_min / 1000).toFixed(0)}k–₹${(item.budget_max / 1000).toFixed(0)}k`
-                : `₹${item.budget}`}
+    <div className="bg-white dark:bg-slate-900 rounded-2xl p-5 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col justify-between h-full relative overflow-hidden">
+      <div className="absolute top-0 right-0 w-24 h-24 bg-orange-50 dark:bg-orange-900/10 rounded-full blur-2xl -mr-10 -mt-10 transition-transform group-hover:scale-150"></div>
+      
+      <div>
+        <div className="flex justify-between items-start gap-4 mb-3 relative z-10">
+          <div className="flex-1">
+            <h4 className="font-bold text-slate-900 dark:text-white text-base leading-tight line-clamp-2 group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
+              {item.title}
+            </h4>
+            <div className="flex items-center gap-2 mt-2">
+              <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded">
+                {isWorkerJob ? "Job" : item.material_type ? "RFQ" : "Project"}
+              </span>
+              {item.category?.name && (
+                <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400 rounded line-clamp-1">
+                  {item.category.name}
+                </span>
+              )}
             </div>
           </div>
-        )}
+          
+          {(item.budget_min || item.budget_max || item.daily_rate || item.budget) && (
+            <div className="shrink-0 text-right bg-orange-50 dark:bg-slate-800 rounded-lg p-2 border border-orange-100 dark:border-slate-700">
+              <div className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-0.5">Budget</div>
+              <div className="text-sm font-black text-orange-600 dark:text-orange-500">
+                {isWorkerJob
+                  ? `₹${item.daily_rate ?? "?"}/day`
+                  : item.budget_min
+                  ? `₹${(item.budget_min / 1000).toFixed(0)}k–₹${(item.budget_max / 1000).toFixed(0)}k`
+                  : `₹${item.budget}`}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        <p className="text-xs text-slate-500 dark:text-slate-400 mt-3 line-clamp-2 leading-relaxed relative z-10">{item.description}</p>
       </div>
-      <div className="flex items-center justify-between mt-3">
-        <div className="flex items-center gap-2 flex-wrap">
+
+      <div className="mt-5 pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between relative z-10">
+        <div className="flex items-center gap-3">
           {item.city && (
-            <span className="flex items-center text-xs text-slate-400">
-              <MapPin className="w-3 h-3 mr-0.5" />
+            <span className="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+              <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />
               {typeof item.city === "string" ? item.city : item.city?.name}
             </span>
           )}
-          {item.category?.name && (
-            <span className="text-xs bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full">
-              {item.category.name}
-            </span>
-          )}
           {item.created_at && (
-            <span className="flex items-center text-xs text-slate-400">
-              <Clock className="w-3 h-3 mr-0.5" />
+            <span className="flex items-center text-xs font-medium text-slate-500 dark:text-slate-400">
+              <Clock className="w-3.5 h-3.5 mr-1 text-slate-400" />
               {new Date(item.created_at).toLocaleDateString("en-IN", { day: "numeric", month: "short" })}
             </span>
           )}
         </div>
         <Link href={`/requirements/${item.id}?type=${item.material_type ? 'rfq' : item.skill_required ? 'job' : 'project'}`}>
-          <button className="text-xs text-orange-600 font-semibold flex items-center hover:text-orange-700 transition-colors">
-            View <ChevronRight className="w-3 h-3 ml-0.5" />
+          <button className="text-xs text-white bg-slate-900 dark:bg-white dark:text-slate-900 px-3 py-1.5 rounded-lg font-bold flex items-center hover:bg-orange-600 dark:hover:bg-orange-500 dark:hover:text-white transition-colors">
+            View Details <ChevronRight className="w-3 h-3 ml-1" />
           </button>
         </Link>
       </div>
@@ -332,17 +407,33 @@ function QuickStats({ stats, config }: { stats: any; config: any }) {
   if (!config.quickCards || config.quickCards.length === 0) return null;
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-8">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-10 -mt-12 relative z-20 px-0 sm:px-4">
       {config.quickCards.map((s: any, i: number) => {
         const Icon = s.icon;
+        const val = stats[s.key] ?? 0;
         return (
-          <Link key={i} href={s.href}>
-            <div className="premium-card rounded-xl p-4 h-full flex flex-col justify-between">
-              <div className="flex items-center gap-2 mb-3">
-                <Icon className="w-4 h-4 text-orange-500" />
-                <span className="text-xs font-medium text-slate-500 dark:text-gray-400">{s.label}</span>
+          <Link key={i} href={s.href} className="group">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-lg shadow-slate-200/50 dark:shadow-none h-full flex flex-col justify-between transition-all duration-300 group-hover:-translate-y-1 group-hover:shadow-xl group-hover:border-orange-200 dark:group-hover:border-orange-900/50">
+              <div className="flex justify-between items-start mb-4">
+                <div className="w-12 h-12 rounded-xl bg-orange-50 dark:bg-orange-900/20 flex items-center justify-center text-orange-600 dark:text-orange-500 group-hover:scale-110 transition-transform">
+                  <Icon className="w-6 h-6" />
+                </div>
+                {s.key === 'recommended_leads_count' && (
+                  <div className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-green-50 text-green-600 dark:bg-green-900/20 dark:text-green-400 rounded-md flex items-center">
+                    <TrendingUp className="w-3 h-3 mr-1" />
+                    Live
+                  </div>
+                )}
+                {s.key === 'unread_messages' && val > 0 && (
+                  <div className="text-[10px] font-bold uppercase tracking-wider px-2 py-1 bg-orange-50 text-orange-600 dark:bg-orange-900/20 dark:text-orange-400 rounded-md flex items-center">
+                    New
+                  </div>
+                )}
               </div>
-              <div className="text-2xl font-bold text-slate-900 dark:text-white">{stats[s.key] ?? 0}</div>
+              <div>
+                <div className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">{val}</div>
+                <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mt-1">{s.label}</div>
+              </div>
             </div>
           </Link>
         )
@@ -418,71 +509,113 @@ export function RoleBasedHomepage() {
   return (
     <div className="w-full bg-slate-50 dark:bg-background min-h-screen pb-12">
       {/* ─── Personalized Hero ──────────────────────────────────── */}
-      <div className={`w-full bg-gradient-to-r ${config.color} text-white`}>
-        <div className="container mx-auto px-4 py-10 md:py-14 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-          <div className="flex-1">
+      <div className={`w-full bg-gradient-to-r ${config.color} text-white relative overflow-hidden`}>
+        {/* Background decorative elements */}
+        <div className="absolute top-0 right-0 w-96 h-96 bg-white opacity-5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/3"></div>
+        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white opacity-5 rounded-full blur-2xl translate-y-1/3 -translate-x-1/4"></div>
+
+        <div className="container mx-auto px-4 pt-8 pb-16 md:pt-10 md:pb-20 flex flex-col lg:flex-row items-center justify-between gap-8 relative z-10">
+          <div className="flex-1 w-full max-w-2xl">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center border border-white/10 shadow-inner">
                 <Icon className="w-4 h-4 text-white" />
               </div>
-              <span className="text-white/70 text-sm font-medium capitalize">
-                {effectiveRole?.replace(/_/g, " ")}
+              <span className="text-white/80 text-sm font-semibold tracking-wide uppercase">
+                {effectiveRole?.replace(/_/g, " ")} Workspace
               </span>
             </div>
-            <h2 className="text-2xl md:text-3xl font-extrabold leading-tight mb-2">
+            <h2 className="text-2xl md:text-4xl font-extrabold leading-tight mb-3 tracking-tight">
               {config.greeting === "Welcome back"
                 ? `Welcome back, ${firstName}! 👋`
                 : config.greeting}
             </h2>
-            <p className="text-white/75 text-sm md:text-base max-w-lg">{config.tagline}</p>
-            <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-3 mt-5 w-full">
-              {config.ctas.map((cta: any) => (
+            <p className="text-white/80 text-sm md:text-base max-w-xl leading-relaxed mb-6">{config.tagline}</p>
+            <div className="flex flex-col sm:flex-row sm:flex-wrap items-center gap-4 w-full">
+              {config.ctas.map((cta: any, idx: number) => (
                 <Link key={cta.label} href={cta.href} className="w-full sm:w-auto">
                   <button
-                    className={`w-full sm:w-auto justify-center flex items-center gap-1.5 px-5 py-2.5 rounded-lg text-sm font-semibold transition-all duration-200 ${
+                    className={`w-full sm:w-auto justify-center flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all duration-300 ${
                       cta.primary
-                        ? "bg-[#E8701A] hover:bg-orange-500 text-white shadow-lg"
-                        : "bg-white/15 hover:bg-white/25 text-white border border-white/30"
+                        ? "bg-gradient-to-r from-orange-500 to-[#E8701A] hover:from-orange-400 hover:to-orange-500 text-white shadow-xl hover:shadow-orange-500/25 hover:-translate-y-0.5"
+                        : "bg-white/10 hover:bg-white/20 text-white backdrop-blur-md border border-white/20 hover:border-white/40"
                     }`}
                   >
-                    {cta.label} {cta.primary && <ArrowRight className="w-3.5 h-3.5" />}
+                    {cta.label} {cta.primary && <ArrowRight className="w-4 h-4" />}
                   </button>
                 </Link>
               ))}
             </div>
           </div>
-
-          {/* Right: verification nudge */}
-          {!["site_verified", "verified_business", "trusted_professional", "elite_professional"].includes(
-            (user as any).verification_level ?? ""
-          ) && (
-            <div className="hidden md:flex flex-col bg-white/10 backdrop-blur-sm border border-white/20 rounded-2xl p-5 max-w-xs gap-3">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-5 h-5 text-yellow-300" />
-                <span className="text-sm font-bold text-white">Get Verified & Rank Higher</span>
+          
+          {/* Rich Right-Side Widget to fill empty space */}
+          <div className="hidden lg:block w-full max-w-sm">
+            <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-5 shadow-2xl relative overflow-hidden group">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-orange-500 opacity-20 blur-2xl rounded-full -mr-10 -mt-10 transition-transform group-hover:scale-150 duration-700"></div>
+              
+              <div className="flex justify-between items-center mb-4 relative z-10">
+                <h3 className="text-white font-bold text-base">Market Pulse</h3>
+                <span className="flex h-3 w-3 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </span>
               </div>
-              <p className="text-xs text-white/70">
-                Verified profiles appear first in search results and display a trust badge that converts more clients.
-              </p>
-              <Link href="/dashboard">
-                <button className="w-full bg-yellow-400 hover:bg-yellow-300 text-yellow-900 text-xs font-bold py-2 rounded-lg transition">
-                  Apply for Verification →
-                </button>
-              </Link>
+              
+              <div className="space-y-3 relative z-10">
+                <div className="bg-black/20 rounded-xl p-3 border border-white/5 flex items-center gap-3 hover:bg-black/30 transition-colors cursor-default">
+                  <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center text-blue-300">
+                    <Users className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-white/60 text-[10px] font-medium mb-0.5">Active Professionals</div>
+                    <div className="text-white font-bold text-base">2,450+</div>
+                  </div>
+                </div>
+                
+                <div className="bg-black/20 rounded-xl p-3 border border-white/5 flex items-center gap-3 hover:bg-black/30 transition-colors cursor-default">
+                  <div className="w-8 h-8 rounded-full bg-orange-500/20 flex items-center justify-center text-orange-300">
+                    <Search className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-white/60 text-[10px] font-medium mb-0.5">Open Projects Today</div>
+                    <div className="text-white font-bold text-base">142</div>
+                  </div>
+                </div>
+                
+                <div className="bg-black/20 rounded-xl p-3 border border-white/5 flex items-center gap-3 hover:bg-black/30 transition-colors cursor-default">
+                  <div className="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-300">
+                    <TrendingUp className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <div className="text-white/60 text-[10px] font-medium mb-0.5">Avg. Project Value</div>
+                    <div className="text-white font-bold text-base">₹4.5L</div>
+                  </div>
+                </div>
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
       <div className="container mx-auto px-4 py-8">
+        <AdsBanner role={effectiveRole!} location="hero_banner" />
+        <AdsBanner role={effectiveRole!} location="mid_page" />
+
         <QuickStats stats={stats} config={config} />
 
-        {config.feeds?.map((feed: any, idx: number) => {
-          const items = dataSources[feed.key] || [];
-          
-          return (
-            <div key={idx} className="mb-10">
-              <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col lg:flex-row gap-8 mt-8">
+          <div className="flex-1">
+            {config.feeds?.map((feed: any, idx: number) => {
+              const items = dataSources[feed.key] || [];
+              
+              return (
+                <React.Fragment key={idx}>
+                  {idx === 1 && (
+                    <div className="mb-8">
+                      <AdsBanner role={effectiveRole!} location="between_categories" />
+                    </div>
+                  )}
+                  <div className="mb-10">
+                <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-slate-800 dark:text-white">{feed.title}</h3>
                 <Link href={feed.type === 'listing' ? '/professionals' : feed.type === 'supplier' ? '/materials' : '/dashboard'} className="text-sm text-orange-600 font-semibold hover:text-orange-700 flex items-center gap-1">
                   View All <ChevronRight className="w-4 h-4" />
@@ -510,14 +643,37 @@ export function RoleBasedHomepage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-10 text-slate-400 dark:text-gray-500 premium-card rounded-xl">
-                  <Search className="w-10 h-10 mx-auto mb-3 opacity-30" />
-                  <p className="text-sm">{feed.empty || "No items to show."}</p>
+                <div className="text-center py-16 px-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 border-dashed rounded-2xl flex flex-col items-center justify-center group hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer" onClick={() => router.push(feed.type === 'listing' ? '/professionals' : '/projects')}>
+                  <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                    <Search className="w-8 h-8 text-slate-400 dark:text-slate-500" />
+                  </div>
+                  <h4 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Nothing here yet</h4>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-sm mx-auto">{feed.empty || "There are no matches right now, but things change fast. Explore our main directories in the meantime."}</p>
+                  <button className="px-6 py-2.5 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-semibold rounded-lg text-sm hover:bg-slate-800 dark:hover:bg-white transition-colors shadow-md shadow-slate-900/10">
+                    Explore Directory
+                  </button>
                 </div>
               )}
             </div>
+            {idx > 0 && idx % 2 === 0 && (
+              <div className="mb-8">
+                <AdsBanner role={effectiveRole!} location="between_categories" />
+              </div>
+            )}
+            </React.Fragment>
           );
         })}
+
+        <EducationalBlogsFeed role={effectiveRole!} />
+          </div>
+
+          {/* Right Sidebar */}
+          <div className="hidden lg:block w-80 shrink-0">
+            <div className="sticky top-24 space-y-6">
+              <AdsBanner role={effectiveRole!} location="right_sidebar" />
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

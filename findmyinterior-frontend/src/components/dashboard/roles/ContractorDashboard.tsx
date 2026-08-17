@@ -1,16 +1,18 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Truck, Wrench, Wallet, User, LogOut, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Truck, Wrench, Wallet, User, LogOut, ShieldCheck , Star } from "lucide-react";
+import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
+
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnlockedLeadsTab } from "@/components/dashboard/UnlockedLeadsTab";
 import Link from "next/link";
@@ -19,11 +21,33 @@ import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
 import { Paintbrush } from "lucide-react";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
+import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 
 export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("available_leads");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || "available_leads");
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  useEffect(() => {
+    // Auto-scroll to content area on mobile when tab changes
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        const contentArea = document.getElementById('dashboard-content-area');
+        if (contentArea) {
+          const y = contentArea.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [activeTab]);
 
   const handleLogout = async () => {
     await handleLogoutAction();
@@ -38,7 +62,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
       <div className={`mr-3 shrink-0 ${activeTab === id ? 'text-orange-600' : 'text-slate-400'}`}>
         {icon}
       </div>
-      {label}
+      <span className="whitespace-nowrap">{label}</span>
     </button>
   );
 
@@ -47,12 +71,13 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-900 font-bold">
-            <HardHat className="h-5 w-5 text-orange-600" /> {user?.name}'s Workshop
+            <HardHat className="h-5 w-5 text-orange-600 hidden md:block" /> 
+            <span className="hidden md:inline">{user?.name}'s Contractor Dashboard</span>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 md:gap-4">
             <span className="text-sm font-medium text-slate-600 hidden md:block">CONTRACTOR</span>
-            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600">
-              <LogOut className="h-4 w-4 mr-2" /> Logout
+            <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 hover:text-red-600 px-2 md:px-4">
+              <LogOut className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">Logout</span>
             </Button>
           </div>
         </div>
@@ -62,43 +87,31 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 bg-slate-100 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 shadow">
-                  <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                  {user?.avatar && (
-                    <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
-                  )}
-                </div>
-                <h3 className="font-bold text-lg">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="default">Contractor</Badge>
-                
-                <div className="w-full space-y-2 mt-2">
-                  <div className="w-full bg-orange-50 border border-orange-100 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-orange-600 font-medium">Subscription</div>
-                      <div className="font-bold text-slate-900">{data?.user?.subscription || "Free Plan"}</div>
-                    </div>
-                    <Link href="/pricing">
-                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200">Upgrade</Button>
-                    </Link>
+            <DashboardProfileCard
+              fetchDashboard={fetchDashboard}
+              roleLabel="Contractor" onEditProfile={() => setActiveTab("business_profile")}
+              extraContent={
+                <>
+                  <div className="flex justify-between items-center text-sm py-2 border-b">
+                    <span className="text-slate-500">Won Projects</span>
+                    <span className="font-semibold">{data?.stats?.won_projects || 0}</span>
                   </div>
-                  
-                  <div className="w-full bg-green-50 border border-green-100 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-green-700 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
-                      <div className="font-bold text-slate-900">₹{data?.user?.wallet_balance || 0}</div>
-                    </div>
-                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-green-700 border-green-200" onClick={() => setActiveTab("wallet")}>Add</Button>
+                  <div className="flex justify-between items-center text-sm py-2 border-b">
+                    <span className="text-slate-500">Active Bids</span>
+                    <span className="font-semibold">{data?.stats?.active_bids || 0}</span>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </>
+              }
+            />
 
-            <div className="bg-white border rounded-xl overflow-hidden w-full">
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
-                {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Projects")}
-                {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Leads")}
+            <UnverifiedBanner 
+              onVerifyClick={() => setActiveTab("verification")} 
+            />
+            
+            <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+              <div className="flex overflow-x-auto md:flex-col no-scrollbar md:overflow-x-hidden md:overflow-y-auto custom-scrollbar">
+                {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Leads")}
+                {renderSidebarButton("unlocked_leads", <LayoutDashboard className="h-5 w-5" />, "Unlocked Leads")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "My Bids")}
                 {renderSidebarButton("won_projects", <Trophy className="h-5 w-5" />, "Won Projects")}
                 {renderSidebarButton("labour_requests", <HardHat className="h-5 w-5" />, "Labour Requests")}
@@ -114,7 +127,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             </div>
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
+          <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
 
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
@@ -227,3 +240,9 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
     </div>
   );
 }
+
+
+
+
+
+

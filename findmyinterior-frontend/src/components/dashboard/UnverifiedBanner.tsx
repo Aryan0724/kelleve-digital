@@ -10,7 +10,8 @@ export function UnverifiedBanner({ onVerifyClick, hasPendingVerification }: { on
 
   if (!user) return null;
 
-  const isVerified = ["verified_business", "trusted_professional", "elite_professional", "site_verified"].includes(user.verification_level || "");
+  const isHomeowner = ['customer', 'homeowner'].includes(user.role || '');
+  const isVerified = ["verified_business", "trusted_professional", "elite_professional", "site_verified", "verified"].includes(user.verification_level || "");
 
   if (isVerified || hasPendingVerification) return null;
 
@@ -19,9 +20,13 @@ export function UnverifiedBanner({ onVerifyClick, hasPendingVerification }: { on
       <div className="flex items-center gap-3">
         <AlertTriangle className="h-5 w-5 text-red-600" />
         <div>
-          <AlertTitle className="font-bold text-red-800">Boost Your Profile: Business Verification</AlertTitle>
+          <AlertTitle className="font-bold text-red-800">
+            {isHomeowner ? "Identity Verification Recommended" : "Boost Your Profile: Business Verification"}
+          </AlertTitle>
           <AlertDescription className="text-red-700">
-            Your profile is currently unverified. While you have full access to all features, verifying your business will give you a Trust Badge and significantly boost your ranking in search results!
+            {isHomeowner
+              ? "Your profile is currently unverified. Upload your Aadhaar Card and PAN Card to get your identity verified and build trust with top professionals!"
+              : "Your profile is currently unverified. While you have full access to all features, verifying your business will give you a Trust Badge and significantly boost your ranking in search results!"}
           </AlertDescription>
         </div>
       </div>
@@ -31,7 +36,7 @@ export function UnverifiedBanner({ onVerifyClick, hasPendingVerification }: { on
         className="mt-4 md:mt-0 whitespace-nowrap bg-red-600 hover:bg-red-700 text-white"
         onClick={onVerifyClick}
       >
-        Verify Now
+        {isHomeowner ? "Verify Identity" : "Verify Now"}
       </Button>
     </Alert>
   );

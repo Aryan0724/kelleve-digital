@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 import { notFound } from "next/navigation";
-import { Calendar, Eye, User, Tag, ArrowLeft, ChevronRight } from "lucide-react";
+import { Calendar, Eye, User, Tag, ArrowLeft, ChevronRight, ListIcon } from "lucide-react";
+import { AdSlot } from "@/components/ads/AdSlot";
 import { getServerApiUrl } from "@/lib/serverApi";
 
 async function getBlog(slug: string) {
@@ -97,20 +98,65 @@ export default async function BlogPostPage({
           </p>
         )}
 
-        {/* Content */}
-        <div
-          className="prose prose-slate prose-lg max-w-none
-            prose-headings:font-bold prose-headings:text-slate-900
-            prose-h2:text-2xl prose-h3:text-xl
-            prose-p:text-slate-700 prose-p:leading-relaxed
-            prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline
-            prose-strong:text-slate-900
-            prose-ul:text-slate-700 prose-ol:text-slate-700
-            prose-li:my-1
-            prose-blockquote:border-orange-400 prose-blockquote:text-slate-600
-            prose-img:rounded-xl prose-img:shadow-md"
-          dangerouslySetInnerHTML={{ __html: blog.content ?? "" }}
-        />
+        {/* Native Ad */}
+        <div className="my-8">
+          <AdSlot location="native_blog" className="w-full h-auto min-h-32 rounded-xl" />
+        </div>
+
+        {(() => {
+          let toc: { id: string, title: string, level: number }[] = [];
+          let content = blog.content ?? "";
+          
+          content = content.replace(/<h([23])([^>]*)>(.*?)<\/h\1>/gi, (match: string, level: string, attrs: string, innerText: string) => {
+            const title = innerText.replace(/<[^>]+>/g, '').trim();
+            const id = title.toLowerCase().replace(/[\s\W-]+/g, '-');
+            toc.push({ id, title, level: parseInt(level) });
+            return `<h${level} id="${id}"${attrs} class="scroll-mt-24">${innerText}</h${level}>`;
+          });
+
+          return (
+            <>
+              {/* Table of Contents */}
+              {toc.length > 0 && (
+                <div className="bg-slate-50 border border-slate-200 rounded-xl p-6 mb-10 shadow-sm">
+                  <h3 className="font-bold text-lg text-slate-900 mb-4 flex items-center gap-2">
+                    <span className="bg-orange-100 text-orange-600 p-1.5 rounded-lg">
+                      <ListIcon className="w-4 h-4" />
+                    </span>
+                    Table of Contents
+                  </h3>
+                  <ul className="space-y-2.5">
+                    {toc.map((item, idx) => (
+                      <li key={idx} className={item.level === 3 ? "ml-6" : ""}>
+                        <a 
+                          href={`#${item.id}`}
+                          className="text-slate-600 hover:text-orange-600 hover:underline underline-offset-4 transition-colors"
+                        >
+                          {item.title}
+                        </a>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Content */}
+              <div
+                className="prose prose-slate prose-lg max-w-none
+                  prose-headings:font-bold prose-headings:text-slate-900
+                  prose-h2:text-2xl prose-h3:text-xl
+                  prose-p:text-slate-700 prose-p:leading-relaxed
+                  prose-a:text-orange-600 prose-a:no-underline hover:prose-a:underline
+                  prose-strong:text-slate-900
+                  prose-ul:text-slate-700 prose-ol:text-slate-700
+                  prose-li:my-1
+                  prose-blockquote:border-orange-400 prose-blockquote:text-slate-600
+                  prose-img:rounded-xl prose-img:shadow-md"
+                dangerouslySetInnerHTML={{ __html: content }}
+              />
+            </>
+          );
+        })()}
 
         {/* Tags */}
         {blog.tags && blog.tags.length > 0 && (

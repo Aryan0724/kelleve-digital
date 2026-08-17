@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star, TrendingUp } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
@@ -21,11 +21,34 @@ import { PostedRequirementsTab } from "@/components/dashboard/PostedRequirements
 import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
+import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
+import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 
 export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
   const { user, logout } = useAuthStore();
-  const [activeTab, setActiveTab] = useState("available_leads");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const [activeTab, setActiveTab] = useState(tabParam || "available_leads");
+
+  useEffect(() => {
+    if (tabParam) {
+      setActiveTab(tabParam);
+    }
+  }, [tabParam]);
+
+  useEffect(() => {
+    // Auto-scroll to content area on mobile when tab changes
+    if (window.innerWidth < 1024) {
+      setTimeout(() => {
+        const contentArea = document.getElementById('dashboard-content-area');
+        if (contentArea) {
+          const y = contentArea.getBoundingClientRect().top + window.scrollY - 80;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [activeTab]);
   const [reviewModal, setReviewModal] = useState<{isOpen: boolean; professionalId: number; requirementId: number}>({ isOpen: false, professionalId: 0, requirementId: 0 });
 
   const handleLogout = async () => {
@@ -55,7 +78,9 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           </div>
           <div className="flex items-center gap-2 md:gap-4">
             <VentureSwitcher />
-            <span className="text-sm font-medium text-slate-600 dark:text-slate-400 hidden md:block">DESIGNER</span>
+            <span className="text-sm font-medium text-slate-600 dark:text-slate-400 hidden md:block uppercase">
+              {(user?.professional_type || user?.role || 'PROFESSIONAL').replace(/_/g, ' ')}
+            </span>
             <Button variant="ghost" size="sm" onClick={handleLogout} className="text-slate-500 dark:text-slate-400 hover:text-red-600 dark:hover:text-red-400 px-2 md:px-4">
               <LogOut className="h-4 w-4 md:mr-2" /> <span className="hidden md:inline">Logout</span>
             </Button>
@@ -67,38 +92,36 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           
           <div className="lg:col-span-1 space-y-4">
-            <Card>
-              <CardContent className="p-6 flex flex-col items-center text-center">
-                <div className="h-20 w-20 relative rounded-full overflow-hidden ring-4 ring-orange-100 dark:ring-orange-900/30 bg-slate-100 dark:bg-slate-800 flex items-center justify-center mb-4 text-2xl font-bold text-slate-400 dark:text-slate-500 shadow">
-                  <span className="absolute inset-0 z-0 flex items-center justify-center">{user?.name?.charAt(0)}</span>
-                  {user?.avatar && (
-                    <img src={user.avatar} alt="Avatar" className="w-full h-full object-cover absolute inset-0 z-10 text-transparent" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+            <DashboardProfileCard
+              fetchDashboard={fetchDashboard}
+              roleLabel={user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || "Professional"}
+              extraContent={
+                <>
+                  {((user as any)?.is_verified || data?.user?.is_verified) && (
+                    <Badge className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold flex items-center justify-center gap-1 text-xs mb-4">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Verified Professional
+                    </Badge>
                   )}
-                </div>
-                <h3 className="font-bold text-lg dark:text-white">{user?.name}</h3>
-                <Badge className="mt-2 capitalize mb-4" variant="default">Interior Designer</Badge>
-                
-                <div className="w-full space-y-2 mt-2">
-                  <div className="w-full bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-orange-600 dark:text-orange-500 font-medium">Subscription</div>
-                      <div className="font-bold text-slate-900 dark:text-white">{data?.user?.subscription || "Free Plan"}</div>
+                  <div className="w-full space-y-2 mt-2">
+                    <div className="w-full bg-orange-50 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/50 rounded-lg p-3 text-left flex justify-between items-center">
+                      <div>
+                        <div className="text-xs text-orange-600 dark:text-orange-500 font-medium">Subscription</div>
+                        <div className="font-bold text-slate-900 dark:text-white">{data?.user?.subscription || "Free Plan"}</div>
+                      </div>
+                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-slate-700" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
                     </div>
-                    <Link href="/pricing">
-                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-slate-700">Upgrade</Button>
-                    </Link>
-                  </div>
-                  
-                  <div className="w-full bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-green-700 dark:text-green-500 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
-                      <div className="font-bold text-slate-900 dark:text-white">₹{data?.user?.wallet_balance || 0}</div>
+                    
+                    <div className="w-full bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50 rounded-lg p-3 text-left flex justify-between items-center">
+                      <div>
+                        <div className="text-xs text-green-700 dark:text-green-500 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
+                        <div className="font-bold text-slate-900 dark:text-white">₹{data?.user?.wallet_balance || 0}</div>
+                      </div>
+                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-green-700 dark:text-green-500 border-green-200 dark:border-slate-700" onClick={() => setActiveTab("wallet")}>Add</Button>
                     </div>
-                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-green-700 dark:text-green-500 border-green-200 dark:border-slate-700" onClick={() => setActiveTab("wallet")}>Add</Button>
                   </div>
-                </div>
-              </CardContent>
-            </Card>
+                </>
+              }
+            />
 
             <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
@@ -109,7 +132,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
-                {renderSidebarButton("reviews", <Star className="h-5 w-5" />, "Reviews")}
+                {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
                 {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
@@ -118,36 +141,77 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             </div>
           </div>
 
-          <div className="lg:col-span-3 space-y-6">
+          <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Profile Views</div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.total_views || 0}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Phone Clicks</div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.phone_clicks || 0}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">WhatsApp Clicks</div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.whatsapp_clicks || 0}</div>
-                </CardContent>
-              </Card>
-              <Card>
-                <CardContent className="p-4 flex flex-col items-center justify-center text-center">
-                  <div className="text-sm font-medium text-slate-500 dark:text-slate-400 mb-1">Website Clicks</div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">{data?.website_clicks || 0}</div>
-                </CardContent>
-              </Card>
-            </div>
+            {activeTab === 'bookmarks' && (
+              <SavedBookmarksTab />
+            )}
+
+            <Card className="dark:bg-slate-900 dark:border-slate-800 mb-6">
+              <CardHeader className="pb-3 border-b dark:border-slate-800 mb-4">
+                <CardTitle className="text-lg flex items-center gap-2 dark:text-white">
+                  <TrendingUp className="w-5 h-5 text-indigo-500" />
+                  Performance Insights
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex flex-wrap gap-4">
+                  <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-indigo-50/50 dark:bg-slate-800/50 border border-indigo-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-indigo-50 dark:hover:bg-slate-800 transition-colors">
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">Profile Views</div>
+                    <div className="text-3xl font-bold text-indigo-700 dark:text-indigo-400">{data?.total_views || 0}</div>
+                  </div>
+                  <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-green-50/50 dark:bg-slate-800/50 border border-green-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-green-50 dark:hover:bg-slate-800 transition-colors">
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">Phone Clicks</div>
+                    <div className="text-3xl font-bold text-green-700 dark:text-green-400">{data?.phone_clicks || 0}</div>
+                  </div>
+                  <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-emerald-50/50 dark:bg-slate-800/50 border border-emerald-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-emerald-50 dark:hover:bg-slate-800 transition-colors">
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">WA Clicks</div>
+                    <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-400">{data?.whatsapp_clicks || 0}</div>
+                  </div>
+                  <div onClick={() => setActiveTab('business_profile')} className="flex-1 min-w-[120px] bg-blue-50/50 dark:bg-slate-800/50 border border-blue-100 dark:border-slate-700 rounded-xl p-4 flex flex-col items-center justify-center cursor-pointer hover:bg-blue-50 dark:hover:bg-slate-800 transition-colors">
+                    <div className="text-[11px] uppercase tracking-wider font-semibold text-slate-500 dark:text-slate-400 mb-1">Web Clicks</div>
+                    <div className="text-3xl font-bold text-blue-700 dark:text-blue-400">{data?.website_clicks || 0}</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
             
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
+            
+            {/* Profile Viewers Section - shown on dashboard overview */}
+            {activeTab === 'available_leads' && data?.recent_visitors && data.recent_visitors.length > 0 && (
+              <Card className="dark:bg-slate-900 dark:border-slate-800">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-base flex items-center gap-2 dark:text-white">
+                    <Search className="w-4 h-4 text-orange-500" />
+                    Recent Profile Visitors
+                    <span className="ml-auto text-xs text-slate-400 font-normal">Last 10 logged-in views</span>
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-3">
+                    {data.recent_visitors.map((visitor: any, idx: number) => (
+                      <div key={idx} className="flex items-center gap-3 py-2 border-b dark:border-slate-800 last:border-0">
+                        <div className="w-9 h-9 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden flex items-center justify-center text-slate-500 font-bold flex-shrink-0">
+                          {visitor.avatar ? (
+                            <img src={visitor.avatar} alt={visitor.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <span>{visitor.name?.charAt(0) || '?'}</span>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="font-semibold text-sm text-slate-800 dark:text-white truncate">{visitor.name}</div>
+                          <div className="text-xs text-slate-400 capitalize">{visitor.role?.replace('_', ' ')}</div>
+                        </div>
+                        <div className="text-xs text-slate-400 text-right flex-shrink-0">
+                          {visitor.viewed_at ? new Date(visitor.viewed_at).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' }) : 'Recently'}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            )}
             
             {activeTab === 'unlocked_leads' && (
               <UnlockedLeadsTab unlockedContacts={data?.unlocked_contacts || []} onRefresh={fetchDashboard} />
@@ -242,3 +306,4 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
     </div>
   );
 }
+

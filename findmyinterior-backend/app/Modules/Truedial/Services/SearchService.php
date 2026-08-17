@@ -25,6 +25,7 @@ class SearchService
             'verified'      => $params['verified'] ?? false,
             'premium'       => $params['premium'] ?? false,
             'offers'      => $params['offers'] ?? false,
+            'card_type'   => $params['card_type'] ?? null,
             'min_rating'  => $params['min_rating'] ?? null,
             'lat'         => $params['lat'] ?? null,
             'lng'         => $params['lng'] ?? null,

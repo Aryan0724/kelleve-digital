@@ -34,6 +34,10 @@ class User extends Authenticatable
         'is_verified_business',
         'daily_notification_limit',
         'primary_role_id',
+        'city',
+        'district',
+        'address',
+        'cover_image',
     ];
 
     protected $hidden = [
@@ -75,7 +79,14 @@ class User extends Authenticatable
 
     public function listing(): HasOne
     {
-        return $this->hasOne(Listing::class);
+        $relation = $this->hasOne(Listing::class);
+        try {
+            $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
+            if ($tenantId) {
+                $relation->where('tenant_id', $tenantId);
+            }
+        } catch (\Throwable $e) {}
+        return $relation;
     }
 
     public function listings(): HasMany
@@ -138,6 +149,11 @@ class User extends Authenticatable
         return $this->hasMany(UserSubscription::class);
     }
 
+    public function bookmarks(): HasMany
+    {
+        return $this->hasMany(Bookmark::class);
+    }
+
     public function activeSubscription(): HasOne
     {
         return $this->hasOne(UserSubscription::class)
@@ -171,6 +187,18 @@ class User extends Authenticatable
     public function hasRole(string $roleSlug): bool
     {
         return $this->roles()->where('slug', $roleSlug)->exists();
+    }
+
+    public function assignRole($role)
+    {
+        if (is_string($role)) {
+            $roleModel = \App\Models\Role::where('slug', $role)->orWhere('name', $role)->first();
+            if ($roleModel) {
+                $this->roles()->syncWithoutDetaching([$roleModel->id]);
+            }
+        } elseif ($role instanceof \App\Models\Role) {
+            $this->roles()->syncWithoutDetaching([$role->id]);
+        }
     }
 
     public function isAdmin(): bool

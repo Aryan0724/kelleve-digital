@@ -30,18 +30,7 @@ use App\Http\Controllers\Api\V1\Admin\RevenueController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-// E2E Testing DB Reset — ONLY available in explicit testing environment
-// DISABLED in production: never expose this endpoint outside of CI/CD pipelines
-if (app()->environment('local', 'testing')) {
-    Route::post('/e2e/reset', function () {
-        \Illuminate\Support\Facades\Artisan::call('migrate:fresh', [
-            '--seeder' => 'E2ESeeder',
-            '--force'  => true,
-        ]);
-        return response()->json(['message' => 'Database wiped and reseeded for E2E']);
-    });
-}
-
+// E2E Reset removed for security
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -65,44 +54,32 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
             'environment' => app()->environment()
         ]);
     });
+    Route::get('/debug-internal', function (\Illuminate\Http\Request $request) {
+        $url = 'http://127.0.0.1:80/api/v1/listings?search=Interior+Designer';
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Host: backend']);
+        $response = curl_exec($ch);
+        $status = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $error = curl_error($ch);
+        curl_close($ch);
 
-    // ONE-TIME admin credential reset — secured by secret key
-    // REMOVE AFTER USE
-    Route::get('/system/admin-reset', function (\Illuminate\Http\Request $req) {
-        if ($req->query('key') !== 'fmi_reset_2025_xK9mP') {
-            return response()->json(['error' => 'Unauthorized'], 401);
-        }
-        $admin = \App\Models\User::whereHas('roles', function($q) {
-            $q->where('slug', 'admin');
-        })->first();
-        if (!$admin) {
-            return response()->json(['error' => 'No admin user found', 'users' => \App\Models\User::select(['id','email'])->limit(5)->get()], 404);
-        }
-        $admin->password = \Illuminate\Support\Facades\Hash::make('Admin@123!');
-        $admin->is_active = true;
-        $admin->save();
         return response()->json([
-            'success'  => true,
-            'message'  => 'Admin password reset',
-            'email'    => $admin->email,
-            'new_pass' => 'Admin@123!',
+            'url' => $url,
+            'status' => $status,
+            'response' => $response,
+            'curl_error' => $error
         ]);
-    });
-
-    Route::get('/debug-logs', function (\Illuminate\Http\Request $request) {
-        if ($request->query('key') !== 'aryan123') return response('Unauthorized', 401);
-        $logPath = storage_path('logs/laravel.log');
-        if (!file_exists($logPath)) return response('No log file', 404);
-        
-        $lines = file($logPath);
-        $lastLines = array_slice($lines, -200); // get last 200 lines
-        return response(implode("", $lastLines))->header('Content-Type', 'text/plain');
     });
 
     // ─── Auth ─────────────────────────────────────────────────────────────
     Route::prefix('auth')->middleware('throttle:auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
         Route::post('login', [AuthController::class, 'login']);
+        Route::post('send-otp', [AuthController::class, 'sendOtp']);
+        Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
+        Route::post('login-with-otp', [AuthController::class, 'loginWithOtp']);
         Route::post('forgot-password', [PasswordResetController::class, 'forgotPassword']);
         Route::post('reset-password', [PasswordResetController::class, 'resetPassword']);
 
@@ -151,6 +128,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
     // Public inquiry submission
     Route::post('inquiries', [InquiryController::class, 'store']);
+    Route::post('call-logs', [\App\Http\Controllers\Api\V1\Public\CallLogController::class, 'store']);
+    Route::get('health', \App\Http\Controllers\HealthCheckController::class);
     Route::post('contact', [\App\Http\Controllers\Public\ContactController::class, 'store']);
     
     // Opportunity Backend Configuration
@@ -175,21 +154,27 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('profile', [ProfileController::class, 'show']);
         Route::put('profile', [ProfileController::class, 'update']);
         Route::post('avatar', [ProfileController::class, 'uploadAvatar']);
+        Route::post('cover', [ProfileController::class, 'uploadCover']);
         Route::put('change-password', [ProfileController::class, 'changePassword']);
         
-        // Listing management for businesses
-        Route::middleware('role:business,builder,supplier,worker,skilled_worker,interior_designer,interior_company,contractor,architect,material_supplier')->group(function () {
-            Route::get('listings', [ProfileController::class, 'listings']);
-            Route::post('listings', [ProfileController::class, 'createListing']);
-            Route::put('listings/{id}', [ProfileController::class, 'updateListing']);
-            Route::post('listings/{id}/cover', [ProfileController::class, 'uploadListingCover']);
-            Route::post('listings/{id}/gallery', [ProfileController::class, 'addGalleryImages']);
-            Route::delete('listings/{id}/gallery/{imageId}', [ProfileController::class, 'deleteGalleryImage']);
-            
-            // Unified Role-based Professional Profile
-            Route::get('professional-profile', [\App\Http\Controllers\Api\V1\ProfessionalProfileController::class, 'show']);
-            Route::put('professional-profile', [\App\Http\Controllers\Api\V1\ProfessionalProfileController::class, 'update']);
-        });
+        // Bookmarks
+        Route::get('bookmarks', [\App\Http\Controllers\Api\V1\BookmarkController::class, 'index']);
+        Route::post('bookmarks/toggle', [\App\Http\Controllers\Api\V1\BookmarkController::class, 'toggle']);
+        
+        Route::post('/verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
+        
+        // Listing & Professional Profile management
+        Route::get('listings', [ProfileController::class, 'listings']);
+        Route::post('listings', [ProfileController::class, 'createListing']);
+        Route::put('listings/{id}', [ProfileController::class, 'updateListing']);
+        Route::post('listings/{id}/cover', [ProfileController::class, 'uploadListingCover']);
+        Route::post('listings/{id}/gallery', [ProfileController::class, 'addGalleryImages']);
+        Route::put('listings/{id}/gallery/{imageId}', [ProfileController::class, 'updateGalleryImage']);
+        Route::delete('listings/{id}/gallery/{imageId}', [ProfileController::class, 'deleteGalleryImage']);
+        
+        // Unified Role-based Professional Profile
+        Route::get('professional-profile', [\App\Http\Controllers\Api\V1\ProfessionalProfileController::class, 'show']);
+        Route::put('professional-profile', [\App\Http\Controllers\Api\V1\ProfessionalProfileController::class, 'update']);
 
         // Reviews
         Route::post('reviews', [ReviewController::class, 'store']);
@@ -211,6 +196,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('requirements/{id}/complete', [BidController::class, 'complete']);
         Route::put('requirements/{id}', [RequirementController::class, 'update']);
         Route::patch('requirements/{id}/status', [RequirementController::class, 'updateStatus']);
+        Route::patch('requirements/{id}/extend', [RequirementController::class, 'extend']);
         Route::patch('bids/{bid}/accept', [BidController::class, 'accept']);
         Route::patch('bids/{bid}/reject', [BidController::class, 'reject']);
         Route::patch('bids/{bid}/award', [BidController::class, 'award']);
@@ -228,6 +214,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         // Contact Unlocks
         Route::post('/requirements/{requirement}/unlock', [UnlockController::class, 'unlockContact']);
+        Route::post('/listings/{listing}/unlock', [UnlockController::class, 'unlockListing']);
         Route::get('/requirements/{requirement}/pricing-context', [\App\Http\Controllers\Api\V1\PricingController::class, 'getPricingContext']);
         // Saved Items
         Route::post('/saved-projects/{requirement}', [\App\Http\Controllers\Api\V1\SaveController::class, 'saveProject']);
@@ -296,11 +283,13 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         // Verification & Trust
         Route::get('/verification/status', [\App\Http\Controllers\Api\V1\VerificationController::class, 'status']);
         Route::post('/verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
+        Route::delete('/verification/document/{id}', [\App\Http\Controllers\Api\V1\VerificationController::class, 'destroy']);
     });
 
     // ─── Payments (Protected) ─────────────────────────────────────────────
     Route::middleware('auth:sanctum')->prefix('payments')->group(function () {
         Route::post('create-order', [PaymentController::class, 'createOrder']);
+        Route::post('pay-with-wallet', [PaymentController::class, 'payWithWallet']);
         Route::post('verify', [PaymentController::class, 'verify']);
         Route::get('history', [PaymentController::class, 'history']);
     });
@@ -389,12 +378,21 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         
         // Blogs
         Route::get('blogs', [AdminController::class, 'blogs']);
+        
+        // System Health Dashboard
+        Route::get('system-health', [\App\Http\Controllers\Admin\SystemHealthController::class, 'index']);
+        Route::get('system-health/logs', [\App\Http\Controllers\Admin\SystemHealthController::class, 'logs']);
     });
 });
 
+Route::get('clear-cache', function () {
+    if (function_exists('opcache_reset')) {
+        @opcache_reset();
+    }
+    \Illuminate\Support\Facades\Artisan::call('route:clear');
+    \Illuminate\Support\Facades\Artisan::call('config:clear');
+    \Illuminate\Support\Facades\Artisan::call('cache:clear');
+    return response()->json(['success' => true, 'message' => 'OPcache, route, config, and application cache reset successfully.']);
+});
 
 
-// -------------------------------------------------------------
-// TRUEDIAL MULTI-TENANT ROUTES
-// -------------------------------------------------------------
-require base_path('routes/truedial_api.php');

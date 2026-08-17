@@ -20,6 +20,10 @@ class BlogController extends Controller
         if ($request->filled('category')) {
             $query->byCategory($request->category);
         }
+        
+        if ($request->filled('target_audience')) {
+            $query->whereJsonContains('target_audience', $request->target_audience);
+        }
 
         $blogs = $query->paginate($request->get('per_page', 9));
 

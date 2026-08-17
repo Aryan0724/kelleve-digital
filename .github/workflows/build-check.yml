@@ -1,0 +1,42 @@
+name: Build Check
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-frontend:
+    name: Build Frontend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+          cache-dependency-path: './findmyinterior-frontend/package-lock.json'
+      - name: Install dependencies
+        working-directory: ./findmyinterior-frontend
+        run: npm ci
+      - name: Type Check & Build
+        working-directory: ./findmyinterior-frontend
+        run: npm run build
+
+  build-backend:
+    name: Check Backend
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+      - name: Install dependencies
+        working-directory: ./findmyinterior-backend
+        run: composer install --no-dev --optimize-autoloader
+      - name: Lint PHP
+        working-directory: ./findmyinterior-backend
+        run: find . -name "*.php" ! -path "./vendor/*" -print0 | xargs -0 -n 1 php -l > /dev/null

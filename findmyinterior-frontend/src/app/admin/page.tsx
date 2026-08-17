@@ -18,6 +18,8 @@ import { CMSAdminPanel } from "@/components/admin/CMSAdminPanel";
 import { ContactMessagesPanel } from "@/components/admin/ContactMessagesPanel";
 import { SubscriptionAdminPanel } from "@/components/admin/SubscriptionAdminPanel";
 import { AdvertisementsAdminPanel } from "@/components/admin/AdvertisementsAdminPanel";
+import { InquiriesAdminPanel } from "@/components/admin/InquiriesAdminPanel";
+import SystemHealthPanel from "@/components/admin/SystemHealthPanel";
 import {
   CheckCircle,
   ClipboardList,
@@ -30,10 +32,11 @@ import {
   XCircle,
 } from "lucide-react";
 
-type AdminTab = "overview" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages" | "advertisements";
+type AdminTab = "overview" | "system-health" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages" | "advertisements";
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: "overview", label: "Overview" },
+  { id: "system-health", label: "System Health" },
   { id: "database", label: "Database Explorer" },
   { id: "verifications", label: "Verifications" },
   { id: "users", label: "Users" },
@@ -70,7 +73,6 @@ export default function AdminDashboard() {
   const [dbTables, setDbTables] = useState<string[]>([]);
   const [selectedTable, setSelectedTable] = useState<string>("");
   const [dbData, setDbData] = useState<{ columns: string[], rows: any[] }>({ columns: [], rows: [] });
-  const [inquiries, setInquiries] = useState<any[]>([]);
   const [blogs, setBlogs] = useState<any[]>([]);
   const [plans, setPlans] = useState<any[]>([]);
   const [categories, setCategories] = useState<any[]>([]);
@@ -129,13 +131,6 @@ export default function AdminDashboard() {
     } catch (e) { console.error(e); }
   }, []);
 
-  const fetchInquiries = useCallback(async () => {
-    try {
-      const res = await api.get("/admin/inquiries");
-      setInquiries(res.data.data || []);
-    } catch (e) {}
-  }, []);
-
   const fetchBlogs = useCallback(async () => {
     try {
       const res = await api.get("/admin/blogs");
@@ -167,11 +162,11 @@ export default function AdminDashboard() {
 
   const refreshAll = useCallback(async () => {
     try {
-      await Promise.all([fetchDashboard(), fetchUsers(), fetchListings(), fetchRequirements(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchInquiries(), fetchBlogs(), fetchPlans(), fetchCategories()]);
+      await Promise.all([fetchDashboard(), fetchUsers(), fetchListings(), fetchRequirements(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchBlogs(), fetchPlans(), fetchCategories()]);
     } finally {
       setLoading(false);
     }
-  }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers, fetchListings, fetchDbTables, fetchInquiries, fetchBlogs, fetchPlans, fetchCategories]);
+  }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers, fetchListings, fetchDbTables, fetchBlogs, fetchPlans, fetchCategories]);
 
   // Auth guard — only depends on token/isAdmin/hydration, NOT on data-fetching functions
   useEffect(() => {
@@ -244,6 +239,8 @@ export default function AdminDashboard() {
             </button>
           ))}
         </div>
+
+        {activeTab === "system-health" && <SystemHealthPanel />}
 
         {activeTab === "overview" && (
           <div className="space-y-8">
@@ -669,32 +666,7 @@ export default function AdminDashboard() {
         )}
 
         {activeTab === "inquiries" && (
-          <Card>
-            <CardHeader>
-              <CardTitle>Support Inquiries</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <AdminTable
-                headers={["Customer", "Subject", "Message", "Status", "Action"]}
-                rows={inquiries.map((item) => [
-                  <div key="cust">
-                    <div className="font-semibold">{item.name}</div>
-                    <div className="text-slate-500">{item.email}</div>
-                  </div>,
-                  <div key="subj" className="font-medium">{item.subject}</div>,
-                  <div key="msg" className="max-w-xs truncate">{item.message}</div>,
-                  <Badge key="status" variant={item.status === 'resolved' ? 'default' : 'secondary'}>{item.status}</Badge>,
-                  <div key="actions" className="flex justify-end gap-2">
-                    {item.status !== 'resolved' && (
-                      <Button size="sm" onClick={() => runAction(`res-inq-${item.id}`, () => api.patch(`/admin/inquiries/${item.id}/resolve`))}>
-                        Resolve
-                      </Button>
-                    )}
-                  </div>
-                ])}
-              />
-            </CardContent>
-          </Card>
+            <InquiriesAdminPanel />
         )}
 
 

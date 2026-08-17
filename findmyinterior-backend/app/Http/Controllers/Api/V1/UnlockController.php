@@ -39,4 +39,30 @@ class UnlockController extends Controller
             ], 400);
         }
     }
+
+    /**
+     * Unlock a listing's contact (professional's contact)
+     */
+    public function unlockListing(Request $request, int $listingId): JsonResponse
+    {
+        $listing = \App\Models\Listing::with('user')->findOrFail($listingId);
+        
+        // Ensure Listing model has an unlock_price if we want dynamic pricing, 
+        // otherwise default config is used by UnlockService.
+        // If homeowners are unlocking, perhaps it should be free or a different fee?
+        // Let's set a default unlock_price of 49 if not present on Listing model.
+        if (!isset($listing->unlock_price)) {
+            $listing->unlock_price = 49.00;
+        }
+
+        try {
+            $result = $this->unlockService->unlockContact($request->user(), $listing);
+            return response()->json($result);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 400);
+        }
+    }
 }

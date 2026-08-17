@@ -28,10 +28,10 @@ class HomepageController extends Controller
         $data = \Illuminate\Support\Facades\Cache::remember('homepage_data', 900, function () {
             // Stats bar
         $stats = [
-            'verified_professionals' => Listing::forCurrentTenant()->active()->verified()->count(),
+            'verified_professionals' => Listing::active()->verified()->count(),
             'total_projects'         => BuilderProject::whereIn('status', ['completed', 'possession_ready'])->count(),
-            'happy_customers'        => Listing::forCurrentTenant()->active()->sum('review_count'),
-            'cities_covered'         => Listing::forCurrentTenant()->active()->distinct('city')->count('city'),
+            'happy_customers'        => Listing::active()->sum('review_count'),
+            'cities_covered'         => Listing::active()->distinct('city')->count('city'),
             'categories'             => Category::active()->whereNull('parent_id')->count(),
         ];
 
@@ -41,7 +41,7 @@ class HomepageController extends Controller
             ->ordered()
             ->get();
 
-        $featuredListings = Listing::forCurrentTenant()->active()
+        $featuredListings = Listing::active()
             ->where(function ($q) {
                 $q->where('listings.is_featured', true)
                   ->orWhere('listings.is_verified', true);

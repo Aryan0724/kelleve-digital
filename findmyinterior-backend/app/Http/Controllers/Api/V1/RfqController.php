@@ -70,7 +70,11 @@ class RfqController extends Controller
             'status' => 'open'
         ]);
 
-        if ($request->hasFile('image')) {
+        if ($request->hasFile('images')) {
+            $file = $request->file('images')[0];
+            $rfq->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
+            $rfq->save();
+        } elseif ($request->hasFile('image')) {
             $file = $request->file('image');
             $rfq->image = \App\Helpers\ImageHelper::toBase64($file, 1200, 80);
             $rfq->save();
@@ -125,6 +129,12 @@ class RfqController extends Controller
 
         $rfq->is_unlocked = $rfq->isUnlockedBy($user);
         $rfq->has_bid = $rfq->bids()->where('professional_id', $user->id)->exists();
+
+        if (!$rfq->is_unlocked) {
+            $rfq->phone = substr($rfq->phone, 0, 2) . '********';
+            $rfq->email = '********';
+            $rfq->name = '***';
+        }
 
         return $this->success($rfq);
     }

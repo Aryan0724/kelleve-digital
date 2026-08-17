@@ -13,7 +13,7 @@ function getServerApiBase(): string {
   if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  const vps = process.env.VPS_BACKEND_URL || "http://187.127.164.142:8000";
+  const vps = process.env.VPS_BACKEND_URL || "https://findmyinterior.com";
   return `${vps}/api/v1`;
 }
 const API_BASE = getServerApiBase();

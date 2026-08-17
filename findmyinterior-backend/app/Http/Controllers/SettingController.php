@@ -16,12 +16,15 @@ class SettingController extends Controller
     {
         $validated = $request->validate([
             'settings' => 'required|array',
-            'settings.*.key' => 'required|string|exists:settings,key',
+            'settings.*.key' => 'required|string',
             'settings.*.value' => 'required|string'
         ]);
 
         foreach ($validated['settings'] as $settingData) {
-            Setting::where('key', $settingData['key'])->update(['value' => $settingData['value']]);
+            Setting::updateOrCreate(
+                ['key' => $settingData['key']],
+                ['value' => $settingData['value']]
+            );
         }
 
         return response()->json(['success' => true, 'data' => Setting::all()]);

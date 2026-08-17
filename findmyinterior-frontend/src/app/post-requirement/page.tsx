@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
+import { toast } from "react-toastify";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -81,6 +82,7 @@ function PostRequirementContent() {
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const [mounted, setMounted] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
 
   const [selectedType, setSelectedType] = useState<string>("");
   const [locations, setLocations] = useState<any[]>([]);
@@ -119,7 +121,7 @@ function PostRequirementContent() {
     project_scale: "",
     project_location: ""
   });
-  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imageFiles, setImageFiles] = useState<File[]>([]);
 
   useEffect(() => {
     setMounted(true);
@@ -131,6 +133,17 @@ function PostRequirementContent() {
         setLocations(res.data.data);
       }
     }).catch(console.error);
+
+    if (!editId) {
+      const draft = localStorage.getItem("postRequirementDraft");
+      if (draft) {
+        try {
+          const parsed = JSON.parse(draft);
+          if (parsed.formData) setFormData(parsed.formData);
+          if (parsed.selectedType) setSelectedType(parsed.selectedType);
+        } catch (e) {}
+      }
+    }
 
     if (editId) {
       setLoading(true);
@@ -229,7 +242,59 @@ function PostRequirementContent() {
         setLoading(false);
       });
     }
-  }, [editId, editType]);
+  }, [editId, editType, token, router]);
+
+  const detectLocation = () => {
+    if (!navigator.geolocation) {
+      toast.error("Geolocation is not supported by your browser");
+      return;
+    }
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        try {
+          const res = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`
+          );
+          const data = await res.json();
+          const city = data.address.city || data.address.town || data.address.village || data.address.county || "";
+          const district = data.address.state_district || data.address.county || "";
+          const formattedAddress = data.display_name || "";
+          
+          setFormData((prev: any) => ({
+            ...prev,
+            city,
+            district,
+            project_location: formattedAddress,
+          }));
+        } catch (e) {
+          toast.error("Failed to detect location.");
+        } finally {
+          setLocationLoading(false);
+        }
+      },
+      () => {
+        toast.error("Permission denied or location unavailable.");
+        setLocationLoading(false);
+      },
+      { enableHighAccuracy: true }
+    );
+  };
+
+  const handleBack = () => {
+    setStep(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Save to draft automatically
+  useEffect(() => {
+    if (mounted && !editId) {
+      localStorage.setItem("postRequirementDraft", JSON.stringify({
+        formData,
+        selectedType
+      }));
+    }
+  }, [formData, selectedType, mounted, editId]);
 
   const handleNext = () => {
     if (!selectedType) {
@@ -241,9 +306,7 @@ function PostRequirementContent() {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
-  const handleBack = () => {
-    setStep(1);
-  };
+
 
   const handleSubmit = async () => {
     if (!mounted) return;
@@ -323,13 +386,15 @@ function PostRequirementContent() {
         }
       });
 
-      if (imageFile) {
-        try {
-          const compressedFile = await compressImage(imageFile);
-          formDataPayload.append('image', compressedFile);
-        } catch (e) {
-          console.error("Compression failed", e);
-          formDataPayload.append('image', imageFile);
+      if (imageFiles.length > 0) {
+        for (let i = 0; i < imageFiles.length; i++) {
+          try {
+            const compressedFile = await compressImage(imageFiles[i]);
+            formDataPayload.append('images[]', compressedFile);
+          } catch (e) {
+            console.error("Compression failed for image " + i, e);
+            formDataPayload.append('images[]', imageFiles[i]);
+          }
         }
       }
 
@@ -369,6 +434,7 @@ function PostRequirementContent() {
       
       setLoading(false);
       setSuccess(true);
+      if (!editId) localStorage.removeItem("postRequirementDraft");
       router.refresh();
       setTimeout(() => router.push('/dashboard'), 100);
 
@@ -376,7 +442,7 @@ function PostRequirementContent() {
       console.error("POST requirement error:", err);
       const errMsg = err.name === 'AbortError' ? "Request timed out after 20 seconds. Please check your internet connection." : (err.message || "Failed to post opportunity");
       setError(errMsg);
-      alert("Error: " + errMsg);
+      toast.error("Error: " + errMsg);
     } finally {
       setLoading(false);
     }
@@ -389,27 +455,28 @@ function PostRequirementContent() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-12 flex justify-center items-center">
-      <Card className="w-full max-w-2xl">
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Smart Opportunity Creation</CardTitle>
+    <div className="container mx-auto px-4 py-6 md:py-10 flex justify-center items-center min-h-[calc(100vh-80px)]">
+      <Card className="w-full max-w-3xl border-slate-200/60 dark:border-slate-800 shadow-xl dark:shadow-2xl/10">
+        <CardHeader className="pb-4">
+          <CardTitle className="text-2xl font-bold">
+            {step === 1 ? 'Post a New Requirement' : `Post ${OPPORTUNITY_TYPES.find(o => o.id === selectedType)?.label || 'Requirement'}`}
+          </CardTitle>
           <CardDescription>
             Step {step} of 2 - {step === 1 ? 'What do you need?' : 'Details'}
           </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-6">
+        <CardContent className="space-y-5">
           {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md">{error}</div>}
           
           {step === 1 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
               {OPPORTUNITY_TYPES.map((opp) => (
                 <div 
                   key={opp.id}
                   onClick={() => { setSelectedType(opp.id); setStep(2); window.scrollTo({ top: 0, behavior: 'smooth' }); }}
-                  className={`p-4 border rounded-xl cursor-pointer transition-all ${selectedType === opp.id ? 'border-orange-600 bg-orange-50 dark:bg-orange-950/30 ring-2 ring-orange-100 dark:ring-orange-900' : 'hover:border-slate-300 bg-white dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-500'}`}
+                  className={`p-3 border rounded-xl cursor-pointer transition-all text-center flex flex-col items-center justify-center min-h-[100px] ${selectedType === opp.id ? 'border-orange-600 bg-orange-50 dark:bg-orange-950/30 ring-2 ring-orange-100 dark:ring-orange-900 shadow-sm' : 'hover:border-slate-300 bg-white dark:bg-slate-800 dark:border-slate-700 dark:hover:border-slate-500 hover:shadow-sm'}`}
                 >
-                  <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100">{opp.label}</h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">Post a request for {opp.label.toLowerCase()}</p>
+                  <h3 className="font-semibold text-sm md:text-base text-slate-900 dark:text-slate-100 leading-tight">{opp.label}</h3>
                 </div>
               ))}
             </div>
@@ -480,7 +547,20 @@ function PostRequirementContent() {
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="style">Style Preferences <span className="text-red-500 ml-1">*</span></Label>
-                    <Input id="style" placeholder="e.g. Modern, Minimalist, Traditional" value={formData.style_preferences} onChange={(e) => setFormData({...formData, style_preferences: e.target.value})} />
+                    <Select onValueChange={(val: any) => setFormData({...formData, style_preferences: val})}>
+                      <SelectTrigger><SelectValue placeholder="e.g. Modern, Minimalist, Traditional" /></SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Modern">Modern</SelectItem>
+                        <SelectItem value="Minimalist">Minimalist</SelectItem>
+                        <SelectItem value="Traditional">Traditional</SelectItem>
+                        <SelectItem value="Industrial">Industrial</SelectItem>
+                        <SelectItem value="Contemporary">Contemporary</SelectItem>
+                        <SelectItem value="Scandinavian">Scandinavian</SelectItem>
+                        <SelectItem value="Bohemian">Bohemian</SelectItem>
+                        <SelectItem value="Rustic">Rustic</SelectItem>
+                        <SelectItem value="Other">Other / Not Sure</SelectItem>
+                      </SelectContent>
+                    </Select>
                   </div>
                 </>
               )}
@@ -694,17 +774,23 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="duration">Estimated Duration <span className="text-red-500 ml-1">*</span></Label>
-                    <Select onValueChange={(val: any) => setFormData({...formData, duration: val})}>
-                        <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="1 - 3 Days">1 - 3 Days</SelectItem>
-                          <SelectItem value="1 Week">1 Week</SelectItem>
-                          <SelectItem value="2 - 3 Weeks">2 - 3 Weeks</SelectItem>
-                          <SelectItem value="1 Month+">1 Month+</SelectItem>
-                        </SelectContent>
-                    </Select>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="duration">Estimated Duration <span className="text-red-500 ml-1">*</span></Label>
+                      <Select onValueChange={(val: any) => setFormData({...formData, duration: val})}>
+                          <SelectTrigger><SelectValue placeholder="Select Duration" /></SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="1 - 3 Days">1 - 3 Days</SelectItem>
+                            <SelectItem value="1 Week">1 Week</SelectItem>
+                            <SelectItem value="2 - 3 Weeks">2 - 3 Weeks</SelectItem>
+                            <SelectItem value="1 Month+">1 Month+</SelectItem>
+                          </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="budget">Daily Rate Expected (₹) <span className="text-red-500 ml-1">*</span></Label>
+                      <Input type="number" placeholder="e.g. 500" value={formData.budget} onChange={(e) => setFormData({...formData, budget: e.target.value})} />
+                    </div>
                   </div>
                 </>
               )}
@@ -729,7 +815,18 @@ function PostRequirementContent() {
                       </Select>
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="project_location">Location Details <span className="text-red-500 ml-1">*</span></Label>
+                      <div className="flex items-center justify-between">
+                        <Label htmlFor="project_location">Location Details <span className="text-red-500 ml-1">*</span></Label>
+                        <button
+                          type="button"
+                          onClick={detectLocation}
+                          disabled={locationLoading}
+                          className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                        >
+                          {locationLoading ? <span className="animate-spin mr-1">⌛</span> : null}
+                          Use Current
+                        </button>
+                      </div>
                       <Input id="project_location" placeholder="e.g. Main Road, Block B" value={formData.project_location} onChange={(e) => setFormData({...formData, project_location: e.target.value})} />
                     </div>
                   </div>
@@ -770,7 +867,18 @@ function PostRequirementContent() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="city">City <span className="text-red-500 ml-1">*</span></Label>
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="city">City <span className="text-red-500 ml-1">*</span></Label>
+                    <button
+                      type="button"
+                      onClick={detectLocation}
+                      disabled={locationLoading}
+                      className="text-xs text-indigo-600 hover:text-indigo-800 font-medium flex items-center gap-1"
+                    >
+                      {locationLoading ? <span className="animate-spin mr-1">⌛</span> : null}
+                      Use Current
+                    </button>
+                  </div>
                   <Select required value={formData.city} onValueChange={(val) => setFormData({...formData, city: val || ""})}>
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Select City" />
@@ -789,21 +897,50 @@ function PostRequirementContent() {
                 </div>
               </div>
 
-              {/* Image Upload for all types */}
-              <div className="space-y-2 mt-6 p-4 border rounded-lg bg-slate-50">
-                <Label htmlFor="image" className="font-semibold text-slate-700 block mb-1">Add a Photo (Optional)</Label>
-                <span className="text-sm text-slate-500 block mb-2">Upload a photo to give professionals a better idea of what you need.</span>
-                <Input 
-                  id="image" 
-                  type="file" 
-                  accept="image/*"
-                  onChange={(e) => {
-                    if (e.target.files && e.target.files.length > 0) {
-                      setImageFile(e.target.files[0]);
-                    }
-                  }} 
-                />
-              </div>
+              {/* Image Upload for all types except those that don't need it */}
+              {!['furniture', 'materials', 'builder_project', 'workers', 'worker-jobs'].includes(selectedType) && (
+                <div className="space-y-2 mt-6 p-4 border rounded-lg bg-slate-50">
+                  <Label htmlFor="image" className="font-semibold text-slate-700 block mb-1">Add Photos (Optional, max 5)</Label>
+                  <span className="text-sm text-slate-500 block mb-2">Upload up to 5 photos to give professionals a better idea of what you need.</span>
+                  
+                  {imageFiles.length > 0 && (
+                    <div className="flex flex-wrap gap-3 mb-3">
+                      {imageFiles.map((file, idx) => (
+                        <div key={idx} className="relative w-20 h-20 border rounded overflow-hidden">
+                          <img src={URL.createObjectURL(file)} alt={`preview ${idx}`} className="w-full h-full object-cover" />
+                          <button 
+                            type="button" 
+                            onClick={() => {
+                              const newFiles = [...imageFiles];
+                              newFiles.splice(idx, 1);
+                              setImageFiles(newFiles);
+                            }}
+                            className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  {imageFiles.length < 5 && (
+                    <Input 
+                      id="image" 
+                      type="file" 
+                      accept="image/*"
+                      multiple
+                      onChange={(e) => {
+                        if (e.target.files) {
+                          const newFiles = Array.from(e.target.files);
+                          const totalFiles = [...imageFiles, ...newFiles].slice(0, 5);
+                          setImageFiles(totalFiles);
+                        }
+                      }} 
+                    />
+                  )}
+                </div>
+              )}
             </div>
           )}
 
@@ -818,7 +955,7 @@ function PostRequirementContent() {
                 Back
               </Button>
               <Button onClick={handleSubmit} disabled={loading} className="bg-orange-600 hover:bg-orange-700">
-                {loading ? (imageFile ? "Uploading Image... (Please Wait)" : (editId ? "Updating..." : "Posting...")) : (editId ? "Update Opportunity" : "Post Opportunity")}
+                {loading ? (imageFiles.length > 0 ? "Uploading Images... (Please Wait)" : (editId ? "Updating..." : "Posting...")) : (editId ? "Update Opportunity" : "Post Opportunity")}
               </Button>
             </>
           )}
