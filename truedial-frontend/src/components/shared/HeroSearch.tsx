@@ -63,7 +63,7 @@ export default function HeroSearch() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full pb-24 md:pb-20">
       <div className="bg-[#0B1530] rounded-3xl md:rounded-[2rem] p-6 sm:p-10 shadow-2xl border border-[#1E40AF]/40 relative">
         
         {/* Background elements - Clipped to rounded corners */}
