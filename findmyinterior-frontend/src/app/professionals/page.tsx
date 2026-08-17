@@ -146,9 +146,6 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                       <CardContent className="p-4 flex-1">
                         <div className="flex items-center gap-2 mb-2">
                           <h3 className="font-bold text-lg text-slate-900 line-clamp-1">{listing.title}</h3>
-                          {listing.tenant_id === 'truedial' && (
-                            <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 text-[10px] uppercase tracking-wider shrink-0">TrueDial</Badge>
-                          )}
                         </div>
                         <div className="flex items-center text-sm text-slate-500">
                           <MapPin className="h-4 w-4 mr-1" /> <span className="line-clamp-1">{formatLocation(listing.city, listing.district)}</span>
@@ -201,9 +198,6 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                               <h3 className="font-bold text-xl text-slate-900 group-hover:text-orange-600 transition-colors">
                                 {listing.title}
                               </h3>
-                              {listing.tenant_id === 'truedial' && (
-                                <Badge className="bg-blue-100 text-blue-700 hover:bg-blue-200 border border-blue-200 text-xs uppercase tracking-wider">TrueDial Partner</Badge>
-                              )}
                             </div>
                             <div className="z-10">
                               <BookmarkButton id={listing.id} type="Listing" />
