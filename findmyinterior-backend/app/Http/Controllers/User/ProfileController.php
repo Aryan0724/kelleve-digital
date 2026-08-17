@@ -48,6 +48,11 @@ class ProfileController extends Controller
         }
 
         $fullUrl = \Illuminate\Support\Str::startsWith($url, 'http') ? $url : url($url);
+        if (config('app.env') === 'production' || str_contains($fullUrl, 'findmyinterior.com') || str_contains($fullUrl, 'localhost')) {
+            if (\Illuminate\Support\Str::startsWith($url, '/')) {
+                $fullUrl = 'https://findmyinterior.com' . $url;
+            }
+        }
         $user->update(['avatar' => $url]);
 
         $listing = \App\Models\Listing::withoutGlobalScopes()->where('user_id', $user->id)->first();
@@ -87,6 +92,11 @@ class ProfileController extends Controller
         }
 
         $fullUrl = \Illuminate\Support\Str::startsWith($url, 'http') ? $url : url($url);
+        if (config('app.env') === 'production' || str_contains($fullUrl, 'findmyinterior.com') || str_contains($fullUrl, 'localhost')) {
+            if (\Illuminate\Support\Str::startsWith($url, '/')) {
+                $fullUrl = 'https://findmyinterior.com' . $url;
+            }
+        }
         $user->update(['cover_image' => $url]);
 
         $listing = \App\Models\Listing::withoutGlobalScopes()->where('user_id', $user->id)->first();

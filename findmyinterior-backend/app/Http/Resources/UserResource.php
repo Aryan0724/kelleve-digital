@@ -21,8 +21,8 @@ class UserResource extends JsonResource
                 return $img;
             }
             $url = url($img);
-            if (config('app.env') === 'production' || str_contains($url, 'findmyinterior.com')) {
-                $url = str_replace('http://', 'https://', $url);
+            if (config('app.env') === 'production' || str_contains($url, 'findmyinterior.com') || str_contains($url, 'localhost')) {
+                return 'https://findmyinterior.com' . $img;
             }
             return $url;
         };
