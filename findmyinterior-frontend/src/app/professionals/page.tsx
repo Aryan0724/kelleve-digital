@@ -135,8 +135,10 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                   <Link href={`/professionals/${listing.slug}`}>
                     <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-all border-slate-200 group">
                       <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
-                        {listing.cover_image ? (
-                          <img src={listing.cover_image} alt={listing.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                        {(listing.user?.avatar || listing.cover_image) ? (
+                          <div className="w-full h-full bg-white flex items-center justify-center p-2">
+                            <img src={listing.user?.avatar || listing.cover_image} alt={listing.title} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500" />
+                          </div>
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">No Image</div>
                         )}
@@ -170,8 +172,10 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                     <Card className="flex flex-col md:flex-row overflow-hidden hover:shadow-lg transition-all border-slate-200 bg-white group">
                       {/* Left Image Section */}
                       <div className="relative w-full md:w-72 h-64 md:h-auto bg-slate-100 flex-shrink-0">
-                        {listing.cover_image ? (
-                          <img src={listing.cover_image} alt={listing.title} className="w-full h-full object-cover" />
+                        {(listing.user?.avatar || listing.cover_image) ? (
+                          <div className="w-full h-full bg-white flex items-center justify-center p-4">
+                            <img src={listing.user?.avatar || listing.cover_image} alt={listing.title} className="max-w-full max-h-full object-contain" />
+                          </div>
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">No Image</div>
                         )}
