@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Camera, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
+import { ImageCropperModal } from "@/components/ui/ImageCropperModal";
 
 export function DashboardProfileCard({ 
   fetchDashboard,
@@ -26,15 +27,39 @@ export function DashboardProfileCard({
   const avatarFileRef = useRef<HTMLInputElement>(null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
+  const [cropperOpen, setCropperOpen] = useState(false);
+  const [cropperImageSrc, setCropperImageSrc] = useState("");
+  const [cropperAspectRatio, setCropperAspectRatio] = useState(1);
+  const [cropperTarget, setCropperTarget] = useState<'avatar' | 'cover'>('avatar');
 
-  const handleCoverChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onFileSelect = (e: React.ChangeEvent<HTMLInputElement>, target: 'avatar' | 'cover', aspect: number) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      setCropperImageSrc(reader.result as string);
+      setCropperTarget(target);
+      setCropperAspectRatio(aspect);
+      setCropperOpen(true);
+    });
+    reader.readAsDataURL(file);
+    if (e.target) e.target.value = "";
+  };
+
+  const handleCropComplete = async (croppedBlob: Blob) => {
+    if (cropperTarget === 'avatar') {
+      await uploadAvatar(croppedBlob);
+    } else {
+      await uploadCover(croppedBlob);
+    }
+  };
+
+  const uploadCover = async (blob: Blob) => {
     setUploadingCover(true);
     try {
       const form = new FormData();
-      form.append("cover_image", file);
+      form.append("cover_image", blob, "cover.jpg");
       const res = await api.post("/user/cover", form);
       if (user && res.data.cover_image) {
         updateUser({ ...user, cover_image: res.data.cover_image });
@@ -44,18 +69,14 @@ export function DashboardProfileCard({
       toast.error(err.response?.data?.message || "Failed to upload cover image.");
     } finally {
       setUploadingCover(false);
-      if (e.target) e.target.value = "";
     }
   };
 
-  const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
+  const uploadAvatar = async (blob: Blob) => {
     setUploadingAvatar(true);
     try {
       const form = new FormData();
-      form.append("avatar", file);
+      form.append("avatar", blob, "avatar.jpg");
       const res = await api.post("/user/avatar", form);
       if (user && res.data.avatar) {
         updateUser({ ...user, avatar: res.data.avatar });
@@ -65,7 +86,6 @@ export function DashboardProfileCard({
       toast.error(err.response?.data?.message || "Failed to upload profile picture.");
     } finally {
       setUploadingAvatar(false);
-      if (e.target) e.target.value = "";
     }
   };
 
@@ -76,7 +96,7 @@ export function DashboardProfileCard({
           <img src={user.cover_image} alt="Cover" className="w-full h-full object-cover" />
         )}
         <div className="absolute inset-0 bg-black/10"></div>
-        <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={handleCoverChange} />
+        <input ref={coverFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFileSelect(e, 'cover', 16/5)} />
         <button
           onClick={() => coverFileRef.current?.click()}
           className="absolute top-2 right-2 p-2 bg-black/50 hover:bg-black/70 text-white rounded-full transition-all shadow-md z-20 flex items-center gap-1 text-xs"
@@ -96,7 +116,7 @@ export function DashboardProfileCard({
           <div className="absolute inset-0 z-20 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
             {uploadingAvatar ? <Loader2 className="w-6 h-6 animate-spin text-white" /> : <Camera className="w-6 h-6 text-white" />}
           </div>
-          <input ref={avatarFileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
+          <input ref={avatarFileRef} type="file" accept="image/*" className="hidden" onChange={(e) => onFileSelect(e, 'avatar', 1)} />
         </div>
         <h3 className="font-bold text-xl">{user?.name}</h3>
         <div className="flex flex-col gap-2 items-center justify-center mt-2 mb-2">
@@ -117,6 +137,14 @@ export function DashboardProfileCard({
           </div>
         )}
       </CardContent>
+
+      <ImageCropperModal
+        open={cropperOpen}
+        onOpenChange={setCropperOpen}
+        imageSrc={cropperImageSrc}
+        aspectRatio={cropperAspectRatio}
+        onCropComplete={handleCropComplete}
+      />
     </Card>
   );
 }
