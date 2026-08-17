@@ -200,11 +200,9 @@ export function VerificationTab({ onSwitchTab, profileData }: { onSwitchTab?: (t
   });
 
   const isVerifiedBusiness =
-    data?.verification_status === 'approved' ||
-    data?.verification_level === 'verified_business' ||
-    data?.verification_level === 'trusted_professional' ||
-    data?.verification_level === 'elite_professional' ||
-    data?.verification_level === 'verified';
+    data?.is_verified_business ||
+    data?.verification_level === 'business_verified' ||
+    data?.verification_level === 'site_verified';
 
   const completionPercentage = profileCompletion;
 

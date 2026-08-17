@@ -89,6 +89,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                 fetchDashboard={fetchDashboard}
                 roleLabel="Homeowner"
                 description="Managing projects and seeking professionals."
+                onEditProfile={() => setActiveTab('profile')}
               />
 
             <div className="bg-white dark:bg-slate-900 border dark:border-slate-800 rounded-xl overflow-hidden w-full">

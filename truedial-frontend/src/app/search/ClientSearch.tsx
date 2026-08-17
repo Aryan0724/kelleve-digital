@@ -89,6 +89,8 @@ function SearchContent() {
   
   const [verifiedOnly, setVerifiedOnly] = useState(searchParams.get("verified") === "true");
   const [premiumOnly, setPremiumOnly] = useState(searchParams.get("premium") === "true");
+  const [offersOnly, setOffersOnly] = useState(searchParams.get("offers") === "1");
+  const [cardType, setCardType] = useState(searchParams.get("card_type") || "");
   const [minRating, setMinRating] = useState(searchParams.get("min_rating") || "");
 
   useEffect(() => {
@@ -104,8 +106,10 @@ function SearchContent() {
       const verified = searchParams.get("verified") || "";
       const premium = searchParams.get("premium") || "";
       const min_rating = searchParams.get("min_rating") || "";
+      const offers = searchParams.get("offers") || "";
+      const card_type = searchParams.get("card_type") || "";
       
-      const response = await TrueDialAPI.searchBusinesses({ q, category_name: cat, city: currentCity, verified, premium, min_rating });
+      const response = await TrueDialAPI.searchBusinesses({ q, category_name: cat, city: currentCity, verified, premium, min_rating, offers, card_type });
       
       let listings = [];
       if (Array.isArray(response.data)) {
@@ -158,6 +162,12 @@ function SearchContent() {
 
     if (minRating) params.set("min_rating", minRating);
     else params.delete("min_rating");
+    
+    if (offersOnly) params.set("offers", "1");
+    else params.delete("offers");
+    
+    if (cardType) params.set("card_type", cardType);
+    else params.delete("card_type");
 
     router.push(`/search?${params.toString()}`);
   };
@@ -297,6 +307,39 @@ function SearchContent() {
                   </div>
                 </div>
               )}
+
+              <div>
+                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">TrueDial Privilege</label>
+                <div className="space-y-3 mb-6 p-4 bg-orange-50 dark:bg-slate-800/50 rounded-xl border border-primary/20">
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <input 
+                      type="checkbox" 
+                      checked={offersOnly}
+                      onChange={(e) => setOffersOnly(e.target.checked)}
+                      className="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4 transition-colors"
+                    />
+                    <span className="flex items-center gap-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
+                      <Sparkles className="w-4 h-4 text-primary" /> Active Offers
+                    </span>
+                  </label>
+                  
+                  {offersOnly && (
+                    <div className="pl-6 pt-2">
+                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-2">My Card Type</label>
+                      <select 
+                        value={cardType}
+                        onChange={(e) => setCardType(e.target.value)}
+                        className="w-full h-8 text-xs font-semibold border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900"
+                      >
+                        <option value="">All Card Types</option>
+                        <option value="free">Free First Year</option>
+                        <option value="city">City Card</option>
+                        <option value="multi-city">Multi-City Card</option>
+                      </select>
+                    </div>
+                  )}
+                </div>
+              </div>
 
               <div>
                 <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">Quality & Trust</label>

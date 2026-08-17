@@ -28,6 +28,50 @@ export function AdvertisementsAdminPanel() {
     is_active: true
   });
 
+  const [editingId, setEditingId] = useState<number | null>(null);
+
+  const resetForm = () => {
+    setIsCreating(false);
+    setEditingId(null);
+    setFormData({
+      title: "",
+      location: "hero_banner",
+      media_type: "image",
+      banner_url: "",
+      custom_code: "",
+      link: "",
+      target_city: "",
+      target_category_id: "",
+      target_role: "",
+      starts_at: "",
+      ends_at: "",
+      max_impressions: "",
+      max_clicks: "",
+      is_active: true
+    });
+  };
+
+  const handleEdit = (ad: any) => {
+    setFormData({
+      title: ad.title || "",
+      location: ad.location || "hero_banner",
+      media_type: ad.media_type || "image",
+      banner_url: ad.banner_url || "",
+      custom_code: ad.custom_code || "",
+      link: ad.link || "",
+      target_city: ad.target_city || "",
+      target_category_id: ad.target_category_id || "",
+      target_role: ad.target_role || "",
+      starts_at: ad.starts_at ? new Date(ad.starts_at).toISOString().split('T')[0] : "",
+      ends_at: ad.ends_at ? new Date(ad.ends_at).toISOString().split('T')[0] : "",
+      max_impressions: ad.max_impressions || "",
+      max_clicks: ad.max_clicks || "",
+      is_active: ad.is_active === undefined ? true : ad.is_active
+    });
+    setEditingId(ad.id);
+    setIsCreating(true);
+  };
+
   const fetchAds = async () => {
     try {
       setLoading(true);
@@ -47,28 +91,16 @@ export function AdvertisementsAdminPanel() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await api.post("/admin/advertisements", formData);
-      setIsCreating(false);
-      setFormData({
-        title: "",
-        location: "hero_banner",
-        media_type: "image",
-        banner_url: "",
-        custom_code: "",
-        link: "",
-        target_city: "",
-        target_category_id: "",
-        target_role: "",
-        starts_at: "",
-        ends_at: "",
-        max_impressions: "",
-        max_clicks: "",
-        is_active: true
-      });
+      if (editingId) {
+        await api.put(`/admin/advertisements/${editingId}`, formData);
+      } else {
+        await api.post("/admin/advertisements", formData);
+      }
+      resetForm();
       fetchAds();
     } catch (err) {
       console.error(err);
-      alert("Failed to save advertisement.");
+      alert(`Failed to ${editingId ? 'update' : 'save'} advertisement.`);
     }
   };
 
@@ -95,7 +127,7 @@ export function AdvertisementsAdminPanel() {
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-2xl font-bold">Advertisements Management</h2>
-        <Button onClick={() => setIsCreating(!isCreating)}>
+        <Button onClick={() => isCreating ? resetForm() : setIsCreating(true)}>
           {isCreating ? "Cancel" : <><PlusCircle className="w-4 h-4 mr-2" /> Create Ad</>}
         </Button>
       </div>
@@ -103,7 +135,7 @@ export function AdvertisementsAdminPanel() {
       {isCreating && (
         <Card>
           <CardHeader>
-            <CardTitle>Create New Advertisement</CardTitle>
+            <CardTitle>{editingId ? "Edit Advertisement" : "Create New Advertisement"}</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -239,6 +271,9 @@ export function AdvertisementsAdminPanel() {
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => handleEdit(ad)}>
+                    <Edit2 className="w-4 h-4 mr-1 text-slate-500" /> Edit
+                  </Button>
                   <Button variant="outline" size="sm" onClick={() => toggleStatus(ad)}>
                     {ad.is_active ? <XCircle className="w-4 h-4 mr-1 text-red-500" /> : <CheckCircle className="w-4 h-4 mr-1 text-green-500" />}
                     {ad.is_active ? "Pause" : "Activate"}

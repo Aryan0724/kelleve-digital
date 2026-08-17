@@ -12,12 +12,14 @@ export function DashboardProfileCard({
   fetchDashboard,
   roleLabel,
   description,
-  extraContent
+  extraContent,
+  onEditProfile
 }: { 
   fetchDashboard: () => void,
   roleLabel: string,
   description?: string,
-  extraContent?: React.ReactNode
+  extraContent?: React.ReactNode,
+  onEditProfile?: () => void
 }) {
   const { user, updateUser } = useAuthStore();
   const coverFileRef = useRef<HTMLInputElement>(null);
@@ -97,10 +99,15 @@ export function DashboardProfileCard({
           <input ref={avatarFileRef} type="file" accept="image/*" className="hidden" onChange={handleAvatarChange} />
         </div>
         <h3 className="font-bold text-xl">{user?.name}</h3>
-        <div className="flex gap-2 items-center justify-center mt-2 mb-2">
-          <Badge className="capitalize bg-orange-100 text-orange-700 hover:bg-orange-200 border-0" variant="secondary">{roleLabel}</Badge>
-          {(user?.is_verified_business || user?.verification_level === 'business_verified' || user?.verification_level === 'site_verified') && (
-            <Badge className="bg-green-600 hover:bg-green-700 text-white border-0">Verified</Badge>
+        <div className="flex flex-col gap-2 items-center justify-center mt-2 mb-2">
+          <div className="flex gap-2">
+            <Badge className="capitalize bg-orange-100 text-orange-700 hover:bg-orange-200 border-0" variant="secondary">{roleLabel}</Badge>
+            {(user?.is_verified_business || user?.verification_level === 'business_verified' || user?.verification_level === 'site_verified') && (
+              <Badge className="bg-green-600 hover:bg-green-700 text-white border-0">Verified</Badge>
+            )}
+          </div>
+          {onEditProfile && (
+            <button onClick={onEditProfile} className="text-xs text-indigo-600 hover:text-indigo-800 font-medium underline">Edit Profile</button>
           )}
         </div>
         {description && <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>}

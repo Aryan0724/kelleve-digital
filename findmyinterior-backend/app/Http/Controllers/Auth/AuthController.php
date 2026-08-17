@@ -221,6 +221,19 @@ class AuthController extends Controller
                 ]);
                 Log::info("AuthController::register - wallet created");
 
+                // Auto-create TrueDial Free Privilege Card
+                \Illuminate\Support\Facades\DB::table('privilege_cards')->insertOrIgnore([
+                    'user_id'     => $user->id,
+                    'card_number' => 'TD-' . strtoupper(\Illuminate\Support\Str::random(10)),
+                    'card_type'   => 'free',
+                    'price'       => 0.00,
+                    'status'      => 'active',
+                    'valid_until' => now()->addYear(),
+                    'created_at'  => now(),
+                    'updated_at'  => now(),
+                ]);
+                Log::info("AuthController::register - free privilege card created");
+
                 return $user;
             });
 

@@ -89,7 +89,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
           <div className="lg:col-span-1 space-y-4">
             <DashboardProfileCard
               fetchDashboard={fetchDashboard}
-              roleLabel="Contractor"
+              roleLabel="Contractor" onEditProfile={() => setActiveTab("business_profile")}
               extraContent={
                 <>
                   <div className="flex justify-between items-center text-sm py-2 border-b">

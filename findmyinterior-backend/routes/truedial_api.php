@@ -103,6 +103,10 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::post('/businesses/{slug}/reviews', [\App\Modules\Truedial\Controllers\User\ReviewController::class, 'store']);
         Route::put('/reviews/{id}/helpful', [\App\Modules\Truedial\Controllers\User\ReviewController::class, 'voteHelpful']);
         Route::put('/categories', [\App\Modules\Truedial\Controllers\User\CategoryController::class, 'updateCategories']);
+
+        // Checkout & Payments
+        Route::post('/checkout/initiate', [\App\Modules\Truedial\Controllers\Public\CheckoutController::class, 'initiate']);
+        Route::post('/checkout/verify', [\App\Modules\Truedial\Controllers\Public\CheckoutController::class, 'verify']);
     });
     
     // Admin routes
