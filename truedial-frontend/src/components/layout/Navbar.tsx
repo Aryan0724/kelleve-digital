@@ -34,13 +34,12 @@ export default async function Navbar() {
         
         <div className="flex items-center gap-4 lg:gap-8 flex-1">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#E8701A] text-white font-bold text-xl shadow-md group-hover:scale-105 transition-transform">
-              T
-            </div>
-            <span className="text-2xl lg:text-3xl font-black tracking-tight text-[#1E40AF]">
-              truedial
-            </span>
+          <Link href="/" className="flex items-center group flex-shrink-0">
+            <img 
+              src="/images/logo.jpg" 
+              alt="TrueDial Logo" 
+              className="h-10 lg:h-12 w-auto object-contain group-hover:scale-105 transition-transform"
+            />
           </Link>
 
           {/* Search Bar (Hidden on Mobile, shown on Desktop) */}
