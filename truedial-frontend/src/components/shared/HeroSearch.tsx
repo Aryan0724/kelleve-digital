@@ -64,11 +64,13 @@ export default function HeroSearch() {
 
   return (
     <div className="w-full">
-      <div className="bg-[#0B1530] rounded-3xl md:rounded-[2rem] p-6 sm:p-10 overflow-hidden shadow-2xl border border-[#1E40AF]/40 relative">
+      <div className="bg-[#0B1530] rounded-3xl md:rounded-[2rem] p-6 sm:p-10 shadow-2xl border border-[#1E40AF]/40 relative">
         
-        {/* Background elements */}
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full -mr-20 -mt-20 blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/20 rounded-full -ml-10 -mb-10 blur-3xl" />
+        {/* Background elements - Clipped to rounded corners */}
+        <div className="absolute inset-0 rounded-3xl md:rounded-[2rem] overflow-hidden pointer-events-none">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-600/10 rounded-full -mr-20 -mt-20 blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-indigo-600/20 rounded-full -ml-10 -mb-10 blur-3xl" />
+        </div>
         
         <div className="max-w-4xl mx-auto z-10 relative">
           {/* Hero Text */}
