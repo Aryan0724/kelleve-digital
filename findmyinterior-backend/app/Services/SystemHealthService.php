@@ -32,11 +32,15 @@ class SystemHealthService
 
     private function getDeploymentStatus(): array
     {
-        $statusFile = storage_path('app/public/deploy_status.json');
-        if (file_exists($statusFile)) {
-            return json_decode(file_get_contents($statusFile), true) ?? ['status' => 'unknown'];
+        try {
+            $statusFile = storage_path('app/public/deploy_status.json');
+            if (file_exists($statusFile)) {
+                return json_decode(file_get_contents($statusFile), true) ?? ['status' => 'unknown'];
+            }
+            return ['status' => 'unknown'];
+        } catch (\Throwable $e) {
+            return ['status' => 'unknown'];
         }
-        return ['status' => 'unknown'];
     }
 
     private function checkDatabase(): array
@@ -100,47 +104,59 @@ class SystemHealthService
 
     private function checkStorage(): array
     {
-        $storagePath = storage_path();
-        $freeSpace = @disk_free_space($storagePath);
-        $totalSpace = @disk_total_space($storagePath);
-        
-        if ($freeSpace === false || $totalSpace === false) {
-            return ['status' => 'unknown'];
-        }
+        try {
+            $storagePath = storage_path();
+            $freeSpace = @disk_free_space($storagePath);
+            $totalSpace = @disk_total_space($storagePath);
+            
+            if ($freeSpace === false || $totalSpace === false) {
+                return ['status' => 'unknown'];
+            }
 
-        $freePercent = ($freeSpace / $totalSpace) * 100;
-        
-        return [
-            'status' => $freePercent > 10 ? 'healthy' : 'critical',
-            'free_space_gb' => round($freeSpace / 1024 / 1024 / 1024, 2),
-            'total_space_gb' => round($totalSpace / 1024 / 1024 / 1024, 2),
-            'free_percent' => round($freePercent, 2)
-        ];
+            $freePercent = ($freeSpace / $totalSpace) * 100;
+            
+            return [
+                'status' => $freePercent > 10 ? 'healthy' : 'critical',
+                'free_space_gb' => round($freeSpace / 1024 / 1024 / 1024, 2),
+                'total_space_gb' => round($totalSpace / 1024 / 1024 / 1024, 2),
+                'free_percent' => round($freePercent, 2)
+            ];
+        } catch (\Throwable $e) {
+            return ['status' => 'critical'];
+        }
     }
 
     private function getMemoryUsage(): string
     {
-        $mem = memory_get_usage(true);
-        return round($mem / 1024 / 1024, 2) . ' MB';
+        try {
+            $mem = memory_get_usage(true);
+            return round($mem / 1024 / 1024, 2) . ' MB';
+        } catch (\Throwable $e) {
+            return 'Unknown';
+        }
     }
 
     private function getCpuLoad(): string
     {
-        if (function_exists('sys_getloadavg')) {
-            $load = sys_getloadavg();
-            if (is_array($load) && count($load) > 0) {
-                return $load[0] . ' (1 min avg)';
+        try {
+            if (function_exists('sys_getloadavg')) {
+                $load = sys_getloadavg();
+                if (is_array($load) && count($load) > 0) {
+                    return $load[0] . ' (1 min avg)';
+                }
             }
-        }
-        
-        // Windows fallback
-        if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-            @exec('wmic cpu get loadpercentage', $output);
-            if (isset($output[1])) {
-                return trim($output[1]) . '%';
+            
+            // Windows fallback
+            if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
+                @exec('wmic cpu get loadpercentage', $output);
+                if (isset($output[1])) {
+                    return trim($output[1]) . '%';
+                }
             }
-        }
 
-        return 'Unknown';
+            return 'Unknown';
+        } catch (\Throwable $e) {
+            return 'Unknown';
+        }
     }
 }
