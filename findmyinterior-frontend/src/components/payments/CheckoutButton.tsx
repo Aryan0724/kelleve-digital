@@ -85,9 +85,10 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
 
       const paymentObject = new (window as any).Razorpay(options);
       paymentObject.open();
-    } catch (error) {
+    } catch (error: any) {
       console.error(error);
-      alert("Failed to initiate payment.");
+      const errorMessage = error?.response?.data?.message || error?.message || "Unknown error occurred";
+      alert("Failed to initiate payment. " + errorMessage);
     } finally {
       setLoading(false);
     }

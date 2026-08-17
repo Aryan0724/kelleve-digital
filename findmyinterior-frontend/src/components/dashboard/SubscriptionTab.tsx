@@ -400,8 +400,8 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
                 onClick={() => handlePayWithWallet(selectedPlanForUpgrade)}
                 disabled={
                   isProcessingWallet ||
-                  (user?.wallet_balance ?? 0) <
-                    (selectedPlanForUpgrade?.price_yearly ?? 0)
+                  Number(user?.wallet_balance ?? 0) <
+                    Number(selectedPlanForUpgrade?.price_yearly ?? 0)
                 }
                 className="bg-orange-600 hover:bg-orange-700 shrink-0"
               >
@@ -412,13 +412,13 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
               </Button>
             </div>
 
-            {(user?.wallet_balance ?? 0) <
-              (selectedPlanForUpgrade?.price_yearly ?? 0) && (
+            {Number(user?.wallet_balance ?? 0) <
+              Number(selectedPlanForUpgrade?.price_yearly ?? 0) && (
               <p className="text-xs text-amber-600 dark:text-amber-400 -mt-2 px-1">
                 Insufficient wallet balance. Add ₹
                 {(
-                  (selectedPlanForUpgrade?.price_yearly ?? 0) -
-                  (user?.wallet_balance ?? 0)
+                  Number(selectedPlanForUpgrade?.price_yearly ?? 0) -
+                  Number(user?.wallet_balance ?? 0)
                 ).toLocaleString("en-IN")}{" "}
                 more to use this option.
               </p>
