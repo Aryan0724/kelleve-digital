@@ -20,6 +20,8 @@ import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
+import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
+import { Paintbrush } from "lucide-react";
 
 export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -122,6 +124,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
+                {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
               </div>
             </div>
@@ -234,6 +237,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
 
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'business_profile' && <CompleteProfileTab />}
+            {activeTab === 'portfolio' && <PortfolioTab />}
 
             {activeTab === 'messages' && (
               <Card>

@@ -11,6 +11,7 @@ import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
+import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
@@ -95,6 +96,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
                 {renderSidebarButton("active_jobs", <CheckCircle2 className="h-5 w-5" />, "Active Jobs")}
                 {renderSidebarButton("completed_jobs", <CheckCircle2 className="h-5 w-5" />, "Completed Jobs")}
                 {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
+                {renderSidebarButton("portfolio", <Briefcase className="h-5 w-5" />, "Portfolio")}
                 {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
                 {renderSidebarButton("ratings", <Star className="h-5 w-5" />, "Ratings")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
@@ -131,6 +133,8 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
                 onReviewClick={(professionalId, requirementId) => setReviewModal({ isOpen: true, professionalId, requirementId })}
               />
             )}
+
+            {activeTab === 'portfolio' && <PortfolioTab />}
 
             {activeTab === 'ratings' && (
               <Card>

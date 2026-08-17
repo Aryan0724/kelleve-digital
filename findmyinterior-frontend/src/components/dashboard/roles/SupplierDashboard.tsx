@@ -21,6 +21,8 @@ import { LeaveReviewModal } from "@/components/dashboard/LeaveReviewModal";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
+import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
+import { Paintbrush } from "lucide-react";
 
 export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDashboard: () => void }) {
   const router = useRouter();
@@ -126,6 +128,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
+                {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
               </div>
             </div>
           </div>
@@ -179,6 +182,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
 
             {activeTab === 'business_profile' && <CompleteProfileTab />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
+            {activeTab === 'portfolio' && <PortfolioTab />}
 
             {activeTab === 'messages' && (
               <Card>

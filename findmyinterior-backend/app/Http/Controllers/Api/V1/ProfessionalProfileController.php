@@ -111,15 +111,22 @@ class ProfessionalProfileController extends Controller
                     ]);
                     $profile->load(['category', 'gallery']);
                 }
-            } elseif ($type === 'worker') {
-                $profile = Worker::where('user_id', $user->id)->first()
-                    ?? Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
-            } elseif ($type === 'supplier') {
-                $profile = Supplier::where('user_id', $user->id)->first()
-                    ?? Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
-            } elseif ($type === 'builder') {
-                $profile = Builder::where('user_id', $user->id)->first()
-                    ?? Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
+            } elseif (in_array($type, ['worker', 'supplier', 'builder'])) {
+                if ($type === 'worker') {
+                    $profile = Worker::where('user_id', $user->id)->first();
+                } elseif ($type === 'supplier') {
+                    $profile = Supplier::where('user_id', $user->id)->first();
+                } else {
+                    $profile = Builder::where('user_id', $user->id)->first();
+                }
+
+                $listing = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
+                if ($profile && $listing) {
+                    $profile->address = $listing->address;
+                    $profile->description = $listing->description;
+                } else {
+                    $profile = $listing;
+                }
             } else {
                 $profile = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
                 if ($profile) $type = 'listing';
@@ -281,6 +288,7 @@ class ProfessionalProfileController extends Controller
             $data = $request->validate([
                 'company_name'     => ['nullable', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
+                'description'      => ['nullable', 'string', 'max:5000'],
                 'phone'            => ['nullable', 'string', 'max:20'],
                 'city'             => ['nullable', 'string', 'max:100'],
                 'district'         => ['nullable', 'string', 'max:100'],
@@ -308,7 +316,7 @@ class ProfessionalProfileController extends Controller
             // Sync to Listing model for public profile visibility
             $listing = Listing::firstOrNew(['user_id' => $user->id]);
             $listing->title = $data['company_name'] ?? $user->name;
-            $listing->description = $data['tagline'] ?? 'Material supplier.';
+            $listing->description = $data['description'] ?? $data['tagline'] ?? 'Material supplier.';
             $listing->phone = $data['phone'] ?? $user->phone;
             $listing->city = $data['city'] ?? $user->city ?? 'Patna';
             $listing->district = $data['district'] ?? $user->district ?? 'Patna';
@@ -327,6 +335,7 @@ class ProfessionalProfileController extends Controller
             $data = $request->validate([
                 'company_name'     => ['nullable', 'string', 'max:255'],
                 'tagline'          => ['nullable', 'string', 'max:255'],
+                'description'      => ['nullable', 'string', 'max:5000'],
                 'phone'            => ['nullable', 'string', 'max:20'],
                 'city'             => ['nullable', 'string', 'max:100'],
                 'district'         => ['nullable', 'string', 'max:100'],
@@ -355,7 +364,7 @@ class ProfessionalProfileController extends Controller
             // Sync to Listing model for public profile visibility
             $listing = Listing::firstOrNew(['user_id' => $user->id]);
             $listing->title = $data['company_name'] ?? $user->name;
-            $listing->description = $data['tagline'] ?? 'Real estate developer.';
+            $listing->description = $data['description'] ?? $data['tagline'] ?? 'Real estate developer.';
             $listing->phone = $data['phone'] ?? $user->phone;
             $listing->city = $data['city'] ?? $user->city ?? 'Patna';
             $listing->district = $data['district'] ?? $user->district ?? 'Patna';

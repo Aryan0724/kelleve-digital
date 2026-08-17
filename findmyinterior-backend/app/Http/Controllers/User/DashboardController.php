@@ -153,7 +153,7 @@ class DashboardController extends Controller
                             $requirementTypeLabel = 'RFQ';
                         } elseif (in_array($bid->requirement_type, ['WorkerJob', 'App\Models\WorkerJob'])) {
                             $requirementTitle = $workerJobs[$bid->requirement_id] ?? $requirementTitle;
-                            $requirementTypeLabel = 'Skilled Labour Job';
+                            $requirementTypeLabel = 'Skilled Worker Job';
                         }
 
                         // Get worker/professional profile for extra info

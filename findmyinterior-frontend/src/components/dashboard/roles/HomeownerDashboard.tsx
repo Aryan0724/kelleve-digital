@@ -269,7 +269,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                         <div className="px-5 py-3 bg-slate-50 border-b flex items-center justify-between gap-2 flex-wrap">
                           <div className="flex items-center gap-2">
                             <span className={`text-xs font-semibold px-2 py-0.5 rounded-full ${
-                              bid.requirement_type === 'Skilled Labour Job'
+                              bid.requirement_type === 'Skilled Worker Job'
                                 ? 'bg-orange-100 text-orange-700'
                                 : bid.requirement_type === 'RFQ'
                                   ? 'bg-blue-100 text-blue-700'
@@ -331,7 +331,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
                           {/* Stats row */}
                           <div className="mt-4 flex flex-wrap gap-4 pt-4 border-t">
                             <div className="text-center">
-                              <div className="text-xs text-slate-500 mb-0.5">{bid.requirement_type === 'Skilled Labour Job' ? 'Expected Rate' : 'Bid Amount'}</div>
+                              <div className="text-xs text-slate-500 mb-0.5">{bid.requirement_type === 'Skilled Worker Job' ? 'Expected Rate' : 'Bid Amount'}</div>
                               <div className="text-lg font-bold text-orange-600">₹{Number(bid.amount || 0).toLocaleString('en-IN')}</div>
                             </div>
                             {bid.timeline_days && (
