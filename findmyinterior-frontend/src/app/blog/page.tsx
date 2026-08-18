@@ -2,6 +2,8 @@ import { Tag } from "lucide-react";
 import { getServerApiUrl } from "@/lib/serverApi";
 import { BlogListClient } from "@/components/blog/BlogListClient";
 
+export const dynamic = 'force-dynamic';
+
 async function getAllBlogs() {
   try {
     const res = await fetch(`${getServerApiUrl()}/blogs?per_page=100`, { cache: "no-store" });
