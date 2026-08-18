@@ -48,7 +48,7 @@ export default function MessageBusinessButton({ vendorUserId, businessName }: Pr
       className="w-full bg-primary hover:bg-primary/90 text-white font-bold flex items-center justify-center gap-2 h-11 rounded-xl shadow-md transition-all"
     >
       {loading ? <Loader2 className="w-4 h-4 animate-spin" /> : <MessageSquare className="w-4 h-4" />}
-      {loading ? 'Starting Chat...' : `Message ${businessName || 'Business'}`}
+      <span className="truncate">{loading ? 'Starting Chat...' : `Message ${businessName || 'Business'}`}</span>
     </Button>
   );
 }

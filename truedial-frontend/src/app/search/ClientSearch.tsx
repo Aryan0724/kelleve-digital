@@ -4,7 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { TrueDialAPI } from "@/lib/api";
 import BusinessCard, { BusinessCardProps } from "@/components/shared/BusinessCard";
-import { SlidersHorizontal, MapPin, Star, ShieldCheck, Loader2, Utensils, Stethoscope, Briefcase, Sparkles, Store, Search as SearchIcon } from "lucide-react";
+import { SlidersHorizontal, MapPin, Star, ShieldCheck, Loader2, Utensils, Stethoscope, Briefcase, Sparkles, Store, Search as SearchIcon, Map as MapIcon, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useUserLocation } from "@/context/LocationContext";
@@ -77,6 +77,7 @@ function SearchContent() {
   const [category, setCategory] = useState(searchParams.get("category") || "");
   const [results, setResults] = useState<BusinessCardProps[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showMap, setShowMap] = useState(false);
 
   // Dynamic filter selections (mocked state for UI demonstration)
   const [dynamicSelections, setDynamicSelections] = useState<Record<string, any>>({});
@@ -175,129 +176,117 @@ function SearchContent() {
   const activeDynamicFilters = getDynamicFilters(category);
 
   return (
-    <div className="bg-slate-50 dark:bg-slate-950 min-h-screen pb-12">
-      {/* Search Header Banner */}
-      <div className="bg-navy pt-8 pb-16 px-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542744173-8e7e53415bb0?q=80&w=2070&auto=format&fit=crop')] bg-cover bg-center opacity-10"></div>
-        <div className="absolute inset-0 bg-gradient-to-t from-navy to-transparent"></div>
-        
-        <div className="max-w-7xl mx-auto relative z-10 flex flex-col items-center text-center">
-          <h1 className="text-3xl md:text-5xl font-black text-white mb-4">
-            Find the Best <span className="text-primary">{category || 'Local Businesses'}</span>
-          </h1>
-          <p className="text-white/80 max-w-2xl text-sm md:text-base">
-            Discover top-rated services, exclusive offers, and trusted professionals in your area.
-          </p>
+    <div className="bg-slate-50 dark:bg-slate-950 min-h-screen">
+      {/* Dense Header */}
+      <div className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 sticky top-0 z-30 shadow-sm">
+        <div className="max-w-[1400px] mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <h1 className="text-lg md:text-xl font-black text-slate-900 dark:text-white">
+              {category ? `${category} in ${location}` : `Search Results in ${location}`}
+            </h1>
+            <span className="hidden md:inline-flex bg-primary/10 text-primary px-2 py-0.5 rounded text-xs font-bold">
+              {results.length} results
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            <Button 
+              variant="outline" 
+              size="sm" 
+              className={`h-9 font-bold text-xs ${showMap ? 'bg-primary text-white border-primary' : ''}`}
+              onClick={() => setShowMap(!showMap)}
+            >
+              {showMap ? <><List className="w-4 h-4 mr-1.5" /> Show List</> : <><MapIcon className="w-4 h-4 mr-1.5" /> Show Map</>}
+            </Button>
+          </div>
         </div>
       </div>
 
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 md:px-8 -mt-8 relative z-20 flex flex-col lg:flex-row gap-8">
+      <main className={`max-w-[1400px] mx-auto w-full px-4 md:px-6 py-6 flex flex-col lg:flex-row gap-6 ${showMap ? 'h-[calc(100vh-64px)] overflow-hidden' : ''}`}>
         {/* Sidebar Filters */}
-        <aside className="w-full lg:w-72 flex-shrink-0">
-          <div className="bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-xl border border-slate-100 dark:border-slate-800 sticky top-24">
-            <div className="flex items-center justify-between mb-6 pb-4 border-b border-slate-100 dark:border-slate-800">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-5 h-5 text-primary" />
-                <h2 className="font-bold text-lg text-slate-900 dark:text-white">Filters</h2>
+        <aside className={`w-full lg:w-64 flex-shrink-0 ${showMap ? 'overflow-y-auto h-full pr-2 custom-scrollbar' : 'sticky top-24'}`}>
+          <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+            <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center gap-1.5">
+                <SlidersHorizontal className="w-4 h-4 text-primary" />
+                <h2 className="font-bold text-sm text-slate-900 dark:text-white">Filters</h2>
               </div>
               <button 
                 onClick={() => { setQuery(""); setCategory(""); setVerifiedOnly(false); setPremiumOnly(false); setMinRating(""); setDynamicSelections({}); }}
-                className="text-xs font-semibold text-slate-500 hover:text-primary transition"
+                className="text-[10px] font-bold text-slate-500 hover:text-primary transition uppercase"
               >
                 Clear All
               </button>
             </div>
 
-            <div className="space-y-6">
+            <div className="space-y-5">
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Search Term</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Search Term</label>
                 <div className="relative">
-                  <SearchIcon className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                  <SearchIcon className="absolute left-2.5 top-2 w-3.5 h-3.5 text-slate-400" />
                   <Input 
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
-                    placeholder="e.g. Plumbers, Doctors..."
-                    className="pl-9 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 h-10"
+                    placeholder="Plumbers, Doctors..."
+                    className="pl-8 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 h-8 text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Category</label>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Category</label>
                 <div className="relative">
-                  <Briefcase className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                  <Briefcase className="absolute left-2.5 top-2 w-3.5 h-3.5 text-slate-400" />
                   <Input 
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
-                    placeholder="e.g. Restaurants"
-                    className="pl-9 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 h-10"
+                    placeholder="Restaurants"
+                    className="pl-8 bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 h-8 text-xs"
                   />
                 </div>
               </div>
 
-              <div className="relative">
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-2 block">Location</label>
-                
-                <div className="flex flex-col gap-2">
-                  <div className="relative">
-                    <select 
-                      value={location}
-                      onChange={(e) => setLocation(e.target.value)}
-                      className="w-full h-10 pl-9 pr-8 border border-slate-200 dark:border-slate-700 rounded-md dark:bg-slate-800 appearance-none bg-slate-50 text-sm font-medium"
-                    >
-                      <option value="">Any City</option>
-                      {locationsList.map((loc, idx) => (
-                        <option key={idx} value={loc}>{loc}</option>
-                      ))}
-                      {!locationsList.includes(location) && location && (
-                        <option value={location}>{location}</option>
-                      )}
-                    </select>
-                    <div className="absolute left-3 top-2.5 pointer-events-none">
-                      <MapPin className="w-4 h-4 text-slate-400" />
-                    </div>
-                  </div>
-                  
-                  <Button 
-                    type="button" 
-                    variant="outline" 
-                    size="sm"
-                    onClick={detectLocation}
-                    disabled={locLoading}
-                    className="w-full text-xs font-bold flex items-center justify-center gap-2 border-primary/20 text-primary hover:bg-primary/5 bg-primary/5 h-9"
+              <div>
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Location</label>
+                <div className="relative">
+                  <select 
+                    value={location}
+                    onChange={(e) => setLocation(e.target.value)}
+                    className="w-full h-8 pl-8 pr-6 border border-slate-200 dark:border-slate-700 rounded-md dark:bg-slate-800 appearance-none bg-slate-50 text-xs font-medium"
                   >
-                    {locLoading ? (
-                      <><Loader2 className="w-3 h-3 animate-spin" /> Locating...</>
-                    ) : (
-                      <><MapPin className="w-3 h-3" /> Detect My Location</>
+                    <option value="">Any City</option>
+                    {locationsList.map((loc, idx) => (
+                      <option key={idx} value={loc}>{loc}</option>
+                    ))}
+                    {!locationsList.includes(location) && location && (
+                      <option value={location}>{location}</option>
                     )}
-                  </Button>
-                  {locError && <p className="text-[10px] text-red-500 mt-1">{locError}</p>}
+                  </select>
+                  <MapPin className="absolute left-2.5 top-2 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
                 </div>
               </div>
 
               {/* Dynamic Filters Section */}
               {activeDynamicFilters && (
-                <div className={`p-4 rounded-xl border ${activeDynamicFilters.color.replace('text-', 'border-').replace('500', '200')} bg-slate-50 dark:bg-slate-800/50`}>
-                  <div className={`flex items-center gap-2 mb-4 ${activeDynamicFilters.color}`}>
-                    <activeDynamicFilters.icon className="w-4 h-4" />
-                    <span className="font-bold text-sm">{activeDynamicFilters.title}</span>
+                <div className={`p-3 rounded-lg border ${activeDynamicFilters.color.replace('text-', 'border-').replace('500', '200')} bg-slate-50 dark:bg-slate-800/50`}>
+                  <div className={`flex items-center gap-1.5 mb-3 ${activeDynamicFilters.color}`}>
+                    <activeDynamicFilters.icon className="w-3.5 h-3.5" />
+                    <span className="font-bold text-xs">{activeDynamicFilters.title}</span>
                   </div>
-                  
-                  <div className="space-y-4">
+                  <div className="space-y-3">
                     {activeDynamicFilters.options.map((opt, i) => (
                       <div key={i}>
-                        <label className="text-xs font-semibold text-slate-600 dark:text-slate-400 mb-2 block">{opt.label}</label>
+                        <label className="text-[10px] font-bold text-slate-600 dark:text-slate-400 mb-1.5 block">{opt.label}</label>
                         {opt.type === 'select' ? (
-                          <select className="w-full h-9 border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900 px-2 text-sm">
+                          <select className="w-full h-7 border border-slate-200 dark:border-slate-700 rounded bg-white dark:bg-slate-900 px-2 text-[11px]">
                             {opt.choices.map(c => <option key={c}>{c}</option>)}
                           </select>
                         ) : (
-                          <div className="space-y-2">
+                          <div className="space-y-1.5">
                             {opt.choices.map(c => (
                               <label key={c} className="flex items-center gap-2 cursor-pointer">
-                                <input type="checkbox" className="rounded border-slate-300 text-primary focus:ring-primary h-3.5 w-3.5" />
-                                <span className="text-sm text-slate-700 dark:text-slate-300">{c}</span>
+                                <input type="checkbox" className="rounded border-slate-300 text-primary focus:ring-primary h-3 w-3" />
+                                <span className="text-[11px] font-medium text-slate-700 dark:text-slate-300">{c}</span>
                               </label>
                             ))}
                           </div>
@@ -309,50 +298,17 @@ function SearchContent() {
               )}
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">TrueDial Privilege</label>
-                <div className="space-y-3 mb-6 p-4 bg-orange-50 dark:bg-slate-800/50 rounded-xl border border-primary/20">
-                  <label className="flex items-center gap-2 cursor-pointer group">
-                    <input 
-                      type="checkbox" 
-                      checked={offersOnly}
-                      onChange={(e) => setOffersOnly(e.target.checked)}
-                      className="rounded border-slate-300 text-primary focus:ring-primary h-4 w-4 transition-colors"
-                    />
-                    <span className="flex items-center gap-1.5 text-sm font-bold text-slate-700 dark:text-slate-200">
-                      <Sparkles className="w-4 h-4 text-primary" /> Active Offers
-                    </span>
-                  </label>
-                  
-                  {offersOnly && (
-                    <div className="pl-6 pt-2">
-                      <label className="text-[10px] font-bold text-slate-500 uppercase block mb-2">My Card Type</label>
-                      <select 
-                        value={cardType}
-                        onChange={(e) => setCardType(e.target.value)}
-                        className="w-full h-8 text-xs font-semibold border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-900"
-                      >
-                        <option value="">All Card Types</option>
-                        <option value="free">Free First Year</option>
-                        <option value="city">City Card</option>
-                        <option value="multi-city">Multi-City Card</option>
-                      </select>
-                    </div>
-                  )}
-                </div>
-              </div>
-
-              <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">Quality & Trust</label>
-                <div className="space-y-3">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Quality & Trust</label>
+                <div className="space-y-2">
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <input 
                       type="checkbox" 
                       checked={verifiedOnly}
                       onChange={(e) => setVerifiedOnly(e.target.checked)}
-                      className="rounded border-slate-300 text-green-500 focus:ring-green-500 h-4 w-4 transition-colors"
+                      className="rounded border-slate-300 text-green-600 focus:ring-green-600 h-3.5 w-3.5 transition-colors"
                     />
-                    <span className="flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition">
-                      <ShieldCheck className="w-4 h-4 text-green-500" /> Verified Only
+                    <span className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 transition">
+                      <ShieldCheck className="w-3.5 h-3.5 text-green-600" /> Verified Only
                     </span>
                   </label>
                   <label className="flex items-center gap-2 cursor-pointer group">
@@ -360,18 +316,18 @@ function SearchContent() {
                       type="checkbox" 
                       checked={premiumOnly}
                       onChange={(e) => setPremiumOnly(e.target.checked)}
-                      className="rounded border-slate-300 text-amber-500 focus:ring-amber-500 h-4 w-4 transition-colors"
+                      className="rounded border-slate-300 text-amber-500 focus:ring-amber-500 h-3.5 w-3.5 transition-colors"
                     />
-                    <span className="flex items-center gap-1.5 text-sm font-medium text-slate-700 dark:text-slate-300 group-hover:text-slate-900 dark:group-hover:text-white transition">
-                      <Star className="w-4 h-4 text-amber-500 fill-amber-500" /> Premium Partners
+                    <span className="flex items-center gap-1 text-xs font-bold text-slate-700 dark:text-slate-300 group-hover:text-slate-900 transition">
+                      <Star className="w-3.5 h-3.5 text-amber-500 fill-amber-500" /> Premium Partners
                     </span>
                   </label>
                 </div>
               </div>
 
               <div>
-                <label className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3 block">Minimum Rating</label>
-                <div className="grid grid-cols-4 gap-2">
+                <label className="text-[10px] font-bold text-slate-500 uppercase tracking-wider mb-1.5 block">Minimum Rating</label>
+                <div className="grid grid-cols-4 gap-1.5">
                   {['Any', '3+', '4+', '4.5+'].map((r) => {
                     const val = r === 'Any' ? '' : r.replace('+', '');
                     const isSelected = minRating === val;
@@ -379,7 +335,7 @@ function SearchContent() {
                       <button
                         key={r}
                         onClick={() => setMinRating(val)}
-                        className={`py-2 px-1 text-xs font-bold rounded-lg border transition ${isSelected ? 'border-primary bg-primary text-white shadow-md' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-primary/50'}`}
+                        className={`py-1 text-[10px] font-bold rounded border transition ${isSelected ? 'border-primary bg-primary text-white' : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-400 hover:border-primary/50'}`}
                       >
                         {r}
                       </button>
@@ -388,7 +344,7 @@ function SearchContent() {
                 </div>
               </div>
 
-              <Button onClick={applyFilters} className="w-full h-12 font-bold shadow-lg shadow-primary/25">
+              <Button onClick={applyFilters} className="w-full h-9 text-xs font-bold shadow-sm">
                 Apply Filters
               </Button>
             </div>
@@ -396,62 +352,70 @@ function SearchContent() {
         </aside>
 
         {/* Results */}
-        <div className="flex-1 mt-4 lg:mt-0">
-          <div className="mb-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
-            <h2 className="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
-              <span className="bg-primary text-white w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-sm">{results.length}</span>
-              {searchParams.get("q") ? `Matches for "${searchParams.get("q")}"` : "Top Recommendations"}
-            </h2>
-            <div className="flex items-center gap-2 text-sm font-medium text-slate-500">
-              Sort by: 
-              <select className="bg-transparent font-bold text-slate-900 dark:text-white border-none focus:ring-0 cursor-pointer">
-                <option>Relevance</option>
-                <option>Highest Rated</option>
-                <option>Nearest</option>
-              </select>
+        <div className={`flex-1 ${showMap ? 'flex gap-4 h-full' : ''}`}>
+          <div className={`flex-1 flex flex-col gap-4 ${showMap ? 'overflow-y-auto pr-2 custom-scrollbar' : ''}`}>
+            {/* Sort Bar */}
+            <div className="flex justify-between items-center bg-white dark:bg-slate-900 p-2 px-4 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+              <div className="flex gap-2">
+                <button className="px-3 py-1 bg-slate-100 dark:bg-slate-800 rounded-full text-[10px] font-bold text-slate-700 dark:text-slate-300">Relevance</button>
+                <button className="px-3 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full text-[10px] font-bold text-slate-600">Top Rated</button>
+                <button className="px-3 py-1 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-full text-[10px] font-bold text-slate-600">Distance</button>
+              </div>
+              <span className="text-xs text-slate-500">Page 1 of 10</span>
             </div>
+
+            {loading ? (
+              <div className="flex flex-col justify-center items-center py-20 bg-white dark:bg-slate-900 rounded-xl border border-slate-200">
+                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                <p className="mt-3 font-bold text-sm text-slate-500">Finding the best options...</p>
+              </div>
+            ) : results.length > 0 ? (
+              <div className="flex flex-col gap-4">
+                {results.map((biz, index) => (
+                  <div key={biz.id} className="animate-fade-in-up" style={{ animationDelay: `${index * 50}ms` }}>
+                    <BusinessCard {...biz} />
+                    {/* Show an inline ad after every 4th item */}
+                    {(index + 1) % 4 === 0 && (
+                      <div className="mt-4">
+                        <InlineListAd targetCity={location} targetCategoryId={undefined} />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="bg-white dark:bg-slate-900 rounded-xl p-12 text-center border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col items-center">
+                <div className="w-16 h-16 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-4">
+                  <MapPin className="w-6 h-6 text-slate-300 dark:text-slate-600" />
+                </div>
+                <h3 className="text-lg font-bold mb-2 text-slate-900 dark:text-white">No businesses found</h3>
+                <p className="text-xs text-slate-500 mb-6 max-w-sm mx-auto">
+                  We couldn't find any listings matching your exact filters. Try broadening your search or exploring a different city.
+                </p>
+                <Button 
+                  onClick={() => {
+                    setQuery(""); setVerifiedOnly(false); setPremiumOnly(false); setMinRating("");
+                    router.push('/search');
+                  }}
+                  className="h-9 px-6 text-xs font-bold"
+                >
+                  Clear All Filters
+                </Button>
+              </div>
+            )}
           </div>
 
-          {loading ? (
-            <div className="flex flex-col justify-center items-center py-32">
-              <div className="relative">
-                <div className="w-16 h-16 border-4 border-primary/20 rounded-full"></div>
-                <div className="w-16 h-16 border-4 border-primary border-t-transparent rounded-full animate-spin absolute inset-0"></div>
-              </div>
-              <p className="mt-4 font-bold text-slate-500 animate-pulse">Finding the best options...</p>
-            </div>
-          ) : results.length > 0 ? (
-            <div className="flex flex-col gap-6">
-              {results.map((biz, index) => (
-                <div key={biz.id} className="animate-fade-in-up" style={{ animationDelay: `${index * 50}ms` }}>
-                  <BusinessCard {...biz} />
-                  {/* Show an inline ad after every 4th item (index 3, 7, 11...) */}
-                  {(index + 1) % 4 === 0 && (
-                    <div className="my-6">
-                      <InlineListAd targetCity={location} targetCategoryId={undefined} />
-                    </div>
-                  )}
+          {/* Map Column (If Toggled) */}
+          {showMap && (
+            <div className="hidden lg:block w-[40%] bg-slate-200 dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 overflow-hidden relative">
+              {/* Dummy Map Placeholder */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="text-center">
+                  <MapIcon className="w-12 h-12 text-slate-400 mx-auto mb-2 opacity-50" />
+                  <p className="text-sm font-bold text-slate-500">Interactive Map View</p>
+                  <p className="text-xs text-slate-400">Loading map markers...</p>
                 </div>
-              ))}
-            </div>
-          ) : (
-            <div className="bg-white dark:bg-slate-900 rounded-3xl p-16 text-center border border-slate-100 dark:border-slate-800 shadow-sm flex flex-col items-center">
-              <div className="w-24 h-24 bg-slate-50 dark:bg-slate-800 rounded-full flex items-center justify-center mb-6">
-                <MapPin className="w-10 h-10 text-slate-300 dark:text-slate-600" />
               </div>
-              <h3 className="text-2xl font-bold mb-3 text-slate-900 dark:text-white">No businesses found</h3>
-              <p className="text-slate-500 mb-8 max-w-sm mx-auto leading-relaxed">
-                We couldn't find any listings matching your exact filters. Try broadening your search or exploring a different city.
-              </p>
-              <Button 
-                onClick={() => {
-                  setQuery(""); setVerifiedOnly(false); setPremiumOnly(false); setMinRating("");
-                  router.push('/search');
-                }}
-                className="h-12 px-8 font-bold"
-              >
-                Clear All Filters
-              </Button>
             </div>
           )}
         </div>
