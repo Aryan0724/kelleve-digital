@@ -5,6 +5,8 @@ import { Ticket, MapPin, Search, Clock, Tag } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
 
+export const dynamic = 'force-dynamic';
+
 export default async function GlobalOffersPage() {
   const response = await TrueDialAPI.getPublicOffers();
   const offers = response.success ? response.data.data : [];

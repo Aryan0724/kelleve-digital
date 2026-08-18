@@ -4,6 +4,8 @@ import Footer from "@/components/layout/Footer";
 import { TrueDialAPI } from "@/lib/api";
 import { Utensils, Hotel, PlusSquare, GraduationCap, HardHat, Car, Smartphone, Wrench, HeartPulse, Building2, Landmark, Briefcase, Truck, Sofa, Camera, Scissors, Tag } from "lucide-react";
 
+export const dynamic = 'force-dynamic';
+
 // Map strings from DB to lucide-react components
 const iconMap: Record<string, any> = {
   Utensils, Hotel, PlusSquare, GraduationCap, HardHat, Car, Smartphone, Wrench, HeartPulse, Building2, Landmark, Briefcase, Truck, Sofa, Camera, Scissors

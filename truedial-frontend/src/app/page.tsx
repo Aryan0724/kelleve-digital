@@ -10,6 +10,8 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import HeroSearch from "@/components/shared/HeroSearch";
 
+export const dynamic = 'force-dynamic';
+
 export default async function Home() {
   return (
     <div className="min-h-screen flex flex-col font-sans bg-[#F8FAFC] dark:bg-slate-950 text-navy dark:text-white transition-colors duration-300">

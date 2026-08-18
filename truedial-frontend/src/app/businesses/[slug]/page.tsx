@@ -11,6 +11,8 @@ import Link from "next/link";
 import TrackedLink from "@/components/shared/TrackedLink";
 import MessageBusinessButton from "@/components/messaging/MessageBusinessButton";
 
+export const dynamic = 'force-dynamic';
+
 export default async function BusinessProfilePage({ params }: { params: Promise<{ slug: string }> }) {
   const resolvedParams = await params;
   const response = await TrueDialAPI.getListingBySlug(resolvedParams.slug);
