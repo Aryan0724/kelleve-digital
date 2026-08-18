@@ -64,7 +64,7 @@ export default function HeroSearch() {
   };
 
   return (
-    <div className="w-full pb-0 md:pb-20 flex flex-col" ref={dropdownRef}>
+    <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 md:pt-10 pb-0 md:pb-20 flex flex-col" ref={dropdownRef}>
       
       {/* === MOBILE SEARCH BAR (Visible < MD) === */}
       <div className="md:hidden flex flex-col bg-white rounded-2xl shadow-sm border border-slate-200 mb-6 relative z-30">
@@ -181,10 +181,10 @@ export default function HeroSearch() {
               </div>
             </div>
 
-            {/* Right side: Hero Image & Floating Badge (Desktop only) */}
-            <div className="hidden md:flex relative w-1/2 justify-end items-end h-[300px]">
+            {/* Right side: Hero Image & Floating Badge */}
+            <div className="flex relative w-full md:w-1/2 justify-center md:justify-end items-end h-[220px] md:h-[300px] mt-4 md:mt-0">
               {/* Hero Image */}
-              <div className="relative w-full h-[120%] max-w-[450px] -mt-10 mr-12 z-0 pointer-events-none">
+              <div className="relative w-full h-[120%] max-w-[280px] md:max-w-[450px] -mt-10 md:-mt-10 mr-0 md:mr-12 z-0 pointer-events-none">
                 <Image 
                   src="/images/hero-family.png"
                   alt="Business Growth"
@@ -195,9 +195,9 @@ export default function HeroSearch() {
               </div>
               
               {/* Floating Badge */}
-              <div className="absolute right-0 top-10 flex flex-col bg-white/10 backdrop-blur-md border border-white/20 p-6 rounded-2xl items-center text-center shadow-2xl max-w-[180px] z-10">
-                <Trophy className="w-10 h-10 text-[#F59E0B] mb-3" />
-                <p className="text-base font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
+              <div className="absolute right-0 md:right-0 top-0 md:top-10 flex flex-col bg-white/10 backdrop-blur-md border border-white/20 p-3 md:p-6 rounded-xl md:rounded-2xl items-center text-center shadow-2xl max-w-[120px] md:max-w-[180px] z-10 scale-90 md:scale-100 origin-top-right">
+                <Trophy className="w-6 h-6 md:w-10 md:h-10 text-[#F59E0B] mb-1.5 md:mb-3" />
+                <p className="text-[10px] md:text-base font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
               </div>
             </div>
           </div>
