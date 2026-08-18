@@ -48,8 +48,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   };
 
 
-  const hasAdminRole = roleSlugs.some((r: string) => ['admin', 'super_admin'].includes(r));
-  const hasVendorRole = roleSlugs.includes('business') || roleSlugs.some((r: string) => ['vendor', 'business_owner'].includes(r));
+  const hasAdminRole = isAdmin;
+  const hasVendorRole = isVendor;
 
   let links: any[] = [];
 
