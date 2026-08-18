@@ -394,11 +394,11 @@ export default async function Home() {
             
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {[
-                { title: "How to Optimize Your TrueDial Business Listing for Maximum Reach", category: "Marketing", date: "Aug 15, 2026", img: "/images/card-b2b.jpg" },
-                { title: "5 Proven Strategies to Convert Local Leads into Paying Customers", category: "Sales", date: "Aug 12, 2026", img: "/images/promo-banner.jpg" },
-                { title: "Why Online Reviews Are the Most Important Metric for Local SEO", category: "SEO & Growth", date: "Aug 08, 2026", img: "/images/card-realestate.jpg" }
+                { title: "How to Optimize Your TrueDial Business Listing for Maximum Reach", category: "Marketing", date: "Aug 15, 2026", img: "https://images.unsplash.com/photo-1432828684865-eb73b228b3f1?q=80&w=1200", slug: "optimize-business-listing-maximum-reach" },
+                { title: "5 Proven Strategies to Convert Local Leads into Paying Customers", category: "Sales", date: "Aug 12, 2026", img: "https://images.unsplash.com/photo-1556761175-5973dc0f32b7?q=80&w=1200", slug: "strategies-convert-local-leads" },
+                { title: "Why Online Reviews Are the Most Important Metric for Local SEO", category: "SEO & Growth", date: "Aug 08, 2026", img: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=1200", slug: "importance-online-reviews-local-seo" }
               ].map((blog, i) => (
-                <Link href={`/blog/${i}`} key={i} className="group flex flex-col bg-slate-50 dark:bg-slate-900/50 rounded-[20px] overflow-hidden border border-slate-200/60 dark:border-slate-700/50 hover:shadow-lg transition-all duration-300">
+                <Link href={`/blog/${blog.slug}`} key={i} className="group flex flex-col bg-slate-50 dark:bg-slate-900/50 rounded-[20px] overflow-hidden border border-slate-200/60 dark:border-slate-700/50 hover:shadow-lg transition-all duration-300">
                   <div className="relative w-full h-48 overflow-hidden">
                     <Image src={blog.img} alt={blog.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 100vw, 33vw" />
                     <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-full text-[10px] font-black uppercase text-[#1E3A8A] tracking-wider shadow-sm">
