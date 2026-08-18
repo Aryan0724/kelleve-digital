@@ -40,14 +40,31 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register SQLite custom math functions robustly for any SQLite connection
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Database\Events\ConnectionEstablished::class, function ($event) {
+            if ($event->connection->getDriverName() === 'sqlite') {
+                $pdo = $event->connection->getPdo();
+                if (method_exists($pdo, 'sqliteCreateFunction')) {
+                    $pdo->sqliteCreateFunction('acos', 'acos', 1);
+                    $pdo->sqliteCreateFunction('cos', 'cos', 1);
+                    $pdo->sqliteCreateFunction('sin', 'sin', 1);
+                    $pdo->sqliteCreateFunction('radians', 'deg2rad', 1);
+                }
+            }
+        });
+
+        // Also register immediately for the default connection if it's already resolved
         if (config('database.default') === 'sqlite') {
-            $connection = \Illuminate\Support\Facades\DB::connection();
-            if ($connection instanceof \Illuminate\Database\SQLiteConnection) {
-                $pdo = $connection->getPdo();
-                $pdo->sqliteCreateFunction('acos', 'acos', 1);
-                $pdo->sqliteCreateFunction('cos', 'cos', 1);
-                $pdo->sqliteCreateFunction('sin', 'sin', 1);
-                $pdo->sqliteCreateFunction('radians', 'deg2rad', 1);
+            try {
+                $pdo = \Illuminate\Support\Facades\DB::connection()->getPdo();
+                if ($pdo && method_exists($pdo, 'sqliteCreateFunction')) {
+                    $pdo->sqliteCreateFunction('acos', 'acos', 1);
+                    $pdo->sqliteCreateFunction('cos', 'cos', 1);
+                    $pdo->sqliteCreateFunction('sin', 'sin', 1);
+                    $pdo->sqliteCreateFunction('radians', 'deg2rad', 1);
+                }
+            } catch (\Exception $e) {
+                // Ignore if DB not ready
             }
         }
         // Enforce explicit morph mapping for polymorphic relations
