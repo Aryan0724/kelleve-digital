@@ -151,8 +151,9 @@ export default function HeroSearch() {
         
         <div className="max-w-4xl mx-auto z-10 relative">
           {/* Hero Text */}
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-8 relative z-10 md:mb-12">
-            <div className="flex-1">
+          <div className="flex flex-col md:flex-row items-center justify-between">
+            {/* Left side: Text Content */}
+            <div className="flex-1 md:pr-[45%] lg:pr-[50%] z-10 relative">
               <h2 className="text-lg md:text-xl font-normal text-white mb-2">India's Emerging</h2>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight md:leading-[1.1]"><span className="text-[#F59E0B]">Business Growth</span> <span className="text-white">Platform</span></h1>
               <p className="text-lg md:text-xl text-blue-100 font-medium mt-4 mb-8">

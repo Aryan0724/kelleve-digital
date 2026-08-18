@@ -107,7 +107,7 @@ export default async function Navbar() {
             <img 
               src="/images/logo-official.png" 
               alt="TrueDial Logo" 
-              className="h-10 lg:h-12 w-auto object-contain group-hover:scale-105 transition-transform"
+              className="h-10 lg:h-12 max-w-[160px] lg:max-w-[200px] w-auto object-contain group-hover:scale-105 transition-transform"
             />
           </Link>
 
