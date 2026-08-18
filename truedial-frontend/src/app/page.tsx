@@ -41,7 +41,7 @@ export default async function Home() {
       <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         {/* 2. POPULAR CATEGORIES */}
         <div className="pt-10">
-          <div className="flex justify-between items-center mb-6 px-4">
+          <div className="flex justify-between items-center mb-6">
             <h3 className="text-2xl md:text-3xl font-black text-slate-900 mx-auto text-center w-full relative">
               Popular Categories
               <Link href="/categories" className="absolute right-0 top-1/2 -translate-y-1/2 text-sm font-bold text-[#1E40AF] hover:underline flex items-center gap-1 hidden sm:flex">
