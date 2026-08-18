@@ -182,22 +182,22 @@ export default function HeroSearch() {
             </div>
 
             {/* Right side: Hero Image & Floating Badge */}
-            <div className="flex relative w-full md:w-1/2 justify-center md:justify-end items-end h-[220px] md:h-[300px] mt-4 md:mt-0">
+            <div className="md:absolute md:bottom-0 md:right-0 flex relative w-full md:w-[45%] justify-center md:justify-end items-end h-[220px] md:h-[110%] mt-4 md:mt-0 z-0">
               {/* Hero Image */}
-              <div className="relative w-full h-[120%] max-w-[280px] md:max-w-[450px] -mt-10 md:-mt-10 mr-0 md:mr-12 z-0 pointer-events-none">
+              <div className="relative w-full h-[120%] max-w-[280px] md:max-w-[500px] md:h-full md:mr-0 z-0 pointer-events-none overflow-hidden md:overflow-visible md:rounded-br-[2rem]">
                 <Image 
                   src="/images/hero-family.png"
                   alt="Business Growth"
                   fill
-                  className="object-contain object-bottom drop-shadow-2xl"
+                  className="object-contain object-bottom md:object-right-bottom drop-shadow-2xl"
                   priority
                 />
               </div>
               
               {/* Floating Badge */}
-              <div className="absolute right-0 md:right-0 top-0 md:top-10 flex flex-col bg-white/10 backdrop-blur-md border border-white/20 p-3 md:p-6 rounded-xl md:rounded-2xl items-center text-center shadow-2xl max-w-[120px] md:max-w-[180px] z-10 scale-90 md:scale-100 origin-top-right">
-                <Trophy className="w-6 h-6 md:w-10 md:h-10 text-[#F59E0B] mb-1.5 md:mb-3" />
-                <p className="text-[10px] md:text-base font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
+              <div className="absolute right-0 md:right-8 top-0 md:top-12 flex flex-col bg-white/10 backdrop-blur-md border border-white/20 p-3 md:p-5 rounded-xl md:rounded-2xl items-center text-center shadow-2xl max-w-[120px] md:max-w-[160px] z-10 scale-90 md:scale-100 origin-top-right">
+                <Trophy className="w-6 h-6 md:w-8 md:h-8 text-[#F59E0B] mb-1.5 md:mb-2" />
+                <p className="text-[10px] md:text-sm font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
               </div>
             </div>
           </div>
