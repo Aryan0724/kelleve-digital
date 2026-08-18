@@ -103,7 +103,7 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
   return (
     <div 
       ref={containerRef} 
-      className={`relative overflow-hidden group cursor-pointer ${className}`}
+      className={`relative overflow-hidden group cursor-pointer bg-slate-50 dark:bg-slate-900 flex items-center justify-center ${className}`}
       onClick={handleClick}
     >
       <div className="absolute top-2 right-2 bg-black/40 text-white text-[10px] px-1.5 py-0.5 rounded backdrop-blur-sm z-10 pointer-events-none">
@@ -114,7 +114,7 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
         <img 
           src={currentAd.banner_url} 
           alt={currentAd.title || "Advertisement"} 
-          className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]" 
+          className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-[1.02]" 
           loading="lazy"
         />
       )}

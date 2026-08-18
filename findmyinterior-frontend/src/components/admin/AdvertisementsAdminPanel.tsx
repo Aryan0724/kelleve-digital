@@ -157,6 +157,7 @@ export function AdvertisementsAdminPanel() {
                     <option value="popup">Popup</option>
                     <option value="top_ribbon">Top Ribbon</option>
                     <option value="search_feed">Search Feed</option>
+                    <option value="before_footer">Before Footer</option>
                   </select>
                 </div>
                 <div>
