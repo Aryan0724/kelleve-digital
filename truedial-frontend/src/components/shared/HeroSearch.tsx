@@ -151,22 +151,16 @@ export default function HeroSearch() {
         
         <div className="max-w-4xl mx-auto z-10 relative">
           {/* Hero Text */}
-          <div className="flex flex-col md:flex-row items-center justify-between">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-10 z-10 relative">
             {/* Left side: Text Content */}
-            <div className="flex-1 md:pr-[45%] lg:pr-[50%] z-10 relative">
+            <div className="flex-1 max-w-2xl">
               <h2 className="text-lg md:text-xl font-normal text-white mb-2">India's Emerging</h2>
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold leading-tight md:leading-[1.1]"><span className="text-[#F59E0B]">Business Growth</span> <span className="text-white">Platform</span></h1>
               <p className="text-lg md:text-xl text-blue-100 font-medium mt-4 mb-8">
-                <span className="italic text-white">Beyond Listing.</span> <span className="text-white font-normal">We Help Businesses </span><span className="text-[#F59E0B] font-bold">Grow.</span>
+                Beyond Listing. We Help Businesses <span className="text-[#F59E0B] font-bold">Grow.</span>
               </p>
-
-              {/* Mobile CTA (Mockup shows a yellow button) */}
-              <button className="md:hidden bg-[#F59E0B] text-black font-bold px-6 py-2.5 rounded-full flex items-center gap-2 mt-4 hover:bg-yellow-400 transition">
-                Explore Now <ChevronRight className="w-4 h-4" />
-              </button>
-
-              {/* Feature Bullets (Hidden on mobile to match mockup) */}
-              <div className="hidden md:flex flex-col md:flex-row gap-4 mt-8">
+              
+              <div className="flex flex-wrap items-center gap-3 md:gap-4 mb-6 md:mb-0">
                 <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 w-max">
                   <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
                   <p className="text-white font-medium text-sm">Find Verified Businesses</p>
@@ -175,30 +169,26 @@ export default function HeroSearch() {
                   <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path></svg>
                   <p className="text-white font-medium text-sm">Get Best Deals & Offers</p>
                 </div>
-                <div className="bg-white/5 border border-white/10 px-4 py-2 rounded-full flex items-center gap-2 w-max">
-                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
-                  <p className="text-white font-medium text-sm">Grow Your Business</p>
-                </div>
               </div>
             </div>
 
             {/* Right side: Hero Image & Floating Badge */}
-            <div className="md:absolute md:bottom-0 md:right-0 flex relative w-full md:w-[45%] justify-center md:justify-end items-end h-[220px] md:h-[110%] mt-4 md:mt-0 z-0">
-              {/* Hero Image */}
-              <div className="relative w-full h-[120%] max-w-[280px] md:max-w-[500px] md:h-full md:mr-0 z-0 pointer-events-none overflow-hidden md:overflow-visible md:rounded-br-[2rem]">
+            <div className="flex relative w-full md:w-[40%] justify-center md:justify-end items-center h-[250px] md:h-[320px] z-10">
+              {/* Hero Image as a stylish Card */}
+              <div className="relative w-full h-full max-w-[400px] rounded-2xl overflow-hidden border-4 border-white/10 shadow-[0_20px_50px_rgba(0,0,0,0.5)]">
                 <Image 
                   src="/images/hero-family.png"
                   alt="Business Growth"
                   fill
-                  className="object-contain object-bottom md:object-right-bottom drop-shadow-2xl"
+                  className="object-cover object-center"
                   priority
                 />
               </div>
               
-              {/* Floating Badge */}
-              <div className="absolute right-0 md:right-8 top-0 md:top-12 flex flex-col bg-white/10 backdrop-blur-md border border-white/20 p-3 md:p-5 rounded-xl md:rounded-2xl items-center text-center shadow-2xl max-w-[120px] md:max-w-[160px] z-10 scale-90 md:scale-100 origin-top-right">
-                <Trophy className="w-6 h-6 md:w-8 md:h-8 text-[#F59E0B] mb-1.5 md:mb-2" />
-                <p className="text-[10px] md:text-sm font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
+              {/* Floating Badge overlapping the image slightly */}
+              <div className="absolute -right-2 md:-right-8 top-10 flex flex-col bg-white/10 backdrop-blur-xl border border-white/20 p-4 md:p-6 rounded-2xl items-center text-center shadow-2xl max-w-[140px] md:max-w-[160px] z-20">
+                <Trophy className="w-8 h-8 md:w-10 md:h-10 text-[#F59E0B] mb-2" />
+                <p className="text-xs md:text-sm font-bold text-white leading-tight">Trusted by<br/>Thousands of<br/><span className="text-[#F59E0B]">Businesses</span><br/>Across India</p>
               </div>
             </div>
           </div>
