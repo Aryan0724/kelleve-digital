@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ChevronDown, LayoutDashboard, LogOut, MessageSquare, Menu, X } from "lucide-react";
+import { ChevronDown, LayoutDashboard, LogOut, MessageSquare, Menu, X, Bell, User } from "lucide-react";
 import AutocompleteSearch from "@/components/shared/AutocompleteSearch";
 import NavbarLocationPill from "@/components/shared/NavbarLocationPill";
 import { cookies } from "next/headers";
