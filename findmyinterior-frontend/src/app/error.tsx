@@ -23,9 +23,16 @@ export default function Error({
       <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">
         Oops! Something went wrong.
       </h1>
-      <p className="text-gray-600 dark:text-gray-400 mb-8 max-w-md mx-auto">
+      <p className="text-gray-600 dark:text-gray-400 mb-4 max-w-md mx-auto">
         We've encountered an unexpected error while loading this page. Our technical team has been notified.
       </p>
+      
+      <div className="bg-red-50 dark:bg-red-900/20 text-left p-4 rounded-lg w-full max-w-2xl overflow-auto mb-8 text-sm">
+        <p className="font-bold text-red-600 dark:text-red-400 mb-2">Error Details (for debugging):</p>
+        <code className="text-red-500 whitespace-pre-wrap font-mono text-xs">
+          {error.message || String(error)}
+        </code>
+      </div>
       
       <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
         <button
