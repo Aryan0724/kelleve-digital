@@ -21,6 +21,7 @@ const inter = Inter({
   display: "swap",
 });
 
+export const metadata: Metadata = {
   title: "TrueDial — India's Business Discovery Platform",
   description: "Discover and connect with trusted local businesses across India. TrueDial is India's emerging business discovery and growth platform.",
 };

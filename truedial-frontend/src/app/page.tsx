@@ -38,6 +38,7 @@ export default async function Home() {
       {/* 1. SMART SEARCH & HERO BANNER COMBINED */}
       <HeroSearch />
 
+      <main className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8">
         {/* 2. POPULAR CATEGORIES */}
         <div className="pt-10">
           <div className="flex justify-between items-center mb-6 px-4">
