@@ -174,7 +174,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
 
             {activeTab === 'profile' && <CompleteProfileTab />}
             {activeTab === 'wallet' && <WalletTab />}
-            {activeTab === 'subscription' && <SubscriptionTab />}
+            {activeTab === 'subscription' && <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'messages' && (
               <Card>
