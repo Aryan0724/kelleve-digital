@@ -5,8 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, CheckCircle2, User, LogOut, ShieldCheck, Briefcase, Star } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, CheckCircle2, User, LogOut, ShieldCheck, Briefcase, Star, Wallet } from "lucide-react";
 import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
+import { WalletTab } from "@/components/dashboard/WalletTab";
+import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
@@ -101,6 +103,8 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
                 {renderSidebarButton("ratings", <Star className="h-5 w-5" />, "Ratings")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
+                {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
+                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("profile", <User className="h-5 w-5" />, "Profile")}
               </div>
             </div>
@@ -169,6 +173,8 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
             )}
 
             {activeTab === 'profile' && <CompleteProfileTab />}
+            {activeTab === 'wallet' && <WalletTab />}
+            {activeTab === 'subscription' && <SubscriptionTab />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'messages' && (
               <Card>

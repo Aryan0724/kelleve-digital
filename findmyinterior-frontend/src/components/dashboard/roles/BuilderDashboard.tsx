@@ -18,6 +18,7 @@ import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
+import { WalletTab } from "@/components/dashboard/WalletTab";
 import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
 import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
@@ -235,6 +236,8 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
             {activeTab === 'subscription' && (
               <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />
             )}
+            
+            {activeTab === 'wallet' && <WalletTab />}
 
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'business_profile' && <CompleteProfileTab />}
