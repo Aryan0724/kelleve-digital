@@ -7,8 +7,6 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { LayoutDashboard, MessageSquare, Search, Gavel, CheckCircle2, User, LogOut, ShieldCheck, Briefcase, Star, Wallet } from "lucide-react";
 import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
-import { WalletTab } from "@/components/dashboard/WalletTab";
-import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
@@ -26,7 +24,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
   const { user, logout } = useAuthStore();
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
-  const [activeTab, setActiveTab] = useState(tabParam || "available_leads");
+  const [activeTab, setActiveTab] = useState(tabParam || "dashboard");
 
   useEffect(() => {
     if (tabParam) {
@@ -92,6 +90,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
 
             <div className="bg-white border rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
+                {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Overview")}
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Jobs")}
                 {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Leads")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
@@ -103,14 +102,61 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
                 {renderSidebarButton("ratings", <Star className="h-5 w-5" />, "Ratings")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
-                {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("profile", <User className="h-5 w-5" />, "Profile")}
               </div>
             </div>
           </div>
 
           <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
+
+            {activeTab === 'dashboard' && (
+              <div className="space-y-6">
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">Overview</h2>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-slate-500">Available Jobs</p>
+                          <h3 className="text-3xl font-bold text-slate-900 mt-2">{data?.recommended_leads?.length || 0}</h3>
+                        </div>
+                        <div className="p-3 bg-blue-50 rounded-xl">
+                          <Search className="h-6 w-6 text-blue-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-slate-500">Applied Jobs</p>
+                          <h3 className="text-3xl font-bold text-slate-900 mt-2">{data?.submitted_bids?.length || 0}</h3>
+                        </div>
+                        <div className="p-3 bg-orange-50 rounded-xl">
+                          <Gavel className="h-6 w-6 text-orange-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                  
+                  <Card>
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="text-sm font-medium text-slate-500">Unlocked Leads</p>
+                          <h3 className="text-3xl font-bold text-slate-900 mt-2">{data?.unlocked_contacts?.length || 0}</h3>
+                        </div>
+                        <div className="p-3 bg-green-50 rounded-xl">
+                          <User className="h-6 w-6 text-green-600" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                </div>
+              </div>
+            )}
 
             {activeTab === 'available_leads' && <AvailableLeadsTab leads={data?.recommended_leads} />}
             
@@ -173,8 +219,6 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
             )}
 
             {activeTab === 'profile' && <CompleteProfileTab />}
-            {activeTab === 'wallet' && <WalletTab />}
-            {activeTab === 'subscription' && <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'messages' && (
               <Card>
