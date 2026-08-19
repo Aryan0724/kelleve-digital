@@ -73,6 +73,18 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         ]);
     });
 
+    // ─── Temp fix ────────────────────────────────────────────────────────
+    Route::get('/fix-unlocks', function() {
+        $affected = \App\Models\ContactUnlock::where('requirement_type', 'App\Models\Requirement')
+            ->whereNotExists(function ($query) {
+                $query->select(\Illuminate\Support\Facades\DB::raw(1))
+                    ->from('projects')
+                    ->whereColumn('projects.id', 'contact_unlocks.requirement_id');
+            })
+            ->update(['requirement_type' => 'App\Models\WorkerJob']);
+        return response()->json(['affected' => $affected]);
+    });
+
     // ─── Auth ─────────────────────────────────────────────────────────────
     Route::prefix('auth')->middleware('throttle:auth')->group(function () {
         Route::post('register', [AuthController::class, 'register']);
