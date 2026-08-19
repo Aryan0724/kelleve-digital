@@ -29,6 +29,8 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
   useEffect(() => {
     if (tabParam) {
       setActiveTab(tabParam);
+    } else {
+      setActiveTab("dashboard");
     }
   }, [tabParam]);
 

@@ -35,6 +35,8 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
   useEffect(() => {
     if (tabParam) {
       setActiveTab(tabParam);
+    } else {
+      setActiveTab("projects");
     }
   }, [tabParam]);
 

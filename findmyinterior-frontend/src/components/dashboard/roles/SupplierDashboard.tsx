@@ -35,6 +35,8 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
   useEffect(() => {
     if (tabParam) {
       setActiveTab(tabParam);
+    } else {
+      setActiveTab("available_leads");
     }
   }, [tabParam]);
 

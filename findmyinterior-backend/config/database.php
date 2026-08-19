@@ -65,11 +65,11 @@ return [
         ],
 
         'auth' => [
-            'driver' => 'mysql',
+            'driver' => env('DB_CONNECTION', 'mysql'),
             'url' => env('DB_URL'),
             'host' => env('DB_AUTH_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('DB_AUTH_PORT', env('DB_PORT', '3306')),
-            'database' => env('DB_AUTH_DATABASE', env('DB_DATABASE', 'findmyinterior')),
+            'database' => env('DB_CONNECTION') === 'sqlite' ? database_path('database.sqlite') : env('DB_AUTH_DATABASE', env('DB_DATABASE', 'findmyinterior')),
             'username' => env('DB_AUTH_USERNAME', env('DB_USERNAME', 'root')),
             'password' => env('DB_AUTH_PASSWORD', env('DB_PASSWORD', '')),
             'charset' => env('DB_CHARSET', 'utf8mb4'),
@@ -80,11 +80,11 @@ return [
         ],
 
         'truedial' => [
-            'driver' => 'mysql',
+            'driver' => env('DB_CONNECTION', 'mysql'),
             'url' => env('DB_URL'),
             'host' => env('DB_TRUEDIAL_HOST', env('DB_HOST', '127.0.0.1')),
             'port' => env('DB_TRUEDIAL_PORT', env('DB_PORT', '3306')),
-            'database' => env('DB_TRUEDIAL_DATABASE', env('DB_DATABASE', 'truedial_db')),
+            'database' => env('DB_CONNECTION') === 'sqlite' ? database_path('database.sqlite') : env('DB_TRUEDIAL_DATABASE', env('DB_DATABASE', 'truedial_db')),
             'username' => env('DB_TRUEDIAL_USERNAME', env('DB_USERNAME', 'root')),
             'password' => env('DB_TRUEDIAL_PASSWORD', env('DB_PASSWORD', '')),
             'charset' => env('DB_CHARSET', 'utf8mb4'),

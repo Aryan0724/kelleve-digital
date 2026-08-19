@@ -30,6 +30,8 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   useEffect(() => {
     if (tabParam) {
       setActiveTab(tabParam);
+    } else {
+      setActiveTab("dashboard");
     }
   }, [tabParam]);
 

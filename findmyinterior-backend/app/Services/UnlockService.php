@@ -62,6 +62,11 @@ class UnlockService
             $fee = 0;
         }
 
+        // Skilled workers and laborers get unlocks for free
+        if ($vendor->hasRole('worker') || $vendor->hasRole('skilled_worker')) {
+            $fee = 0;
+        }
+
         return DB::transaction(function () use ($vendor, $requirement, $requirementType, $fee) {
             // 3. Deduct from wallet if fee is greater than 0
             if ($fee > 0) {

@@ -33,6 +33,8 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
   useEffect(() => {
     if (tabParam) {
       setActiveTab(tabParam);
+    } else {
+      setActiveTab("available_leads");
     }
   }, [tabParam]);
 

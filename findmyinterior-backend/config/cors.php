@@ -12,7 +12,7 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['https://findmyinterior.com', 'https://www.findmyinterior.com', 'http://localhost:3000', 'http://127.0.0.1:3000', 'https://kelleve-digital.vercel.app'],
+    'allowed_origins' => ['https://findmyinterior.com', 'https://www.findmyinterior.com', 'http://localhost:3000', 'http://127.0.0.1:3000', 'https://kelleve-digital.vercel.app', 'http://localhost:8081', 'http://127.0.0.1:8081'],
 
     'allowed_origins_patterns' => [],
 

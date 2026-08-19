@@ -1,5 +1,6 @@
-// Production live API endpoint
-export const API_BASE_URL = "https://truedial.in/api/v1";
+// Development local API endpoint (using local network IP for physical device testing)
+// Production: "https://truedial.in/api/v1"
+export const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || "http://192.168.1.3:8000/api/v1";
 export const APP_PLATFORM_HEADER = "truedial";
 export const AUTH_TOKEN_HEADER = "Authorization";
 export const AUTH_TOKEN_PREFIX = "Bearer";
