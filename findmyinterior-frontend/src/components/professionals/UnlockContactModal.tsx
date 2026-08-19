@@ -34,6 +34,7 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
   const { token, user, setShowLoginModal } = useAuthStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const isFree = user?.role === 'worker' || user?.role === 'skilled_worker';
 
   const startRazorpayPayment = async (amountToRecharge: number = 49) => {
     try {
@@ -130,7 +131,8 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
             Unlock Contact Details
           </DialogTitle>
           <DialogDescription>
-            Unlock {listing.title}'s phone and WhatsApp details. This requires a ₹49 fee which will be processed via Razorpay or your wallet balance.
+            Unlock {listing.title}'s phone and WhatsApp details. 
+            {!isFree && ` This requires a ₹49 fee which will be processed via Razorpay or your wallet balance.`}
           </DialogDescription>
         </DialogHeader>
         
@@ -147,12 +149,14 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
             className="w-full h-12 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold text-base"
             disabled={loading}
           >
-            {loading ? "Processing..." : "Pay ₹49 & Unlock Contact"}
+            {loading ? "Processing..." : isFree ? "Unlock for Free" : "Pay ₹49 & Unlock Contact"}
           </Button>
           
-          <p className="text-xs text-center text-slate-500">
-            Secure payment powered by Razorpay.
-          </p>
+          {!isFree && (
+            <p className="text-xs text-center text-slate-500">
+              Secure payment powered by Razorpay.
+            </p>
+          )}
         </div>
       </DialogContent>
     </Dialog>

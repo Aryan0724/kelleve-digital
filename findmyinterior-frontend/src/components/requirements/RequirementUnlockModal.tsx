@@ -41,6 +41,8 @@ export function RequirementUnlockModal({
   const { token, user, setShowLoginModal } = useAuthStore();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+  const isFree = user?.role === 'worker' || user?.role === 'skilled_worker';
+  const displayPrice = isFree ? 0 : (unlockPrice ?? 49);
 
   const startRazorpayPayment = async (amountToRecharge: number = unlockPrice || 49) => {
     try {
@@ -147,6 +149,7 @@ export function RequirementUnlockModal({
           </DialogTitle>
           <DialogDescription className="text-slate-600 pt-2">
             Get instant access to the client's direct phone number and message them to discuss the project.
+            {!isFree && ` This requires a ₹${displayPrice} fee.`}
           </DialogDescription>
         </DialogHeader>
         
@@ -162,8 +165,14 @@ export function RequirementUnlockModal({
           </div>
           <div className="text-right">
             <div className="flex flex-col items-end">
-              <span className="text-xs text-slate-500 line-through">₹99</span>
-              <span className="font-bold text-slate-800">₹{unlockPrice ?? 49}</span>
+              {isFree ? (
+                <span className="font-bold text-green-600 text-lg">FREE</span>
+              ) : (
+                <>
+                  <span className="text-xs text-slate-500 line-through">₹99</span>
+                  <span className="font-bold text-slate-800">₹{displayPrice}</span>
+                </>
+              )}
             </div>
           </div>
         </div>
@@ -177,7 +186,7 @@ export function RequirementUnlockModal({
             disabled={loading}
             className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
           >
-            {loading ? "Processing..." : "Confirm Unlock"}
+            {loading ? "Processing..." : isFree ? "Unlock for Free" : "Confirm Unlock"}
           </Button>
         </div>
       </DialogContent>
