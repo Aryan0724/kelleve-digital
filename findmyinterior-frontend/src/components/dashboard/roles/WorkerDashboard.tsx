@@ -68,7 +68,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2 text-slate-900 font-bold">
-            <Briefcase className="h-5 w-5 text-orange-600" /> {user?.name}'s Jobs
+            <Briefcase className="h-5 w-5 text-orange-600" /> {user?.name}'s Dashboard
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm font-medium text-slate-600 hidden md:block">WORKER</span>
@@ -90,7 +90,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
 
             <div className="bg-white border rounded-xl overflow-hidden w-full">
               <div className="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-col w-full">
-                {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Overview")}
+                {renderSidebarButton("dashboard", <LayoutDashboard className="h-5 w-5" />, "Dashboard")}
                 {renderSidebarButton("available_leads", <Search className="h-5 w-5" />, "Available Jobs")}
                 {renderSidebarButton("unlocked_leads", <User className="h-5 w-5" />, "Unlocked Leads")}
                 {renderSidebarButton("bids_submitted", <Gavel className="h-5 w-5" />, "Applied Jobs")}
@@ -111,7 +111,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
 
             {activeTab === 'dashboard' && (
               <div className="space-y-6">
-                <h2 className="text-2xl font-bold text-slate-900 mb-6">Overview</h2>
+                <h2 className="text-2xl font-bold text-slate-900 mb-6">Dashboard</h2>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                   <Card>
                     <CardContent className="p-6">
