@@ -10,8 +10,8 @@ use Illuminate\Support\Facades\DB;
 $affected = ContactUnlock::where('requirement_type', 'App\Models\Requirement')
     ->whereNotExists(function ($query) {
         $query->select(DB::raw(1))
-            ->from('requirements')
-            ->whereColumn('requirements.id', 'contact_unlocks.requirement_id');
+            ->from('projects')
+            ->whereColumn('projects.id', 'contact_unlocks.requirement_id');
     })
     ->update(['requirement_type' => 'App\Models\WorkerJob']);
 
