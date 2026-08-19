@@ -25,7 +25,7 @@ class UnlockController extends Controller
         $type = $request->query('requirement_type', 'project');
         $modelClass = \App\Models\Requirement::class;
         if ($type === 'rfq') $modelClass = \App\Models\Rfq::class;
-        if ($type === 'job') $modelClass = \App\Models\WorkerJob::class;
+        if ($type === 'job' || $type === 'worker_job') $modelClass = \App\Models\WorkerJob::class;
         
         $requirement = $modelClass::with('user')->findOrFail($requirementId);
         

@@ -269,9 +269,17 @@ class DashboardController extends Controller
                     
                 // Fetch unlocked contacts
                 $data['unlocked_contacts'] = $user->contactUnlocks()
-                    ->with('requirement')
+                    ->with('requirement.user')
                     ->latest()
-                    ->get();
+                    ->get()
+                    ->map(function($unlock) {
+                        if ($unlock->requirement) {
+                            $unlock->requirement->name = $unlock->requirement->name ?? $unlock->requirement->user->name ?? 'Customer';
+                            $unlock->requirement->phone = $unlock->requirement->phone ?? $unlock->requirement->user->phone ?? null;
+                            $unlock->requirement->email = $unlock->requirement->email ?? $unlock->requirement->user->email ?? null;
+                        }
+                        return $unlock;
+                    });
 
                 // Fetch Vendor Metrics
                 $data['vendor_metrics'] = $user->vendorMetric;
@@ -378,12 +386,21 @@ class DashboardController extends Controller
                         $hasBid
                     );
                     
+                    // Attach the contact info from the user if it exists (for models like WorkerJob)
+                    $phone = $lead->phone ?? $lead->user->phone ?? null;
+                    $email = $lead->email ?? $lead->user->email ?? null;
+
                     // Mask phone if not allowed
-                    if (!$canSeeContact && !empty($lead->phone)) {
-                        $lead->phone = substr($lead->phone, 0, 2) . '********';
+                    if (!$canSeeContact && !empty($phone)) {
+                        $lead->phone = substr($phone, 0, 2) . '********';
+                    } elseif ($canSeeContact) {
+                        $lead->phone = $phone;
                     }
-                    if (!$canSeeContact && !empty($lead->email)) {
+                    
+                    if (!$canSeeContact && !empty($email)) {
                         $lead->email = null;
+                    } elseif ($canSeeContact) {
+                        $lead->email = $email;
                     }
                     
                     $lead->is_unlocked = $canSeeContact;
