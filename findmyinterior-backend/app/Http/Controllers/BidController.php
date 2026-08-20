@@ -17,6 +17,14 @@ class BidController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
+        if (in_array($request->input('requirement_type'), ['project', 'job', 'rfq'])) {
+            return response()->json([
+                'error' => 'LEGACY_BID_ENDPOINT',
+                'message' => 'Use the domain-specific endpoint.',
+                'replacement' => '/api/v1/' . ($request->input('requirement_type') === 'project' ? 'projects' : ($request->input('requirement_type') === 'job' ? 'worker-jobs' : 'rfqs')) . '/{id}/quotes'
+            ], 400);
+        }
+
         $validated = $request->validate([
             'requirement_id' => 'required|exists:projects,id',
             'amount' => 'required|numeric|min:1',

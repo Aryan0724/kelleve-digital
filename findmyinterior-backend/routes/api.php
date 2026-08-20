@@ -395,3 +395,5 @@ Route::get('clear-cache', function () {
 });
 
 
+
+require __DIR__.'/api_c1_marketplace.php';

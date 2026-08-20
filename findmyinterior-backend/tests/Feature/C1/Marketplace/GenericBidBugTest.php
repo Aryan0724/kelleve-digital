@@ -63,7 +63,7 @@ class GenericBidBugTest extends TestCase
             'experience_years' => 5
         ];
 
-        $response = $this->actingAs($worker)->postJson('/api/v1/bids', $bidData);
+        $response = $this->actingAs($worker)->postJson("/api/v1/projects/{$project->id}/quotes", $bidData);
         
         // Assert it is forbidden (403)
         $response->assertStatus(403);

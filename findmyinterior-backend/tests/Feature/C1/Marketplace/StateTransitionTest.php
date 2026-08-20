@@ -62,7 +62,7 @@ class StateTransitionTest extends TestCase
             'experience_years' => 5
         ];
 
-        $response = $this->actingAs($pro)->postJson('/api/v1/bids', $bidData);
+        $response = $this->actingAs($pro)->postJson("/api/v1/projects/{$project->id}/quotes", $bidData);
         
         // Assert it is rejected (403 or 422 depending on how we want to handle it, but it should NOT be 201)
         $response->assertStatus(403);
