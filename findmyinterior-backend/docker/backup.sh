@@ -12,7 +12,8 @@ mkdir -p "$BACKUP_DIR"
 
 # Backup Database
 echo "Starting database backup to $DB_BACKUP_FILE"
-mysqldump -h db -u fmi_user -psecret findmyinterior | gzip > "$DB_BACKUP_FILE"
+# Run mysqldump inside the db container to avoid mariadb-client SSL/plugin issues
+docker compose -f /var/www/find-my-interior/docker-compose.yml exec -T db mysqldump -u root -psecret findmyinterior | gzip > "$DB_BACKUP_FILE"
 
 # Backup Storage
 echo "Starting storage backup to $STORAGE_BACKUP_FILE"
