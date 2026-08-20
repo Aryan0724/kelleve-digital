@@ -43,6 +43,7 @@ class GoldenFlowTest extends TestCase
         // 2. Owner Creates Open Project
         $project = Requirement::create([
             'user_id' => $owner->id,
+            'title' => 'My Golden Project',
             'project_type' => 'residential',
             'name' => 'John Doe',
             'phone' => '9876543210',
