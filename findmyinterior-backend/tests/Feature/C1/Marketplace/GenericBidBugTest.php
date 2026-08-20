@@ -18,8 +18,8 @@ class GenericBidBugTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $district = District::firstOrCreate(['name' => 'Patna']);
-        City::firstOrCreate(['name' => 'Patna', 'district_id' => $district->id]);
+        $district = District::firstOrCreate(['name' => 'Patna', 'slug' => 'patna', 'state' => 'Bihar']);
+        City::firstOrCreate(['name' => 'Patna', 'slug' => 'patna', 'district_id' => $district->id]);
         Category::firstOrCreate(['name' => 'Interior Designer', 'slug' => 'interior-designer']);
         
         Role::firstOrCreate(['slug' => 'worker', 'name' => 'Worker']);
