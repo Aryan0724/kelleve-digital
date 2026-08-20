@@ -3,6 +3,24 @@
 This document contains the canonical business rules, state machines, and endpoint contracts for Find My Interior (FMI).
 **Rule: Do not modify any API endpoint code until its behavior is documented and verified here.**
 
+## 0. Canonical Core Decisions
+
+### 1. Which roles can create an interior project?
+**Decision:** Only `homeowner` (or its synonym `customer`) can create interior projects (`POST /projects`). 
+`builder` roles create Tenders (`POST /tenders`), not interior projects. 
+`business` roles cannot post projects unless explicitly scoped (to be audited).
+
+### 2. Should ProjectQuote, JobApplication, and RFQQuotation be separate DB models?
+**Decision:** Yes, conceptually. The current `bids` table contains interior-specific columns (`warranty_months`, `design_included`).
+While we may use the same underlying `bids` table in the short-term via Eloquent Global Scopes (Single Table Inheritance) to avoid complex data migrations, the API and application models MUST treat them as completely separate entities:
+* `ProjectQuote` belongs to `Project`, submitted by `Professional` (Interior Designer, Architect, etc.)
+* `JobApplication` belongs to `WorkerJob`, submitted by `Worker`
+* `RfqQuotation` belongs to `Rfq`, submitted by `Material Supplier`
+
+### 3. Conflict / Concurrency Rule
+* Awarding a project: Atomic. Two simultaneous requests must not result in two winners.
+* Contact Unlocks: Atomic. Two simultaneous requests must deduct wallet balance only once.
+
 ## 1. Canonical State Machines
 
 ### A. Customer Project (Interior Design)
