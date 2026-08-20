@@ -15,11 +15,11 @@ use Tests\TestCase;
 
 class GoldenFlowTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;\n
+    use RefreshDatabase, WithFaker;
     protected function setUp(): void
     {
         parent::setUp();
-        \ = District::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'city_id' => City::firstOrCreate(['slug' => 'patna', 'state_id' => 1], ['name' => 'Patna'])->id]);
+        $district = District::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'city_id' => City::firstOrCreate(['slug' => 'patna', 'state_id' => 1], ['name' => 'Patna'])->id]);
         Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test', 'is_active' => true]);
     }
 
