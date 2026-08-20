@@ -19,7 +19,8 @@ class GoldenFlowTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $district = District::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'city_id' => City::firstOrCreate(['slug' => 'patna', 'state_id' => 1], ['name' => 'Patna'])->id]);
+        $district = District::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'state' => 'Bihar']);
+        City::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'district_id' => $district->id]);
         Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test', 'is_active' => true]);
     }
 
