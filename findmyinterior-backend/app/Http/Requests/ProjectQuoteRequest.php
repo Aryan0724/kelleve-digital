@@ -8,7 +8,8 @@ class ProjectQuoteRequest extends FormRequest
 {
     public function authorize()
     {
-        return $this->user() && ($this->user()->isBusiness() || $this->user()->isWorker() || $this->user()->isBuilder());
+        // Workers apply to worker-jobs, not interior projects
+        return $this->user() && ($this->user()->isBusiness() || $this->user()->isBuilder());
     }
 
     public function rules()

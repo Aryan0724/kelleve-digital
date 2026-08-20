@@ -23,8 +23,10 @@ class ProjectQuoteController extends Controller
     public function store(ProjectQuoteRequest $request, $id): JsonResponse
     {
         $user = Auth::user();
-        if (!$user->isBusiness() && !$user->isWorker() && !$user->isBuilder()) {
-            return response()->json(['message' => 'Only professionals can quote on projects.'], 403);
+        // Interior project quotes are for Designers/Contractors/Builders (business/builder roles).
+        // Workers apply to worker-jobs via /worker-jobs/{id}/apply — NOT interior project quotes.
+        if (!$user->isBusiness() && !$user->isBuilder()) {
+            return response()->json(['message' => 'Only professionals (designers, contractors, builders) can quote on interior projects.'], 403);
         }
 
         $project = Requirement::findOrFail($id);
