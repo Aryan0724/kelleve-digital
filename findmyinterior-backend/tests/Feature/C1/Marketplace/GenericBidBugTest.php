@@ -22,9 +22,9 @@ class GenericBidBugTest extends TestCase
         City::firstOrCreate(['name' => 'Patna', 'slug' => 'patna', 'district_id' => $district->id]);
         Category::firstOrCreate(['name' => 'Interior Designer', 'slug' => 'interior-designer']);
         
-        Role::firstOrCreate(['slug' => 'worker', 'name' => 'Worker']);
-        Role::firstOrCreate(['slug' => 'business', 'name' => 'Professional']);
-        Role::firstOrCreate(['slug' => 'customer', 'name' => 'Customer']);
+        Role::firstOrCreate(['slug' => 'worker'], ['name' => 'Worker']);
+        Role::firstOrCreate(['slug' => 'business'], ['name' => 'Professional']);
+        Role::firstOrCreate(['slug' => 'customer'], ['name' => 'Customer']);
     }
 
     public function test_worker_cannot_bid_on_interior_project_via_generic_endpoint()
