@@ -110,7 +110,7 @@ class OwnershipTest extends TestCase
             'name' => 'John Doe',
             'phone' => '9876543210',
             'status' => 'awarded',
-            'professional_id' => $pro->id,
+            
             'category_id' => Category::first()->id,
             'city_id' => City::first()->id,
             'district_id' => District::first()->id,
@@ -121,9 +121,12 @@ class OwnershipTest extends TestCase
         $pro = User::factory()->create();
         $pro->roles()->attach(Role::where('slug', 'business')->first());
 
+        $project->professional_id = $pro->id;
+        $project->save();
+
         $quote = Bid::create([
             'requirement_id' => $project->id,
-            'professional_id' => $pro->id,
+            
             'amount' => 100,
             'timeline_days' => 30,
             'proposal_message' => 'I can do it!',
@@ -151,7 +154,7 @@ class OwnershipTest extends TestCase
             'name' => 'John Doe',
             'phone' => '9876543210',
             'status' => 'awarded',
-            'professional_id' => $pro->id,
+            
             'category_id' => Category::first()->id,
             'city_id' => City::first()->id,
             'district_id' => District::first()->id,
@@ -165,9 +168,12 @@ class OwnershipTest extends TestCase
         $randomPro = User::factory()->create();
         $randomPro->roles()->attach(Role::where('slug', 'business')->first());
 
+        $project->professional_id = $pro->id;
+        $project->save();
+
         $quote = Bid::create([
             'requirement_id' => $project->id,
-            'professional_id' => $pro->id,
+            
             'amount' => 100,
             'timeline_days' => 30,
             'proposal_message' => 'I can do it!',
@@ -197,7 +203,7 @@ class OwnershipTest extends TestCase
             'name' => 'John Doe',
             'phone' => '9876543210',
             'status' => 'awarded',
-            'professional_id' => $pro->id,
+            
             'category_id' => Category::first()->id,
             'city_id' => City::first()->id,
             'district_id' => District::first()->id,
@@ -254,7 +260,7 @@ class OwnershipTest extends TestCase
 
         $quoteOnProject2 = Bid::create([
             'requirement_id' => $project2->id,
-            'professional_id' => $pro->id,
+            
             'amount' => 100,
             'timeline_days' => 30,
             'proposal_message' => 'I can do it!',
