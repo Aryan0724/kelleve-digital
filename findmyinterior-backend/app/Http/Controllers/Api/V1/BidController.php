@@ -29,9 +29,7 @@ class BidController extends Controller
     public function store(Request $request): JsonResponse
     {
         $user = $request->user();
-        if ($user->role === 'customer' || $user->role === 'homeowner') {
-            return $this->error('Customers cannot place bids', 403);
-        }
+        $this->authorize('create', \App\Models\Bid::class);
 
         $validated = $request->validate([
             'requirement_id' => 'required|integer',

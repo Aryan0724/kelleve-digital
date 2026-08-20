@@ -54,4 +54,18 @@ class ListingPolicy
         $roles = $user->roles->pluck('slug')->toArray();
         return in_array('platform_admin', $roles) || in_array('admin', $roles);
     }
+
+    /**
+     * Determine whether the user can unlock the contact.
+     */
+    public function unlock(User $user, Listing $model): bool
+    {
+        // Owner doesn't need to unlock their own listing
+        if ($user->id === $model->user_id) {
+            return false;
+        }
+
+        // Homeowners/Customers can unlock professional contacts
+        return $user->hasRole('customer');
+    }
 }

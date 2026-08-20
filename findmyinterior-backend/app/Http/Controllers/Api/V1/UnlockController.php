@@ -29,6 +29,8 @@ class UnlockController extends Controller
         
         $requirement = $modelClass::with('user')->findOrFail($requirementId);
         
+        $this->authorize('unlock', $requirement);
+        
         try {
             $result = $this->unlockService->unlockContact($request->user(), $requirement);
             return response()->json($result);
@@ -46,6 +48,8 @@ class UnlockController extends Controller
     public function unlockListing(Request $request, int $listingId): JsonResponse
     {
         $listing = \App\Models\Listing::with('user')->findOrFail($listingId);
+        
+        $this->authorize('unlock', $listing);
         
         // Ensure Listing model has an unlock_price if we want dynamic pricing, 
         // otherwise default config is used by UnlockService.

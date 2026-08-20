@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   # MySQL Database
   db:
@@ -18,6 +16,15 @@ services:
       - dbdata:/var/lib/mysql
     networks:
       - fmi-network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
 
   # Laravel Backend (API)
   backend:
@@ -29,7 +36,10 @@ services:
     ports:
       - "8000:80"
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
       DB_HOST: db
       DB_DATABASE: ${DB_DATABASE:-findmyinterior}
@@ -37,11 +47,16 @@ services:
       DB_PASSWORD: ${DB_PASSWORD:-secret}
       CACHE_DRIVER: redis
       QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
     volumes:
       - storage_data:/var/www/html/storage/app/public
       - backups_data:/var/www/backups
     networks:
       - fmi-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
 
   # Next.js Frontend
   frontend:
@@ -61,6 +76,10 @@ services:
       NODE_OPTIONS: "--max-old-space-size=512"
     networks:
       - fmi-network
+    deploy:
+      resources:
+        limits:
+          memory: 256M
 
   # Redis for Queue & Cache
   redis:
@@ -70,6 +89,15 @@ services:
       - "127.0.0.1:6380:6379"
     networks:
       - fmi-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          memory: 128M
 
 volumes:
   dbdata:

@@ -35,14 +35,20 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
+        $storage = app(\App\Services\UnifiedStorageService::class);
+
         if ($request->hasFile('avatar')) {
             $request->validate([
                 'avatar' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
             ]);
-            $file = $request->file('avatar');
-            $url = \App\Helpers\ImageHelper::toStoragePath($file, 'avatars');
+            $url = $storage->storeFile($request->file('avatar'), 'avatars');
         } elseif ($request->filled('avatar')) {
-            $url = $request->input('avatar');
+            $base64 = $request->input('avatar');
+            if (\Illuminate\Support\Str::startsWith($base64, 'data:image')) {
+                $url = $storage->storeBase64($base64, 'avatars');
+            } else {
+                $url = $base64;
+            }
         } else {
             return response()->json(['success' => false, 'message' => 'No avatar image provided.'], 422);
         }

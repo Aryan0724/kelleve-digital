@@ -39,21 +39,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::prefix('v1')->middleware('throttle:api')->group(function () {
     
-    Route::get('/health', function () {
-        $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
-        $tenantSlug = \Illuminate\Support\Facades\DB::table('tenants')->where('id', $tenantId)->value('slug') ?? 'unknown';
-
-        return response()->json([
-            'status' => 'ok',
-            'tenant' => $tenantSlug,
-            'database' => 'ok',
-            'cache' => 'ok',
-            'queue' => 'ok',
-            'storage' => 'ok',
-            'version' => '1.0.0',
-            'environment' => app()->environment()
-        ]);
-    });
+    Route::get('/health/live', [\App\Http\Controllers\Api\V1\HealthController::class, 'live']);
+    Route::get('/health/ready', [\App\Http\Controllers\Api\V1\HealthController::class, 'ready']);
     Route::get('/debug-internal', function (\Illuminate\Http\Request $request) {
         $url = 'http://127.0.0.1:80/api/v1/listings?search=Interior+Designer';
         $ch = curl_init();

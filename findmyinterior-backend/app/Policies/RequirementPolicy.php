@@ -64,4 +64,22 @@ class RequirementPolicy
     {
         return $user->hasRole('admin') || $user->id === $model->user_id;
     }
+
+    /**
+     * Determine whether the user can unlock the contact.
+     */
+    public function unlock(User $user, Requirement $model): bool
+    {
+        // Owner doesn't need to unlock their own requirement
+        if ($user->id === $model->user_id) {
+            return false;
+        }
+        
+        // Professionals can unlock projects/RFQs
+        if ($model->type === 'project' || $model->type === 'rfq') {
+            return $user->hasRole('business') || $user->hasRole('builder') || $user->hasRole('supplier');
+        }
+
+        return false;
+    }
 }
