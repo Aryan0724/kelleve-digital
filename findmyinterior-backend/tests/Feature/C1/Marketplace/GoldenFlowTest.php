@@ -62,7 +62,7 @@ class GoldenFlowTest extends TestCase
 
         // 3. Pro Submits Quote
         $quoteResponse = $this->actingAs($pro)->postJson("/api/v1/projects/{$project->id}/quotes", [
-            'amount' => 10000,
+            'estimated_cost' => 10000,
             'timeline_days' => 45,
             'proposal_message' => 'I can do this!'
         ]);
@@ -71,7 +71,7 @@ class GoldenFlowTest extends TestCase
 
         // Pro 2 Submits Quote (will be rejected later)
         $quote2Response = $this->actingAs($pro2)->postJson("/api/v1/projects/{$project->id}/quotes", [
-            'amount' => 12000,
+            'estimated_cost' => 12000,
             'timeline_days' => 40,
             'proposal_message' => 'I can do it better!'
         ]);
