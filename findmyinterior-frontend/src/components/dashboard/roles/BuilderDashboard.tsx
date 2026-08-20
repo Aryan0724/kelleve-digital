@@ -95,7 +95,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
             <DashboardProfileCard
               fetchDashboard={fetchDashboard}
               roleLabel="Builder & Developer"
-              onEditProfile={() => setActiveTab("profile")}
+              onEditProfile={() => setActiveTab("business_profile")}
               extraContent={
                 <div className="w-full space-y-2 mt-2">
                   <div className="w-full bg-orange-50 border border-orange-100 rounded-lg p-3 text-left flex justify-between items-center">

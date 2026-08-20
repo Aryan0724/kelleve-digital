@@ -97,7 +97,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
             <DashboardProfileCard
               fetchDashboard={fetchDashboard}
               roleLabel={user?.professional_type?.replace(/_/g, ' ') || user?.role?.replace(/_/g, ' ') || "Professional"}
-              onEditProfile={() => setActiveTab("profile")}
+              onEditProfile={() => setActiveTab("business_profile")}
               extraContent={
                 <>
                   {((user as any)?.is_verified || data?.user?.is_verified) && (

@@ -98,7 +98,7 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                     )}
                   </div>
                   <div>
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex flex-wrap items-center gap-2 mb-1">
                       <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>
                       <BookmarkButton id={listing.id} type="Listing" />
                       {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 ml-2" title="Elite Professional">Elite</Badge>}
@@ -118,12 +118,12 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                     <div className="flex items-center text-slate-500 mb-2">
                       <MapPin className="h-4 w-4 mr-1" /> {[listing.address, listing.city, listing.district, 'Bihar', 'India'].filter(Boolean).join(', ')}
                     </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex flex-wrap items-center gap-3">
                     <Badge variant="secondary">{listing.category?.name}</Badge>
                     <div className="flex items-center">
                       <Star className="h-4 w-4 fill-amber-400 text-amber-400 mr-1" />
                       <span className="font-semibold text-slate-900 mr-1">{listing.avg_rating.toFixed(1)}</span>
-                      <span className="text-slate-500 text-sm">({listing.review_count} reviews)</span>
+                      <span className="text-slate-500 text-sm">({listing.reviews ? listing.reviews.length : 0} reviews)</span>
                     </div>
                     {listing.trust_score > 0 && (
                       <div className="flex items-center">

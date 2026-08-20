@@ -727,10 +727,10 @@ export function CompleteProfileTab() {
                 <svg viewBox="0 0 36 36" className="w-16 h-16 -rotate-90">
                   <circle cx="18" cy="18" r="15.9" fill="none" stroke="#f1f5f9" strokeWidth="3" />
                   <circle cx="18" cy="18" r="15.9" fill="none" stroke="#ea580c" strokeWidth="3"
-                    strokeDasharray={`${completionScore} ${100 - completionScore}`} strokeLinecap="round" />
+                    strokeDasharray={`${user?.profile_completion_score || 0} ${100 - (user?.profile_completion_score || 0)}`} strokeLinecap="round" />
                 </svg>
                 <div className="absolute inset-0 flex items-center justify-center text-sm font-bold text-orange-600">
-                  {completionScore}%
+                  {user?.profile_completion_score || 0}%
                 </div>
               </div>
               <span className="text-xs text-slate-500 font-medium">Profile</span>

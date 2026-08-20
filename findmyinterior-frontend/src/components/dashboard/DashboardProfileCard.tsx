@@ -2,8 +2,11 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Settings } from "lucide-react";
+import { Settings, ExternalLink, Loader2 } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
+import { useEffect, useState } from "react";
+import api from "@/lib/api";
+import Link from "next/link";
 
 export function DashboardProfileCard({ 
   fetchDashboard,
@@ -19,6 +22,22 @@ export function DashboardProfileCard({
   onEditProfile?: () => void
 }) {
   const { user } = useAuthStore();
+  const [listingSlug, setListingSlug] = useState<string | null>(null);
+  const [loadingSlug, setLoadingSlug] = useState(false);
+
+  const isBusiness = user?.role && ['interior_designer', 'interior_company', 'contractor', 'architect', 'supplier', 'material_supplier', 'builder', 'business', 'worker', 'skilled_worker'].includes(user.role);
+
+  useEffect(() => {
+    if (!isBusiness) return;
+    setLoadingSlug(true);
+    api.get("/user/professional-profile")
+      .then(res => {
+        const slug = res.data?.data?.slug;
+        if (slug) setListingSlug(slug);
+      })
+      .catch(() => {})
+      .finally(() => setLoadingSlug(false));
+  }, [isBusiness]);
 
   return (
     <Card className="overflow-hidden shadow-sm hover:shadow-md transition-shadow">
@@ -37,21 +56,60 @@ export function DashboardProfileCard({
         </div>
         <h3 className="font-bold text-xl">{user?.name}</h3>
         <div className="flex flex-col gap-2 items-center justify-center mt-2 mb-2">
-          <div className="flex gap-2">
+          <div className="flex gap-2 flex-wrap justify-center">
             <Badge className="capitalize bg-orange-100 text-orange-700 hover:bg-orange-200 border-0" variant="secondary">{roleLabel}</Badge>
             {(user?.is_verified_business || user?.verification_level === 'business_verified' || user?.verification_level === 'site_verified') && (
               <Badge className="bg-green-600 hover:bg-green-700 text-white border-0">Verified</Badge>
             )}
           </div>
-          {onEditProfile && (
-            <button 
-              onClick={onEditProfile} 
-              className="mt-1 flex items-center gap-1.5 px-4 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-xs font-semibold transition-all shadow-sm"
-            >
-              <Settings className="w-3.5 h-3.5" />
-              Edit Profile
-            </button>
-          )}
+          <div className="flex items-center gap-2 flex-wrap justify-center">
+            {onEditProfile && (
+              <button 
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  onEditProfile();
+                  // Force scroll for mobile to ensure visual feedback
+                  if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+                    setTimeout(() => {
+                      const contentArea = document.getElementById('dashboard-content-area');
+                      if (contentArea) {
+                        const y = contentArea.getBoundingClientRect().top + window.scrollY - 80;
+                        window.scrollTo({ top: y, behavior: 'smooth' });
+                      }
+                    }, 50);
+                  }
+                }} 
+                className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-full text-xs font-semibold transition-all shadow-sm cursor-pointer z-50 relative"
+              >
+                <Settings className="w-3.5 h-3.5 pointer-events-none" />
+                <span className="pointer-events-none">Edit Profile</span>
+              </button>
+            )}
+            {isBusiness && (
+              loadingSlug ? (
+                <span className="flex items-center gap-1.5 px-4 py-1.5 bg-orange-50 text-orange-400 rounded-full text-xs font-semibold">
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                  Loading...
+                </span>
+              ) : listingSlug ? (
+                <Link
+                  href={`/professionals/${listingSlug}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-4 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-full text-xs font-semibold transition-all shadow-sm"
+                >
+                  <ExternalLink className="w-3.5 h-3.5" />
+                  View Public Listing
+                </Link>
+              ) : (
+                <span className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-50 text-slate-400 rounded-full text-xs font-semibold border border-dashed border-slate-200">
+                  Complete profile to get public listing
+                </span>
+              )
+            )}
+          </div>
         </div>
         {description && <p className="text-sm text-slate-500 dark:text-slate-400">{description}</p>}
         {extraContent && (

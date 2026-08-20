@@ -83,6 +83,19 @@ export function BookmarkButton({ id, type, className, variant = "outline", size 
       const res = await api.post("/user/bookmarks/toggle", { id, type });
       setIsBookmarked(res.data.is_bookmarked);
       
+      // Update global cache so it stays in sync across component mounts
+      if (globalBookmarksCache) {
+        if (res.data.is_bookmarked) {
+          // Add if not exists
+          if (!globalBookmarksCache.some((b: any) => b.item_id === id && b.type === type)) {
+            globalBookmarksCache.push({ item_id: id, type });
+          }
+        } else {
+          // Remove
+          globalBookmarksCache = globalBookmarksCache.filter((b: any) => !(b.item_id === id && b.type === type));
+        }
+      }
+      
       if (res.data.is_bookmarked) {
         toast.success("Saved to bookmarks");
       } else {

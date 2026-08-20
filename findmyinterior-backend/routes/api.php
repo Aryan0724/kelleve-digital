@@ -382,6 +382,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('system-health', [\App\Http\Controllers\Admin\SystemHealthController::class, 'index']);
         Route::get('system-health/logs', [\App\Http\Controllers\Admin\SystemHealthController::class, 'logs']);
     });
+
+    require __DIR__.'/api_c1_marketplace.php';
 });
 
 Route::get('clear-cache', function () {
@@ -393,7 +395,3 @@ Route::get('clear-cache', function () {
     \Illuminate\Support\Facades\Artisan::call('cache:clear');
     return response()->json(['success' => true, 'message' => 'OPcache, route, config, and application cache reset successfully.']);
 });
-
-
-
-require __DIR__.'/api_c1_marketplace.php';

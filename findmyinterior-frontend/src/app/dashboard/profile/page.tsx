@@ -254,13 +254,13 @@ export default function ProfilePage() {
     <div className="bg-slate-50 min-h-screen pb-20">
       <div className="bg-white border-b sticky top-0 z-10">
         <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2 font-bold text-slate-900">
-            <Link href="/dashboard" className="text-orange-600 hover:text-orange-700">← Dashboard</Link>
-            <span className="text-slate-300">/</span>
-            My Professional Profile
+          <div className="flex items-center gap-2 font-bold text-slate-900 flex-wrap">
+            <Link href="/dashboard" className="text-orange-600 hover:text-orange-700 whitespace-nowrap">← Dashboard</Link>
+            <span className="text-slate-300 hidden sm:inline">/</span>
+            <span className="whitespace-nowrap">My Professional Profile</span>
           </div>
           {listing && listing.slug && (
-            <Link href={`/professionals/${listing.slug}`} target="_blank" className="text-sm font-semibold text-blue-600 hover:underline">
+            <Link href={`/professionals/${listing.slug}`} target="_blank" className="text-sm font-semibold text-blue-600 hover:underline mt-2 sm:mt-0 whitespace-nowrap">
               View Public Profile →
             </Link>
           )}

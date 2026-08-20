@@ -133,29 +133,29 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                 <React.Fragment key={listing.id}>
                   {/* Grid layout omitted for brevity as the focus is List view. Render a simpler grid card here or re-use existing. */}
                   <Link href={`/professionals/${listing.slug}`}>
-                    <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-all border-slate-200 group">
-                      <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
+                    <Card className="h-full flex flex-col overflow-hidden hover:shadow-lg transition-all border-slate-200 dark:border-slate-800 dark:bg-slate-900 group">
+                      <div className="relative h-48 w-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                         {(listing.user?.avatar || listing.cover_image) ? (
-                          <div className="w-full h-full bg-white flex items-center justify-center p-2">
+                          <div className="w-full h-full bg-white dark:bg-slate-900 flex items-center justify-center p-2">
                             <img src={listing.user?.avatar || listing.cover_image} alt={listing.title} className="max-w-full max-h-full object-contain group-hover:scale-105 transition-transform duration-500" />
                           </div>
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">No Image</div>
+                          <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500">No Image</div>
                         )}
                       </div>
                       <CardContent className="p-4 flex-1">
                         <div className="flex items-center gap-2 mb-2">
-                          <h3 className="font-bold text-lg text-slate-900 line-clamp-1">{listing.title}</h3>
+                          <h3 className="font-bold text-lg text-slate-900 dark:text-slate-100 line-clamp-1">{listing.title}</h3>
                         </div>
-                        <div className="flex items-center text-sm text-slate-500">
-                          <MapPin className="h-4 w-4 mr-1" /> <span className="line-clamp-1">{formatLocation(listing.city, listing.district)}</span>
+                        <div className="flex items-center text-sm text-slate-500 dark:text-slate-400">
+                          <MapPin className="h-4 w-4 mr-1 flex-shrink-0" /> <span className="line-clamp-1">{formatLocation(listing.city, listing.district)}</span>
                         </div>
                       </CardContent>
                     </Card>
                   </Link>
                 </React.Fragment>
               )) : (
-                <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-20 text-slate-500">
+                <div className="col-span-1 md:col-span-2 lg:col-span-3 text-center py-20 text-slate-500 dark:text-slate-400">
                   No professionals found matching your search criteria.
                 </div>
               )}
@@ -166,15 +166,15 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                 const tags = [...(listing.products || []), ...(listing.services || [])].slice(0, 4);
                 return (
                   <React.Fragment key={listing.id}>
-                    <Card className="flex flex-col md:flex-row overflow-hidden hover:shadow-lg transition-all border-slate-200 bg-white group">
+                    <Card className="flex flex-col md:flex-row overflow-hidden hover:shadow-lg transition-all border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 group">
                       {/* Left Image Section */}
-                      <div className="relative w-full md:w-72 h-64 md:h-auto bg-slate-100 flex-shrink-0">
+                      <div className="relative w-full md:w-72 h-64 md:h-auto bg-slate-100 dark:bg-slate-800 flex-shrink-0">
                         {(listing.user?.avatar || listing.cover_image) ? (
-                          <div className="w-full h-full bg-white flex items-center justify-center p-4">
+                          <div className="w-full h-full bg-white dark:bg-slate-900 flex items-center justify-center p-4">
                             <img src={listing.user?.avatar || listing.cover_image} alt={listing.title} className="max-w-full max-h-full object-contain" />
                           </div>
                         ) : (
-                          <div className="w-full h-full flex items-center justify-center bg-slate-200 text-slate-400">No Image</div>
+                          <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500">No Image</div>
                         )}
                         {(listing.is_verified || listing.verification_level === 'verified_business') && (
                           <Badge className="absolute top-3 left-3 bg-green-600 hover:bg-green-700 text-white border-0">Verified</Badge>
@@ -195,7 +195,7 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                         <div>
                           <div className="flex justify-between items-start mb-1">
                             <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-xl text-slate-900 group-hover:text-orange-600 transition-colors">
+                              <h3 className="font-bold text-xl text-slate-900 dark:text-slate-100 group-hover:text-orange-600 transition-colors">
                                 {listing.title}
                               </h3>
                             </div>
@@ -205,26 +205,26 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                           </div>
                           
                           <div className="flex items-center gap-2 mb-3">
-                            <span className="text-sm font-bold text-slate-700">{listing.avg_rating.toFixed(1)}</span>
+                            <span className="text-sm font-bold text-slate-700 dark:text-slate-300">{listing.avg_rating.toFixed(1)}</span>
                             <div className="flex text-amber-400">
                               {[...Array(5)].map((_, i) => (
-                                <Star key={i} className={`h-4 w-4 ${i < Math.floor(listing.avg_rating) ? 'fill-current' : 'text-slate-200'}`} />
+                                <Star key={i} className={`h-4 w-4 ${i < Math.floor(listing.avg_rating) ? 'fill-current' : 'text-slate-200 dark:text-slate-700'}`} />
                               ))}
                             </div>
-                            <span className="text-sm text-slate-500">({listing.review_count})</span>
+                            <span className="text-sm text-slate-500 dark:text-slate-400">({listing.review_count})</span>
                           </div>
 
-                          <div className="flex items-center text-sm text-slate-500 mb-4">
+                          <div className="flex items-center text-sm text-slate-500 dark:text-slate-400 mb-4">
                             <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
                             <span className="truncate">{formatLocation(listing.city, listing.district)}</span>
                           </div>
 
                           {tags.length > 0 && (
-                            <div className="flex flex-wrap gap-2 mb-4 text-sm text-slate-700 font-medium">
+                            <div className="flex flex-wrap gap-2 mb-4 text-sm text-slate-700 dark:text-slate-300 font-medium">
                               {tags.map((tag, i) => (
                                 <React.Fragment key={i}>
                                   <span>{tag}</span>
-                                  {i < tags.length - 1 && <span className="text-slate-300">•</span>}
+                                  {i < tags.length - 1 && <span className="text-slate-300 dark:text-slate-600">•</span>}
                                 </React.Fragment>
                               ))}
                             </div>
@@ -232,34 +232,34 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
 
                           <div className="flex flex-wrap gap-2 mb-4">
                             {listing.years_experience > 0 && (
-                              <Badge variant="outline" className="bg-slate-50 text-slate-700 flex items-center gap-1 font-medium border-slate-200">
-                                <ShieldCheck className="w-3.5 h-3.5 text-slate-400" /> {listing.years_experience}+ Years
+                              <Badge variant="outline" className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1 font-medium border-slate-200 dark:border-slate-700">
+                                <ShieldCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {listing.years_experience}+ Years
                               </Badge>
                             )}
                             {(listing.achievements && listing.achievements.length > 0) && (
-                              <Badge variant="outline" className="bg-slate-50 text-slate-700 flex items-center gap-1 font-medium border-slate-200">
-                                <ShieldCheck className="w-3.5 h-3.5 text-slate-400" /> {listing.achievements[0]}
+                              <Badge variant="outline" className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1 font-medium border-slate-200 dark:border-slate-700">
+                                <ShieldCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {listing.achievements[0]}
                               </Badge>
                             )}
                             {(listing.availability || listing.services?.includes('Delivery')) && (
-                              <Badge variant="outline" className="bg-green-50 text-green-700 flex items-center gap-1 font-medium border-green-200">
-                                <ShieldCheck className="w-3.5 h-3.5 text-green-500" /> {listing.availability?.includes('Delivery') ? listing.availability : 'Timely Delivery'}
+                              <Badge variant="outline" className="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center gap-1 font-medium border-green-200 dark:border-green-800">
+                                <ShieldCheck className="w-3.5 h-3.5 text-green-500 dark:text-green-400" /> {listing.availability?.includes('Delivery') ? listing.availability : 'Timely Delivery'}
                               </Badge>
                             )}
                           </div>
                         </div>
 
-                        <div className="flex flex-col xl:flex-row gap-6 mt-4 xl:items-end justify-between border-t border-slate-100 pt-4">
+                        <div className="flex flex-col xl:flex-row gap-6 mt-4 xl:items-end justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
                           <div className="flex-1">
-                            <p className="text-sm text-slate-600 line-clamp-2 mb-3">
+                            <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">
                               {listing.description || 'Verified professional ready to help with your next project.'}
                             </p>
                             {listing.business_hours ? (
-                              <div className="flex items-center text-sm text-green-600 font-medium">
-                                <span className="flex items-center justify-center w-4 h-4 rounded-full bg-green-100 mr-2">
+                              <div className="flex items-center text-sm text-green-600 dark:text-green-500 font-medium">
+                                <span className="flex items-center justify-center w-4 h-4 rounded-full bg-green-100 dark:bg-green-900/40 mr-2">
                                   <span className="w-2 h-2 rounded-full bg-green-500"></span>
                                 </span>
-                                Open now <span className="text-slate-400 mx-2">•</span> <span className="text-slate-500 font-normal">{listing.business_hours}</span>
+                                Open now <span className="text-slate-400 dark:text-slate-600 mx-2">•</span> <span className="text-slate-500 dark:text-slate-400 font-normal">{listing.business_hours}</span>
                               </div>
                             ) : null}
                           </div>

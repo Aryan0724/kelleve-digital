@@ -68,10 +68,11 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
             </Link>
           ))}
 
+          {/* View All card - hidden on mobile (header has a View All link), visible on desktop grid */}
           <Link 
             href="/professionals"
             prefetch={true}
-            className="flex flex-col items-center justify-center gap-1.5 p-3 md:p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 min-w-[100px] w-[100px] md:min-w-0 md:w-auto xl:w-[calc(11.11%-15px)] shrink-0 hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-lg active:scale-95 cursor-pointer transition-all duration-150"
+            className="hidden md:flex flex-col items-center justify-center gap-1.5 p-3 md:p-5 bg-white dark:bg-slate-800 rounded-2xl shadow-[0_2px_15px_-4px_rgba(0,0,0,0.08)] border border-slate-100 dark:border-slate-700 md:min-w-0 md:w-auto hover:border-orange-200 dark:hover:border-orange-700 hover:shadow-lg active:scale-95 cursor-pointer transition-all duration-150"
           >
             <div className="relative flex items-center justify-center w-12 h-12 md:w-16 md:h-16 mb-1">
               <div className="absolute w-8 h-8 md:w-10 md:h-10 bg-orange-50 dark:bg-orange-900/40 rounded-full bottom-0 left-0"></div>
