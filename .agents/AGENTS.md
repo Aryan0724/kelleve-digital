@@ -21,3 +21,11 @@ When working inside the `truedial-frontend` directory, you MUST strictly adhere 
  
 ## 5. Destructive Database Commands
 - **NEVER** run \php artisan migrate:fresh\, \migrate:refresh\, or \db:wipe\ without asking for the user's explicit, written permission first. Data loss must be avoided at all costs.
+
+## 6. Production & Engineering Standards
+- **Never modify production directly.** Production is an output of the repository, never the place where source code is authored.
+- **Never modify unrelated code while fixing an issue.** 
+- **Never assume a feature works because the UI renders.** Trace failures through the full stack. 
+- **Read existing architecture and business rules before modifying code.** 
+- **After every change, run the relevant automated tests and regression suite.** 
+- **Never introduce new business terminology or behaviour without updating the canonical specification.**
