@@ -122,7 +122,7 @@ class OwnershipTest extends TestCase
 
         $quote = Bid::create([
             'requirement_id' => $project->id,
-            'user_id' => $pro->id,
+            'professional_id' => $pro->id,
             'requirement_type' => 'project',
             'status' => 'awarded'
         ]);
@@ -162,7 +162,7 @@ class OwnershipTest extends TestCase
 
         $quote = Bid::create([
             'requirement_id' => $project->id,
-            'user_id' => $pro->id,
+            'professional_id' => $pro->id,
             'requirement_type' => 'project',
             'status' => 'awarded'
         ]);
@@ -245,7 +245,7 @@ class OwnershipTest extends TestCase
 
         $quoteOnProject2 = Bid::create([
             'requirement_id' => $project2->id,
-            'user_id' => $pro->id,
+            'professional_id' => $pro->id,
             'requirement_type' => 'project',
             'status' => 'pending'
         ]);
