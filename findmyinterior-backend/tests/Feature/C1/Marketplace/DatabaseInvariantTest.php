@@ -37,12 +37,15 @@ class DatabaseInvariantTest extends TestCase
         $project = Requirement::create([
             'user_id' => $user->id,
             'title' => 'Need 3BHK Design',
+            'description' => 'Looking for full home interior',
             'category_id' => Category::first()->id,
             'city_id' => City::first()->id,
             'district_id' => District::first()->id,
             'city' => 'Patna',
             'district' => 'Patna',
             'project_type' => 'residential',
+            'name' => 'John Doe',
+            'phone' => '9876543210',
             'status' => 'open'
         ]);
 
