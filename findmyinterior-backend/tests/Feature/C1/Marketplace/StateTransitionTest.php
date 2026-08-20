@@ -54,9 +54,12 @@ class StateTransitionTest extends TestCase
         // 3. Pro tries to bid on the Completed Project
         $bidData = [
             'requirement_id' => $project->id,
+            'requirement_type' => 'project',
             'amount' => 500000,
+            'estimated_cost' => 500000,
             'timeline_days' => 30,
-            'proposal_message' => 'I can do this!'
+            'proposal_message' => 'I can do this!',
+            'experience_years' => 5
         ];
 
         $response = $this->actingAs($pro)->postJson('/api/v1/bids', $bidData);
