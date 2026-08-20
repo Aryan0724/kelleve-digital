@@ -15,7 +15,15 @@ use Tests\TestCase;
 
 class GoldenFlowTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use RefreshDatabase, WithFaker;\n
+    protected function setUp(): void
+    {
+        parent::setUp();
+        \ = District::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'city_id' => City::firstOrCreate(['slug' => 'patna', 'state_id' => 1], ['name' => 'Patna'])->id]);
+        Category::firstOrCreate(['slug' => 'test-cat'], ['name' => 'Test', 'is_active' => true]);
+    }
+
+
 
     public function test_golden_flow_e2e_project_lifecycle()
     {
