@@ -52,7 +52,9 @@ class ProjectQuoteService
                         ->where('id', '!=', $quote->id)
                         ->update(['status' => 'rejected']);
             
-            $lockedProject->update(['status' => 'closed']);
+            // Canonical state machine: Open → (Award) → Awarded
+            // NOT "closed". Closed is a terminal state set by the customer after completion.
+            $lockedProject->update(['status' => 'awarded']);
 
             return $quote->fresh();
         });
