@@ -54,7 +54,7 @@ class GoldenFlowTest extends TestCase
             'city' => 'Patna',
             'district' => 'Patna',
             'address' => '123 Main St',
-            'details' => 'Full interior work',
+            'description' => 'Full interior work',
             'requirement_type' => 'project'
         ]);
 
