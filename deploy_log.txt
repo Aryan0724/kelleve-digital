@@ -1,0 +1,345 @@
+DEPLOYMENT LOG
+
+[EXEC] cd /var/www/find-my-interior && git rev-parse HEAD
+fe9bebe09e4b336521a86d777eb2758188eb82ec
+
+[EXEC] docker ps --format 'table {{.Names}}	{{.Status}}'
+NAMES                       STATUS
+fmi_backend                 Up About a minute
+fmi_frontend                Up About a minute
+fmi_mysql                   Up 3 days
+truedial_staging_frontend   Up 5 days
+fmi_redis                   Up 5 days
+fmi_nginx                   Up 5 days
+
+[EXEC] docker logs --tail 20 fmi_backend
+   INFO  Application cache cleared successfully.  
+
+
+   INFO  The [public/storage] link has been connected to [storage/app/public].  
+
+
+   INFO  Nothing to migrate.  
+
+2026-08-20 19:32:19,785 CRIT Supervisor is running as root.  Privileges were not dropped because no user is specified in the config file.  If you intend to run as root, you can set user=root in the config file to avoid this message.
+2026-08-20 19:32:19,788 INFO supervisord started with pid 1
+2026-08-20 19:32:20,792 INFO spawned: 'cron' with pid 29
+2026-08-20 19:32:20,797 INFO spawned: 'nginx' with pid 30
+2026-08-20 19:32:20,802 INFO spawned: 'php-fpm' with pid 31
+2026-08-20 19:32:20,805 INFO spawned: 'queue-worker' with pid 32
+2026-08-20 19:32:21,838 INFO success: cron entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-08-20 19:32:21,838 INFO success: nginx entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-08-20 19:32:21,838 INFO success: php-fpm entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+2026-08-20 19:32:21,839 INFO success: queue-worker entered RUNNING state, process has stayed up for > than 1 seconds (startsecs)
+STDERR: [20-Aug-2026 19:32:20] NOTICE: fpm is running, pid 31
+[20-Aug-2026 19:32:20] NOTICE: ready to handle connections
+
+[EXEC] docker logs --tail 20 fmi_frontend
+
+> findmyinterior-frontend@0.1.0 start
+> next start
+
+▲ Next.js 16.2.9
+- Local:         http://localhost:3000
+- Network:       http://172.18.0.2:3000
+✓ Ready in 172ms
+
+[EXEC] docker inspect -f '{{ json .Mounts }}' fmi_backend
+[{"Type":"volume","Name":"find-my-interior_storage_data","Source":"/var/lib/docker/volumes/find-my-interior_storage_data/_data","Destination":"/var/www/html/storage/app/public","Driver":"local","Mode":"rw","RW":true,"Propagation":""},{"Type":"volume","Name":"find-my-interior_backups_data","Source":"/var/lib/docker/volumes/find-my-interior_backups_data/_data","Destination":"/var/www/backups","Driver":"local","Mode":"rw","RW":true,"Propagation":""}]
+
+[EXEC] cd /var/www/find-my-interior && git fetch origin && git reset --hard origin/main
+HEAD is now at fe9bebe chore: implement FMI Stability System constitution and architecture
+
+[EXEC] cd /var/www/find-my-interior && CACHE_BUST=$(date +%s) docker compose up --build -d
+#1 [internal] load local bake definitions
+#1 reading from stdin 1.19kB done
+#1 DONE 0.0s
+
+#2 [frontend internal] load build definition from Dockerfile
+#2 transferring dockerfile: 804B done
+#2 DONE 0.0s
+
+#3 [backend internal] load build definition from Dockerfile
+#3 transferring dockerfile: 1.84kB done
+#3 DONE 0.0s
+
+#4 [backend internal] load metadata for docker.io/library/php:8.4-fpm-alpine
+#4 ...
+
+#5 [backend internal] load metadata for docker.io/library/composer:latest
+#5 DONE 0.8s
+
+#4 [backend internal] load metadata for docker.io/library/php:8.4-fpm-alpine
+#4 DONE 0.8s
+
+#6 [backend internal] load .dockerignore
+#6 transferring context: 2B done
+#6 DONE 0.0s
+
+#7 [frontend internal] load metadata for docker.io/library/node:22-alpine
+#7 DONE 0.8s
+
+#8 [frontend internal] load .dockerignore
+#8 transferring context: 2B done
+#8 DONE 0.0s
+
+#9 [backend stage-0  1/13] FROM docker.io/library/php:8.4-fpm-alpine@sha256:5992f8b7433fe7fa96dfbf67746c86d6c41bc91e686eac38fe531c72a02e40e4
+#9 resolve docker.io/library/php:8.4-fpm-alpine@sha256:5992f8b7433fe7fa96dfbf67746c86d6c41bc91e686eac38fe531c72a02e40e4 0.0s done
+#9 DONE 0.0s
+
+#10 [backend] FROM docker.io/library/composer:latest@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040
+#10 resolve docker.io/library/composer:latest@sha256:4d71c3c2109c61d5415544264b59ad4087e4c5b7244481723664138fd36d5040 0.0s done
+#10 DONE 0.0s
+
+#11 [frontend 1/6] FROM docker.io/library/node:22-alpine@sha256:c610fcdfb1d5b4740dd70c284ed3cb16bb857e0f7166196e36a5501df7a3aa32
+#11 resolve docker.io/library/node:22-alpine@sha256:c610fcdfb1d5b4740dd70c284ed3cb16bb857e0f7166196e36a5501df7a3aa32 0.0s done
+#11 DONE 0.0s
+
+#12 [frontend internal] load build context
+#12 transferring context: 50.85kB 0.0s done
+#12 DONE 0.0s
+
+#13 [frontend 3/6] COPY package.json package-lock.json* ./
+#13 CACHED
+
+#14 [frontend 2/6] WORKDIR /app
+#14 CACHED
+
+#15 [frontend 4/6] RUN npm install
+#15 CACHED
+
+#16 [frontend 5/6] COPY . .
+#16 CACHED
+
+#17 [backend internal] load build context
+#17 transferring context: 2.61MB 0.5s done
+#17 DONE 0.5s
+
+#18 [backend stage-0  2/13] RUN apk add --no-cache     curl     libpng-dev     libxml2-dev     postgresql-dev     zip     unzip     nginx     supervisor     mariadb-client     tar     gzip
+#18 CACHED
+
+#19 [backend stage-0  3/13] RUN apk add --no-cache pcre-dev autoconf 		dpkg-dev dpkg 		file 		g++ 		gcc 		libc-dev 		make 		pkgconf 		re2c     && pecl install redis     && docker-php-ext-enable redis     && docker-php-ext-install pdo_mysql pdo_pgsql gd xml     && apk del pcre-dev autoconf 		dpkg-dev dpkg 		file 		g++ 		gcc 		libc-dev 		make 		pkgconf 		re2c
+#19 CACHED
+
+#20 [backend stage-0  5/13] COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+#20 CACHED
+
+#21 [backend stage-0  4/13] RUN mv "/usr/local/etc/php/php.ini-production" "/usr/local/etc/php/php.ini" &&     sed -i 's/upload_max_filesize = 2M/upload_max_filesize = 20M/g' "/usr/local/etc/php/php.ini" &&     sed -i 's/post_max_size = 8M/post_max_size = 25M/g' "/usr/local/etc/php/php.ini" &&     sed -i 's/memory_limit = 128M/memory_limit = 256M/g' "/usr/local/etc/php/php.ini"
+#21 CACHED
+
+#22 [backend stage-0  6/13] WORKDIR /var/www/html
+#22 CACHED
+
+#23 [backend stage-0  7/13] COPY . .
+#23 DONE 4.4s
+
+#24 [frontend 6/6] RUN echo "Build: 1787254414" && npm run build
+#24 0.228 Build: 1787254414
+#24 0.406 
+#24 0.406 > findmyinterior-frontend@0.1.0 build
+#24 0.406 > next build
+#24 0.406 
+#24 0.901 Attention: Next.js now collects completely anonymous telemetry regarding usage.
+#24 0.902 This information is used to shape Next.js' roadmap and prioritize features.
+#24 0.902 You can learn more, including how to opt-out if you'd not like to participate in this anonymous program, by visiting the following URL:
+#24 0.902 https://nextjs.org/telemetry
+#24 0.902 
+#24 0.905 Warning: Custom Cache-Control headers detected for the following routes:
+#24 0.905   - /_next/static/:path*
+#24 0.905 
+#24 0.905 Setting a custom Cache-Control header can break Next.js development behavior.
+#24 0.927 ▲ Next.js 16.2.9 (Turbopack)
+#24 0.927 - Environments: .env.production, .env
+#24 0.928 
+#24 1.007   Creating an optimized production build ...
+#24 ...
+
+#25 [backend stage-0  8/13] RUN composer install --optimize-autoloader --no-dev
+#25 0.422 Installing dependencies from lock file
+#25 0.424 Verifying lock file contents can be installed on current platform.
+#25 0.729 Nothing to install, update or remove
+#25 0.738 Generating optimized autoload files
+#25 1.665 > Illuminate\Foundation\ComposerScripts::postAutoloadDump
+#25 1.679 > @php artisan package:discover --ansi
+#25 1.814 
+#25 1.814   [37;44m INFO [39;49m Discovering packages.  
+#25 1.814 
+#25 1.817   darkaonline/l5-swagger [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 1.819   intervention/image-laravel [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 1.819   laravel/sanctum [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 1.819   laravel/tinker [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 1.819   nesbot/carbon [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 1.819   nunomaduro/termwind [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 1.819   sentry/sentry-laravel [90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m[90m.[39m [32;1mDONE[39;22m
+#25 1.819 
+#25 1.837 67 packages you are using are looking for funding.
+#25 1.838 Use the `composer fund` command to find out more!
+#25 DONE 1.9s
+
+#26 [backend stage-0  9/13] RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+#26 DONE 0.4s
+
+#24 [frontend 6/6] RUN echo "Build: 1787254414" && npm run build
+#24 ...
+
+#27 [backend stage-0 10/13] COPY docker/nginx.conf /etc/nginx/http.d/default.conf
+#27 DONE 0.0s
+
+#28 [backend stage-0 11/13] COPY docker/www.conf /usr/local/etc/php-fpm.d/www.conf
+#28 DONE 0.0s
+
+#29 [backend stage-0 12/13] COPY docker/supervisord.conf /etc/supervisord.conf
+#29 DONE 0.1s
+
+#30 [backend stage-0 13/13] RUN crontab /var/www/html/docker/backup-cron || true
+#30 DONE 0.2s
+
+#24 [frontend 6/6] RUN echo "Build: 1787254414" && npm run build
+#24 ...
+
+#31 [backend] exporting to image
+#31 exporting layers
+#31 exporting layers 4.0s done
+#31 exporting manifest sha256:c1bae08a0644c098818e5ed1ae5bd69ed81947db58a68ee2e54c7e68550537fc done
+#31 exporting config sha256:cb9568efd78f4f1b0332a7844f20ba915e8ccb97d6c136ef52c5ceae3c88702e done
+#31 exporting attestation manifest sha256:80adabcd4b503ed26dbb23bec928166d10650a454f577386f8f2eae99f16ff48 done
+#31 exporting manifest list sha256:86ce2f80b22f428ddab44154651b2cb6668c4af059e5b6a52b37dfe78884881c done
+#31 naming to docker.io/library/find-my-interior-backend:latest done
+#31 unpacking to docker.io/library/find-my-interior-backend:latest
+#31 unpacking to docker.io/library/find-my-interior-backend:latest 2.9s done
+#31 DONE 6.9s
+
+#32 [backend] resolving provenance for metadata file
+#32 DONE 0.0s
+
+#24 [frontend 6/6] RUN echo "Build: 1787254414" && npm run build
+#24 20.84 ✓ Compiled successfully in 19.6s
+#24 20.85   Running TypeScript ...
+#24 34.12   Finished TypeScript in 13.3s ...
+#24 34.13   Collecting page data using 1 worker ...
+#24 34.73   Generating static pages using 1 worker (0/37) ...
+#24 35.22   Generating static pages using 1 worker (9/37) 
+#24 35.27   Generating static pages using 1 worker (18/37) 
+#24 35.47   Generating static pages using 1 worker (27/37) 
+#24 35.53 ✓ Generating static pages using 1 worker (37/37) in 795ms
+#24 35.54   Finalizing page optimization ...
+#24 35.54 
+#24 35.55 Route (app)
+#24 35.55 ┌ ○ /
+#24 35.55 ├ ○ /_not-found
+#24 35.55 ├ ƒ /[category]/[city]
+#24 35.55 ├ ○ /about
+#24 35.55 ├ ○ /admin
+#24 35.55 ├ ○ /advertise
+#24 35.55 ├ ƒ /blog
+#24 35.55 ├ ƒ /blog/[slug]
+#24 35.55 ├ ○ /compare
+#24 35.55 ├ ○ /compliance
+#24 35.55 ├ ○ /contact
+#24 35.55 ├ ○ /cost-calculator
+#24 35.55 ├ ○ /dashboard
+#24 35.55 ├ ƒ /dashboard/jobs/[id]
+#24 35.55 ├ ○ /dashboard/profile
+#24 35.55 ├ ƒ /dashboard/projects/[id]
+#24 35.55 ├ ƒ /dashboard/rfqs/[id]
+#24 35.55 ├ ○ /dispute-resolution
+#24 35.55 ├ ○ /enquiry
+#24 35.55 ├ ○ /forgot-password
+#24 35.55 ├ ○ /help
+#24 35.55 ├ ○ /jobs
+#24 35.55 ├ ○ /labour
+#24 35.55 ├ ƒ /leads
+#24 35.55 ├ ○ /login
+#24 35.55 ├ ƒ /materials
+#24 35.55 ├ ƒ /materials/[slug]
+#24 35.55 ├ ○ /messages
+#24 35.55 ├ ƒ /messages/[id]
+#24 35.55 ├ ƒ /pages/[slug]
+#24 35.55 ├ ○ /post-requirement
+#24 35.55 ├ ○ /pricing
+#24 35.55 ├ ○ /privacy
+#24 35.55 ├ ƒ /professionals
+#24 35.55 ├ ƒ /professionals/[slug]
+#24 35.55 ├ ○ /projects
+#24 35.55 ├ ƒ /projects/[slug]
+#24 35.55 ├ ○ /register
+#24 35.55 ├ ƒ /requirements/[id]
+#24 35.55 ├ ƒ /requirements/[id]/compare
+#24 35.55 ├ ○ /reset-password
+#24 35.55 ├ ○ /rfqs
+#24 35.55 ├ ○ /robots.txt
+#24 35.55 ├ ○ /sitemap.xml
+#24 35.55 ├ ○ /tender
+#24 35.55 ├ ○ /terms
+#24 35.55 ├ ○ /test-razorpay
+#24 35.55 ├ ƒ /workers
+#24 35.55 └ ƒ /workers/[slug]
+#24 35.55 
+#24 35.55 
+#24 35.55 ○  (Static)   prerendered as static content
+#24 35.55 ƒ  (Dynamic)  server-rendered on demand
+#24 35.55 
+#24 DONE 36.0s
+
+#33 [frontend] exporting to image
+#33 exporting layers
+#33 exporting layers 1.0s done
+#33 exporting manifest sha256:6d25c3cb3199d18e6e5d3b19c98ef85c425751dfb842484bbd91e3a949fe0395
+#33 exporting manifest sha256:6d25c3cb3199d18e6e5d3b19c98ef85c425751dfb842484bbd91e3a949fe0395 done
+#33 exporting config sha256:6e29e3c36beb345dd7839c6178ce4c01d5b7f3c758729be64ca962dbd9e4270b done
+#33 exporting attestation manifest sha256:98df0e9e094ae65f1c8becbaa76e06e2ac85241b529281f2be897918f37b28a5 done
+#33 exporting manifest list sha256:802cd3dc07cebad0e593ef93314374eca8b5f38c09c0e94a276b1fd33cfd3433 done
+#33 naming to docker.io/library/find-my-interior-frontend:latest done
+#33 unpacking to docker.io/library/find-my-interior-frontend:latest
+#33 unpacking to docker.io/library/find-my-interior-frontend:latest 0.2s done
+#33 DONE 1.3s
+
+#34 [frontend] resolving provenance for metadata file
+#34 DONE 0.0s
+STDERR: time="2026-08-20T19:33:34Z" level=warning msg="/var/www/find-my-interior/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+ Image find-my-interior-backend Building 
+ Image find-my-interior-frontend Building 
+ Image find-my-interior-backend Built 
+ Image find-my-interior-frontend Built 
+ Container fmi_mysql Running 
+ Container fmi_redis Running 
+ Container fmi_backend Recreate 
+ Container fmi_frontend Recreate 
+ Container fmi_frontend Recreated 
+ Container fmi_backend Recreated 
+ Container fmi_backend Starting 
+ Container fmi_frontend Starting 
+ Container fmi_frontend Started 
+ Container fmi_backend Started 
+
+[EXEC] cd /var/www/find-my-interior && docker compose exec -T backend php artisan migrate --force
+
+   INFO  Nothing to migrate.  
+
+STDERR: time="2026-08-20T19:34:29Z" level=warning msg="/var/www/find-my-interior/docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
+
+[EXEC] cd /var/www/find-my-interior && git rev-parse HEAD
+fe9bebe09e4b336521a86d777eb2758188eb82ec
+
+[EXEC] docker exec fmi_backend php -l /var/www/html/routes/api.php
+No syntax errors detected in /var/www/html/routes/api.php
+
+[EXEC] docker exec fmi_backend php artisan route:list > /dev/null
+
+[EXEC] docker exec fmi_backend php artisan db:show
+
+  MySQL ............................................................... 8.0.46  
+  Connection ........................................................... mysql  
+  Database .................................................... findmyinterior  
+  Host .................................................................... db  
+  Port .................................................................. 3306  
+  Username .......................................................... fmi_user  
+  URL ........................................................................  
+  Open Connections ......................................................... 2  
+  Tables .................................................................. 90  
+
+In Number.php line 461:
+                                                                    
+  The "intl" PHP extension is required to use the [format] method.  
+                                                                    
+

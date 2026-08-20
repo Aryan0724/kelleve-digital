@@ -1,0 +1,50 @@
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+Error: Failed to find Server Action "x". This request might be from an older or newer deployment.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error [InvariantError]: Invariant: Expected RSC response, got text/plain. This is a bug in Next.js.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.
+⨯ Error: The router state header was sent but could not be parsed.

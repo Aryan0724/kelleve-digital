@@ -23,7 +23,7 @@ class ProjectQuoteController extends Controller
     public function store(ProjectQuoteRequest $request, $id): JsonResponse
     {
         $user = Auth::user();
-        if (!$user->isBusiness()) {
+        if (!$user->isBusiness() && !$user->isWorker() && !$user->isBuilder()) {
             return response()->json(['message' => 'Only professionals can quote on projects.'], 403);
         }
 
