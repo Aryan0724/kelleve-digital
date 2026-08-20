@@ -207,6 +207,10 @@ class OpportunityProjectController extends Controller
             return $this->error('Unauthorized', 403);
         }
 
+        if ($requirement->status !== 'open') {
+            return $this->error('Cannot edit an awarded or closed project', 409);
+        }
+
         $requirement->update($request->all());
         return $this->success($requirement, 'Requirement updated successfully');
     }
@@ -219,7 +223,7 @@ class OpportunityProjectController extends Controller
         $isAdmin = in_array('admin', $user->roles->pluck('slug')->toArray());
         $isProfessional = ($user->id === $requirement->professional_id) || ($user->id === $requirement->awarded_vendor_id);
 
-        if ($user->id !== $requirement->user_id && !$isAdmin && !$isProfessional) {
+        if (!$isAdmin && !$isProfessional) {
             return $this->error('Unauthorized', 403);
         }
 

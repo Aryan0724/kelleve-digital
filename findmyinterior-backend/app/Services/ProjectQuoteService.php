@@ -42,6 +42,13 @@ class ProjectQuoteService
                 throw new InvalidArgumentException("Cannot accept quote. Project is already {$lockedProject->status}.");
             }
 
+            if ($quote->requirement_id !== $project->id) {
+                // If it's a completely different project, throw 404 behavior by throwing model not found?
+                // The controller handles InvalidArgumentException as 403, which might be okay or I can throw ModelNotFoundException
+                // Wait, if it doesn't belong, it's essentially a 404 (or 403). The test expects 404.
+                throw new \Illuminate\Database\Eloquent\ModelNotFoundException("Quote not found in this project.");
+            }
+
             if ($quote->status !== 'pending') {
                 throw new InvalidArgumentException("This quote cannot be accepted.");
             }
