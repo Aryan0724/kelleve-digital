@@ -136,7 +136,7 @@ class OwnershipTest extends TestCase
         ]);
 
         $response = $this->actingAs($pro)->postJson("/api/v1/projects/{$project->id}/progress", [
-            'status' => 'work_started'
+            'status' => 'in_progress'
         ]);
 
         $response->assertStatus(200);
@@ -184,7 +184,7 @@ class OwnershipTest extends TestCase
         ]);
 
         $response = $this->actingAs($randomPro)->postJson("/api/v1/projects/{$project->id}/progress", [
-            'status' => 'work_started'
+            'status' => 'in_progress'
         ]);
 
         $response->assertStatus(403);
