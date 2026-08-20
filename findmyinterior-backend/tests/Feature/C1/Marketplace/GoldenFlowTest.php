@@ -87,6 +87,7 @@ class GoldenFlowTest extends TestCase
         // 5. Negative path: Award a quote from another project
         $project2 = Requirement::create([
             'user_id' => $owner->id,
+            'title' => 'Another Golden Project',
             'project_type' => 'residential',
             'name' => 'John Doe',
             'phone' => '9876543210',
@@ -97,7 +98,7 @@ class GoldenFlowTest extends TestCase
             'city' => 'Patna',
             'district' => 'Patna',
             'address' => '123 Main St',
-            'details' => 'Another interior work',
+            'description' => 'Another interior work',
             'requirement_type' => 'project'
         ]);
 
