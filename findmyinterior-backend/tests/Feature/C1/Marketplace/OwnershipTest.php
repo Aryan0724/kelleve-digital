@@ -124,6 +124,8 @@ class OwnershipTest extends TestCase
             'requirement_id' => $project->id,
             'professional_id' => $pro->id,
             'amount' => 100,
+            'timeline_days' => 30,
+            'proposal_message' => 'I can do it!',
             'requirement_type' => 'project',
             'status' => 'awarded'
         ]);
@@ -165,6 +167,8 @@ class OwnershipTest extends TestCase
             'requirement_id' => $project->id,
             'professional_id' => $pro->id,
             'amount' => 100,
+            'timeline_days' => 30,
+            'proposal_message' => 'I can do it!',
             'requirement_type' => 'project',
             'status' => 'awarded'
         ]);
@@ -249,6 +253,8 @@ class OwnershipTest extends TestCase
             'requirement_id' => $project2->id,
             'professional_id' => $pro->id,
             'amount' => 100,
+            'timeline_days' => 30,
+            'proposal_message' => 'I can do it!',
             'requirement_type' => 'project',
             'status' => 'pending'
         ]);
