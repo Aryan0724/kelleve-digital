@@ -80,6 +80,9 @@ class FinancialTest extends TestCase
             'district_id' => $district->id,
             'city' => 'Patna',
             'district' => 'Patna',
+            'project_type' => 'residential',
+            'name' => 'Test User',
+            'phone' => '9999999999',
             'unlock_price' => 200,
             'status' => 'open'
         ]);
