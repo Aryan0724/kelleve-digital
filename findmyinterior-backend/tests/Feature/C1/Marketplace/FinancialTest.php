@@ -71,7 +71,7 @@ class FinancialTest extends TestCase
         $city = \App\Models\City::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'district_id' => $district->id]);
         $category = \App\Models\Category::firstOrCreate(['slug' => 'interior'], ['name' => 'Interior', 'is_active' => true]);
 
-        $project = Project::create([
+        $project = \App\Models\Requirement::create([
             'user_id' => $customer->id,
             'title' => 'Atomicity Test',
             'description' => 'Test desc',
