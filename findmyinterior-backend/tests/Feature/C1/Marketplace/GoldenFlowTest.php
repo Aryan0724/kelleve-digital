@@ -9,13 +9,13 @@ use App\Models\Bid;
 use App\Models\Category;
 use App\Models\City;
 use App\Models\District;
-use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 
 class GoldenFlowTest extends TestCase
 {
-    use RefreshDatabase, WithFaker;
+    use DatabaseTransactions, WithFaker;
     protected function setUp(): void
     {
         parent::setUp();
