@@ -199,9 +199,17 @@ class PaymentController extends Controller
             }
         }
 
-        $payment = Payment::where('razorpay_order_id', $data['razorpay_order_id'])->firstOrFail();
+        return DB::transaction(function () use ($data) {
+            $payment = Payment::where('razorpay_order_id', $data['razorpay_order_id'])->lockForUpdate()->firstOrFail();
 
-        DB::transaction(function () use ($payment, $data) {
+            if ($payment->status === 'success') {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Payment already fulfilled.',
+                    'data'    => new PaymentResource($payment),
+                ]);
+            }
+
             $payment->update([
                 'razorpay_payment_id' => $data['razorpay_payment_id'],
                 'razorpay_signature'  => $data['razorpay_signature'],
@@ -209,15 +217,15 @@ class PaymentController extends Controller
             ]);
 
             $this->fulfillPayment($payment);
+
+            Log::info("Payment fulfilled successfully for order {$data['razorpay_order_id']}");
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Payment successful!',
+                'data'    => new PaymentResource($payment->fresh()),
+            ]);
         });
-
-        Log::info("Payment fulfilled successfully for order {$data['razorpay_order_id']}");
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Payment successful!',
-            'data'    => new PaymentResource($payment->fresh()),
-        ]);
     }
 
     /**
@@ -288,7 +296,13 @@ class PaymentController extends Controller
             app(\App\Services\WalletService::class)->addFunds(
                 $payment->user,
                 $payment->amount,
-                "Wallet Recharge (Order: {$payment->razorpay_order_id})"
+                "Wallet Recharge (Order: {$payment->razorpay_order_id})",
+                [
+                    'source' => 'RAZORPAY',
+                    'reference_type' => 'App\Models\Payment',
+                    'reference_id' => $payment->id,
+                    'status' => 'success',
+                ]
             );
         }
     }

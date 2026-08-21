@@ -25,35 +25,6 @@ class UnlockService
     {
         $requirementType = $requirement->getMorphClass();
 
-        // 1. Check if already unlocked
-        $existing = DB::table('contact_unlocks')
-            ->where('user_id', $vendor->id)
-            ->where('requirement_id', $requirement->id)
-            ->where('requirement_type', $requirementType)
-            ->first();
-            
-        if ($existing) {
-            return [
-                'success' => true,
-                'message' => 'Contact already unlocked',
-                'contact' => [
-                    'name' => $requirement->user->name ?? $requirement->name ?? 'Customer',
-                    'phone' => $requirement->user->phone ?? $requirement->phone ?? null,
-                    'email' => $requirement->user->email ?? $requirement->email ?? null,
-                ]
-            ];
-        }
-
-        // 1.5 Check max unlocks
-        $unlocksCount = DB::table('contact_unlocks')
-            ->where('requirement_id', $requirement->id)
-            ->where('requirement_type', $requirementType)
-            ->count();
-            
-        if ($unlocksCount >= ($requirement->max_unlocks ?? 10)) {
-            throw new Exception('This requirement has reached its maximum number of contact unlocks.');
-        }
-
         // 2. Fetch the fee from requirement or configuration (default ₹49)
         $fee = (float) ($requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00));
 
@@ -68,6 +39,41 @@ class UnlockService
         }
 
         return DB::transaction(function () use ($vendor, $requirement, $requirementType, $fee) {
+            // Lock the requirement to serialize concurrent unlock attempts for the same resource
+            $lockedReq = DB::table($requirement->getTable())->where('id', $requirement->id)->lockForUpdate()->first();
+            if (!$lockedReq) {
+                throw new Exception('Requirement not found or unavailable.');
+            }
+
+            // 1. Check if already unlocked (Atomically, within lock)
+            $existing = DB::table('contact_unlocks')
+                ->where('user_id', $vendor->id)
+                ->where('requirement_id', $requirement->id)
+                ->where('requirement_type', $requirementType)
+                ->first();
+                
+            if ($existing) {
+                return [
+                    'success' => true,
+                    'message' => 'Contact already unlocked',
+                    'contact' => [
+                        'name' => $requirement->user->name ?? $requirement->name ?? 'Customer',
+                        'phone' => $requirement->user->phone ?? $requirement->phone ?? null,
+                        'email' => $requirement->user->email ?? $requirement->email ?? null,
+                    ]
+                ];
+            }
+
+            // 1.5 Check max unlocks
+            $unlocksCount = DB::table('contact_unlocks')
+                ->where('requirement_id', $requirement->id)
+                ->where('requirement_type', $requirementType)
+                ->count();
+                
+            if ($unlocksCount >= ($requirement->max_unlocks ?? 10)) {
+                throw new Exception('This requirement has reached its maximum number of contact unlocks.');
+            }
+
             // 3. Deduct from wallet if fee is greater than 0
             if ($fee > 0) {
                 $this->walletService->deduct(
@@ -75,8 +81,10 @@ class UnlockService
                     $fee,
                     "Unlocked contact for requirement ID: {$requirement->id}",
                     [
+                        'source' => 'CONTACT_UNLOCK',
                         'reference_type' => $requirementType,
-                        'reference_id' => $requirement->id
+                        'reference_id' => $requirement->id,
+                        'status' => 'success'
                     ]
                 );
             }

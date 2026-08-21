@@ -47,20 +47,29 @@ class WalletController extends Controller
      */
     public function store(Request $request): JsonResponse
     {
-        // Allow admins to recharge anyone, and users to recharge themselves.
+        $user = $request->user();
+        if (!$user->hasRole('admin')) {
+            return response()->json(['message' => 'Unauthorized. Only admins can manually add funds.'], 403);
+        }
+
         $validated = $request->validate([
             'amount' => 'required|numeric|min:1',
             'description' => 'nullable|string',
+            'user_id' => 'required|exists:users,id', // Specify which user gets funds
         ]);
 
-        $user = $request->user();
+        $targetUser = \App\Models\User::findOrFail($validated['user_id']);
         
-        $description = $validated['description'] ?? 'Wallet Recharge';
-        $this->walletService->addFunds($user, $validated['amount'], $description);
+        $description = $validated['description'] ?? 'Admin Wallet Adjustment';
+        $this->walletService->addFunds($targetUser, $validated['amount'], $description, [
+            'source' => 'ADMIN_ADJUSTMENT',
+            'created_by' => $user->id,
+            'status' => 'success'
+        ]);
 
         return response()->json([
             'message' => 'Funds added successfully.',
-            'new_balance' => $this->walletService->getBalance($user)
+            'new_balance' => $this->walletService->getBalance($targetUser)
         ]);
     }
 }
