@@ -74,6 +74,7 @@ class FinancialTest extends TestCase
         $project = Project::create([
             'user_id' => $customer->id,
             'title' => 'Atomicity Test',
+            'description' => 'Test desc',
             'category_id' => $category->id,
             'city_id' => $city->id,
             'district_id' => $district->id,
