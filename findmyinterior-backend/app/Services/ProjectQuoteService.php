@@ -61,7 +61,10 @@ class ProjectQuoteService
             
             // Canonical state machine: Open → (Award) → Awarded
             // NOT "closed". Closed is a terminal state set by the customer after completion.
-            $lockedProject->update(['status' => 'awarded']);
+            $lockedProject->update([
+                'status' => 'awarded',
+                'professional_id' => $quote->professional_id
+            ]);
 
             return $quote->fresh();
         });
