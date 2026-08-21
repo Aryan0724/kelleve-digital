@@ -76,7 +76,8 @@ class RequirementPolicy
         }
         
         // Professionals can unlock projects/RFQs
-        if ($model->type === 'project' || $model->type === 'rfq') {
+        $type = $model->requirement_type ?? 'project'; // fallback to project if missing
+        if ($type === 'project' || $type === 'rfq') {
             return $user->hasRole('business') || $user->hasRole('builder') || $user->hasRole('supplier');
         }
 
