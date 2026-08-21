@@ -66,9 +66,19 @@ class FinancialTest extends TestCase
         app(WalletService::class)->addFunds($vendor, 1000, 'Init', ['source' => 'ADMIN_ADJUSTMENT']);
 
         $customer = User::factory()->create();
+        
+        $district = \App\Models\District::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'state' => 'Bihar']);
+        $city = \App\Models\City::firstOrCreate(['slug' => 'patna'], ['name' => 'Patna', 'district_id' => $district->id]);
+        $category = \App\Models\Category::firstOrCreate(['slug' => 'interior'], ['name' => 'Interior', 'is_active' => true]);
+
         $project = Project::create([
             'user_id' => $customer->id,
             'title' => 'Atomicity Test',
+            'category_id' => $category->id,
+            'city_id' => $city->id,
+            'district_id' => $district->id,
+            'city' => 'Patna',
+            'district' => 'Patna',
             'unlock_price' => 200,
             'status' => 'open'
         ]);
@@ -103,6 +113,7 @@ class FinancialTest extends TestCase
             'price_monthly' => 1000,
             'price_yearly' => 10000,
             'is_featured_listing' => true,
+            'features' => json_encode(['Feature 1', 'Feature 2']),
         ]);
 
         $payment = Payment::create([
