@@ -83,7 +83,20 @@ api.interceptors.response.use(
           }, 300);
         }
       }
+    } else if (error.response?.status === 403) {
+      if (typeof window !== 'undefined') {
+        toast.error('You do not have permission to perform this action.', { toastId: 'forbidden-error' });
+      }
+    } else if (error.response?.status === 404) {
+      if (typeof window !== 'undefined') {
+        toast.error('The requested resource could not be found.', { toastId: 'not-found-error' });
+      }
+    } else if (error.response?.status === 409) {
+      if (typeof window !== 'undefined') {
+        toast.error(error.response?.data?.message || 'There is a conflict with the current state of the resource.', { toastId: 'conflict-error' });
+      }
     }
+
     return Promise.reject(error);
   }
 );
