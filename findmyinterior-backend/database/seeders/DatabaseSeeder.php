@@ -25,7 +25,6 @@ class DatabaseSeeder extends Seeder
             WorkerSeeder::class,
             RequirementSeeder::class,
             InquirySeeder::class,
-            ReviewSeeder::class,
             BlogSeeder::class,
             SeoPageSeeder::class,
             MockUserSeeder::class,   // 95 realistic mock professional accounts

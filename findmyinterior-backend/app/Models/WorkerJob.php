@@ -66,8 +66,7 @@ class WorkerJob extends Model
 
     public function bids(): HasMany
     {
-        return $this->hasMany(Bid::class, 'requirement_id')
-            ->where('requirement_type', 'WorkerJob');
+        return $this->hasMany(JobApplication::class, 'requirement_id');
     }
 
     public function contactUnlocks(): HasMany

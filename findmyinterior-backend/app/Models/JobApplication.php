@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class JobApplication extends Model
 {
-    protected $table = 'bids';
+    protected $table = 'job_applications';
 
     protected $guarded = ['id'];
 
@@ -21,10 +21,10 @@ class JobApplication extends Model
 
     public function job()
     {
-        return $this->belongsTo(Requirement::class, 'requirement_id');
+        return $this->belongsTo(WorkerJob::class, 'requirement_id');
     }
 
-    public function worker()
+    public function professional()
     {
         return $this->belongsTo(User::class, 'professional_id');
     }

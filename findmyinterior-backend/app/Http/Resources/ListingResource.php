@@ -7,9 +7,11 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ListingResource extends JsonResource
 {
+    use \App\Http\Resources\Traits\HasContactPrivacy;
+
     public function toArray(Request $request): array
     {
-        $ownerUser = $this->relationLoaded('user') ? $this->user : \App\Models\User::withoutGlobalScopes()->find($this->user_id);
+        $ownerUser = $this->whenLoaded('user');
         $ownerPlan = $ownerUser?->activeSubscription?->plan;
         
         $canHaveWebsite = $ownerPlan?->can_add_website ?? false;
@@ -35,7 +37,6 @@ class ListingResource extends JsonResource
 
         $coverImage = $formatUrl($this->cover_image ?: $ownerUser?->cover_image);
         $avatarImage = $formatUrl($ownerUser?->avatar);
-        $languages = $this->languages ?? $ownerUser?->worker?->languages ?? $ownerUser?->builder?->languages ?? $ownerUser?->supplier?->languages ?? [];
 
         return [
             'id'               => $this->id,
@@ -44,7 +45,6 @@ class ListingResource extends JsonResource
             'tagline'          => $this->tagline,
             'description'      => $this->description,
             'cover_image'      => $coverImage,
-            'languages'        => $languages,
             'category'         => new CategoryResource($this->whenLoaded('category')),
             'city'             => $this->city,
             'district'         => $this->district,
@@ -105,30 +105,5 @@ class ListingResource extends JsonResource
         ];
     }
 
-    private function shouldShowContact(Request $request): bool
-    {
-        $user = $request->user();
-        if (!$user) return false;
-        // Owner always sees contact
-        if ($user->id === $this->user_id) return true;
-        // Admin always sees
-        if ($user->isAdmin()) return true;
-        // Premium subscriber sees
-        if ($user->hasPremiumSubscription()) return true;
-
-        // Check if unlocked explicitly
-        $unlocked = \Illuminate\Support\Facades\DB::table('contact_unlocks')
-            ->where('user_id', $user->id)
-            ->where('requirement_id', $this->id)
-            ->where('requirement_type', get_class($this->resource))
-            ->exists();
-
-        return $unlocked;
-    }
-
-    private function isOwner(Request $request): bool
-    {
-        $user = $request->user();
-        return $user && $user->id === $this->user_id;
-    }
+    // Contact methods shouldShowContact and isOwner have been moved to HasContactPrivacy trait
 }

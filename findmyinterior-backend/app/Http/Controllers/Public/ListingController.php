@@ -17,7 +17,7 @@ class ListingController extends Controller
     public function index(Request $request): JsonResponse
     {
         $query = Listing::active()
-            ->with(['category', 'user'])
+            ->with(['category', 'user.activeSubscription.plan'])
             ->withCount(['approvedReviews as review_count', 'gallery as gallery_count']);
 
         // Filters
@@ -129,9 +129,15 @@ class ListingController extends Controller
                 ->orderByDesc('listings.id'),
         };
 
+        // Validate pagination bounds
+        $request->validate([
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page'     => ['nullable', 'integer', 'min:1'],
+        ]);
+
         // Avoid caching the entire LengthAwarePaginator object as it can cause serialization issues
         // especially during deployments or when the container environment changes.
-        $listings = $query->paginate($request->get('per_page', 12));
+        $listings = $query->paginate($request->get('per_page', 20));
 
         return response()->json([
             'success' => true,

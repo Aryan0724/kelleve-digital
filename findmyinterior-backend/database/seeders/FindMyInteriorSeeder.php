@@ -13,7 +13,15 @@ class FindMyInteriorSeeder extends Seeder
     public function run(): void
     {
         $tenantId = 1;
-        app(TenantContext::class)->setTenantId($tenantId);
+        $tenant = \App\Models\Tenant::firstOrCreate(
+            ['id' => $tenantId],
+            [
+                'name' => 'Find My Interior',
+                'slug' => 'fmi',
+                'domain' => 'findmyinterior.com',
+            ]
+        );
+        app(TenantContext::class)->setTenant($tenant);
 
         // Platform Admin
         $admin = User::firstOrCreate(['email' => 'admin@findmyinterior.com'], [
@@ -46,3 +54,4 @@ class FindMyInteriorSeeder extends Seeder
         }
     }
 }
+

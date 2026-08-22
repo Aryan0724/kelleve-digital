@@ -39,7 +39,7 @@ class SearchController extends Controller
                 Listing::active()
                     ->active()
                     ->search($term)
-                    ->with(['category'])
+                    ->with(['category', 'user.activeSubscription.plan'])
                     ->orderByRaw("CASE 
                         WHEN subscription_plan = 'elite' THEN 4
                         WHEN subscription_plan = 'professional' THEN 3
@@ -49,6 +49,7 @@ class SearchController extends Controller
                     END DESC")
                     ->orderByDesc('is_featured')
                     ->orderByDesc('is_verified')
+                    ->orderByDesc('id')
                     ->distinct()
                     ->take(8)
                     ->get()
@@ -60,6 +61,7 @@ class SearchController extends Controller
                 Worker::active()
                     ->search($term)
                     ->orderByDesc('is_verified')
+                    ->orderByDesc('id')
                     ->take(6)
                     ->get()
             );
@@ -70,6 +72,7 @@ class SearchController extends Controller
                 Builder::active()
                     ->where('company_name', 'LIKE', "%{$term}%")
                     ->orderByDesc('is_verified')
+                    ->orderByDesc('id')
                     ->take(4)
                     ->get()
             );
@@ -80,6 +83,7 @@ class SearchController extends Controller
                 Supplier::active()
                     ->where('company_name', 'LIKE', "%{$term}%")
                     ->orderByDesc('is_verified')
+                    ->orderByDesc('id')
                     ->take(4)
                     ->get()
             );
@@ -90,6 +94,7 @@ class SearchController extends Controller
                 BuilderProject::where('title', 'LIKE', "%{$term}%")
                     ->orWhere('city', 'LIKE', "%{$term}%")
                     ->with(['builder'])
+                    ->orderByDesc('id')
                     ->take(4)
                     ->get()
             );
