@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class RfqQuotation extends Model
 {
-    protected $table = 'bids';
+    protected $connection = 'fmi_mysql';
+    protected $table = 'rfq_quotations';
 
     protected $guarded = ['id'];
 
@@ -21,10 +22,15 @@ class RfqQuotation extends Model
 
     public function rfq()
     {
-        return $this->belongsTo(Requirement::class, 'requirement_id');
+        return $this->belongsTo(\App\Models\Rfq::class, 'requirement_id');
     }
 
     public function supplier()
+    {
+        return $this->belongsTo(User::class, 'professional_id');
+    }
+
+    public function professional()
     {
         return $this->belongsTo(User::class, 'professional_id');
     }

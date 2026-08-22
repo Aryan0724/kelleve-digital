@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Payment extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = [
         'user_id', 'razorpay_order_id', 'razorpay_payment_id', 'razorpay_signature',
         'amount', 'currency', 'purpose', 'meta', 'status',

@@ -302,6 +302,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('users/{id}/verify', [AdminController::class, 'verifyUser']);
         Route::delete('users/{id}', [AdminController::class, 'deleteUser']);
         Route::delete('users/mock/purge', [AdminController::class, 'purgeMockUsers']);
+        Route::patch('users/{id}/wallet/adjust', [\App\Http\Controllers\Admin\AdminWalletController::class, 'adjustBalance']);
         
         Route::get('listings', [AdminController::class, 'listings']);
         Route::patch('listings/{id}/verify', [AdminController::class, 'verifyListing']);
@@ -338,11 +339,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('workers/{id}/verify', [AdminController::class, 'verifyWorker']);
         
         Route::get('requirements', [AdminController::class, 'requirements']);
-        Route::patch('requirements/{id}/close', [AdminController::class, 'closeRequirement']);
-        Route::patch('requirements/{id}/status', [AdminController::class, 'updateRequirementStatus']);
+        Route::patch('requirements/{id}/moderate', [\App\Http\Controllers\Admin\ProjectModerationController::class, 'moderate']);
         Route::patch('requirements/{id}/price', [AdminController::class, 'updateRequirementPrice']);
-        Route::patch('requirements/{id}/approve', [AdminController::class, 'approveRequirement']);
-        Route::patch('requirements/{id}/reject', [AdminController::class, 'rejectRequirement']);
 
         // Projects
         Route::post('projects/{id}/reviews', [App\Http\Controllers\Api\V1\ReviewController::class, 'store']);

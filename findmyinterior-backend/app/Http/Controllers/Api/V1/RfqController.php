@@ -12,9 +12,15 @@ class RfqController extends Controller
 {
     use \App\Traits\ApiResponse, \App\Traits\ParsesBudget;
 
-    public function index()
+    public function index(Request $request)
     {
-        return $this->success(Rfq::latest()->get());
+        $paginator = Rfq::latest()->paginate($request->get('per_page', 20));
+        return $this->success($paginator->items(), null, 200, [
+            'current_page' => $paginator->currentPage(),
+            'per_page'     => $paginator->perPage(),
+            'total'        => $paginator->total(),
+            'last_page'    => $paginator->lastPage(),
+        ]);
     }
 
     public function store(Request $request)
@@ -149,7 +155,10 @@ class RfqController extends Controller
             return $this->error('Unauthorized', 403);
         }
 
-        $rfq->update($request->all());
+        $rfq->update($request->only([
+            'title', 'description', 'city', 'district', 'budget_min',
+            'budget_max', 'quantity', 'material_type', 'delivery_location', 'timeline'
+        ]));
         return $this->success($rfq, 'RFQ updated successfully');
     }
 

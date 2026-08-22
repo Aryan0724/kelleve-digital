@@ -33,6 +33,17 @@ class WalletService
                 throw new Exception("Insufficient wallet balance.");
             }
 
+            // Wallet Provenance Checks (if provenance table exists)
+            $provenance = DB::table('wallet_provenance')->where('wallet_id', $wallet->id)->first();
+            if ($provenance) {
+                if ($provenance->is_synthetic) {
+                    throw new Exception("This is a synthetic mock wallet and cannot be used for real transactions.");
+                }
+                if ($provenance->classification === 'UNVERIFIED_LEGACY_BALANCE') {
+                    throw new Exception("This wallet balance is restricted pending manual verification.");
+                }
+            }
+
             // Deduct
             DB::table('wallets')->where('id', $wallet->id)->decrement('balance', $amount);
 
@@ -52,7 +63,7 @@ class WalletService
             ]);
 
             return true;
-        });
+        }, 3);
     }
 
     /**
@@ -96,6 +107,6 @@ class WalletService
             ]);
 
             return true;
-        });
+        }, 3);
     }
 }

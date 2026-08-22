@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
 
 class Inquiry extends Model
 {
+    protected $connection = 'fmi_mysql';
     use HasFactory, \App\Traits\TenantAwareTrait;
 
     protected $fillable = [

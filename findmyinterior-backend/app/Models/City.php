@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class City extends Model
 {
     use HasFactory;
+    protected $connection = 'fmi_mysql';
 
     protected $fillable = ['district_id', 'name', 'slug',];
 

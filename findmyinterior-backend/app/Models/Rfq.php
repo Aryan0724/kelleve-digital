@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Rfq extends Model
 {
+    protected $connection = 'fmi_mysql';
     use HasFactory, SoftDeletes;
 
     protected $table = 'rfqs';
@@ -65,8 +66,7 @@ class Rfq extends Model
 
     public function bids(): HasMany
     {
-        return $this->hasMany(Bid::class, 'requirement_id')
-            ->whereIn('requirement_type', ['Rfq', 'App\Models\Rfq']);
+        return $this->hasMany(RfqQuotation::class, 'requirement_id');
     }
 
     public function contactUnlocks(): HasMany

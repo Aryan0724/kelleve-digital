@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class SupplierProduct extends Model
 {
+    protected $connection = 'fmi_mysql';
     use HasFactory, SoftDeletes;
 
     protected $fillable = [

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ContactUnlock extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = ['user_id', 'requirement_id', 'requirement_type', 'payment_id'];
 
     // ─── Relationships ────────────────────────────────────────────────────────

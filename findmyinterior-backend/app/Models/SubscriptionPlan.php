@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 class SubscriptionPlan extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = [
         'name', 'slug', 'price_monthly', 'price_yearly',
         'features', 'max_listings', 'max_gallery_images',

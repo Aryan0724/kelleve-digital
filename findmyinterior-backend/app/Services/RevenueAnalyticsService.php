@@ -80,12 +80,20 @@ class RevenueAnalyticsService
      */
     public function getFunnelMetrics(): array
     {
-        $totalRequirements = DB::table('projects')->count();
-        $requirementsWithBids = DB::table('bids')->distinct('requirement_id')->count('requirement_id');
-        $totalBids = DB::table('bids')->count();
-        $awardedBids = DB::table('bids')->where('status', 'awarded')->count();
-        $awardedRequirements = DB::table('projects')->where('status', 'awarded')->count();
-        $completedRequirements = DB::table('projects')->where('status', 'completed')->count();
+        $totalRequirements = DB::table('projects')->count() + DB::table('worker_jobs')->count() + DB::table('rfqs')->count();
+        $requirementsWithBids = DB::table('bids')->distinct('requirement_id')->count('requirement_id')
+                              + DB::table('job_applications')->distinct('requirement_id')->count('requirement_id')
+                              + DB::table('rfq_quotations')->distinct('requirement_id')->count('requirement_id');
+        $totalBids = DB::table('bids')->count() + DB::table('job_applications')->count() + DB::table('rfq_quotations')->count();
+        $awardedBids = DB::table('bids')->where('status', 'awarded')->count()
+                     + DB::table('job_applications')->where('status', 'awarded')->count()
+                     + DB::table('rfq_quotations')->where('status', 'awarded')->count();
+        $awardedRequirements = DB::table('projects')->where('status', 'awarded')->count()
+                             + DB::table('worker_jobs')->where('status', 'awarded')->count()
+                             + DB::table('rfqs')->where('status', 'awarded')->count();
+        $completedRequirements = DB::table('projects')->where('status', 'completed')->count()
+                               + DB::table('worker_jobs')->where('status', 'completed')->count()
+                               + DB::table('rfqs')->where('status', 'completed')->count();
 
         $leadToBidRate = $totalRequirements > 0
             ? round(($requirementsWithBids / $totalRequirements) * 100, 2)

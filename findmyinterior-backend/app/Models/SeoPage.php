@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SeoPage extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = [
         'title', 'slug', 'meta_title', 'meta_description', 'content', 'blocks_json', 'schema_json', 'is_active'
     ];

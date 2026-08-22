@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class AdvertisementStat extends Model
 {
     use HasFactory;
+    protected $connection = 'truedial_mysql';
 
     protected $fillable = [
         'advertisement_id',

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 class Category extends Model
 {
+    protected $connection = 'fmi_mysql';
     use HasFactory, \App\Traits\TenantAwareTrait;
 
     protected $fillable = [

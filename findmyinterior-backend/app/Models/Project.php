@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Project extends Model
 {
+    protected $connection = 'fmi_mysql';
     use HasFactory, SoftDeletes;
 
     protected $table = 'projects';

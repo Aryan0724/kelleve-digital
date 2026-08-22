@@ -261,11 +261,31 @@ class DashboardController extends Controller
                     $user->payments()->latest()->take(5)->get()
                 );
 
-                // Fetch their submitted bids
-                $data['submitted_bids'] = \App\Models\Bid::with('requirement')
+                // Fetch their submitted bids across all three domains
+                $bids = \App\Models\Bid::with('requirement')
                     ->where('professional_id', $user->id)
                     ->latest()
                     ->get();
+                    
+                $jobApps = \App\Models\JobApplication::with('job')
+                    ->where('professional_id', $user->id)
+                    ->latest()
+                    ->get()
+                    ->map(function($app) {
+                        $app->requirement = $app->job; 
+                        return $app;
+                    });
+                    
+                $rfqQuotes = \App\Models\RfqQuotation::with('rfq')
+                    ->where('professional_id', $user->id)
+                    ->latest()
+                    ->get()
+                    ->map(function($quote) {
+                        $quote->requirement = $quote->rfq;
+                        return $quote;
+                    });
+                    
+                $data['submitted_bids'] = $bids->concat($jobApps)->concat($rfqQuotes)->sortByDesc('created_at')->values();
                     
                 // Fetch unlocked contacts
                 $data['unlocked_contacts'] = $user->contactUnlocks()

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class OpportunityType extends Model
 {
     use HasFactory;
+    protected $connection = 'fmi_mysql';
 
     protected $fillable = ['type', 'creator_roles', 'target_roles'];
 

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Shortlist extends Model
 {
     use HasFactory;
+    protected $connection = 'fmi_mysql';
 
     protected $fillable = [
         'user_id',

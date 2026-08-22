@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class UserSubscription extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = [
         'user_id', 'subscription_plan_id', 'payment_id',
         'billing_cycle', 'starts_at', 'expires_at', 'status',

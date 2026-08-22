@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class UserDocument extends Model
 {
     use HasFactory;
+    protected $connection = 'fmi_mysql';
 
     protected $fillable = [
         'user_id',

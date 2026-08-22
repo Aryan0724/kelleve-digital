@@ -1,48 +1,65 @@
 <?php
+require 'vendor/autoload.php';
+$app = require_once 'bootstrap/app.php';
+$kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
+$kernel->bootstrap();
 
-echo "====================================\n";
-echo "SYSTEM VERIFICATION REPORT\n";
-echo "====================================\n\n";
+use Illuminate\Support\Facades\DB;
 
-try {
-    // Phase 1: Authentication & RBAC
-    $usersCount = \App\Models\User::count();
-    $rolesCount = \App\Models\Role::count();
-    echo "[PASS] Phase 1: Authentication & RBAC (Users: {$usersCount}, Roles: {$rolesCount})\n";
+config(['database.connections.legacy_restore' => [
+    'driver' => 'mysql',
+    'host' => env('DB_HOST', '127.0.0.1'),
+    'port' => env('DB_PORT', '3306'),
+    'database' => 'findmyinterior_legacy_restore',
+    'username' => env('DB_USERNAME', 'root'),
+    'password' => env('DB_PASSWORD', ''),
+]]);
 
-    // Phase 2: Ecosystem Registration
-    $suppliers = \App\Models\Supplier::count();
-    $workers = \App\Models\Worker::count();
-    $designers = \App\Models\Listing::count();
-    $builders = \App\Models\Builder::count();
-    echo "[PASS] Phase 2: Ecosystem Registration (Suppliers: {$suppliers}, Workers: {$workers}, Designers: {$designers}, Builders: {$builders})\n";
-
-    // Phase 4: Opportunities
-    $projects = \App\Models\Project::count();
-    $rfqs = \App\Models\Rfq::count();
-    $workerJobs = \App\Models\WorkerJob::count();
-    echo "[PASS] Phase 4: Opportunities (Projects: {$projects}, RFQs: {$rfqs}, Worker Jobs: {$workerJobs})\n";
-
-    // Phase 5: Bidding
-    $bids = \App\Models\Bid::count();
-    echo "[PASS] Phase 5: Bidding (Total Bids: {$bids})\n";
-
-    // Phase 8: Moderation
-    $approvedProjects = \App\Models\Project::where('status', 'open')->count();
-    echo "[PASS] Phase 8: Moderation (Approved/Open Projects: {$approvedProjects})\n";
-
-    // Phase 9: Intelligent Matching
-    $recommendations = \Illuminate\Support\Facades\DB::table('requirement_recommendations')->count();
-    echo "[PASS] Phase 9: Matching Engine (Generated Recommendations: {$recommendations})\n";
-
-    // Phase 10: Premium Analytics
-    $sponsored = \App\Models\Listing::whereNotNull('sponsored_until')->count();
-    echo "[PASS] Phase 10: Premium Analytics (Sponsored Placements Active: {$sponsored})\n";
-
-} catch (\Exception $e) {
-    echo "[FAIL] Error during verification: " . $e->getMessage() . "\n";
+$t = ['listing_galleries'=>'image_url','listings'=>'cover_image','projects'=>'image','user_documents'=>'file_path','users'=>'avatar'];
+$c = 0; $b = 0;
+foreach($t as $table => $col) {
+    $rows = DB::connection('legacy_restore')->table($table)->get();
+    foreach($rows as $row) {
+        $val = $row->$col;
+        if ($val && strlen($val) > 100 && !str_starts_with($val, 'http')) {
+            $c++; $b += strlen($val);
+        }
+    }
+}
+$rows = DB::connection('legacy_restore')->table('users')->get();
+foreach($rows as $row) {
+    $val = $row->cover_image;
+    if ($val && strlen($val) > 100 && !str_starts_with($val, 'http')) {
+        $c++; $b += strlen($val);
+    }
 }
 
-echo "\n====================================\n";
-echo "VERIFICATION COMPLETE\n";
-echo "====================================\n";
+// Get Object sizes
+$bytes = 0;
+$count = 0;
+$files = Illuminate\Support\Facades\Storage::disk('local')->allFiles('storage/migrated/blobs');
+foreach($files as $file) {
+    $bytes += Illuminate\Support\Facades\Storage::disk('local')->size($file);
+    $count++;
+}
+
+// Get Migrations count
+$migs = DB::connection('legacy_restore')->table('storage_migrations')->count();
+$verified = DB::connection('legacy_restore')->table('storage_migrations')->where('status', 'VERIFIED')->count();
+
+$urls = 0;
+$url_t = ['listing_galleries'=>'storage_url','listings'=>'cover_image_url','projects'=>'image_url','user_documents'=>'file_url','users'=>'avatar_url'];
+foreach($url_t as $table => $col) {
+    $urls += DB::connection('legacy_restore')->table($table)->whereNotNull($col)->count();
+}
+$urls += DB::connection('legacy_restore')->table('users')->whereNotNull('cover_image_url')->count();
+
+echo json_encode([
+    'base64_records' => $c,
+    'base64_bytes' => $b,
+    'objects_count' => $count,
+    'objects_bytes' => $bytes,
+    'migrations_count' => $migs,
+    'verified_count' => $verified,
+    'urls_populated' => $urls
+], JSON_PRETTY_PRINT);

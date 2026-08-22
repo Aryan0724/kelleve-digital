@@ -134,6 +134,6 @@ class UnlockService
                     'email' => $requirement->user->email ?? $requirement->email ?? null,
                 ]
             ];
-        });
+        }, 3);
     }
 }

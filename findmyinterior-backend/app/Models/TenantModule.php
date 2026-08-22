@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TenantModule extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = [
         'tenant_id',
         'module_name',

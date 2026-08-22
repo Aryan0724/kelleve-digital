@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ListingGallery extends Model
 {
-    protected $connection = 'truedial';
+    protected $connection = 'truedial_mysql';
 
     protected $fillable = ['listing_id', 'image_url', 'caption', 'sort_order'];
 

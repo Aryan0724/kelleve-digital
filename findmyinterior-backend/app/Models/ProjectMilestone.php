@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class ProjectMilestone extends Model
 {
     use HasFactory;
+    protected $connection = 'fmi_mysql';
 
     protected $fillable = [
         'project_id', 'title', 'description', 'percentage', 'amount',

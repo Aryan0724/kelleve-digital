@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class VendorMetric extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = [
         'vendor_id',
         'total_bids',

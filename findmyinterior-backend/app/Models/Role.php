@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Role extends Model
 {
-    protected $connection = 'auth';
+    protected $connection = 'fmi_mysql';
 
     protected $fillable = ['name', 'slug', 'description'];
 

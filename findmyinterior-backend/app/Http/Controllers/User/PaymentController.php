@@ -225,7 +225,7 @@ class PaymentController extends Controller
                 'message' => 'Payment successful!',
                 'data'    => new PaymentResource($payment->fresh()),
             ]);
-        });
+        }, 3);
     }
 
     /**

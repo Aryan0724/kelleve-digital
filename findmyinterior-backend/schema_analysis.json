@@ -1,0 +1,920 @@
+{
+    "cache": {
+        "file": "0001_01_01_000001_create_cache_table.php",
+        "foreign_keys": []
+    },
+    "cache_locks": {
+        "file": "0001_01_01_000001_create_cache_table.php",
+        "foreign_keys": []
+    },
+    "jobs": {
+        "file": "0001_01_01_000002_create_jobs_table.php",
+        "foreign_keys": []
+    },
+    "job_batches": {
+        "file": "0001_01_01_000002_create_jobs_table.php",
+        "foreign_keys": []
+    },
+    "failed_jobs": {
+        "file": "0001_01_01_000002_create_jobs_table.php",
+        "foreign_keys": []
+    },
+    "users": {
+        "file": "2026_01_01_000001_create_users_table.php",
+        "foreign_keys": []
+    },
+    "password_reset_tokens": {
+        "file": "2026_01_01_000001_create_users_table.php",
+        "foreign_keys": []
+    },
+    "sessions": {
+        "file": "2026_07_01_161023_create_sessions_table.php",
+        "foreign_keys": []
+    },
+    "districts": {
+        "file": "2026_01_01_000002_create_districts_table.php",
+        "foreign_keys": []
+    },
+    "cities": {
+        "file": "2026_01_01_000003_create_cities_table.php",
+        "foreign_keys": [
+            {
+                "column": "district_id",
+                "on": "districts"
+            }
+        ]
+    },
+    "categories": {
+        "file": "2026_01_01_000004_create_categories_table.php",
+        "foreign_keys": [
+            {
+                "column": "parent_id",
+                "on": "categories"
+            }
+        ]
+    },
+    "listings": {
+        "file": "2026_01_01_000005_create_listings_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "category_id",
+                "on": "categories"
+            },
+            {
+                "column": "city_id",
+                "on": "cities"
+            },
+            {
+                "column": "district_id",
+                "on": "districts"
+            }
+        ]
+    },
+    "listing_galleries": {
+        "file": "2026_01_01_000006_create_listing_galleries_table.php",
+        "foreign_keys": [
+            {
+                "column": "listing_id",
+                "on": "listings"
+            }
+        ]
+    },
+    "requirements": {
+        "file": "2026_01_01_000007_create_requirements_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "category_id",
+                "on": "categories"
+            },
+            {
+                "column": "city_id",
+                "on": "cities"
+            },
+            {
+                "column": "district_id",
+                "on": "districts"
+            },
+            {
+                "column": "awarded_vendor_id",
+                "on": "users"
+            }
+        ]
+    },
+    "requirement_images": {
+        "file": "2026_01_01_000008_create_requirement_images_table.php",
+        "foreign_keys": [
+            {
+                "column": "requirement_id",
+                "on": "requirements"
+            }
+        ]
+    },
+    "builders": {
+        "file": "2026_01_01_000009_create_builders_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "city_id",
+                "on": "cities"
+            },
+            {
+                "column": "district_id",
+                "on": "districts"
+            }
+        ]
+    },
+    "builder_projects": {
+        "file": "2026_01_01_000010_create_builder_projects_table.php",
+        "foreign_keys": [
+            {
+                "column": "builder_id",
+                "on": "builders"
+            }
+        ]
+    },
+    "builder_project_images": {
+        "file": "2026_01_01_000011_create_builder_project_images_table.php",
+        "foreign_keys": [
+            {
+                "column": "builder_project_id",
+                "on": "builder_projects"
+            }
+        ]
+    },
+    "suppliers": {
+        "file": "2026_01_01_000012_create_suppliers_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "city_id",
+                "on": "cities"
+            },
+            {
+                "column": "district_id",
+                "on": "districts"
+            }
+        ]
+    },
+    "supplier_products": {
+        "file": "2026_01_01_000013_create_supplier_products_table.php",
+        "foreign_keys": [
+            {
+                "column": "supplier_id",
+                "on": "suppliers"
+            }
+        ]
+    },
+    "supplier_product_images": {
+        "file": "2026_01_01_000014_create_supplier_product_images_table.php",
+        "foreign_keys": [
+            {
+                "column": "supplier_product_id",
+                "on": "supplier_products"
+            }
+        ]
+    },
+    "workers": {
+        "file": "2026_01_01_000015_create_workers_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "city_id",
+                "on": "cities"
+            },
+            {
+                "column": "district_id",
+                "on": "districts"
+            }
+        ]
+    },
+    "reviews": {
+        "file": "2026_01_01_000016_create_reviews_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "inquiries": {
+        "file": "2026_01_01_000017_create_inquiries_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "blogs": {
+        "file": "2026_01_01_000018_create_blogs_table.php",
+        "foreign_keys": [
+            {
+                "column": "author_id",
+                "on": "users"
+            }
+        ]
+    },
+    "blog_tags": {
+        "file": "2026_01_01_000019_create_blog_tags_table.php",
+        "foreign_keys": [
+            {
+                "column": "blog_id",
+                "on": "blogs"
+            }
+        ]
+    },
+    "payments": {
+        "file": "2026_01_01_000020_create_payments_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "subscription_plans": {
+        "file": "2026_01_01_000021_create_subscription_plans_table.php",
+        "foreign_keys": []
+    },
+    "user_subscriptions": {
+        "file": "2026_01_01_000022_create_user_subscriptions_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "subscription_plan_id",
+                "on": "subscription_plans"
+            },
+            {
+                "column": "payment_id",
+                "on": "payments"
+            }
+        ]
+    },
+    "contact_unlocks": {
+        "file": "2026_01_01_000023_create_contact_unlocks_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "requirement_id",
+                "on": "requirements"
+            },
+            {
+                "column": "payment_id",
+                "on": "payments"
+            }
+        ]
+    },
+    "seo_pages": {
+        "file": "2026_01_01_000024_create_seo_pages_table.php",
+        "foreign_keys": []
+    },
+    "bids": {
+        "file": "2026_06_12_174304_create_bids_table.php",
+        "foreign_keys": [
+            {
+                "column": "requirement_id",
+                "on": "requirements"
+            },
+            {
+                "column": "professional_id",
+                "on": "users"
+            }
+        ]
+    },
+    "roles": {
+        "file": "2026_06_12_181240_create_roles_table.php",
+        "foreign_keys": []
+    },
+    "user_roles": {
+        "file": "2026_06_12_181240_create_user_roles_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "role_id",
+                "on": "roles"
+            }
+        ]
+    },
+    "wallets": {
+        "file": "2026_06_12_181240_create_wallets_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "wallet_transactions": {
+        "file": "2026_06_12_181241_create_wallet_transactions_table.php",
+        "foreign_keys": [
+            {
+                "column": "wallet_id",
+                "on": "wallets"
+            }
+        ]
+    },
+    "advertisements": {
+        "file": "2026_06_12_181242_create_advertisements_table.php",
+        "foreign_keys": []
+    },
+    "vendor_metrics": {
+        "file": "2026_06_12_181242_create_vendor_metrics_table.php",
+        "foreign_keys": [
+            {
+                "column": "vendor_id",
+                "on": "users"
+            }
+        ]
+    },
+    "labour_requirements": {
+        "file": "2026_06_12_181244_create_labour_requirements_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "city_id",
+                "on": "cities"
+            }
+        ]
+    },
+    "labour_applications": {
+        "file": "2026_06_12_181244_z_create_labour_applications_table.php",
+        "foreign_keys": [
+            {
+                "column": "labour_requirement_id",
+                "on": "labour_requirements"
+            },
+            {
+                "column": "worker_id",
+                "on": "users"
+            }
+        ]
+    },
+    "tenders": {
+        "file": "2026_06_12_181245_create_tenders_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "category_id",
+                "on": "categories"
+            },
+            {
+                "column": "city_id",
+                "on": "cities"
+            }
+        ]
+    },
+    "tender_quotes": {
+        "file": "2026_06_12_181245_z_create_tender_quotes_table.php",
+        "foreign_keys": [
+            {
+                "column": "tender_id",
+                "on": "tenders"
+            },
+            {
+                "column": "supplier_id",
+                "on": "users"
+            }
+        ]
+    },
+    "activity_timelines": {
+        "file": "2026_06_12_181246_create_activity_timelines_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "saved_projects": {
+        "file": "2026_06_12_181246_create_saved_projects_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "requirement_id",
+                "on": "requirements"
+            }
+        ]
+    },
+    "saved_vendors": {
+        "file": "2026_06_12_181246_create_saved_vendors_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "vendor_id",
+                "on": "users"
+            }
+        ]
+    },
+    "personal_access_tokens": {
+        "file": "2026_06_12_183250_create_personal_access_tokens_table.php",
+        "foreign_keys": []
+    },
+    "conversations": {
+        "file": "2026_06_12_190918_create_conversations_table.php",
+        "foreign_keys": [
+            {
+                "column": "customer_id",
+                "on": "users"
+            },
+            {
+                "column": "vendor_id",
+                "on": "users"
+            }
+        ]
+    },
+    "messages": {
+        "file": "2026_06_12_190918_create_messages_table.php",
+        "foreign_keys": [
+            {
+                "column": "conversation_id",
+                "on": "conversations"
+            },
+            {
+                "column": "sender_id",
+                "on": "users"
+            }
+        ]
+    },
+    "message_attachments": {
+        "file": "2026_06_12_190919_create_message_attachments_table.php",
+        "foreign_keys": [
+            {
+                "column": "message_id",
+                "on": "messages"
+            },
+            {
+                "column": "uploaded_by",
+                "on": "users"
+            }
+        ]
+    },
+    "requirement_recommendations": {
+        "file": "2026_06_12_194801_create_requirement_recommendations_table.php",
+        "foreign_keys": [
+            {
+                "column": "requirement_id",
+                "on": "requirements"
+            },
+            {
+                "column": "vendor_id",
+                "on": "users"
+            }
+        ]
+    },
+    "notifications": {
+        "file": "2026_06_19_135620_create_notifications_table.php",
+        "foreign_keys": []
+    },
+    "projects": {
+        "file": "2026_06_20_073737_create_projects_table.php",
+        "foreign_keys": [
+            {
+                "column": "requirement_id",
+                "on": "requirements"
+            },
+            {
+                "column": "winning_bid_id",
+                "on": "bids"
+            },
+            {
+                "column": "client_id",
+                "on": "users"
+            },
+            {
+                "column": "professional_id",
+                "on": "users"
+            }
+        ]
+    },
+    "activity_logs": {
+        "file": "2026_06_20_073746_create_activity_logs_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "opportunity_types": {
+        "file": "2026_06_20_135124_create_opportunity_types_table.php",
+        "foreign_keys": []
+    },
+    "rfqs": {
+        "file": "2026_06_20_135346_create_rfqs_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "supplier_id",
+                "on": "users"
+            }
+        ]
+    },
+    "worker_jobs": {
+        "file": "2026_06_20_135347_create_worker_jobs_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "worker_id",
+                "on": "users"
+            }
+        ]
+    },
+    "shortlists": {
+        "file": "2026_06_20_141418_create_shortlists_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "professional_id",
+                "on": "users"
+            },
+            {
+                "column": "project_id",
+                "on": "projects"
+            }
+        ]
+    },
+    "user_documents": {
+        "file": "2026_06_24_023541_create_user_documents_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "approved_by",
+                "on": "users"
+            }
+        ]
+    },
+    "project_milestones": {
+        "file": "2026_07_02_164935_create_project_milestones_table.php",
+        "foreign_keys": [
+            {
+                "column": "project_id",
+                "on": "projects"
+            }
+        ]
+    },
+    "locations": {
+        "file": "2026_07_04_021223_create_locations_table.php",
+        "foreign_keys": []
+    },
+    "settings": {
+        "file": "2026_07_04_021224_create_settings_table.php",
+        "foreign_keys": []
+    },
+    "contact_messages": {
+        "file": "2026_07_04_133021_create_contact_messages_table.php",
+        "foreign_keys": []
+    },
+    "offers": {
+        "file": "2026_07_20_135634_create_offers_table.php",
+        "foreign_keys": [
+            {
+                "column": "listing_id",
+                "on": "listings"
+            }
+        ]
+    },
+    "privilege_cards": {
+        "file": "2026_07_20_135634_create_privilege_cards_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "tenants": {
+        "file": "2026_07_21_201432_create_core_tenancy_tables.php",
+        "foreign_keys": [
+            {
+                "column": "tenant_id",
+                "on": "tenants"
+            },
+            {
+                "column": "tenant_id",
+                "on": "tenants"
+            },
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "role_id",
+                "on": "roles"
+            }
+        ]
+    },
+    "tenant_modules": {
+        "file": "2026_07_21_201432_create_core_tenancy_tables.php",
+        "foreign_keys": [
+            {
+                "column": "tenant_id",
+                "on": "tenants"
+            },
+            {
+                "column": "tenant_id",
+                "on": "tenants"
+            },
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "role_id",
+                "on": "roles"
+            }
+        ]
+    },
+    "tenant_user": {
+        "file": "2026_07_21_201432_create_core_tenancy_tables.php",
+        "foreign_keys": [
+            {
+                "column": "tenant_id",
+                "on": "tenants"
+            },
+            {
+                "column": "tenant_id",
+                "on": "tenants"
+            },
+            {
+                "column": "user_id",
+                "on": "users"
+            },
+            {
+                "column": "role_id",
+                "on": "roles"
+            }
+        ]
+    },
+    "product_categories": {
+        "file": "2026_07_22_081749_create_product_and_service_categories_table.php",
+        "foreign_keys": []
+    },
+    "service_categories": {
+        "file": "2026_07_22_081749_create_product_and_service_categories_table.php",
+        "foreign_keys": []
+    },
+    "listing_products": {
+        "file": "2026_07_22_081759_create_listing_products_table.php",
+        "foreign_keys": [
+            {
+                "column": "listing_id",
+                "on": "listings"
+            },
+            {
+                "column": "product_category_id",
+                "on": "product_categories"
+            }
+        ]
+    },
+    "listing_services": {
+        "file": "2026_07_22_081815_create_listing_services_table.php",
+        "foreign_keys": [
+            {
+                "column": "listing_id",
+                "on": "listings"
+            },
+            {
+                "column": "service_category_id",
+                "on": "service_categories"
+            }
+        ]
+    },
+    "media": {
+        "file": "2026_07_22_081826_create_media_table.php",
+        "foreign_keys": []
+    },
+    "analytics_events": {
+        "file": "2026_07_22_090446_create_analytics_events_table.php",
+        "foreign_keys": [
+            {
+                "column": "tenant_id",
+                "on": "tenants"
+            }
+        ]
+    },
+    "review_helpful_votes": {
+        "file": "2026_07_22_150842_create_review_helpful_votes_table.php",
+        "foreign_keys": [
+            {
+                "column": "review_id",
+                "on": "reviews"
+            },
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "review_replies": {
+        "file": "2026_07_22_150843_create_review_replies_table.php",
+        "foreign_keys": [
+            {
+                "column": "review_id",
+                "on": "reviews"
+            },
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "review_reports": {
+        "file": "2026_07_22_151540_create_review_reports_table.php",
+        "foreign_keys": [
+            {
+                "column": "review_id",
+                "on": "reviews"
+            },
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "analytics_daily": {
+        "file": "2026_07_23_065306_create_analytics_daily_table.php",
+        "foreign_keys": [
+            {
+                "column": "listing_id",
+                "on": "listings"
+            }
+        ]
+    },
+    "ventures": {
+        "file": "2026_07_24_000002_add_professional_type_and_ventures.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "advertisement_stats": {
+        "file": "2026_07_25_000002_create_advertisement_stats_table.php",
+        "foreign_keys": [
+            {
+                "column": "advertisement_id",
+                "on": "advertisements"
+            }
+        ]
+    },
+    "consulting_leads": {
+        "file": "2026_07_26_194524_create_consulting_leads_table.php",
+        "foreign_keys": []
+    },
+    "truedial_invoices": {
+        "file": "2026_07_26_194540_create_truedial_invoices_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "marketing_campaigns": {
+        "file": "2026_07_26_194625_create_marketing_campaigns_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "bookmarks": {
+        "file": "2026_08_07_041149_create_bookmarks_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "call_logs": {
+        "file": "2026_08_09_150937_create_call_logs_table.php",
+        "foreign_keys": [
+            {
+                "column": "caller_id",
+                "on": "users"
+            }
+        ]
+    },
+    "user_categories": {
+        "file": "2026_08_10_000001_create_user_categories_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "cross_platform_bids": {
+        "file": "2026_08_10_234936_create_cross_platform_bids_table.php",
+        "foreign_keys": []
+    },
+    "syndicated_listings": {
+        "file": "2026_08_10_234936_create_syndicated_listings_table.php",
+        "foreign_keys": []
+    },
+    "user_tenant_roles": {
+        "file": "2026_08_10_234936_create_user_tenant_roles_table.php",
+        "foreign_keys": [
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "otps": {
+        "file": "2026_08_11_181632_create_otps_table.php",
+        "foreign_keys": []
+    },
+    "patients": {
+        "file": "2026_08_16_000000_create_patients_table.php",
+        "foreign_keys": [
+            {
+                "column": "tenant_id",
+                "on": "tenants"
+            },
+            {
+                "column": "user_id",
+                "on": "users"
+            }
+        ]
+    },
+    "job_applications": {
+        "file": "2026_08_22_063021_create_job_applications_table.php",
+        "foreign_keys": [
+            {
+                "column": "requirement_id",
+                "on": "worker_jobs"
+            },
+            {
+                "column": "professional_id",
+                "on": "users"
+            }
+        ]
+    },
+    "rfq_quotations": {
+        "file": "2026_08_22_063406_create_rfq_quotations_table.php",
+        "foreign_keys": [
+            {
+                "column": "requirement_id",
+                "on": "rfqs"
+            },
+            {
+                "column": "professional_id",
+                "on": "users"
+            }
+        ]
+    }
+}

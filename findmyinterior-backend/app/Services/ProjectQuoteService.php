@@ -67,6 +67,6 @@ class ProjectQuoteService
             ]);
 
             return $quote->fresh();
-        });
+        }, 3);
     }
 }

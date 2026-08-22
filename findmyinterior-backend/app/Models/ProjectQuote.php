@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class ProjectQuote extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $table = 'bids';
 
     protected $guarded = ['id'];

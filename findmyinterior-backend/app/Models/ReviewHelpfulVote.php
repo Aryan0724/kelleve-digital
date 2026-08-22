@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReviewHelpfulVote extends Model
 {
+    protected $connection = 'truedial_mysql';
     protected $fillable = [
         'review_id',
         'user_id',

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Requirement extends Model
 {
+    protected $connection = 'fmi_mysql';
     use HasFactory, SoftDeletes;
 
     protected $table = 'projects';

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class BlogTag extends Model
 {
+    protected $connection = 'fmi_mysql';
     public $timestamps = false;
 
     protected $fillable = ['blog_id', 'tag'];

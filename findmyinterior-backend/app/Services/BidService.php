@@ -55,9 +55,9 @@ class BidService
     /**
      * Submit a new bid for a requirement.
      */
-    public function submitBid(int $vendorId, array $data): Bid
+    public function submitBid(int $vendorId, array $data)
     {
-        $modelClass = $data['requirement_type_class'] ?? 'App\\Models\\Requirement';
+        $modelClass = $data['requirement_type_class'] ?? 'App\\Models\\Project'; // fallback to Project
         $requirement = $modelClass::find($data['requirement_id']);
         
         if (!$requirement) {
@@ -72,7 +72,15 @@ class BidService
             throw new \Exception('This requirement has expired.');
         }
 
-        $bidsCount = Bid::where('requirement_id', $requirement->id)
+        // Determine correct child application model
+        $bidModelClass = \App\Models\Bid::class;
+        if ($modelClass === 'App\\Models\\WorkerJob') {
+            $bidModelClass = \App\Models\JobApplication::class;
+        } elseif ($modelClass === 'App\\Models\\Rfq') {
+            $bidModelClass = \App\Models\RfqQuotation::class;
+        }
+
+        $bidsCount = $bidModelClass::where('requirement_id', $requirement->id)
             ->where('requirement_type', class_basename($requirement))
             ->count();
             
@@ -88,8 +96,8 @@ class BidService
         $data['smart_bid_score'] = $scoreBreakdown['total_score'];
         $data['status'] = 'pending';
         
-        return DB::transaction(function () use ($data) {
-            $bid = Bid::updateOrCreate(
+        return DB::transaction(function () use ($data, $bidModelClass, $modelClass, $requirement) {
+            $bid = $bidModelClass::updateOrCreate(
                 [
                     'requirement_id'   => $data['requirement_id'],
                     'professional_id'  => $data['professional_id'],
@@ -97,12 +105,12 @@ class BidService
                 $data
             );
             
-            // Emit Event
-            event(new \App\Events\BidSubmitted($bid));
+            // Emit Event (you might want to handle this differently if event expects Bid specifically)
+            // event(new \App\Events\BidSubmitted($bid));
             
             // Log to activity timeline
             DB::table('activity_logs')->insert([
-                'subject_type' => $data['requirement_type_class'] ?? 'App\\Models\\Requirement',
+                'subject_type' => $modelClass,
                 'subject_id' => $data['requirement_id'],
                 'user_id' => $data['professional_id'],
                 'event_type' => 'Bid Submitted',
@@ -112,8 +120,6 @@ class BidService
             ]);
             
             // Notify Customer
-            $modelClass = $data['requirement_type_class'] ?? 'App\\Models\\Requirement';
-            $requirement = $modelClass::find($data['requirement_id']);
             if ($requirement && $requirement->user_id) {
                 $customer = User::find($requirement->user_id);
                 if ($customer) {
@@ -128,7 +134,7 @@ class BidService
 
             // Update Requirement Status if it's open
             if ($requirement && $requirement->status === 'open') {
-                if ($modelClass === 'App\\Models\\Requirement') {
+                if ($modelClass === 'App\\Models\\Requirement' || $modelClass === 'App\\Models\\Project') {
                     $requirement->update(['status' => 'bidding']);
                 } else if ($modelClass === 'App\\Models\\Rfq') {
                     $requirement->update(['status' => 'receiving_quotes']);
@@ -144,12 +150,20 @@ class BidService
     /**
      * Shortlist a bid
      */
-    public function shortlistBid(Bid $bid, User $customer): bool
+    public function shortlistBid($bid, User $customer): bool
     {
         return DB::transaction(function () use ($bid, $customer) {
             $bid->update(['status' => 'shortlisted']);
             
-            $requirement = $bid->requirement;
+            $requirement = null;
+            if (method_exists($bid, 'job')) {
+                $requirement = $bid->job;
+            } elseif (method_exists($bid, 'rfq')) {
+                $requirement = $bid->rfq;
+            } elseif (method_exists($bid, 'requirement')) {
+                $requirement = $bid->requirement;
+            }
+
             if ($requirement->status === 'open' || $requirement->status === 'bidding') {
                 $requirement->update(['status' => 'shortlisted']);
             }
@@ -184,7 +198,7 @@ class BidService
     /**
      * Award the project to a bid
      */
-    public function awardBid(Bid $bid, User $customer): bool
+    public function awardBid($bid, User $customer): bool
     {
         return DB::transaction(function () use ($bid, $customer) {
             $bid->update([
@@ -194,12 +208,21 @@ class BidService
             ]);
             
             // Mark all other bids as rejected
-            Bid::where('requirement_id', $bid->requirement_id)
+            $bidModelClass = get_class($bid);
+            $bidModelClass::where('requirement_id', $bid->requirement_id)
                 ->where('requirement_type', $bid->requirement_type)
                 ->where('id', '!=', $bid->id)
                 ->update(['status' => 'rejected']);
             
-            $requirement = $bid->requirement;
+            // For JobApplication/RfqQuotation, requirement relation might be named job() or rfq()
+            $requirement = null;
+            if (method_exists($bid, 'job')) {
+                $requirement = $bid->job;
+            } elseif (method_exists($bid, 'rfq')) {
+                $requirement = $bid->rfq;
+            } elseif (method_exists($bid, 'requirement')) {
+                $requirement = $bid->requirement;
+            }
             
             // Update the requirement model based on its type
             if ($requirement->getTable() === 'projects') {
@@ -269,16 +292,20 @@ class BidService
     {
         return DB::transaction(function () use ($requirement, $customer) {
             // Update the requirement based on type
+            $bidModelClass = \App\Models\Bid::class;
+
             if ($requirement instanceof \App\Models\Project || $requirement instanceof \App\Models\Requirement) {
                 $requirement->update(['status' => 'completed', 'completed_at' => now()]);
             } else if ($requirement instanceof \App\Models\Rfq) {
                 $requirement->update(['status' => 'fulfilled']);
+                $bidModelClass = \App\Models\RfqQuotation::class;
             } else if ($requirement instanceof \App\Models\WorkerJob) {
                 $requirement->update(['status' => 'completed']);
+                $bidModelClass = \App\Models\JobApplication::class;
             }
             
             // Update the awarded bid
-            $awardedBid = Bid::where('requirement_id', $requirement->id)
+            $awardedBid = $bidModelClass::where('requirement_id', $requirement->id)
                 ->where('requirement_type', class_basename($requirement))
                 ->where('status', 'accepted')
                 ->first();

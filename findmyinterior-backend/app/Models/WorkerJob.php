@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class WorkerJob extends Model
 {
+    protected $connection = 'fmi_mysql';
     use HasFactory, SoftDeletes;
 
     protected $table = 'worker_jobs';
@@ -66,8 +67,7 @@ class WorkerJob extends Model
 
     public function bids(): HasMany
     {
-        return $this->hasMany(Bid::class, 'requirement_id')
-            ->where('requirement_type', 'WorkerJob');
+        return $this->hasMany(JobApplication::class, 'requirement_id');
     }
 
     public function contactUnlocks(): HasMany

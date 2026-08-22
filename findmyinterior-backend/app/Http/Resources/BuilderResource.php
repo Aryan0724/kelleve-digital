@@ -7,6 +7,8 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class BuilderResource extends JsonResource
 {
+    use \App\Http\Resources\Traits\HasContactPrivacy;
+
     public function toArray(Request $request): array
     {
         return [
@@ -26,9 +28,12 @@ class BuilderResource extends JsonResource
             'review_count'       => $this->review_count,
             'is_verified'        => $this->is_verified,
             'is_featured'        => $this->is_featured,
-            'phone'              => $this->phone,
+            'phone'              => $this->when(
+                $this->shouldShowContact($request),
+                $this->phone
+            ),
             'email'              => $this->when(
-                $request->user()?->hasPremiumSubscription() || $request->user()?->isAdmin(),
+                $this->shouldShowContact($request),
                 $this->email
             ),
             'website'            => $this->website,

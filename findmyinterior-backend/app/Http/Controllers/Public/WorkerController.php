@@ -36,13 +36,18 @@ class WorkerController extends Controller
             $query->search($request->search);
         }
 
+        $request->validate([
+            'per_page' => ['nullable', 'integer', 'min:1', 'max:100'],
+            'page'     => ['nullable', 'integer', 'min:1'],
+        ]);
+
         $workers = $query
             ->orderByDesc('is_verified')
             ->orderByDesc('is_featured')
             ->orderByDesc('is_available')
             ->orderByDesc('avg_rating')
             ->orderByDesc('id')
-            ->paginate($request->get('per_page', 12));
+            ->paginate($request->get('per_page', 20));
 
         return response()->json([
             'success' => true,

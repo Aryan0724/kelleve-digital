@@ -16,7 +16,7 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
-    protected $connection = 'auth';
+    protected $connection = 'fmi_mysql';
 
     protected $fillable = [
         'name',

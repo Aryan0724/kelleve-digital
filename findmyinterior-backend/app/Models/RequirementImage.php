@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class RequirementImage extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = ['requirement_id', 'image_url'];
 
     public function requirement(): BelongsTo

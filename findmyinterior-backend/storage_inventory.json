@@ -1,0 +1,95 @@
+{
+    "total_base64_records": 224,
+    "total_encoded_bytes": 92509463,
+    "total_decoded_bytes": 69378028,
+    "tables": {
+        "listing_galleries": {
+            "total_base64_records": 79,
+            "total_encoded_bytes": 9170450,
+            "columns": {
+                "image_url": {
+                    "count": 79,
+                    "bytes": 9170450,
+                    "mime_distribution": {
+                        "image\/png": 3,
+                        "image\/jpeg": 67,
+                        "image\/webp": 9
+                    }
+                }
+            }
+        },
+        "listings": {
+            "total_base64_records": 31,
+            "total_encoded_bytes": 7297955,
+            "columns": {
+                "cover_image": {
+                    "count": 31,
+                    "bytes": 7297955,
+                    "mime_distribution": {
+                        "image\/jpeg": 29,
+                        "image\/png": 2
+                    }
+                }
+            }
+        },
+        "projects": {
+            "total_base64_records": 5,
+            "total_encoded_bytes": 148955,
+            "columns": {
+                "image": {
+                    "count": 5,
+                    "bytes": 148955,
+                    "mime_distribution": {
+                        "image\/jpeg": 5
+                    }
+                }
+            }
+        },
+        "user_documents": {
+            "total_base64_records": 77,
+            "total_encoded_bytes": 68541609,
+            "columns": {
+                "file_path": {
+                    "count": 77,
+                    "bytes": 68541609,
+                    "mime_distribution": {
+                        "image\/jpeg": 49,
+                        "application\/pdf": 1,
+                        "image\/png": 27
+                    }
+                }
+            }
+        },
+        "users": {
+            "total_base64_records": 32,
+            "total_encoded_bytes": 7350494,
+            "columns": {
+                "avatar": {
+                    "count": 1,
+                    "bytes": 52539,
+                    "mime_distribution": {
+                        "image\/jpeg": 1
+                    }
+                },
+                "cover_image": {
+                    "count": 31,
+                    "bytes": 7297955,
+                    "mime_distribution": {
+                        "image\/jpeg": 29,
+                        "image\/png": 2
+                    }
+                }
+            }
+        }
+    },
+    "mime_distribution": {
+        "image\/png": 34,
+        "image\/jpeg": 180,
+        "image\/webp": 9,
+        "application\/pdf": 1
+    },
+    "duplicates": {
+        "count": 88
+    },
+    "invalid_malformed": 0
+}

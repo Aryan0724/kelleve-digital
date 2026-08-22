@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class SupplierProductImage extends Model
 {
+    protected $connection = 'fmi_mysql';
     protected $fillable = ['supplier_product_id', 'image_url', 'sort_order'];
 
     public function product(): BelongsTo

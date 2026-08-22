@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SavedProject extends Model
 {
+    protected $connection = 'fmi_mysql';
     use \App\Traits\TenantAwareTrait;
 
     protected $fillable = ['tenant_id', 'user_id', 'requirement_id', 'requirement_type'];

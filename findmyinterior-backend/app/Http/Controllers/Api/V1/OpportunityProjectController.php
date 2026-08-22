@@ -12,7 +12,7 @@ class OpportunityProjectController extends Controller
 {
     use \App\Traits\ApiResponse, \App\Traits\ParsesBudget;
 
-    public function index()
+    public function index(Request $request)
     {
         $projects = Requirement::where(function($q) {
                 $q->whereNull('opportunity_type')
@@ -22,14 +22,25 @@ class OpportunityProjectController extends Controller
                 $q->where('slug', 'workers');
             })
             ->latest()
-            ->get();
+            ->paginate($request->get('per_page', 20));
 
         $user = Auth::guard('sanctum')->user();
         $isAdmin = $user && in_array('admin', $user->roles->pluck('slug')->toArray());
 
-        $projects->transform(function ($req) use ($user, $isAdmin) {
-            $req->is_unlocked = $user ? $req->isUnlockedBy($user) : false;
+        $unlockedProjectIds = [];
+        if ($user && !$isAdmin) {
+            $unlockedProjectIds = \App\Models\ContactUnlock::where('user_id', $user->id)
+                ->whereIn('requirement_type', ['Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project'])
+                ->pluck('requirement_id')
+                ->toArray();
+        }
+
+        $projects->getCollection()->transform(function ($req) use ($user, $isAdmin, $unlockedProjectIds) {
+            $req->is_unlocked = false;
             
+            if ($user && in_array($req->id, $unlockedProjectIds)) {
+                $req->is_unlocked = true;
+            }
             if ($user && $user->id === $req->user_id) {
                 $req->is_unlocked = true;
             }
@@ -45,7 +56,16 @@ class OpportunityProjectController extends Controller
             return $req;
         });
             
-        return $this->success($projects);
+        return response()->json([
+            'success' => true,
+            'data' => $projects->items(),
+            'meta' => [
+                'current_page' => $projects->currentPage(),
+                'per_page'     => $projects->perPage(),
+                'total'        => $projects->total(),
+                'last_page'    => $projects->lastPage(),
+            ],
+        ]);
     }
 
     public function store(Request $request)
@@ -211,7 +231,10 @@ class OpportunityProjectController extends Controller
             return $this->error('Cannot edit an awarded or closed project', 409);
         }
 
-        $requirement->update($request->all());
+        $requirement->update($request->only([
+            'title', 'description', 'city', 'district', 'category_id', 'sub_category_id',
+            'budget_min', 'budget_max', 'timeline_days'
+        ]));
         return $this->success($requirement, 'Requirement updated successfully');
     }
 

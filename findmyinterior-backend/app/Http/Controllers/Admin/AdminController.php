@@ -45,8 +45,14 @@ class AdminController extends Controller
             ->take(5)
             ->get(['id', 'name']);
 
-        // Top Districts by Requirement volume
-        $topDistricts = Requirement::select('district', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
+        // Top Districts by Requirement volume (Union across all active requirement domains)
+        $topDistricts = \Illuminate\Support\Facades\DB::query()
+            ->fromSub(function ($query) {
+                $query->select('district')->from('projects')->whereNotNull('district')->where('district', '!=', '')
+                    ->unionAll(\Illuminate\Support\Facades\DB::table('worker_jobs')->select('district')->whereNotNull('district')->where('district', '!=', ''))
+                    ->unionAll(\Illuminate\Support\Facades\DB::table('rfqs')->select('district')->whereNotNull('district')->where('district', '!=', ''));
+            }, 'all_reqs')
+            ->select('district', \Illuminate\Support\Facades\DB::raw('count(*) as total'))
             ->groupBy('district')
             ->orderByDesc('total')
             ->take(5)
@@ -60,9 +66,9 @@ class AdminController extends Controller
                     'active_professionals'  => User::whereHas('roles', function($q) {
                         $q->whereIn('slug', ['business', 'worker', 'builder', 'supplier']);
                     })->where('is_active', true)->count(),
-                    'total_requirements'    => Requirement::count(),
-                    'total_bids'            => \App\Models\Bid::count(),
-                    'open_requirements'     => Requirement::open()->count(),
+                    'total_requirements'    => \App\Models\Project::count() + \App\Models\WorkerJob::count() + \App\Models\Rfq::count(),
+                    'total_bids'            => \App\Models\Bid::count() + \App\Models\JobApplication::count() + \App\Models\RfqQuotation::count(),
+                    'open_requirements'     => \App\Models\Project::where('status', 'open')->count() + \App\Models\WorkerJob::where('status', 'open')->count() + \App\Models\Rfq::where('status', 'open')->count(),
                     'pending_reviews'       => Review::where('status', 'pending')->count(),
                     'pending_listings'      => Listing::where('is_verified', false)->count(),
                     'total_revenue'         => $totalRevenue,
@@ -131,10 +137,24 @@ class AdminController extends Controller
     /**
      * PATCH /api/v1/admin/users/{id}/toggle-active
      */
-    public function toggleUserActive(int $id): JsonResponse
+    public function toggleUserActive(Request $request, int $id): JsonResponse
     {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
         $user = User::findOrFail($id);
+        $before = ['is_active' => $user->is_active];
         $user->update(['is_active' => !$user->is_active]);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            $user->is_active ? 'RESTORE' : 'SUSPEND',
+            $user,
+            $before,
+            ['is_active' => $user->is_active],
+            $validated['reason']
+        );
 
         return response()->json([
             'success' => true,
@@ -166,13 +186,28 @@ class AdminController extends Controller
     /**
      * PATCH /api/v1/admin/listings/{id}/verify
      */
-    public function verifyListing(int $id): JsonResponse
+    public function verifyListing(Request $request, int $id): JsonResponse
     {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
         $listing = Listing::findOrFail($id);
+        $before = ['is_verified' => $listing->is_verified, 'status' => $listing->status];
+        
         $listing->update([
             'is_verified' => true,
             'status' => 'active',
         ]);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            'APPROVE',
+            $listing,
+            $before,
+            ['is_verified' => true, 'status' => 'active'],
+            $validated['reason']
+        );
 
         return response()->json([
             'success'     => true,
@@ -185,13 +220,28 @@ class AdminController extends Controller
     /**
      * PATCH /api/v1/admin/listings/{id}/reject
      */
-    public function rejectListing(int $id): JsonResponse
+    public function rejectListing(Request $request, int $id): JsonResponse
     {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
         $listing = Listing::findOrFail($id);
+        $before = ['is_verified' => $listing->is_verified, 'status' => $listing->status];
+        
         $listing->update([
             'is_verified' => false,
             'status' => 'suspended',
         ]);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            'REJECT',
+            $listing,
+            $before,
+            ['is_verified' => false, 'status' => 'suspended'],
+            $validated['reason']
+        );
 
         return response()->json([
             'success' => true,
@@ -203,10 +253,24 @@ class AdminController extends Controller
     /**
      * PATCH /api/v1/admin/listings/{id}/feature
      */
-    public function featureListing(int $id): JsonResponse
+    public function featureListing(Request $request, int $id): JsonResponse
     {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
         $listing = Listing::findOrFail($id);
+        $before = ['is_featured' => $listing->is_featured];
         $listing->update(['is_featured' => !$listing->is_featured]);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            $listing->is_featured ? 'FEATURE' : 'UNFEATURE',
+            $listing,
+            $before,
+            ['is_featured' => $listing->is_featured],
+            $validated['reason']
+        );
 
         return response()->json([
             'success'     => true,
@@ -233,10 +297,24 @@ class AdminController extends Controller
     /**
      * PATCH /api/v1/admin/reviews/{id}/approve
      */
-    public function approveReview(int $id): JsonResponse
+    public function approveReview(Request $request, int $id): JsonResponse
     {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
         $review = Review::findOrFail($id);
+        $before = ['status' => $review->status];
         $review->update(['status' => 'approved']);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            'APPROVE',
+            $review,
+            $before,
+            ['status' => 'approved'],
+            $validated['reason']
+        );
 
         return response()->json(['success' => true, 'message' => 'Review approved and published.']);
     }
@@ -244,9 +322,24 @@ class AdminController extends Controller
     /**
      * DELETE /api/v1/admin/reviews/{id}
      */
-    public function deleteReview(int $id): JsonResponse
+    public function deleteReview(Request $request, int $id): JsonResponse
     {
-        Review::findOrFail($id)->delete();
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
+        $review = Review::findOrFail($id);
+        $before = $review->toArray();
+        $review->delete();
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            'DELETE',
+            $review,
+            $before,
+            [],
+            $validated['reason']
+        );
 
         return response()->json(['success' => true, 'message' => 'Review deleted.']);
     }
@@ -352,10 +445,24 @@ class AdminController extends Controller
     /**
      * PATCH /api/v1/admin/builders/{id}/verify
      */
-    public function verifyBuilder(int $id): JsonResponse
+    public function verifyBuilder(Request $request, int $id): JsonResponse
     {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
         $builder = Builder::findOrFail($id);
+        $before = ['is_verified' => $builder->is_verified];
         $builder->update(['is_verified' => !$builder->is_verified]);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            $builder->is_verified ? 'VERIFY' : 'UNVERIFY',
+            $builder,
+            $before,
+            ['is_verified' => $builder->is_verified],
+            $validated['reason']
+        );
 
         return response()->json(['success' => true, 'is_verified' => $builder->is_verified]);
     }
@@ -363,10 +470,24 @@ class AdminController extends Controller
     /**
      * PATCH /api/v1/admin/workers/{id}/verify
      */
-    public function verifyWorker(int $id): JsonResponse
+    public function verifyWorker(Request $request, int $id): JsonResponse
     {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
         $worker = Worker::findOrFail($id);
+        $before = ['is_verified' => $worker->is_verified];
         $worker->update(['is_verified' => !$worker->is_verified]);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            $worker->is_verified ? 'VERIFY' : 'UNVERIFY',
+            $worker,
+            $before,
+            ['is_verified' => $worker->is_verified],
+            $validated['reason']
+        );
 
         return response()->json(['success' => true, 'is_verified' => $worker->is_verified]);
     }
@@ -374,10 +495,21 @@ class AdminController extends Controller
     /**
      * PATCH /api/v1/admin/suppliers/{id}/verify
      */
-    public function verifySupplier(int $id): JsonResponse
+    public function verifySupplier(Request $request, int $id): JsonResponse
     {
+        $validated = $request->validate([
+            'reason' => 'required|string|max:500'
+        ]);
+
         $supplier = Supplier::findOrFail($id);
+        $before = ['is_verified' => $supplier->is_verified];
         $supplier->update(['is_verified' => !$supplier->is_verified]);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            $supplier->is_verified ? 'VERIFY' : 'UNVERIFY',
+            $supplier,
+);
 
         return response()->json(['success' => true, 'is_verified' => $supplier->is_verified]);
     }
@@ -403,35 +535,6 @@ class AdminController extends Controller
     }
 
     /**
-     * PATCH /api/v1/admin/requirements/{id}/close
-     */
-    public function closeRequirement(int $id): JsonResponse
-    {
-        Requirement::findOrFail($id)->update(['status' => 'expired']);
-
-        return response()->json(['success' => true, 'message' => 'Requirement closed.']);
-    }
-
-    /**
-     * PATCH /api/v1/admin/requirements/{id}/status
-     */
-    public function updateRequirementStatus(Request $request, int $id): JsonResponse
-    {
-        $data = $request->validate([
-            'status' => ['required', 'in:open,bidding,shortlisted,awarded,completed,expired'],
-        ]);
-
-        $requirement = Requirement::findOrFail($id);
-        $requirement->update(['status' => $data['status']]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Requirement status updated.',
-            'data' => $requirement,
-        ]);
-    }
-
-    /**
      * PATCH /api/v1/admin/requirements/{id}/price
      */
     public function updateRequirementPrice(Request $request, int $id): JsonResponse
@@ -451,84 +554,42 @@ class AdminController extends Controller
     }
 
     /**
-     * PATCH /api/v1/admin/requirements/{id}/approve
-     */
-    public function approveRequirement(Request $request, int $id, \App\Services\RecommendationEngineService $recommendationEngine): JsonResponse
-    {
-        $requirement = Requirement::findOrFail($id);
-        
-        if ($requirement->status !== 'pending') {
-            return response()->json(['message' => 'Requirement is not pending.'], 400);
-        }
-
-        $requirement->update(['status' => 'open']);
-
-        // Generate recommendations and notify top professionals
-        $recommendationEngine->generateFor($requirement);
-
-        // Notify Customer
-        if ($requirement->user_id) {
-            $customer = User::find($requirement->user_id);
-            if ($customer) {
-                $customer->notify(new \App\Notifications\RequirementApprovedNotification([
-                    'title' => $requirement->title,
-                    'city' => $requirement->city,
-                    'requirement_id' => $requirement->id
-                ]));
-            }
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Requirement approved and notifications sent.',
-            'data' => $requirement,
-        ]);
-    }
-
-    /**
-     * PATCH /api/v1/admin/requirements/{id}/reject
-     */
-    public function rejectRequirement(Request $request, int $id): JsonResponse
-    {
-        $requirement = Requirement::findOrFail($id);
-        
-        $requirement->update(['status' => 'rejected']);
-
-        // Notify Customer
-        if ($requirement->user_id) {
-            $customer = User::find($requirement->user_id);
-            if ($customer) {
-                $customer->notify(new \App\Notifications\RequirementRejectedNotification([
-                    'title' => $requirement->title,
-                    'requirement_id' => $requirement->id
-                ]));
-            }
-        }
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Requirement rejected.',
-            'data' => $requirement,
-        ]);
-    }
-
-    /**
      * PATCH /api/v1/admin/users/{id}/verify
      */
     public function verifyUser(Request $request, int $id): JsonResponse
     {
         $data = $request->validate([
             'verification_level' => ['nullable', 'in:unverified,mobile_verified,identity_verified,business_verified,site_verified'],
+            'reason' => 'required|string|max:500'
         ]);
 
         $user = User::findOrFail($id);
         $nextVerified = !$user->is_verified;
+        
+        $before = [
+            'is_verified' => $user->is_verified,
+            'is_verified_business' => $user->is_verified_business,
+            'verification_level' => $user->verification_level,
+        ];
 
         $user->update([
             'is_verified' => $nextVerified,
             'is_verified_business' => $nextVerified,
             'verification_level' => $data['verification_level'] ?? ($nextVerified ? 'business_verified' : 'unverified'),
         ]);
+
+        \App\Models\ActivityLog::recordAdminAction(
+            auth()->id(),
+            $nextVerified ? 'VERIFY' : 'UNVERIFY',
+            $user,
+            $before,
+            [
+                'is_verified' => $user->is_verified,
+                'is_verified_business' => $user->is_verified_business,
+                'verification_level' => $user->verification_level,
+            ],
+            $data['reason']
+        );
 
         // Recalculate trust score using TrustScoreService
         app(TrustScoreService::class)->recalculateForUser($user);
@@ -675,8 +736,15 @@ class AdminController extends Controller
      * DELETE /api/v1/admin/users/mock/purge
      * Deletes ALL mock users from the database.
      */
-    public function purgeMockUsers(): JsonResponse
+    public function purgeMockUsers(Request $request): JsonResponse
     {
+        if ($request->query('confirm') !== 'yes') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Missing confirmation token. Pass ?confirm=yes to proceed with destructive purge.'
+            ], 403);
+        }
+
         $mockUsers = User::where('is_mock', true)->get();
         $count = $mockUsers->count();
 

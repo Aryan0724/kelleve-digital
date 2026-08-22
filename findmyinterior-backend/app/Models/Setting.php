@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Setting extends Model
 {
     use HasFactory;
+    protected $connection = 'fmi_mysql';
     
     protected $guarded = [];
 }
