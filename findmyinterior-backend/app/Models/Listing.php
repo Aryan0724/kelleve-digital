@@ -23,14 +23,13 @@ class Listing extends Model
         'years_experience', 'team_size', 'status', 'is_premium', 'is_featured', 'is_verified',
         'gst_number', 'pan_number', 'budget_tier',
         'phone_clicks', 'whatsapp_clicks', 'website_clicks',
-        'services', 'keywords', 'products', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
+        'services', 'products', 'achievements', 'availability', 'response_time', 'languages', 'social_links',
         'tenant_id',
         'subscription_plan', 'subscription_status', 'verified_at', 'featured_until', 'premium_until',
     ];
 
     protected $casts = [
         'services' => 'array',
-        'keywords' => 'array',
         'products' => 'array',
         'achievements' => 'array',
         'languages' => 'array',
@@ -163,8 +162,6 @@ class Listing extends Model
                          ->orWhereRaw('LOWER(listings.description) LIKE ?', ["%{$singularWord}%"])
                          ->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$word}%"])
                          ->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$singularWord}%"])
-                         ->orWhereRaw('LOWER(listings.keywords) LIKE ?', ["%{$word}%"])
-                         ->orWhereRaw('LOWER(listings.keywords) LIKE ?', ["%{$singularWord}%"])
                          ->orWhereHas('category', function ($catQ) use ($word, $singularWord) {
                              $catQ->whereRaw('LOWER(categories.name) LIKE ?', ["%{$word}%"])
                                   ->orWhereRaw('LOWER(categories.name) LIKE ?', ["%{$singularWord}%"]);
