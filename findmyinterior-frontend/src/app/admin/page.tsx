@@ -32,7 +32,7 @@ import {
   XCircle,
 } from "lucide-react";
 
-type AdminTab = "overview" | "system-health" | "verifications" | "users" | "listings" | "requirements" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages" | "advertisements";
+type AdminTab = "overview" | "system-health" | "verifications" | "users" | "listings" | "requirements" | "worker-jobs" | "rfqs" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages" | "advertisements";
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: "overview", label: "Overview" },
@@ -42,6 +42,8 @@ const tabs: { id: AdminTab; label: string }[] = [
   { id: "users", label: "Users" },
   { id: "listings", label: "Business Listings" },
   { id: "requirements", label: "Requirements" },
+  { id: "worker-jobs", label: "Worker Jobs" },
+  { id: "rfqs", label: "RFQs" },
   { id: "reviews", label: "Reviews" },
   { id: "payments", label: "Payments" },
   { id: "subscriptions", label: "Plans" },
@@ -68,6 +70,8 @@ export default function AdminDashboard() {
   const [users, setUsers] = useState<any[]>([]);
   const [listings, setListings] = useState<any[]>([]);
   const [requirements, setRequirements] = useState<any[]>([]);
+  const [workerJobs, setWorkerJobs] = useState<any[]>([]);
+  const [rfqs, setRfqs] = useState<any[]>([]);
   const [reviews, setReviews] = useState<any[]>([]);
   const [payments, setPayments] = useState<any[]>([]);
   const [dbTables, setDbTables] = useState<string[]>([]);
@@ -118,6 +122,20 @@ export default function AdminDashboard() {
       const res = await api.get("/admin/requirements");
       setRequirements(res.data.data || []);
     } catch (e) { console.error("Error fetching requirements:", e); }
+  }, []);
+
+  const fetchWorkerJobs = useCallback(async () => {
+    try {
+      const res = await api.get("/admin/worker-jobs");
+      setWorkerJobs(res.data.data || []);
+    } catch (e) { console.error("Error fetching worker jobs:", e); }
+  }, []);
+
+  const fetchRfqs = useCallback(async () => {
+    try {
+      const res = await api.get("/admin/rfqs");
+      setRfqs(res.data.data || []);
+    } catch (e) { console.error("Error fetching RFQs:", e); }
   }, []);
 
   const fetchReviews = useCallback(async () => {
@@ -172,13 +190,13 @@ export default function AdminDashboard() {
 
   const refreshAll = useCallback(async () => {
     try {
-      await Promise.all([fetchDashboard(), fetchUsers(), fetchListings(), fetchRequirements(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchBlogs(), fetchPlans(), fetchCategories()]);
+      await Promise.all([fetchDashboard(), fetchUsers(), fetchListings(), fetchRequirements(), fetchWorkerJobs(), fetchRfqs(), fetchReviews(), fetchPayments(), fetchDbTables(), fetchBlogs(), fetchPlans(), fetchCategories()]);
     } catch (e) {
       console.error("Error in refreshAll:", e);
     } finally {
       setLoading(false);
     }
-  }, [fetchDashboard, fetchPayments, fetchRequirements, fetchReviews, fetchUsers, fetchListings, fetchDbTables, fetchBlogs, fetchPlans, fetchCategories]);
+  }, [fetchDashboard, fetchPayments, fetchRequirements, fetchWorkerJobs, fetchRfqs, fetchReviews, fetchUsers, fetchListings, fetchDbTables, fetchBlogs, fetchPlans, fetchCategories]);
 
   // Auth guard — only depends on token/isAdmin/hydration, NOT on data-fetching functions
   useEffect(() => {
@@ -553,6 +571,52 @@ export default function AdminDashboard() {
                       </>
                     )}
                   </div>,
+                ])}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "worker-jobs" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>Worker Jobs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AdminTable
+                headers={["Worker Job", "Customer", "Daily Rate", "Status", "Applications"]}
+                rows={workerJobs.map((item) => [
+                  <div key="req">
+                    <div className="font-semibold">{item.title}</div>
+                    <div className="text-slate-500">{item.city}, {item.district}</div>
+                  </div>,
+                  <div key="customer">{item.user?.name || item.name || "Guest"}</div>,
+                  <div key="price" className="font-semibold text-slate-700">₹{item.daily_rate || "N/A"}</div>,
+                  <Badge key="status" variant={item.status === "open" ? "default" : item.status === "pending" ? "destructive" : "secondary"} className="capitalize">{item.status}</Badge>,
+                  <div key="bids">{item.bids_count || 0}</div>,
+                ])}
+              />
+            </CardContent>
+          </Card>
+        )}
+
+        {activeTab === "rfqs" && (
+          <Card>
+            <CardHeader>
+              <CardTitle>RFQs</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <AdminTable
+                headers={["RFQ", "Customer", "Budget", "Status", "Quotes"]}
+                rows={rfqs.map((item) => [
+                  <div key="req">
+                    <div className="font-semibold">{item.title}</div>
+                    <div className="text-slate-500">{item.city}, {item.district}</div>
+                  </div>,
+                  <div key="customer">{item.user?.name || item.name || "Guest"}</div>,
+                  <div key="price" className="font-semibold text-slate-700">₹{item.budget_max || "N/A"}</div>,
+                  <Badge key="status" variant={item.status === "open" ? "default" : item.status === "pending" ? "destructive" : "secondary"} className="capitalize">{item.status}</Badge>,
+                  <div key="bids">{item.bids_count || 0}</div>,
                 ])}
               />
             </CardContent>

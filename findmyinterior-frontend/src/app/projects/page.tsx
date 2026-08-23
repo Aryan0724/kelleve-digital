@@ -55,9 +55,19 @@ export default function ProjectsPage() {
   const fetchProjects = async () => {
     try {
       setLoading(true);
-      const res = await api.get("/projects");
-      setProjects(res.data.data || []);
-      setFilteredProjects(res.data.data || []);
+      const [projRes, jobRes, rfqRes] = await Promise.all([
+        api.get("/projects").catch(() => ({ data: { data: [] } })),
+        api.get("/worker-jobs").catch(() => ({ data: { data: [] } })),
+        api.get("/rfqs").catch(() => ({ data: { data: [] } }))
+      ]);
+      const merged = [
+        ...(projRes.data?.data || []),
+        ...(jobRes.data?.data || []),
+        ...(rfqRes.data?.data || [])
+      ].sort((a, b) => new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime());
+      
+      setProjects(merged);
+      setFilteredProjects(merged);
     } catch (err) {
       console.error(err);
     } finally {

@@ -535,6 +535,42 @@ class AdminController extends Controller
     }
 
     /**
+     * GET /api/v1/admin/worker-jobs
+     */
+    public function workerJobs(Request $request): JsonResponse
+    {
+        $jobs = \App\Models\WorkerJob::with(['user:id,name'])
+            ->withCount('bids')
+            ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $jobs->items(),
+            'meta'    => ['total' => $jobs->total()],
+        ]);
+    }
+
+    /**
+     * GET /api/v1/admin/rfqs
+     */
+    public function rfqs(Request $request): JsonResponse
+    {
+        $rfqs = \App\Models\Rfq::with(['user:id,name'])
+            ->withCount('bids')
+            ->when($request->filled('status'), fn($q) => $q->where('status', $request->status))
+            ->latest()
+            ->paginate(15);
+
+        return response()->json([
+            'success' => true,
+            'data'    => $rfqs->items(),
+            'meta'    => ['total' => $rfqs->total()],
+        ]);
+    }
+
+    /**
      * PATCH /api/v1/admin/requirements/{id}/price
      */
     public function updateRequirementPrice(Request $request, int $id): JsonResponse

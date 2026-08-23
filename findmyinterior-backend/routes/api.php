@@ -339,6 +339,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('workers/{id}/verify', [AdminController::class, 'verifyWorker']);
         
         Route::get('requirements', [AdminController::class, 'requirements']);
+        Route::get('worker-jobs', [AdminController::class, 'workerJobs']);
+        Route::get('rfqs', [AdminController::class, 'rfqs']);
         Route::patch('requirements/{id}/moderate', [\App\Http\Controllers\Admin\ProjectModerationController::class, 'moderate']);
         Route::patch('requirements/{id}/price', [AdminController::class, 'updateRequirementPrice']);
 
