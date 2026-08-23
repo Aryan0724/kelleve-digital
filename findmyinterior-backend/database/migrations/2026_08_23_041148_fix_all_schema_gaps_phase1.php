@@ -35,14 +35,14 @@ return new class extends Migration
         if (DB::connection('fmi_mysql')->table('categories')->count() === 0) {
             $now = now();
             DB::connection('fmi_mysql')->table('categories')->insert([
-                ['name' => 'Interior Designer',    'slug' => 'interior-designer',    'description' => 'Professional interior design services', 'status' => 'active', 'sort_order' => 1, 'created_at' => $now, 'updated_at' => $now],
-                ['name' => 'Architect',             'slug' => 'architect',             'description' => 'Architecture and structural design',     'status' => 'active', 'sort_order' => 2, 'created_at' => $now, 'updated_at' => $now],
-                ['name' => 'Contractor',            'slug' => 'contractor',            'description' => 'Civil and construction contractors',      'status' => 'active', 'sort_order' => 3, 'created_at' => $now, 'updated_at' => $now],
-                ['name' => 'Skilled Worker',        'slug' => 'skilled-worker',        'description' => 'Skilled tradespeople and labour',        'status' => 'active', 'sort_order' => 4, 'created_at' => $now, 'updated_at' => $now],
-                ['name' => 'Supplier',              'slug' => 'supplier',              'description' => 'Material and product suppliers',          'status' => 'active', 'sort_order' => 5, 'created_at' => $now, 'updated_at' => $now],
-                ['name' => 'Builder',               'slug' => 'builder',               'description' => 'Real-estate builders and developers',    'status' => 'active', 'sort_order' => 6, 'created_at' => $now, 'updated_at' => $now],
-                ['name' => 'Brand',                 'slug' => 'brand',                 'description' => 'Interior brands and product companies',  'status' => 'active', 'sort_order' => 7, 'created_at' => $now, 'updated_at' => $now],
-                ['name' => 'Other',                 'slug' => 'other',                 'description' => 'Other professional services',            'status' => 'active', 'sort_order' => 8, 'created_at' => $now, 'updated_at' => $now],
+                ['tenant_id' => null, 'name' => 'Interior Designer', 'slug' => 'interior-designer', 'description' => 'Professional interior design services', 'is_active' => 1, 'sort_order' => 1, 'icon' => null, 'image' => null, 'parent_id' => null, 'created_at' => $now, 'updated_at' => $now],
+                ['tenant_id' => null, 'name' => 'Architect',         'slug' => 'architect',         'description' => 'Architecture and structural design',     'is_active' => 1, 'sort_order' => 2, 'icon' => null, 'image' => null, 'parent_id' => null, 'created_at' => $now, 'updated_at' => $now],
+                ['tenant_id' => null, 'name' => 'Contractor',        'slug' => 'contractor',        'description' => 'Civil and construction contractors',      'is_active' => 1, 'sort_order' => 3, 'icon' => null, 'image' => null, 'parent_id' => null, 'created_at' => $now, 'updated_at' => $now],
+                ['tenant_id' => null, 'name' => 'Skilled Worker',    'slug' => 'skilled-worker',    'description' => 'Skilled tradespeople and labour',         'is_active' => 1, 'sort_order' => 4, 'icon' => null, 'image' => null, 'parent_id' => null, 'created_at' => $now, 'updated_at' => $now],
+                ['tenant_id' => null, 'name' => 'Supplier',          'slug' => 'supplier',          'description' => 'Material and product suppliers',           'is_active' => 1, 'sort_order' => 5, 'icon' => null, 'image' => null, 'parent_id' => null, 'created_at' => $now, 'updated_at' => $now],
+                ['tenant_id' => null, 'name' => 'Builder',           'slug' => 'builder',           'description' => 'Real-estate builders and developers',     'is_active' => 1, 'sort_order' => 6, 'icon' => null, 'image' => null, 'parent_id' => null, 'created_at' => $now, 'updated_at' => $now],
+                ['tenant_id' => null, 'name' => 'Brand',             'slug' => 'brand',             'description' => 'Interior brands and product companies',   'is_active' => 1, 'sort_order' => 7, 'icon' => null, 'image' => null, 'parent_id' => null, 'created_at' => $now, 'updated_at' => $now],
+                ['tenant_id' => null, 'name' => 'Other',             'slug' => 'other',             'description' => 'Other professional services',             'is_active' => 1, 'sort_order' => 8, 'icon' => null, 'image' => null, 'parent_id' => null, 'created_at' => $now, 'updated_at' => $now],
             ]);
         }
 
