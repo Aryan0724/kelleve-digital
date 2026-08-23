@@ -109,8 +109,6 @@ class ListingController extends Controller
             'newest'  => $query->orderByDesc('listings.created_at')->orderByDesc('listings.id'),
             'popular' => $query->orderByDesc('listings.views_count')->orderByDesc('listings.id'),
             default   => $query
-                ->orderByRaw('CASE WHEN listings.sponsored_until > CURRENT_TIMESTAMP THEN 1 ELSE 0 END DESC')
-                ->orderByDesc('listings.sponsored_rank')
                 ->orderByDesc('listings.is_featured')
                 ->orderByDesc('listings.is_verified')
                 ->orderByDesc('listings.is_premium')
