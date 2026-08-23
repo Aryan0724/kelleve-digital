@@ -386,12 +386,4 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     require __DIR__.'/api_c1_marketplace.php';
 });
 
-Route::get('clear-cache', function () {
-    if (function_exists('opcache_reset')) {
-        @opcache_reset();
-    }
-    \Illuminate\Support\Facades\Artisan::call('route:clear');
-    \Illuminate\Support\Facades\Artisan::call('config:clear');
-    \Illuminate\Support\Facades\Artisan::call('cache:clear');
-    return response()->json(['success' => true, 'message' => 'OPcache, route, config, and application cache reset successfully.']);
-});
+Route::get('clear-cache', [\App\Http\Controllers\Admin\SystemHealthController::class, 'clearCache']);

@@ -79,4 +79,18 @@ class SystemHealthController extends Controller
             'logs' => $lines
         ]);
     }
+
+    /**
+     * Clear application cache.
+     */
+    public function clearCache(): JsonResponse
+    {
+        if (function_exists('opcache_reset')) {
+            @opcache_reset();
+        }
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        \Illuminate\Support\Facades\Artisan::call('cache:clear');
+        return response()->json(['success' => true, 'message' => 'OPcache, route, config, and application cache reset successfully.']);
+    }
 }

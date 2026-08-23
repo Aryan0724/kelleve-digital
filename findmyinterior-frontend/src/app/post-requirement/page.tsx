@@ -400,7 +400,11 @@ function PostRequirementContent() {
 
 
 
-      const baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+      let baseUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000/api/v1';
+      if (typeof window !== 'undefined' && baseUrl.includes('localhost')) {
+          baseUrl = `${window.location.origin}/api/v1`;
+      }
+      
       const fullUrl = editId ? `${baseUrl}${endpoint}/${editId}` : `${baseUrl}${endpoint}`;
       
       if (editId) {
