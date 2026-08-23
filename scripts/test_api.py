@@ -1,14 +1,14 @@
-import paramiko
+import urllib.request
+import json
 
-client = paramiko.SSHClient()
-client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-client.connect('187.127.164.142', username='root', password='Truedial@1111')
-
-_, stdout, _ = client.exec_command("docker exec findmyinterior-app php artisan tinker --execute=\"echo App\\Models\\User::first()->createToken('test')->plainTextToken;\"")
-token = stdout.read().decode('utf-8').strip()
-
-print(f"Token: {token}")
-
-if token:
-    _, stdout, _ = client.exec_command(f"curl -s -X PUT http://localhost/api/v1/truedial/vendor/businesses/1 -H 'Authorization: Bearer {token}' -H 'Content-Type: application/json' -H 'Accept: application/json' -d '{{\"title\": \"Test\"}}'")
-    print(stdout.read().decode('utf-8'))
+url = "http://187.127.164.142:8000/api/v1/listings?search=Interior+Designer"
+req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
+try:
+    with urllib.request.urlopen(req) as response:
+        data = json.loads(response.read().decode('utf-8'))
+        print(f"Success: {data.get('success')}")
+        print(f"Total results: {data.get('meta', {}).get('total')}")
+        for item in data.get('data', [])[:3]:
+            print(f"- {item.get('title')} ({item.get('category', {}).get('name')})")
+except Exception as e:
+    print(f"Error: {e}")

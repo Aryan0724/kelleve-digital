@@ -14,7 +14,7 @@ class FixLegacyListingsData extends Command
 
     public function handle()
     {
-        $this->info("Fixing legacy listings data...");
+        $this->info("Fixing legacy listings data from legacy database...");
 
         $listings = Listing::all();
         $count = 0;
@@ -25,59 +25,83 @@ class FixLegacyListingsData extends Command
         $supplierCategory = Category::where('name', 'like', '%Supplier%')->first() ?? $defaultCategory;
 
         foreach ($listings as $listing) {
-            $user = User::with(['worker', 'supplier', 'builder'])->find($listing->user_id);
-            if (!$user) continue;
-
             $updated = false;
-
-            // Worker data
-            if ($user->worker) {
-                $listing->years_experience = (int)$user->worker->experience_years;
-                $listing->budget_tier = $user->worker->daily_rate ? '₹' . $user->worker->daily_rate . '/day' : null;
-                $listing->services = $user->worker->services ?? ($user->worker->skill ? [$user->worker->skill] : []);
-                $listing->description = $user->worker->bio ?? $listing->description;
-                $listing->achievements = $user->worker->achievements ?? [];
-                $listing->languages = $user->worker->languages ?? [];
-                $listing->title = $user->worker->name ?? $user->name;
-                $listing->phone = $user->worker->phone ?? $user->phone;
-                $listing->city = $user->worker->city ?? $listing->city;
-                
-                // Better category matching based on skill
-                if ($user->worker->skill && stripos($user->worker->skill, 'designer') !== false) {
-                    $listing->category_id = $designerCategory->id ?? $listing->category_id;
+            
+            // Try to find the old listing
+            $oldListing = \Illuminate\Support\Facades\DB::connection('legacy_restore')->table('listings')->where('user_id', $listing->user_id)->first();
+            if ($oldListing) {
+                $listing->title = $oldListing->title ?: $listing->title;
+                $listing->description = $oldListing->description ?: $listing->description;
+                $listing->phone = $oldListing->phone ?: $listing->phone;
+                $listing->services = json_decode($oldListing->services, true) ?? [];
+                $listing->achievements = json_decode($oldListing->achievements, true) ?? [];
+                $listing->languages = json_decode($oldListing->languages, true) ?? [];
+                if ($oldListing->category_id) {
+                    // Try to match legacy category ID to modern category? We don't have mapping. 
+                    // Let's use the title/services to guess, or if legacy category name was Designer.
+                    $legacyCat = \Illuminate\Support\Facades\DB::connection('legacy_restore')->table('categories')->where('id', $oldListing->category_id)->first();
+                    if ($legacyCat) {
+                        $modernCat = Category::where('name', 'like', '%' . explode(' ', $legacyCat->name)[0] . '%')->first();
+                        if ($modernCat) $listing->category_id = $modernCat->id;
+                    }
                 }
-                $updated = true;
-            } 
-            // Supplier data
-            elseif ($user->supplier) {
-                $listing->title = $user->supplier->company_name ?? $user->name;
-                $listing->description = $user->supplier->bio ?? $listing->description;
-                $listing->phone = $user->supplier->phone ?? $user->phone;
-                $listing->services = $user->supplier->services ?? [];
-                $listing->achievements = $user->supplier->achievements ?? [];
-                $listing->languages = $user->supplier->languages ?? [];
-                $listing->category_id = $supplierCategory->id ?? $listing->category_id;
-                $updated = true;
-            } 
-            // Builder data
-            elseif ($user->builder) {
-                $listing->title = $user->builder->company_name ?? $user->name;
-                $listing->description = $user->builder->bio ?? $listing->description;
-                $listing->phone = $user->builder->phone ?? $user->phone;
-                $listing->services = $user->builder->services ?? [];
-                $listing->achievements = $user->builder->achievements ?? [];
-                $listing->languages = $user->builder->languages ?? [];
-                $listing->category_id = $builderCategory->id ?? $listing->category_id;
                 $updated = true;
             }
 
+            // Fallbacks: worker, supplier, builder
+            if (!$updated) {
+                $oldWorker = \Illuminate\Support\Facades\DB::connection('legacy_restore')->table('workers')->where('user_id', $listing->user_id)->first();
+                if ($oldWorker) {
+                    $listing->years_experience = (int)$oldWorker->experience_years;
+                    $listing->budget_tier = $oldWorker->daily_rate ? '₹' . $oldWorker->daily_rate . '/day' : null;
+                    $listing->services = json_decode($oldWorker->services, true) ?? ($oldWorker->skill ? [$oldWorker->skill] : []);
+                    $listing->description = $oldWorker->bio ?? $listing->description;
+                    $listing->achievements = json_decode($oldWorker->achievements, true) ?? [];
+                    $listing->languages = json_decode($oldWorker->languages, true) ?? [];
+                    $listing->title = $oldWorker->name ?? $listing->title;
+                    $listing->phone = $oldWorker->phone ?? $listing->phone;
+                    $listing->city = $oldWorker->city ?? $listing->city;
+                    
+                    if ($oldWorker->skill && stripos($oldWorker->skill, 'designer') !== false) {
+                        $listing->category_id = $designerCategory->id ?? $listing->category_id;
+                    }
+                    $updated = true;
+                } else {
+                    $oldSupplier = \Illuminate\Support\Facades\DB::connection('legacy_restore')->table('suppliers')->where('user_id', $listing->user_id)->first();
+                    if ($oldSupplier) {
+                        $listing->title = $oldSupplier->company_name ?? $listing->title;
+                        $listing->description = $oldSupplier->bio ?? $listing->description;
+                        $listing->phone = $oldSupplier->phone ?? $listing->phone;
+                        $listing->services = json_decode($oldSupplier->services, true) ?? [];
+                        $listing->achievements = json_decode($oldSupplier->achievements, true) ?? [];
+                        $listing->languages = json_decode($oldSupplier->languages, true) ?? [];
+                        $listing->category_id = $supplierCategory->id ?? $listing->category_id;
+                        $updated = true;
+                    } else {
+                        $oldBuilder = \Illuminate\Support\Facades\DB::connection('legacy_restore')->table('builders')->where('user_id', $listing->user_id)->first();
+                        if ($oldBuilder) {
+                            $listing->title = $oldBuilder->company_name ?? $listing->title;
+                            $listing->description = $oldBuilder->bio ?? $listing->description;
+                            $listing->phone = $oldBuilder->phone ?? $listing->phone;
+                            $listing->services = json_decode($oldBuilder->services, true) ?? [];
+                            $listing->achievements = json_decode($oldBuilder->achievements, true) ?? [];
+                            $listing->languages = json_decode($oldBuilder->languages, true) ?? [];
+                            $listing->category_id = $builderCategory->id ?? $listing->category_id;
+                            $updated = true;
+                        }
+                    }
+                }
+            }
+
             if ($updated) {
+                // Also if the title is just a name, let's make sure we preserve the company name if we have it in user record?
+                // The DB logic has company_name.
                 $listing->save();
                 $count++;
             }
         }
 
-        $this->info("Successfully updated {$count} listings.");
+        $this->info("Successfully updated {$count} listings from legacy_restore database.");
         return 0;
     }
 }
