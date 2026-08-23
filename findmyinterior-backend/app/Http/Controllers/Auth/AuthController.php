@@ -234,6 +234,29 @@ class AuthController extends Controller
                 ]);
                 Log::info("AuthController::register - free privilege card created");
 
+                // Auto-create Listing for professionals so they appear in search immediately
+                if ($broadRole !== 'customer') {
+                    $tenantId = null;
+                    try {
+                        $tenantId = app(\App\Core\Tenancy\TenantContext::class)->getTenantId();
+                    } catch (\Throwable $e) {}
+
+                    \App\Models\Listing::create([
+                        'tenant_id'   => $tenantId ?? 1,
+                        'user_id'     => $user->id,
+                        'category_id' => 1,
+                        'title'       => $data['name'],
+                        'slug'        => \Illuminate\Support\Str::slug($data['name'] . '-' . \Illuminate\Support\Str::random(6)),
+                        'description' => 'Professional services.',
+                        'phone'       => $data['phone'],
+                        'city'        => 'Patna', // Default since register doesn't ask for city
+                        'district'    => 'Patna',
+                        'state'       => 'Bihar',
+                        'status'      => 'active',
+                    ]);
+                    Log::info("AuthController::register - professional listing created");
+                }
+
                 return $user;
             });
 
