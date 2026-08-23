@@ -8,7 +8,6 @@ class SavedVendor extends Model
 {
     use \App\Traits\TenantAwareTrait;
 
-    protected $connection = 'truedial_mysql';
 
     protected $fillable = ['tenant_id', 'user_id', 'vendor_id'];
 

@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class ReviewReply extends Model
 {
-    protected $connection = 'truedial_mysql';
     protected $fillable = [
         'review_id',
         'user_id',

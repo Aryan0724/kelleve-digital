@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class ProductCategory extends Model
 {
-    protected $connection = 'truedial_mysql';
     use HasFactory, TenantAwareTrait;
 
     protected $fillable = [

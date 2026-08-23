@@ -13,7 +13,6 @@ class ListingService extends Model
 {
     use HasFactory, SoftDeletes, TenantAwareTrait, HasMedia;
 
-    protected $connection = 'truedial_mysql';
 
     protected $fillable = [
         'tenant_id',

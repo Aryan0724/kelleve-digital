@@ -11,7 +11,6 @@ class AnalyticsEvent extends Model
 {
     use HasFactory, TenantAwareTrait;
 
-    protected $connection = 'truedial_mysql';
 
     const UPDATED_AT = null; // No updated_at for analytics events
 

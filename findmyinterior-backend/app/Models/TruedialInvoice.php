@@ -8,7 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class TruedialInvoice extends Model
 {
     use HasFactory;
-    protected $connection = 'truedial_mysql';
 
     protected $fillable = [
         'user_id',

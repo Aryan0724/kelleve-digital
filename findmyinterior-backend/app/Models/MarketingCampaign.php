@@ -9,7 +9,6 @@ class MarketingCampaign extends Model
 {
     use HasFactory;
 
-    protected $connection = 'truedial_mysql';
 
     protected $fillable = [
         'user_id',

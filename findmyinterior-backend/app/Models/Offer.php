@@ -9,7 +9,6 @@ class Offer extends Model
 {
     use HasFactory, \App\Traits\TenantAwareTrait;
 
-    protected $connection = 'truedial_mysql';
 
     protected $fillable = [
         'tenant_id',

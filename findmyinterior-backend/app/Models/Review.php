@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Review extends Model
 {
-    protected $connection = 'truedial_mysql';
     use HasFactory, \App\Traits\TenantAwareTrait, SoftDeletes;
 
     protected $fillable = [
