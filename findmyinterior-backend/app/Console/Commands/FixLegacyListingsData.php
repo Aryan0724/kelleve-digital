@@ -48,8 +48,6 @@ class FixLegacyListingsData extends Command
                 $listing->description = $oldListing['description'] ?: $listing->description;
                 $listing->phone = $oldListing['phone'] ?: $listing->phone;
                 $listing->services = json_decode($oldListing['services'] ?? '[]', true) ?? [];
-                $listing->achievements = json_decode($oldListing['achievements'] ?? '[]', true) ?? [];
-                $listing->languages = json_decode($oldListing['languages'] ?? '[]', true) ?? [];
                 if ($oldListing['category_id']) {
                     $legacyCat = $categoriesById->get($oldListing['category_id']);
                     if ($legacyCat) {
@@ -65,11 +63,8 @@ class FixLegacyListingsData extends Command
                 $oldWorker = $workersById->get($listing->user_id);
                 if ($oldWorker) {
                     $listing->years_experience = (int)$oldWorker['experience_years'];
-                    $listing->budget_tier = $oldWorker['daily_rate'] ? '₹' . $oldWorker['daily_rate'] . '/day' : null;
                     $listing->services = json_decode($oldWorker['services'] ?? '[]', true) ?? ($oldWorker['skill'] ? [$oldWorker['skill']] : []);
                     $listing->description = $oldWorker['bio'] ?? $listing->description;
-                    $listing->achievements = json_decode($oldWorker['achievements'] ?? '[]', true) ?? [];
-                    $listing->languages = json_decode($oldWorker['languages'] ?? '[]', true) ?? [];
                     $listing->title = $oldWorker['name'] ?? $listing->title;
                     $listing->phone = $oldWorker['phone'] ?? $listing->phone;
                     $listing->city = $oldWorker['city'] ?? $listing->city;
@@ -85,8 +80,6 @@ class FixLegacyListingsData extends Command
                         $listing->description = $oldSupplier['bio'] ?? $listing->description;
                         $listing->phone = $oldSupplier['phone'] ?? $listing->phone;
                         $listing->services = json_decode($oldSupplier['services'] ?? '[]', true) ?? [];
-                        $listing->achievements = json_decode($oldSupplier['achievements'] ?? '[]', true) ?? [];
-                        $listing->languages = json_decode($oldSupplier['languages'] ?? '[]', true) ?? [];
                         $listing->category_id = $supplierCategory->id ?? $listing->category_id;
                         $updated = true;
                     } else {
@@ -96,8 +89,6 @@ class FixLegacyListingsData extends Command
                             $listing->description = $oldBuilder['bio'] ?? $listing->description;
                             $listing->phone = $oldBuilder['phone'] ?? $listing->phone;
                             $listing->services = json_decode($oldBuilder['services'] ?? '[]', true) ?? [];
-                            $listing->achievements = json_decode($oldBuilder['achievements'] ?? '[]', true) ?? [];
-                            $listing->languages = json_decode($oldBuilder['languages'] ?? '[]', true) ?? [];
                             $listing->category_id = $builderCategory->id ?? $listing->category_id;
                             $updated = true;
                         }
