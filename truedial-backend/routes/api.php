@@ -31,6 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/auth/profile', [App\Http\Controllers\Auth\AuthController::class, 'updateProfile']);
     // CONVERSATIONS & CHAT
     Route::get('/conversations', [App\Http\Controllers\Public\ConversationController::class, 'index']);
+    Route::post('/conversations', [App\Http\Controllers\Public\ConversationController::class, 'store']);
     Route::get('/conversations/{id}', [App\Http\Controllers\Public\ConversationController::class, 'show']);
     Route::get('/conversations/{id}/messages', [App\Http\Controllers\Public\ConversationController::class, 'messages']);
     Route::post('/conversations/{id}/messages', [App\Http\Controllers\Public\ConversationController::class, 'sendMessage']);

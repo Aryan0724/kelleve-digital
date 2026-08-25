@@ -129,14 +129,8 @@ export default function BusinessProfileScreen() {
       return;
     }
 
-    const vendorId = basicInfo?.user_id || basicInfo?.id;
-    if (!vendorId) {
-      Alert.alert(
-        "Notice",
-        "Direct chat is initializing. You can call or submit an inquiry.",
-      );
-      return;
-    }
+    const vendorId = basicInfo?.user_id || null;
+    const businessId = basicInfo?.id || null;
 
     if (user.id === vendorId) {
       Alert.alert("Notice", "This is your own business listing.");
@@ -145,12 +139,17 @@ export default function BusinessProfileScreen() {
 
     setStartingChat(true);
     try {
-      const res = await api.post("/conversations", { vendor_id: vendorId });
+      const res = await api.post("/conversations", {
+        vendor_id: vendorId,
+        business_id: businessId,
+        listing_id: businessId,
+      });
       const convo = res.data?.data || res.data;
       if (convo?.id) {
         router.push(`/dashboard/chat/${convo.id}`);
       } else {
-        Alert.alert("Error", "Unable to start chat with business.");
+        Alert.alert("Notice", "Starting chat room...");
+        router.push("/(tabs)/messages");
       }
     } catch (err: any) {
       console.warn("Start chat failed:", err);
@@ -179,22 +178,33 @@ export default function BusinessProfileScreen() {
 
     setSubmittingQuote(true);
     try {
-      await api.post("/requirements", {
-        title: `Quote Request for ${business?.basicInfo?.title || "Business"}`,
-        description: quoteMessage,
-        category_id: business?.basicInfo?.category_id || 1,
-        target_vendor_id: business?.basicInfo?.user_id, // Optionally assign this to the specific vendor if backend supports it
+      const res = await api.post("/conversations", {
+        vendor_id: basicInfo?.user_id,
+        business_id: basicInfo?.id,
+        listing_id: basicInfo?.id,
+        initial_message: `Inquiry / Quote Request for ${basicInfo?.title || 'Business'}:\n${quoteMessage.trim()}`,
       });
-      Alert.alert(
-        "Success",
-        "Your quote request has been sent! The business will contact you soon.",
-      );
+      const convo = res.data?.data || res.data;
       setQuoteModalVisible(false);
       setQuoteMessage("");
+      Alert.alert(
+        "Message Sent!",
+        "Your enquiry has been delivered directly to the business.",
+        [
+          {
+            text: "Open Chat",
+            onPress: () => {
+              if (convo?.id) router.push(`/dashboard/chat/${convo.id}`);
+              else router.push("/(tabs)/messages");
+            },
+          },
+          { text: "OK" },
+        ]
+      );
     } catch (err: any) {
       console.warn("Submit quote failed:", err);
       Alert.alert(
-        "Error",
+        "Notice",
         err?.message || "Could not send quote request right now.",
       );
     } finally {
@@ -378,32 +388,32 @@ export default function BusinessProfileScreen() {
             </Text>
           </TouchableOpacity>
 
+          <TouchableOpacity
+            className="items-center"
+            onPress={handleStartChat}
+            disabled={startingChat}
+          >
+            <View className="w-12 h-12 rounded-2xl bg-orange-100 dark:bg-orange-950/60 items-center justify-center mb-1 border border-orange-200 dark:border-orange-800">
+              <MessageSquare size={20} color="#EA580C" />
+            </View>
+            <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-1">
+              Chat
+            </Text>
+          </TouchableOpacity>
+
           {basicInfo.website ? (
             <TouchableOpacity
               className="items-center"
               onPress={() => handleAction(basicInfo.website)}
             >
-              <View className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 items-center justify-center mb-1 border border-blue-500 shadow-sm">
-                <Globe size={20} color="#3B82F6" />
+              <View className="w-12 h-12 rounded-2xl bg-indigo-100 dark:bg-indigo-950/60 items-center justify-center mb-1 border border-indigo-200 dark:border-indigo-800">
+                <Globe size={20} color="#4F46E5" />
               </View>
               <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-1">
                 Website
               </Text>
             </TouchableOpacity>
-          ) : (
-            <TouchableOpacity
-              className="items-center"
-              onPress={handleStartChat}
-              disabled={startingChat}
-            >
-              <View className="w-12 h-12 rounded-full bg-white dark:bg-slate-900 items-center justify-center mb-1 border border-orange-500 shadow-sm">
-                <MessageSquare size={20} color="#F97316" />
-              </View>
-              <Text className="text-[11px] font-bold text-slate-700 dark:text-slate-300 mt-1">
-                Chat
-              </Text>
-            </TouchableOpacity>
-          )}
+          ) : null}
 
           <TouchableOpacity 
             className="items-center" 
