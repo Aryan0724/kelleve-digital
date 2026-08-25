@@ -42,6 +42,8 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
+        \Sentry\Laravel\Integration::handles($exceptions);
+
         // Safety net: Catch the RouteNotFoundException thrown when Authenticate
         // middleware tries to redirect to route('login') which doesn't exist.
         $exceptions->render(function (RouteNotFoundException $e, Request $request) {
