@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::table('listings', function (Blueprint $table) {
             $table->longText('cover_image')->nullable()->change();
-            $table->longText('cover_image_url')->nullable()->change();
         });
 
         Schema::table('listing_galleries', function (Blueprint $table) {
@@ -28,7 +27,6 @@ return new class extends Migration
     {
         Schema::table('listings', function (Blueprint $table) {
             $table->string('cover_image')->nullable()->change();
-            $table->string('cover_image_url')->nullable()->change();
         });
 
         Schema::table('listing_galleries', function (Blueprint $table) {
