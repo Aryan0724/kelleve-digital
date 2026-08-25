@@ -70,10 +70,7 @@ class DashboardController extends Controller
                 
             $data['rfqs'] = \App\Models\Rfq::where('user_id', $user->id)
                 ->with(['bids' => function($q) {
-                    $q->where(function($q2) {
-                        $q2->where('is_awarded', true)
-                           ->orWhereIn('status', ['accepted', 'completed']);
-                    });
+                    $q->whereIn('status', ['accepted', 'completed', 'awarded']);
                 }])
                 ->latest()->get()->map(function($r) {
                     $awardedBid = $r->bids->first();
@@ -84,10 +81,7 @@ class DashboardController extends Controller
                 
             $data['jobs'] = \App\Models\WorkerJob::where('user_id', $user->id)
                 ->with(['bids' => function($q) {
-                    $q->where(function($q2) {
-                        $q2->where('is_awarded', true)
-                           ->orWhereIn('status', ['accepted', 'completed']);
-                    });
+                    $q->whereIn('status', ['accepted', 'completed', 'awarded']);
                 }])
                 ->latest()->get()->map(function($j) {
                     $awardedBid = $j->bids->first();
@@ -318,15 +312,15 @@ class DashboardController extends Controller
                 // Uses direct requirement_type matching instead of fragile category/recommendation-table joins
                 try {
                     $roleToReqTypes = [
-                        'interior_designer'  => ['INTERIOR_DESIGN', 'Interior Design', 'RENOVATION', 'ARCHITECT', 'FURNITURE', 'Furniture'],
-                        'interior_company'   => ['INTERIOR_DESIGN', 'Interior Design', 'RENOVATION', 'ARCHITECT', 'FURNITURE', 'Furniture'],
-                        'architect'          => ['ARCHITECT', 'Architecture', 'ARCHITECTURE', 'CONSTRUCTION', 'Construction'],
-                        'contractor'         => ['CONSTRUCTION', 'Construction', 'RENOVATION', 'INTERIOR_DESIGN'],
-                        'builder'            => ['BUILDER_PROJECT', 'Builder Project', 'CONSTRUCTION', 'Construction'],
-                        'material_supplier'  => ['MATERIALS', 'RFQ'],
-                        'supplier'           => ['MATERIALS', 'RFQ'],
-                        'skilled_worker'     => ['JOB', 'WORKER_JOB'],
-                        'worker'             => ['JOB', 'WORKER_JOB'],
+                        'interior_designer'  => ['INTERIOR_DESIGN', 'Interior Design', 'interior_design', 'RENOVATION', 'renovation', 'ARCHITECT', 'architect', 'FURNITURE', 'furniture', 'Project', 'project'],
+                        'interior_company'   => ['INTERIOR_DESIGN', 'Interior Design', 'interior_design', 'RENOVATION', 'renovation', 'ARCHITECT', 'architect', 'FURNITURE', 'furniture', 'Project', 'project'],
+                        'architect'          => ['ARCHITECT', 'Architecture', 'ARCHITECTURE', 'CONSTRUCTION', 'Construction', 'architect', 'architecture', 'construction', 'Project', 'project'],
+                        'contractor'         => ['CONSTRUCTION', 'Construction', 'construction', 'RENOVATION', 'renovation', 'INTERIOR_DESIGN', 'interior_design', 'Project', 'project'],
+                        'builder'            => ['BUILDER_PROJECT', 'Builder Project', 'builder_project', 'CONSTRUCTION', 'Construction', 'construction', 'Project', 'project'],
+                        'material_supplier'  => ['MATERIALS', 'RFQ', 'materials', 'rfq', 'Material', 'material'],
+                        'supplier'           => ['MATERIALS', 'RFQ', 'materials', 'rfq', 'Material', 'material'],
+                        'skilled_worker'     => ['JOB', 'WORKER_JOB', 'job', 'worker_job', 'Skilled Worker Job'],
+                        'worker'             => ['JOB', 'WORKER_JOB', 'job', 'worker_job', 'Skilled Worker Job'],
                     ];
 
                     // Build a merged list of valid requirement_types for this user's roles
@@ -338,38 +332,40 @@ class DashboardController extends Controller
                     }
                     $validReqTypes = array_unique($validReqTypes);
 
-                    $cacheKey = 'dashboard_leads_' . $user->id . '_' . implode('_', $userRoles);
-                    $data['recommended_leads'] = \Illuminate\Support\Facades\Cache::remember($cacheKey, 180, function() use ($validReqTypes, $user) {
-                        // Base query: open requirements that are not worker-jobs or supplier RFQs unless role matches
-                        $query = \App\Models\Requirement::where('status', 'open');
+                    // Base query: open or bidding requirements matching role
+                    $query = \App\Models\Requirement::with(['category', 'user'])
+                        ->whereIn('status', ['open', 'bidding', 'active', 'published']);
 
-                        if (!empty($validReqTypes)) {
-                            $query->whereIn('requirement_type', $validReqTypes);
+                    if (!empty($validReqTypes)) {
+                        $query->where(function($q) use ($validReqTypes) {
+                            $q->whereIn('requirement_type', $validReqTypes)
+                              ->orWhereIn('opportunity_type', $validReqTypes);
+                        });
+                    } else {
+                        // Fallback for unrecognised roles: show all project-type reqs
+                        $query->where(function($q) {
+                            $q->whereNull('opportunity_type')
+                              ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
+                        });
+                    }
+
+                    // Try personalised recs first
+                    $recommendedIds = \Illuminate\Support\Facades\DB::table('requirement_recommendations')
+                        ->where('vendor_id', $user->id)
+                        ->orderByDesc('match_score')
+                        ->take(10)
+                        ->pluck('requirement_id');
+
+                    if ($recommendedIds->isNotEmpty()) {
+                        $personalised = (clone $query)->whereIn('id', $recommendedIds)->get();
+                        if ($personalised->isNotEmpty()) {
+                            $data['recommended_leads'] = $personalised;
                         } else {
-                            // Fallback for unrecognised roles: show all project-type reqs
-                            $query->where(function($q) {
-                                $q->whereNull('opportunity_type')
-                                  ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
-                            });
+                            $data['recommended_leads'] = $query->latest()->take(10)->get();
                         }
-
-                        // Try personalised recs first
-                        $recommendedIds = \Illuminate\Support\Facades\DB::table('requirement_recommendations')
-                            ->where('vendor_id', $user->id)
-                            ->orderByDesc('match_score')
-                            ->take(10)
-                            ->pluck('requirement_id');
-
-                        if ($recommendedIds->isNotEmpty()) {
-                            $personalised = (clone $query)->whereIn('id', $recommendedIds)->get();
-                            if ($personalised->isNotEmpty()) {
-                                return $personalised;
-                            }
-                        }
-
-                        // Fallback: latest open requirements matching role
-                        return $query->latest()->take(10)->get();
-                    });
+                    } else {
+                        $data['recommended_leads'] = $query->latest()->take(10)->get();
+                    }
                 } catch (\Exception $e) {
                     \Illuminate\Support\Facades\Log::warning('Dashboard recommended_leads failed: ' . $e->getMessage());
                     $data['recommended_leads'] = collect([]);
@@ -395,8 +391,8 @@ class DashboardController extends Controller
                     );
                     
                     // Attach the contact info from the user if it exists (for models like WorkerJob)
-                    $phone = $lead->phone ?? $lead->user->phone ?? null;
-                    $email = $lead->email ?? $lead->user->email ?? null;
+                    $phone = $lead->phone ?? $lead->user?->phone ?? null;
+                    $email = $lead->email ?? $lead->user?->email ?? null;
 
                     // Mask phone if not allowed
                     if (!$canSeeContact && !empty($phone)) {
