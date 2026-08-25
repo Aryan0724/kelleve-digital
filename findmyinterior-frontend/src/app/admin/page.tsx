@@ -127,7 +127,7 @@ export default function AdminDashboard() {
       const { token: impToken, user: impUser } = res.data.data;
       // Save current admin token to return if needed
       sessionStorage.setItem("fmi_admin_backup_token", token || "");
-      useAuthStore.getState().login(impToken, impUser);
+      useAuthStore.getState().setAuth(impUser, impToken);
       router.push("/dashboard");
     } catch (e: any) {
       alert("Error logging in as user: " + (e.response?.data?.message || e.message));
