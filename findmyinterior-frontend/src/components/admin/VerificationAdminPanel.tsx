@@ -184,20 +184,55 @@ export function VerificationAdminPanel() {
 
       {/* Document Viewer Modal */}
       {viewingDoc && (
-        <div className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4" onClick={() => setViewingDoc(null)}>
-          <div className="relative max-w-full max-h-full">
-            <button 
-              className="absolute -top-12 right-0 text-white hover:text-slate-300 bg-slate-800/50 rounded-full p-1 transition-colors" 
-              onClick={() => setViewingDoc(null)}
-            >
-              <XCircle className="w-8 h-8" />
-            </button>
-            <img 
-              src={viewingDoc} 
-              alt="Verification Document" 
-              className="max-w-full max-h-[90vh] object-contain rounded-md shadow-2xl bg-white" 
-              onClick={(e) => e.stopPropagation()} 
-            />
+        <div className="fixed inset-0 z-[100] bg-black/85 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setViewingDoc(null)}>
+          <div className="relative max-w-5xl w-full max-h-[92vh] bg-slate-900 rounded-2xl overflow-hidden shadow-2xl flex flex-col border border-slate-700" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between px-6 py-4 bg-slate-800/90 border-b border-slate-700">
+              <span className="text-white font-bold text-base flex items-center gap-2">
+                <FileText className="w-5 h-5 text-orange-400" /> Verification Document Viewer
+              </span>
+              <div className="flex items-center gap-3">
+                {(viewingDoc.startsWith("data:") || viewingDoc.startsWith("http")) && (
+                  <a
+                    href={viewingDoc}
+                    target="_blank"
+                    rel="noreferrer"
+                    download="verification_document"
+                    className="text-xs bg-slate-700 hover:bg-slate-600 text-white font-semibold px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+                  >
+                    <ExternalLink className="w-3.5 h-3.5" /> Open in New Tab
+                  </a>
+                )}
+                <button 
+                  className="text-slate-400 hover:text-white transition-colors p-1 rounded-lg hover:bg-slate-700" 
+                  onClick={() => setViewingDoc(null)}
+                >
+                  <XCircle className="w-6 h-6" />
+                </button>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto p-4 flex items-center justify-center min-h-[450px] bg-slate-950/60">
+              {viewingDoc.startsWith("data:application/pdf") || viewingDoc.toLowerCase().endsWith(".pdf") ? (
+                <iframe 
+                  src={viewingDoc} 
+                  title="Verification Document PDF" 
+                  className="w-full h-[75vh] rounded-lg border border-slate-800 bg-white" 
+                />
+              ) : viewingDoc.startsWith("TEXT:") ? (
+                <div className="p-8 text-center bg-slate-900 rounded-xl border border-slate-800 max-w-md w-full">
+                  <div className="text-sm font-semibold text-slate-400 mb-2">Registered ID / Tax Number:</div>
+                  <div className="text-2xl font-mono font-bold text-orange-400 select-all p-4 bg-black/40 rounded-lg border border-slate-800">
+                    {viewingDoc.replace(/^TEXT:/, "")}
+                  </div>
+                </div>
+              ) : (
+                <img 
+                  src={viewingDoc} 
+                  alt="Verification Document" 
+                  className="max-w-full max-h-[75vh] object-contain rounded-lg shadow-2xl bg-white/5" 
+                />
+              )}
+            </div>
           </div>
         </div>
       )}

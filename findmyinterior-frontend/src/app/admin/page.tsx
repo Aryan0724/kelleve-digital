@@ -30,6 +30,12 @@ import {
   Star,
   Users,
   XCircle,
+  Key,
+  LogIn,
+  Copy,
+  Check,
+  Phone,
+  ExternalLink,
 } from "lucide-react";
 
 type AdminTab = "overview" | "system-health" | "verifications" | "users" | "listings" | "requirements" | "worker-jobs" | "rfqs" | "reviews" | "payments" | "database" | "subscriptions" | "categories" | "cms" | "inquiries" | "locations" | "settings" | "contact-messages" | "advertisements";
@@ -86,6 +92,49 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [usersMeta, setUsersMeta] = useState<any>({});
+  const [passwordModalUser, setPasswordModalUser] = useState<any | null>(null);
+  const [newPasswordInput, setNewPasswordInput] = useState<string>("");
+  const [copiedPassword, setCopiedPassword] = useState(false);
+
+  const openPasswordModal = (targetUser: any) => {
+    setPasswordModalUser(targetUser);
+    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+    setNewPasswordInput(`Pass@${randomSuffix}`);
+    setCopiedPassword(false);
+  };
+
+  const handleResetPassword = async () => {
+    if (!passwordModalUser) return;
+    try {
+      setBusyId("resetting-password");
+      const res = await api.patch(`/admin/users/${passwordModalUser.id}/reset-password`, {
+        password: newPasswordInput,
+      });
+      alert(`Password updated successfully!\n\nLogin ID: ${res.data.login_id}\nNew Password: ${res.data.new_password}`);
+      setPasswordModalUser(null);
+    } catch (e: any) {
+      alert("Error resetting password: " + (e.response?.data?.message || e.message));
+    } finally {
+      setBusyId(null);
+    }
+  };
+
+  const handleImpersonate = async (targetUser: any) => {
+    if (!confirm(`Log in as "${targetUser.name}" (${targetUser.email || targetUser.phone})?`)) return;
+    try {
+      setBusyId(`impersonate-${targetUser.id}`);
+      const res = await api.post(`/admin/users/${targetUser.id}/impersonate`);
+      const { token: impToken, user: impUser } = res.data.data;
+      // Save current admin token to return if needed
+      sessionStorage.setItem("fmi_admin_backup_token", token || "");
+      useAuthStore.getState().login(impToken, impUser);
+      router.push("/dashboard");
+    } catch (e: any) {
+      alert("Error logging in as user: " + (e.response?.data?.message || e.message));
+    } finally {
+      setBusyId(null);
+    }
+  };
 
   const isAdmin = user?.isAdmin || user?.role === "admin";
 
@@ -415,7 +464,12 @@ export default function AdminDashboard() {
                           <span className="bg-orange-100 text-orange-700 text-[10px] font-bold px-1.5 py-0.5 rounded-full">MOCK</span>
                         )}
                       </div>
-                      <div className="text-slate-400 text-xs">{item.email}</div>
+                      <div className="text-slate-400 text-xs flex items-center gap-2 mt-0.5">
+                        <span>{item.email || "No email"}</span>
+                        {item.phone && (
+                          <span className="text-slate-400 font-mono">• {item.phone}</span>
+                        )}
+                      </div>
                     </div>
                   </div>,
                   <div key="role" className="flex flex-wrap gap-1">
@@ -433,6 +487,25 @@ export default function AdminDashboard() {
                     {item.is_active ? "Active" : "Disabled"}
                   </Badge>,
                   <div key="actions" className="flex justify-end gap-1.5 flex-wrap">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border-indigo-200"
+                      disabled={busyId === `impersonate-${item.id}`}
+                      onClick={() => handleImpersonate(item)}
+                      title="Log in directly as this user"
+                    >
+                      <LogIn className="h-3 w-3 mr-1" /> Log In
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="h-7 text-xs bg-amber-50 hover:bg-amber-100 text-amber-800 border-amber-200"
+                      onClick={() => openPasswordModal(item)}
+                      title="Set/Reset user login password"
+                    >
+                      <Key className="h-3 w-3 mr-1" /> Password
+                    </Button>
                     <Button size="sm" variant="outline" className="h-7 text-xs" onClick={() => runAction(`verify-user-${item.id}`, () => api.patch(`/admin/users/${item.id}/verify`))}>
                       <ShieldCheck className="h-3 w-3 mr-1" />{item.is_verified ? "Unverify" : "Verify"}
                     </Button>
@@ -778,6 +851,93 @@ export default function AdminDashboard() {
           </Card>
         )}
       </div>
+
+      {/* Password Management Modal */}
+      {passwordModalUser && (
+        <div className="fixed inset-0 z-[100] bg-black/75 flex items-center justify-center p-4 backdrop-blur-sm" onClick={() => setPasswordModalUser(null)}>
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 max-w-md w-full shadow-2xl space-y-5" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <div className="p-2 bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 rounded-lg">
+                  <Key className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 dark:text-white text-base">User Credentials & Password</h3>
+                  <p className="text-xs text-slate-500">{passwordModalUser.name}</p>
+                </div>
+              </div>
+              <button onClick={() => setPasswordModalUser(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white p-1 rounded-lg">
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-2 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl text-xs border border-slate-100 dark:border-slate-800">
+              <div className="flex justify-between items-center">
+                <span className="text-slate-500 font-medium">Login Email:</span>
+                <span className="font-mono font-bold text-slate-900 dark:text-white select-all">{passwordModalUser.email || "None"}</span>
+              </div>
+              {passwordModalUser.phone && (
+                <div className="flex justify-between items-center">
+                  <span className="text-slate-500 font-medium">Login Phone:</span>
+                  <span className="font-mono font-bold text-slate-900 dark:text-white select-all">{passwordModalUser.phone}</span>
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-xs font-bold text-slate-700 dark:text-slate-300">Set New Password</label>
+              <div className="flex gap-2">
+                <Input
+                  value={newPasswordInput}
+                  onChange={(e) => setNewPasswordInput(e.target.value)}
+                  placeholder="Enter new password"
+                  className="font-mono text-sm"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
+                    setNewPasswordInput(`Pass@${randomSuffix}`);
+                  }}
+                  title="Generate Random"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
+              </div>
+              <p className="text-[11px] text-slate-400">
+                Set a custom password or generate a random one to share with the user or use for login.
+              </p>
+            </div>
+
+            <div className="flex items-center gap-2 pt-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="flex-1 text-xs"
+                onClick={() => {
+                  const creds = `Login ID: ${passwordModalUser.email || passwordModalUser.phone}\nPassword: ${newPasswordInput}`;
+                  navigator.clipboard.writeText(creds);
+                  setCopiedPassword(true);
+                  setTimeout(() => setCopiedPassword(false), 2000);
+                }}
+              >
+                {copiedPassword ? <Check className="w-3.5 h-3.5 mr-1 text-green-600" /> : <Copy className="w-3.5 h-3.5 mr-1" />}
+                {copiedPassword ? "Copied!" : "Copy Login Info"}
+              </Button>
+              <Button
+                type="button"
+                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs"
+                disabled={busyId === "resetting-password" || !newPasswordInput}
+                onClick={handleResetPassword}
+              >
+                {busyId === "resetting-password" ? "Saving..." : "Save Password"}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
