@@ -275,9 +275,16 @@ function AdsBanner({ role, location }: { role: string; location: string }) {
           }}
         >
           {ad.media_type === 'image' && ad.banner_url ? (
-            <div className="w-full h-32 md:h-48 relative">
-              <img src={ad.banner_url} alt={ad.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
+            <div className="w-full h-36 md:h-52 relative bg-slate-900 overflow-hidden">
+              <img 
+                src={ad.banner_url} 
+                alt={ad.title} 
+                onError={(e) => {
+                  e.currentTarget.src = "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=1200";
+                }}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"></div>
               <div className="absolute bottom-4 left-6 right-6">
                 <span className="bg-orange-500 text-white text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded shadow mb-2 inline-block">Sponsored</span>
                 <h4 className="text-white font-bold text-lg md:text-xl drop-shadow-md">{ad.title}</h4>

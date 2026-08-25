@@ -42,11 +42,16 @@ export function EducationalBlogsFeed({ role }: { role: string }) {
         {blogs.map((blog) => (
           <Link key={blog.id} href={`/blog/${blog.slug}`} className="group block">
             <div className="bg-white dark:bg-slate-900 rounded-2xl p-4 border border-slate-200 dark:border-slate-800 hover:shadow-lg transition-all h-full flex flex-col">
-              {blog.cover_image && (
-                <div className="w-full h-32 rounded-xl bg-slate-100 dark:bg-slate-800 mb-4 overflow-hidden">
-                  <img src={blog.cover_image} alt={blog.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
-                </div>
-              )}
+              <div className="w-full h-36 rounded-xl bg-slate-100 dark:bg-slate-800 mb-4 overflow-hidden relative">
+                <img 
+                  src={blog.cover_image || "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1000"} 
+                  alt={blog.title} 
+                  onError={(e) => {
+                    e.currentTarget.src = "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?auto=format&fit=crop&q=80&w=1000";
+                  }}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                />
+              </div>
               <div className="flex items-center gap-2 mb-2">
                 <span className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 bg-indigo-50 text-indigo-600 dark:bg-indigo-900/30 dark:text-indigo-400 rounded">
                   {blog.category}
