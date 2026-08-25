@@ -48,7 +48,7 @@ class HomepageController extends Controller
             })
             ->join('users', 'users.id', '=', 'listings.user_id')
             ->select('listings.*')
-            ->with(['category'])
+            ->with(['category', 'user.activeSubscription.plan'])
             ->orderByRaw("
                 CASE users.verification_level
                     WHEN 'elite_professional' THEN 4

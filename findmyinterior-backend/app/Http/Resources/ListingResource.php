@@ -11,8 +11,8 @@ class ListingResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $ownerUser = $this->whenLoaded('user');
-        $ownerPlan = $ownerUser?->activeSubscription?->plan;
+        $ownerUser = $this->relationLoaded('user') ? $this->user : null;
+        $ownerPlan = $ownerUser ? $ownerUser->activeSubscription?->plan : null;
         
         $canHaveWebsite = $ownerPlan?->can_add_website ?? false;
         $canHaveWhatsapp = $ownerPlan?->can_add_whatsapp ?? false;
