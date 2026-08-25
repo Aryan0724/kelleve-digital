@@ -90,10 +90,12 @@ export default function ChatDetailScreen() {
     if (!id) return;
     fetchConversationDetails();
     fetchMessages();
+    api.post(`/conversations/${id}/read`).catch(() => {});
 
     // 5-second polling interval for real-time chat updates
     pollingInterval.current = setInterval(() => {
       fetchMessages(true);
+      api.post(`/conversations/${id}/read`).catch(() => {});
     }, 5000);
 
     return () => {

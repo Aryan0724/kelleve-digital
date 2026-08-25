@@ -29,6 +29,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/auth/logout', [App\Http\Controllers\Auth\AuthController::class, 'logout']);
     Route::get('/auth/me', [App\Http\Controllers\Auth\AuthController::class, 'me']);
     Route::put('/auth/profile', [App\Http\Controllers\Auth\AuthController::class, 'updateProfile']);
+    // CONVERSATIONS & CHAT
+    Route::get('/conversations', [App\Http\Controllers\Public\ConversationController::class, 'index']);
+    Route::get('/conversations/{id}', [App\Http\Controllers\Public\ConversationController::class, 'show']);
+    Route::get('/conversations/{id}/messages', [App\Http\Controllers\Public\ConversationController::class, 'messages']);
+    Route::post('/conversations/{id}/messages', [App\Http\Controllers\Public\ConversationController::class, 'sendMessage']);
+    Route::post('/conversations/{id}/read', [App\Http\Controllers\Public\ConversationController::class, 'markAsRead']);
     
     // EXPLORER
     Route::post('/businesses/{slug}/reviews', [App\Http\Controllers\User\ReviewController::class, 'store']);

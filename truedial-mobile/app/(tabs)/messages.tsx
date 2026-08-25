@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { View, Text, TouchableOpacity, ActivityIndicator, Image, RefreshControl, FlatList, Alert } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useRouter, useFocusEffect } from 'expo-router';
 import { MessageSquare, Search, PenSquare } from 'lucide-react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import api from '../../services/api';
@@ -13,10 +13,12 @@ export default function MessagesTab() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
-  useEffect(() => {
-    if (user) fetchConversations();
-    else setLoading(false);
-  }, [user]);
+  useFocusEffect(
+    useCallback(() => {
+      if (user) fetchConversations();
+      else setLoading(false);
+    }, [user])
+  );
 
   const fetchConversations = async () => {
     try {
