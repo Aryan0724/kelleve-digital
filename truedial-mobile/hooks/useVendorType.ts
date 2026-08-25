@@ -39,10 +39,10 @@ export interface VendorConfig {
 export function useVendorType(): VendorConfig {
   const { user } = useAuth();
   
-  // Use professional_type or business_category as a fallback
-  const professionalType = (user?.professional_type || user?.business_category || '').toLowerCase();
+  const userAny = user as any;
+  const professionalType = (userAny?.professional_type || userAny?.business_category || '').toLowerCase();
   
-  const roleSlugs = (user?.roles || []).map(r => (typeof r === 'string' ? r.toLowerCase() : r.slug?.toLowerCase() || ''));
+  const roleSlugs: string[] = (userAny?.roles || []).map((r: any) => (typeof r === 'string' ? r.toLowerCase() : r.slug?.toLowerCase() || ''));
   const hasRole = (role: string) => roleSlugs.includes(role);
 
   return useMemo(() => {

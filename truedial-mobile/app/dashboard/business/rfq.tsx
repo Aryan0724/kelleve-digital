@@ -168,6 +168,7 @@ const s = StyleSheet.create({
   filterLabel: { fontSize: 11, fontWeight: '700', color: '#64748B' },
   filterLabelActive: { color: 'white' },
   card: { backgroundColor: 'white', borderRadius: 16, borderWidth: 1, borderColor: '#E2E8F0', overflow: 'hidden', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.04, shadowRadius: 6, elevation: 1 },
+  cardUrgent: { borderColor: '#FCA5A5' },
   cardTop: { flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', padding: 14, paddingBottom: 8 },
   materialName: { fontSize: 14, fontWeight: '800', color: '#1E293B' },
   buyerName: { fontSize: 12, color: '#64748B' },

@@ -147,6 +147,7 @@ export default function HousekeepingScreen() {
             );
           })}
         </ScrollView>
+      )}
     </View>
   );
 }

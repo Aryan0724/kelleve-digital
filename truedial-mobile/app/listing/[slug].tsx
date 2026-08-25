@@ -11,6 +11,7 @@ import {
   Linking,
   Image,
   Dimensions,
+  Modal,
 } from "react-native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { StatusBar } from "expo-status-bar";

@@ -17,7 +17,12 @@ import {
   User,
   Settings,
   Plus,
-  Minus
+  Minus,
+  GraduationCap,
+  Briefcase,
+  Newspaper,
+  BookOpen,
+  Star
 } from 'lucide-react-native';
 
 export default function CustomerDashboard() {
@@ -88,7 +93,42 @@ export default function CustomerDashboard() {
       icon: CreditCard,
       color: '#F59E0B',
       bgClass: 'bg-amber-50 dark:bg-amber-900/30',
-      route: '/privilege'
+      route: '/dashboard/user/privilege-card'
+    },
+    {
+      title: 'Academy',
+      icon: GraduationCap,
+      color: '#E8701A',
+      bgClass: 'bg-orange-50 dark:bg-orange-900/30',
+      route: '/academy'
+    },
+    {
+      title: 'Jobs',
+      icon: Briefcase,
+      color: '#2563EB',
+      bgClass: 'bg-blue-50 dark:bg-blue-900/30',
+      route: '/jobs'
+    },
+    {
+      title: 'News',
+      icon: Newspaper,
+      color: '#EF4444',
+      bgClass: 'bg-red-50 dark:bg-red-900/30',
+      route: '/news'
+    },
+    {
+      title: 'Blogs',
+      icon: BookOpen,
+      color: '#8B5CF6',
+      bgClass: 'bg-purple-50 dark:bg-purple-900/30',
+      route: '/blog'
+    },
+    {
+      title: 'My Reviews',
+      icon: Star,
+      color: '#EAB308',
+      bgClass: 'bg-yellow-50 dark:bg-yellow-900/30',
+      route: '/dashboard/user/reviews'
     },
     {
       title: 'Browse Offers',

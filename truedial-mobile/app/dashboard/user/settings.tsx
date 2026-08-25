@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, Text, View, ScrollView, TouchableOpacity, Switch
+  StyleSheet, Text, View, ScrollView, TouchableOpacity, Switch, Alert
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { ArrowLeft, Bell, Lock, Shield, Eye, Smartphone } from 'lucide-react-native';
