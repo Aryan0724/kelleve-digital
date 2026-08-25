@@ -190,7 +190,7 @@ export default function CustomerDashboard() {
             </View>
             <TouchableOpacity 
               className="bg-[#D4AF37] px-4 py-2 rounded-xl"
-              onPress={() => router.push('/privilege')}
+              onPress={() => router.push('/dashboard/user/privilege-card')}
             >
               <Text className="text-slate-950 font-bold text-xs">View Full Card</Text>
             </TouchableOpacity>
@@ -267,7 +267,7 @@ export default function CustomerDashboard() {
             </Text>
             <TouchableOpacity 
               className="bg-[#E8701A] px-4 py-2 rounded-xl"
-              onPress={() => router.push('/privilege')}
+              onPress={() => router.push('/dashboard/user/privilege-card')}
             >
               <Text className="text-xs font-bold text-white">Get VIP Card</Text>
             </TouchableOpacity>
