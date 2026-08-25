@@ -126,10 +126,12 @@ class ProfileController extends Controller
         $user = $request->user();
 
         $data = $request->validate([
-            'name'   => ['sometimes', 'required', 'string', 'max:255'],
-            'phone'  => ['sometimes', 'nullable', 'string', 'max:20'],
-            'city'   => ['sometimes', 'nullable', 'string', 'max:100'],
-            'avatar' => ['sometimes', 'nullable', 'string'],
+            'name'     => ['sometimes', 'required', 'string', 'max:255'],
+            'phone'    => ['sometimes', 'nullable', 'string', 'max:20'],
+            'city'     => ['sometimes', 'nullable', 'string', 'max:100'],
+            'district' => ['sometimes', 'nullable', 'string', 'max:100'],
+            'address'  => ['sometimes', 'nullable', 'string'],
+            'avatar'   => ['sometimes', 'nullable', 'string'],
         ]);
 
         // If user has a listing, update city/district/address there too
@@ -343,17 +345,16 @@ class ProfileController extends Controller
 
         $file = $request->file('cover_image');
 
-        // Convert to base64 data URI — stored directly in DB, no filesystem needed.
-        $dataUri = \App\Helpers\ImageHelper::toBase64($file, 1200, 82);
+        $url = app(\App\Services\UnifiedStorageService::class)->storeFile($file, 'covers');
 
-        $listing->update(['cover_image' => $dataUri]);
+        $listing->update(['cover_image' => $url]);
         
-        $request->user()->update(['cover_image' => $dataUri]);
+        $request->user()->update(['cover_image' => $url]);
 
         return response()->json([
             'success' => true,
             'message' => 'Cover image updated.',
-            'cover_image' => $dataUri,
+            'cover_image' => $url,
         ]);
     }
 
@@ -405,6 +406,16 @@ class ProfileController extends Controller
         foreach ($request->images as $index => $image) {
             $type = $image['type'] ?? 'image';
             $dataUrl = $image['data'];
+
+            // If the frontend sends a raw Base64 string, convert it to an actual file to prevent DB bloat/crashes
+            if ($type === 'image' && \Illuminate\Support\Str::startsWith($dataUrl, 'data:image')) {
+                try {
+                    $dataUrl = app(\App\Services\UnifiedStorageService::class)->storeBase64($dataUrl, 'gallery');
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error('Gallery Base64 upload failed: ' . $e->getMessage());
+                    continue; // Skip this image if it's corrupt
+                }
+            }
 
             ListingGallery::create([
                 'listing_id' => $listing->id,
