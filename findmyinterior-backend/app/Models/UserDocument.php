@@ -34,4 +34,22 @@ class UserDocument extends Model
     {
         return $this->belongsTo(User::class, 'approved_by');
     }
+
+    public function getFilePathAttribute($value)
+    {
+        if (empty($value)) return $value;
+        if (str_starts_with($value, 'data:') || str_starts_with($value, 'TEXT:')) {
+            return $value;
+        }
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+        if (str_starts_with($value, '/storage/')) {
+            return 'https://findmyinterior.com' . $value;
+        }
+        if (str_starts_with($value, 'storage/')) {
+            return 'https://findmyinterior.com/' . $value;
+        }
+        return 'https://findmyinterior.com/storage/' . ltrim($value, '/');
+    }
 }

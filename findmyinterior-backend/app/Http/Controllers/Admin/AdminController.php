@@ -163,6 +163,45 @@ class AdminController extends Controller
         ]);
     }
 
+    /**
+     * POST /api/v1/admin/users/{id}/impersonate
+     */
+    public function impersonateUser(Request $request, int $id): JsonResponse
+    {
+        $targetUser = User::with(['roles', 'primaryRole'])->findOrFail($id);
+        $token = $targetUser->createToken('admin_impersonation')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Impersonation token generated.',
+            'data'    => [
+                'token' => $token,
+                'user'  => $targetUser,
+            ]
+        ]);
+    }
+
+    /**
+     * PATCH /api/v1/admin/users/{id}/reset-password
+     */
+    public function resetUserPassword(Request $request, int $id): JsonResponse
+    {
+        $user = User::findOrFail($id);
+
+        $newPassword = $request->input('password') ?: \Illuminate\Support\Str::random(10);
+
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($newPassword),
+        ]);
+
+        return response()->json([
+            'success'      => true,
+            'message'      => 'Password updated successfully.',
+            'new_password' => $newPassword,
+            'login_id'     => $user->email ?? $user->phone,
+        ]);
+    }
+
     // ─── Listings ─────────────────────────────────────────────────────────────
 
     /**

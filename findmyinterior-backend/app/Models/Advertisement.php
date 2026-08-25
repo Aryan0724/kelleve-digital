@@ -61,4 +61,24 @@ class Advertisement extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function getBannerUrlAttribute($value)
+    {
+        if (empty($value)) {
+            return 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1200&h=400&fit=crop';
+        }
+        if (str_starts_with($value, 'data:')) {
+            return $value;
+        }
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+        if (str_starts_with($value, '/storage/')) {
+            return 'https://findmyinterior.com' . $value;
+        }
+        if (str_starts_with($value, 'storage/')) {
+            return 'https://findmyinterior.com/' . $value;
+        }
+        return 'https://findmyinterior.com/storage/' . ltrim($value, '/');
+    }
 }

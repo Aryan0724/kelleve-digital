@@ -136,8 +136,19 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
 
     // Opportunity Entity API Contracts (Sprint A) - Public Read
     Route::apiResource('projects', OpportunityProjectController::class)->only(['index', 'show']);
+    Route::post('projects', [OpportunityProjectController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('projects/{project}', [OpportunityProjectController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('projects/{project}', [OpportunityProjectController::class, 'destroy'])->middleware('auth:sanctum');
+
     Route::apiResource('rfqs', RfqController::class)->only(['index', 'show']);
+    Route::post('rfqs', [RfqController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('rfqs/{rfq}', [RfqController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('rfqs/{rfq}', [RfqController::class, 'destroy'])->middleware('auth:sanctum');
+
     Route::apiResource('worker-jobs', JobController::class)->only(['index', 'show']);
+    Route::post('worker-jobs', [JobController::class, 'store'])->middleware('auth:sanctum');
+    Route::put('worker-jobs/{job}', [JobController::class, 'update'])->middleware('auth:sanctum');
+    Route::delete('worker-jobs/{job}', [JobController::class, 'destroy'])->middleware('auth:sanctum');
     
     // Legacy Requirements (Masked for guests/free users, unmasked for premium/admin via Resource logic)
     Route::apiResource('requirements', RequirementController::class)->only(['index', 'show']);
@@ -300,6 +311,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('users', [AdminController::class, 'users']);
         Route::patch('users/{id}/toggle-active', [AdminController::class, 'toggleUserActive']);
         Route::patch('users/{id}/verify', [AdminController::class, 'verifyUser']);
+        Route::patch('users/{id}/reset-password', [AdminController::class, 'resetUserPassword']);
+        Route::post('users/{id}/impersonate', [AdminController::class, 'impersonateUser']);
         Route::delete('users/{id}', [AdminController::class, 'deleteUser']);
         Route::delete('users/mock/purge', [AdminController::class, 'purgeMockUsers']);
         Route::patch('users/{id}/wallet/adjust', [\App\Http\Controllers\Admin\AdminWalletController::class, 'adjustBalance']);
