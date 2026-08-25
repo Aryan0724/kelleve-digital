@@ -106,6 +106,7 @@ class DashboardController extends Controller
             if ($projectIds->isEmpty() && $rfqIds->isEmpty() && $jobIds->isEmpty()) {
                 $data['received_bids'] = collect([]);
             } else {
+                try {
                 $data['received_bids'] = \App\Models\Bid::with(['professional'])
                     ->where(function($query) use ($projectIds, $rfqIds, $jobIds) {
                         if ($projectIds->isNotEmpty()) {
@@ -184,12 +185,21 @@ class DashboardController extends Controller
                             ] : null,
                         ];
                     });
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning('Dashboard received_bids failed: ' . $e->getMessage());
+                    $data['received_bids'] = collect([]);
+                }
             } // end else (has opportunities)
 
-            $data['shortlisted_professionals'] = \App\Models\Shortlist::with(['professional'])
-                ->where('user_id', $user->id)
-                ->latest()
-                ->get();
+            try {
+                $data['shortlisted_professionals'] = \App\Models\Shortlist::with(['professional'])
+                    ->where('user_id', $user->id)
+                    ->latest()
+                    ->get();
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::warning('Dashboard shortlists failed: ' . $e->getMessage());
+                $data['shortlisted_professionals'] = collect([]);
+            }
 
             // Professional logic
             $isProfessional = array_intersect(
@@ -304,87 +314,65 @@ class DashboardController extends Controller
                 // Fetch Vendor Metrics
                 $data['vendor_metrics'] = $user->vendorMetric;
 
-                // Fetch Recommended Leads based on Phase C visibility engine
-                if (in_array('material_supplier', $userRoles) || in_array('supplier', $userRoles)) {
-                    $data['recommended_leads'] = \App\Models\Rfq::where('status', 'open')
-                        ->latest()
-                        ->take(10)
-                        ->get();
-                } elseif (in_array('skilled_worker', $userRoles) || in_array('worker', $userRoles)) {
-                    $workerEntity = $user->worker;
-                    $query = \App\Models\WorkerJob::where('status', 'open');
-                    
-                    if ($workerEntity && $workerEntity->skill) {
-                        $skill = strtolower($workerEntity->skill);
-                        // Order by matching skill instead of filtering out non-matches
-                        $query->orderByRaw("CASE 
-                            WHEN LOWER(CAST(skills_required AS TEXT)) LIKE ? THEN 0 
-                            WHEN skills_required IS NULL OR CAST(skills_required AS TEXT) = '[]' OR CAST(skills_required AS TEXT) = '\"\"' THEN 1
-                            ELSE 2 END", ['%' . $skill . '%']);
-                    }
-                    if ($workerEntity && $workerEntity->city) {
-                        $query->orderByRaw("CASE WHEN city = ? THEN 0 ELSE 1 END", [$workerEntity->city]);
-                    }
-                    
-                    $data['recommended_leads'] = $query->latest()->take(20)->get();
-                } else {
-                    $recommendedIds = \Illuminate\Support\Facades\DB::table('requirement_recommendations')
-                        ->where('vendor_id', $user->id)
-                        ->orderByDesc('match_score')
-                        ->take(10)
-                        ->pluck('requirement_id');
+                // Fetch Recommended Leads — role-mapped, cached, robust fallback
+                // Uses direct requirement_type matching instead of fragile category/recommendation-table joins
+                try {
+                    $roleToReqTypes = [
+                        'interior_designer'  => ['INTERIOR_DESIGN', 'Interior Design', 'RENOVATION', 'ARCHITECT', 'FURNITURE', 'Furniture'],
+                        'interior_company'   => ['INTERIOR_DESIGN', 'Interior Design', 'RENOVATION', 'ARCHITECT', 'FURNITURE', 'Furniture'],
+                        'architect'          => ['ARCHITECT', 'Architecture', 'ARCHITECTURE', 'CONSTRUCTION', 'Construction'],
+                        'contractor'         => ['CONSTRUCTION', 'Construction', 'RENOVATION', 'INTERIOR_DESIGN'],
+                        'builder'            => ['BUILDER_PROJECT', 'Builder Project', 'CONSTRUCTION', 'Construction'],
+                        'material_supplier'  => ['MATERIALS', 'RFQ'],
+                        'supplier'           => ['MATERIALS', 'RFQ'],
+                        'skilled_worker'     => ['JOB', 'WORKER_JOB'],
+                        'worker'             => ['JOB', 'WORKER_JOB'],
+                    ];
 
-                    $query = \App\Models\Requirement::where('status', 'open')
-                        ->where(function($q) {
-                            $q->whereNull('opportunity_type')
-                              ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
-                        })
-                        ->whereDoesntHave('category', function($q) {
-                            $q->where('slug', 'workers');
-                        });
-                    
-                    $validReqTypes = ['Project', 'Requirement', 'App\Models\Requirement', 'App\Models\Project'];
-                    $profType = $user->professional_type;
-
-                    if (in_array('interior_designer', $userRoles) || in_array('interior_company', $userRoles) || in_array($profType, ['interior_designer', 'interior_company'])) {
-                        $validReqTypes = array_merge($validReqTypes, ['INTERIOR_DESIGN', 'Interior Design', 'FURNITURE', 'Furniture']);
-                    }
-                    if (in_array('architect', $userRoles) || in_array($profType, ['architect', 'architecture_firm'])) {
-                        $validReqTypes = array_merge($validReqTypes, ['ARCHITECTURE', 'Architecture']);
-                    }
-                    if (in_array('contractor', $userRoles) || in_array($profType, ['contractor', 'civil_contractor', 'turnkey_contractor'])) {
-                        $validReqTypes = array_merge($validReqTypes, ['CONSTRUCTION', 'Construction']);
-                    }
-                    if (in_array('builder', $userRoles) || in_array($profType, ['builder', 'real_estate_developer'])) {
-                        $validReqTypes = array_merge($validReqTypes, ['BUILDER_PROJECT', 'Builder Project']);
-                    }
-
-                    if (count($validReqTypes) > 4) { // 4 is the base array length
-                        $query->whereIn('requirement_type', $validReqTypes);
-                    } else {
-                        // Fallback for all other professional roles (e.g. pest_control, modular_kitchen_designer)
-                        $listingCategoryIds = $user->listings()->pluck('category_id')->toArray();
-                        $roleSlugs = array_map(fn($r) => str_replace('_', '-', $r), $userRoles);
-                        
-                        $query->where(function($q) use ($listingCategoryIds, $roleSlugs) {
-                            if (!empty($listingCategoryIds)) {
-                                $q->whereIn('category_id', $listingCategoryIds);
-                            } else {
-                                $q->whereHas('category', function($q2) use ($roleSlugs) {
-                                    $q2->whereIn('slug', $roleSlugs);
-                                });
-                            }
-                        });
-                    }
-
-                    if ($recommendedIds->isEmpty()) {
-                        $data['recommended_leads'] = (clone $query)->latest()->take(10)->get();
-                    } else {
-                        $data['recommended_leads'] = (clone $query)->whereIn('id', $recommendedIds)->get();
-                        if ($data['recommended_leads']->isEmpty()) {
-                            $data['recommended_leads'] = (clone $query)->latest()->take(10)->get();
+                    // Build a merged list of valid requirement_types for this user's roles
+                    $validReqTypes = [];
+                    foreach ($userRoles as $r) {
+                        if (isset($roleToReqTypes[$r])) {
+                            $validReqTypes = array_merge($validReqTypes, $roleToReqTypes[$r]);
                         }
                     }
+                    $validReqTypes = array_unique($validReqTypes);
+
+                    $cacheKey = 'dashboard_leads_' . $user->id . '_' . implode('_', $userRoles);
+                    $data['recommended_leads'] = \Illuminate\Support\Facades\Cache::remember($cacheKey, 180, function() use ($validReqTypes, $user) {
+                        // Base query: open requirements that are not worker-jobs or supplier RFQs unless role matches
+                        $query = \App\Models\Requirement::where('status', 'open');
+
+                        if (!empty($validReqTypes)) {
+                            $query->whereIn('requirement_type', $validReqTypes);
+                        } else {
+                            // Fallback for unrecognised roles: show all project-type reqs
+                            $query->where(function($q) {
+                                $q->whereNull('opportunity_type')
+                                  ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
+                            });
+                        }
+
+                        // Try personalised recs first
+                        $recommendedIds = \Illuminate\Support\Facades\DB::table('requirement_recommendations')
+                            ->where('vendor_id', $user->id)
+                            ->orderByDesc('match_score')
+                            ->take(10)
+                            ->pluck('requirement_id');
+
+                        if ($recommendedIds->isNotEmpty()) {
+                            $personalised = (clone $query)->whereIn('id', $recommendedIds)->get();
+                            if ($personalised->isNotEmpty()) {
+                                return $personalised;
+                            }
+                        }
+
+                        // Fallback: latest open requirements matching role
+                        return $query->latest()->take(10)->get();
+                    });
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::warning('Dashboard recommended_leads failed: ' . $e->getMessage());
+                    $data['recommended_leads'] = collect([]);
                 }
             }
 

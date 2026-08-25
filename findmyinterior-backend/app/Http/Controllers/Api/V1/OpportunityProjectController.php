@@ -108,9 +108,34 @@ class OpportunityProjectController extends Controller
         }
 
         $requirement = \Illuminate\Support\Facades\DB::transaction(function () use ($validated, $user, $budgetMin, $budgetMax, $creatorRole, $oppType, $request) {
+            // Resolve category_id dynamically from requirement_type
+            $reqTypeSlugMap = [
+                'INTERIOR_DESIGN' => 'interior-designers',
+                'RENOVATION'      => 'interior-designers',
+                'ARCHITECT'       => 'architects',
+                'ARCHITECTURE'    => 'architects',
+                'CONSTRUCTION'    => 'contractors',
+                'FURNITURE'       => 'furniture',
+                'BUILDER_PROJECT' => 'builders',
+                'MATERIALS'       => 'material-suppliers',
+                'RFQ'             => 'material-suppliers',
+                'JOB'             => 'skilled-workers',
+                'WORKER_JOB'      => 'skilled-workers',
+            ];
+            $reqTypeUpper = strtoupper($validated['requirement_type'] ?? '');
+            $targetSlug   = $reqTypeSlugMap[$reqTypeUpper] ?? null;
+            $categoryId   = null;
+            if ($targetSlug) {
+                $categoryId = \App\Models\Category::where('slug', $targetSlug)->value('id');
+            }
+            // Fallback: first available category
+            if (!$categoryId) {
+                $categoryId = \App\Models\Category::value('id');
+            }
+
             $req = Requirement::create([
                 'user_id'          => $user->id,
-                'category_id'      => 1, // Default; no category picker in wizard yet
+                'category_id'      => $categoryId, // Dynamically resolved from requirement_type
                 'title'            => $validated['title'],
                 'description'      => $validated['description'],
                 'city'             => $validated['city'],
