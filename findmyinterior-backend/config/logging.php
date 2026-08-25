@@ -129,6 +129,11 @@ return [
             'path' => storage_path('logs/laravel.log'),
         ],
 
+        'sentry_logs' => [
+            'driver' => 'sentry_logs',
+            'level' => env('LOG_LEVEL', 'info'),
+        ],
+
     ],
 
 ];
