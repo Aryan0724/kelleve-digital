@@ -264,7 +264,8 @@ class AuthController extends Controller
             Log::info("AuthController::register - token created");
 
             // Send a welcome message if the user is a professional (not a customer)
-            if ($broadRole !== 'customer') {
+            // Skip if this registration came from TrueDial — TrueDial sends its own branded welcome
+            if ($broadRole !== 'customer' && strtolower($request->header('X-App-Source', 'fmi')) !== 'truedial') {
                 try {
                     // Find an admin user to act as sender (id 1 or first user with admin role)
                     $admin = User::whereHas('roles', function ($q) {
