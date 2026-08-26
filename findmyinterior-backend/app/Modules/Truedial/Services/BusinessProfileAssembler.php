@@ -36,6 +36,7 @@ class BusinessProfileAssembler
             'phone' => $business->phone,
             'email' => $business->email ?? $business->user?->email,
             'website' => $business->website,
+            'gallery' => MediaResource::collection($business->media)->resolve(),
             'services' => $business->services ?? [],
             'products' => $business->products ?? [],
             'social_links' => $business->social_links ?? [],

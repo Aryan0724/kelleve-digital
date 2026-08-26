@@ -191,6 +191,10 @@ export default function BusinessProfileClient({
     vendorGallery = business.media.map((m: any) => typeof m === 'string' ? m : m.url || '').filter(Boolean);
   }
 
+  if (vendorCover) {
+    vendorGallery = [vendorCover, ...vendorGallery.filter((img: string) => img !== vendorCover)];
+  }
+
   const gallery = vendorGallery.length > 0 
     ? vendorGallery 
     : defaultImages;
