@@ -20,13 +20,27 @@ const loadScript = (src: string) => {
   });
 };
 
-export function CheckoutButton({ planId, amount, label }: { planId: number, amount: number, label: string }) {
+import { toast } from "react-toastify";
+
+export function CheckoutButton({ 
+  planId, 
+  amount, 
+  label,
+  buttonText,
+  className
+}: { 
+  planId: number; 
+  amount: number; 
+  label?: string;
+  buttonText?: string;
+  className?: string;
+}) {
   const [loading, setLoading] = useState(false);
   const user = useAuthStore((state) => state.user);
 
   const displayRazorpay = async () => {
     if (!user) {
-      alert("Please login first.");
+      toast.error("Please login first.");
       return;
     }
 
@@ -46,18 +60,18 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
       // 2. Load Razorpay Script
       const res = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
       if (!res) {
-        alert("Razorpay SDK failed to load. Are you offline?");
+        toast.error("Razorpay SDK failed to load. Are you offline?");
         setLoading(false);
         return;
       }
 
       // 3. Configure Razorpay Options
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, // Use test key
+        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TRfrjzfAExcLjs",
         amount: amountInPaise.toString(),
         currency: "INR",
         name: "FindMyInterior",
-        description: `Upgrade to ${label}`,
+        description: `Upgrade to ${label || 'Subscription'}`,
         order_id: orderId,
         handler: async function (response: any) {
           // 4. Verify payment on backend
@@ -67,10 +81,10 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
-            alert("Payment Successful! Your subscription is now active.");
-            window.location.reload(); // Quick refresh to update state
+            toast.success("Payment Successful! Your subscription is now active.");
+            window.location.reload();
           } catch (err) {
-            alert("Payment verification failed!");
+            toast.error("Payment verification failed! Please contact support.");
           }
         },
         prefill: {
@@ -79,7 +93,7 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
           contact: user.phone,
         },
         theme: {
-          color: "#ea580c", // Orange-600
+          color: "#ff6b00",
         },
       };
 
@@ -87,8 +101,8 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
       paymentObject.open();
     } catch (error: any) {
       console.error(error);
-      const errorMessage = error?.response?.data?.message || error?.message || "Unknown error occurred";
-      alert("Failed to initiate payment. " + errorMessage);
+      const errorMessage = error?.response?.data?.message || error?.message || "Payment Gateway Error";
+      toast.error(errorMessage);
     } finally {
       setLoading(false);
     }
@@ -96,7 +110,7 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
 
   const handleWalletPayment = async () => {
     if (!user) return;
-    if (!confirm(`Pay ₹${amount} using your wallet balance?`)) return;
+    if (!confirm(`Pay ₹${Number(amount).toLocaleString('en-IN')} using your wallet balance?`)) return;
     
     setLoading(true);
     try {
@@ -105,10 +119,10 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
         subscription_plan_id: planId,
         billing_cycle: "yearly"
       });
-      alert("Payment Successful! Your subscription is now active.");
+      toast.success("Payment Successful! Your subscription is now active.");
       window.location.reload();
     } catch (err: any) {
-      alert(err.response?.data?.message || "Wallet payment failed!");
+      toast.error(err.response?.data?.message || "Wallet payment failed!");
     } finally {
       setLoading(false);
     }
@@ -121,36 +135,39 @@ export function CheckoutButton({ planId, amount, label }: { planId: number, amou
   if (numAmount <= 0) {
     return (
       <Button 
-        onClick={() => alert("To switch to a free plan, please contact support or use the downgrade option.")} 
-        disabled={loading} 
+        disabled 
         variant="outline"
-        className="w-full h-12 text-lg font-bold"
+        className="w-full h-11 text-xs font-bold"
       >
-        {label}
+        Free Plan Included
       </Button>
     );
   }
 
   return (
-    <div className="w-full flex flex-col gap-2">
-      {hasEnoughWalletBalance && (
-        <Button 
-          onClick={handleWalletPayment} 
-          disabled={loading} 
-          variant="default"
-          className="w-full bg-green-600 hover:bg-green-700 h-12 text-lg text-white font-bold"
-        >
-          {loading ? "Processing..." : `Pay with Wallet (Bal: ₹${numBalance})`}
-        </Button>
-      )}
+    <div className="w-full flex flex-col gap-2.5">
       <Button 
         onClick={displayRazorpay} 
         disabled={loading} 
-        variant={hasEnoughWalletBalance ? "outline" : "default"}
-        className={`w-full h-12 text-lg font-bold ${!hasEnoughWalletBalance ? 'bg-orange-600 hover:bg-orange-700 text-white' : 'border-orange-600 text-orange-600 hover:bg-orange-50'}`}
+        className={className || "w-full bg-[#0b1b36] hover:bg-slate-800 text-white font-bold h-11 text-xs rounded-xl shadow-md"}
       >
-        {loading ? "Processing..." : (hasEnoughWalletBalance ? "Pay with Razorpay" : label)}
+        {loading ? "Connecting Gateway..." : (buttonText || `Pay with Razorpay (₹${numAmount.toLocaleString('en-IN')})`)}
       </Button>
+
+      {hasEnoughWalletBalance ? (
+        <Button 
+          onClick={handleWalletPayment} 
+          disabled={loading} 
+          variant="outline"
+          className="w-full border-emerald-600 text-emerald-600 hover:bg-emerald-50 h-11 text-xs font-bold rounded-xl"
+        >
+          {loading ? "Processing..." : `Pay with Wallet (Bal: ₹${numBalance.toLocaleString('en-IN')})`}
+        </Button>
+      ) : (
+        <div className="text-center text-[11px] text-slate-400">
+          Wallet Balance: ₹{numBalance.toLocaleString('en-IN')} (Insufficient)
+        </div>
+      )}
     </div>
   );
 }
