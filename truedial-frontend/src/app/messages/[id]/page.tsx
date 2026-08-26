@@ -38,8 +38,10 @@ interface Message {
   created_at: string;
 }
 
-export default function ConversationPage({ params }: { params: { id: string } }) {
+export default function ConversationPage() {
   const router = useRouter();
+  const routeParams = useParams();
+  const id = (routeParams?.id as string) || "";
   const { user, isLoggedIn, isLoading } = useAuth();
   const [mounted, setMounted] = useState(false);
 
@@ -57,23 +59,27 @@ export default function ConversationPage({ params }: { params: { id: string } })
   const pollingInterval = useRef<NodeJS.Timeout | null>(null);
 
   const fetchMessages = async (isPolling = false) => {
+    if (!id) return;
     try {
-      const res = await (TrueDialAPI as any).get(`/conversations/${params.id}/messages`);
-      setMessages(prev => {
-        if (isPolling && prev.length === res.data.length) {
-          return prev;
-        }
-        return res.data;
-      });
+      const res = await (TrueDialAPI as any).get(`/conversations/${id}/messages`);
+      if (res && res.data) {
+        setMessages(prev => {
+          if (isPolling && prev.length === res.data.length) {
+            return prev;
+          }
+          return Array.isArray(res.data) ? res.data : [];
+        });
+      }
     } catch (err) {
       console.error("Failed to load messages", err);
     }
   };
 
   const fetchConversationInfo = async () => {
+    if (!id) return;
     try {
-      const res = await (TrueDialAPI as any).get(`/conversations/${params.id}`);
-      if (res.data) {
+      const res = await (TrueDialAPI as any).get(`/conversations/${id}`);
+      if (res && res.data) {
         setConversation(res.data);
       }
     } catch (err) {
@@ -90,7 +96,7 @@ export default function ConversationPage({ params }: { params: { id: string } })
       return;
     }
     
-    if (isLoggedIn) {
+    if (isLoggedIn && id) {
       fetchConversationInfo();
       fetchMessages();
 
@@ -103,7 +109,7 @@ export default function ConversationPage({ params }: { params: { id: string } })
     return () => {
       if (pollingInterval.current) clearInterval(pollingInterval.current);
     };
-  }, [isLoggedIn, params.id, router, mounted, isLoading]);
+  }, [isLoggedIn, id, router, mounted, isLoading]);
 
   // Auto-scroll
   useEffect(() => {
@@ -115,7 +121,7 @@ export default function ConversationPage({ params }: { params: { id: string } })
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newMessage.trim() || !conversation) return;
+    if (!newMessage.trim() || !conversation || !id) return;
 
     setSending(true);
     const msgText = newMessage;
@@ -131,7 +137,7 @@ export default function ConversationPage({ params }: { params: { id: string } })
     }]);
 
     try {
-      await (TrueDialAPI as any).post(`/conversations/${params.id}/messages`, {
+      await (TrueDialAPI as any).post(`/conversations/${id}/messages`, {
         message: msgText,
         message_type: "text"
       });

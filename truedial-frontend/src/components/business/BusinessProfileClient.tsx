@@ -181,43 +181,71 @@ export default function BusinessProfileClient({
 
   // If vendor has an uploaded cover_image, place it first
   const vendorCover = basicInfo.cover_image 
-    ? (basicInfo.cover_image.startsWith("http") ? basicInfo.cover_image : `https://findmyinterior.com${basicInfo.cover_image}`) 
+    ? (basicInfo.cover_image.startsWith("http") || basicInfo.cover_image.startsWith("data:") ? basicInfo.cover_image : `https://findmyinterior.com${basicInfo.cover_image}`) 
     : null;
 
-  const rawGallery = business?.media && business.media.length > 0 
-    ? business.media.map((m: any) => m.url || m)
-    : (basicInfo.gallery && basicInfo.gallery.length > 0 ? basicInfo.gallery.map((g: any) => g.url || g) : (vendorCover ? [vendorCover, ...defaultImages] : defaultImages));
+  let vendorGallery: string[] = [];
+  if (Array.isArray(basicInfo.gallery) && basicInfo.gallery.length > 0) {
+    vendorGallery = basicInfo.gallery.map((g: any) => typeof g === 'string' ? g : g.url || '').filter(Boolean);
+  } else if (Array.isArray(business?.media) && business.media.length > 0) {
+    vendorGallery = business.media.map((m: any) => typeof m === 'string' ? m : m.url || '').filter(Boolean);
+  }
 
-  const gallery = rawGallery.length >= 3 ? rawGallery : [...rawGallery, ...defaultImages].slice(0, 6);
+  if (vendorCover && !vendorGallery.includes(vendorCover)) {
+    vendorGallery = [vendorCover, ...vendorGallery];
+  }
 
-  // Fallback Services if none from API
+  const gallery = vendorGallery.length > 0 
+    ? (vendorGallery.length < 4 ? [...vendorGallery, ...defaultImages].slice(0, 6) : vendorGallery)
+    : defaultImages;
+
+  // Real vendor services mapping
   const rawServices = business?.catalog?.services || basicInfo.listing_services || [];
-  const services = rawServices.length > 0 ? rawServices : [
-    {
-      id: 1,
-      name: "VIP Premium Consultation & Service",
-      description: "Complete professional consultation with dedicated specialist and guaranteed satisfaction.",
-      price_from: 499,
-      price_to: 1499,
-      duration: "45 mins"
-    },
-    {
-      id: 2,
-      name: "Standard Express Booking",
-      description: "Quick priority slot with direct assistance and zero waiting time.",
-      price_from: 299,
-      price_to: 799,
-      duration: "30 mins"
-    },
-    {
-      id: 3,
-      name: "Comprehensive Full Package",
-      description: "All-inclusive end-to-end service package tailored to your exact requirements.",
-      price_from: 2499,
-      price_to: 5999,
-      duration: "2 hours"
-    }
-  ];
+  let services: any[] = [];
+  if (Array.isArray(basicInfo.services) && basicInfo.services.length > 0) {
+    services = basicInfo.services.map((s: any, idx: number) => {
+      if (typeof s === 'string') {
+        return {
+          id: idx + 1,
+          name: s,
+          description: `Certified & professional ${s} service offered by ${title}.`,
+          price_from: 499,
+          price_to: 1999,
+          duration: "Flexible"
+        };
+      }
+      return s;
+    });
+  } else if (rawServices.length > 0) {
+    services = rawServices;
+  } else {
+    services = [
+      {
+        id: 1,
+        name: "Standard Membership / Service Session",
+        description: `Complete professional session and facility access with verified standards at ${title}.`,
+        price_from: 499,
+        price_to: 1499,
+        duration: "Flexible"
+      },
+      {
+        id: 2,
+        name: "Monthly Full Access Package",
+        description: `All-inclusive monthly package tailored to your exact requirements at ${title}.`,
+        price_from: 1499,
+        price_to: 3999,
+        duration: "1 Month"
+      },
+      {
+        id: 3,
+        name: "VIP Premium Consultation & Training",
+        description: `Dedicated specialist guidance with guaranteed satisfaction and priority assistance.`,
+        price_from: 2499,
+        price_to: 5999,
+        duration: "3 Months"
+      }
+    ];
+  }
 
   // Fallback Products / Menu if none from API
   const rawProducts = business?.catalog?.products || basicInfo.listing_products || [];
@@ -411,9 +439,9 @@ export default function BusinessProfileClient({
                 <div className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-emerald-500 shrink-0" />
                   <span className="inline-flex items-center gap-1.5">
-                    <strong className="text-emerald-600 dark:text-emerald-400 font-extrabold">Open Now</strong>
+                    <strong className="text-emerald-600 dark:text-emerald-400 font-extrabold">Open Today</strong>
                     <span className="text-slate-400">•</span>
-                    Closes 10:30 PM
+                    {basicInfo.availability || "09:00 AM to 08:00 PM"}
                   </span>
                   <button 
                     onClick={() => setActiveTab("overview")} 
@@ -478,6 +506,33 @@ export default function BusinessProfileClient({
                   <Heart className={`w-4 h-4 ${isSaved ? "fill-rose-500 text-rose-500" : "text-slate-500"}`} />
                 </Button>
               </div>
+
+              {/* Social Links Row */}
+              {basicInfo.social_links && Object.values(basicInfo.social_links).some(Boolean) && (
+                <div className="flex flex-wrap items-center gap-2 pt-1">
+                  <span className="text-[11px] font-bold text-slate-400">Social:</span>
+                  {basicInfo.social_links.instagram && (
+                    <a href={basicInfo.social_links.instagram.startsWith("http") ? basicInfo.social_links.instagram : `https://${basicInfo.social_links.instagram}`} target="_blank" rel="noreferrer" className="px-2.5 py-1 bg-pink-50 dark:bg-pink-950/40 text-pink-600 dark:text-pink-400 border border-pink-200 dark:border-pink-800/40 rounded-full text-xs font-semibold hover:opacity-80 transition-opacity">
+                      Instagram ↗
+                    </a>
+                  )}
+                  {basicInfo.social_links.facebook && (
+                    <a href={basicInfo.social_links.facebook.startsWith("http") ? basicInfo.social_links.facebook : `https://${basicInfo.social_links.facebook}`} target="_blank" rel="noreferrer" className="px-2.5 py-1 bg-blue-50 dark:bg-blue-950/40 text-blue-600 dark:text-blue-400 border border-blue-200 dark:border-blue-800/40 rounded-full text-xs font-semibold hover:opacity-80 transition-opacity">
+                      Facebook ↗
+                    </a>
+                  )}
+                  {basicInfo.social_links.linkedin && (
+                    <a href={basicInfo.social_links.linkedin.startsWith("http") ? basicInfo.social_links.linkedin : `https://${basicInfo.social_links.linkedin}`} target="_blank" rel="noreferrer" className="px-2.5 py-1 bg-sky-50 dark:bg-sky-950/40 text-sky-600 dark:text-sky-400 border border-sky-200 dark:border-sky-800/40 rounded-full text-xs font-semibold hover:opacity-80 transition-opacity">
+                      LinkedIn ↗
+                    </a>
+                  )}
+                  {basicInfo.social_links.twitter && (
+                    <a href={basicInfo.social_links.twitter.startsWith("http") ? basicInfo.social_links.twitter : `https://${basicInfo.social_links.twitter}`} target="_blank" rel="noreferrer" className="px-2.5 py-1 bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-300 dark:border-slate-700 rounded-full text-xs font-semibold hover:opacity-80 transition-opacity">
+                      Twitter/X ↗
+                    </a>
+                  )}
+                </div>
+              )}
 
             </div>
 

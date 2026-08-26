@@ -54,12 +54,19 @@ class BusinessController extends Controller
             'category_id' => 'required|exists:categories,id',
             'city_id' => 'required|exists:cities,id',
             'title' => 'required|string|max:255',
+            'tagline' => 'nullable|string|max:255',
             'description' => 'required|string',
             'phone' => 'required|string',
+            'whatsapp' => 'nullable|string',
+            'email' => 'nullable|email|max:255',
             'address' => 'required|string',
+            'city' => 'nullable|string|max:100',
             'district' => 'required|string|max:100',
             'state' => 'required|string|max:100',
-            'website' => 'nullable|url',
+            'website' => 'nullable|string',
+            'cover_image' => 'nullable|string',
+            'years_experience' => 'nullable|integer',
+            'gst_number' => 'nullable|string|max:50',
             'availability' => 'nullable|string',
             'response_time' => 'nullable|string',
             'social_links' => 'nullable|array',
@@ -80,7 +87,7 @@ class BusinessController extends Controller
 
         $business = Listing::create($validated);
 
-        return $this->success($business, 'Business created successfully and is pending approval', 201);
+        return $this->success($business, 'Business created successfully and is active', 201);
     }
 
     public function update(Request $request, $id)
@@ -96,10 +103,16 @@ class BusinessController extends Controller
             'tagline' => 'nullable|string|max:255',
             'description' => 'sometimes|required|string',
             'phone' => 'sometimes|required|string',
+            'whatsapp' => 'nullable|string',
+            'email' => 'nullable|email|max:255',
             'address' => 'sometimes|required|string',
+            'city' => 'nullable|string|max:100',
             'district' => 'sometimes|nullable|string|max:100',
             'state' => 'sometimes|nullable|string|max:100',
             'website' => 'nullable|string',
+            'cover_image' => 'nullable|string',
+            'years_experience' => 'nullable|integer',
+            'gst_number' => 'nullable|string|max:50',
             'availability' => 'nullable|string',
             'response_time' => 'nullable|string',
             'social_links' => 'nullable|array',
@@ -138,6 +151,9 @@ class BusinessController extends Controller
         }
 
         $business->update($validated);
+
+        \Illuminate\Support\Facades\Cache::forget("business_profile_{$business->slug}");
+        \Illuminate\Support\Facades\Cache::forget("business_profile_data_{$business->slug}");
 
         return $this->success($business->fresh(['category', 'city']), 'Business updated successfully');
     }
