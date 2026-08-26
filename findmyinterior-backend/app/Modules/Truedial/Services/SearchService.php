@@ -17,11 +17,11 @@ class SearchService
 
     public function search(array $params)
     {
-        $term = $params['q'] ?? null;
+        $term = $params['q'] ?? $params['search'] ?? null;
         $filters = [
             'category_id'   => $params['category_id'] ?? null,
-            'category_name' => $params['category_name'] ?? null,
-            'city'          => $params['city'] ?? null,
+            'category_name' => $params['category_name'] ?? $params['category'] ?? null,
+            'city'          => $params['city'] ?? $params['location'] ?? null,
             'verified'      => $params['verified'] ?? false,
             'premium'       => $params['premium'] ?? false,
             'offers'      => $params['offers'] ?? false,

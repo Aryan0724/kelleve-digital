@@ -4,6 +4,22 @@ import type { NextConfig } from "next";
 const VPS_BACKEND = process.env.VPS_BACKEND_URL || "https://findmyinterior.com";
 
 const nextConfig: NextConfig = {
+  images: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "images.unsplash.com",
+      },
+      {
+        protocol: "https",
+        hostname: "**",
+      },
+      {
+        protocol: "http",
+        hostname: "**",
+      },
+    ],
+  },
   async rewrites() {
     return [
       {

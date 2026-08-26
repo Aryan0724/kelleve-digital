@@ -13,8 +13,8 @@ function getServerApiBase(): string {
   if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  const vps = process.env.VPS_BACKEND_URL || "https://findmyinterior.com";
-  return `${vps}/api/v1`;
+  const backendUrl = process.env.TRUEDIAL_BACKEND_URL || (process.env.NODE_ENV === "production" ? "https://truedial.in" : "http://127.0.0.1:8001");
+  return `${backendUrl}/api/v1`;
 }
 const API_BASE = getServerApiBase();
 

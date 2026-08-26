@@ -8,8 +8,8 @@ function getServerApiBase(): string {
   if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  const vps = process.env.VPS_BACKEND_URL || "https://findmyinterior.com";
-  return `${vps}/api/v1`;
+  const backendUrl = process.env.TRUEDIAL_BACKEND_URL || (process.env.NODE_ENV === "production" ? "https://truedial.in" : "http://127.0.0.1:8001");
+  return `${backendUrl}/api/v1`;
 }
 
 async function handleRequest(
@@ -44,10 +44,8 @@ async function handleRequest(
       headers.set("Accept", "application/json");
     }
 
-    // Always inject TrueDial tenant headers so backend resolves to tenant_id=2
-    // regardless of the domain (findmyinterior.com) being used as the API host
-    headers.set("X-Tenant-ID", "2");
     headers.set("X-Platform", "truedial");
+    headers.set("X-App-Source", "truedial-web");
 
     // Inject bearer token from httpOnly cookie
     if (token) {
@@ -92,7 +90,7 @@ async function handleRequest(
   } catch (error) {
     console.error("[/api/proxy] Error:", error);
     return NextResponse.json(
-      { success: false, message: "Network error in proxy" },
+      { success: false, message: "Network error connecting to TrueDial backend" },
       { status: 500 }
     );
   }

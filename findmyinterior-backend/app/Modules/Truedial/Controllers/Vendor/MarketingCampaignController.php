@@ -27,23 +27,29 @@ class MarketingCampaignController extends Controller
 
     public function store(Request $request)
     {
-        $validated = $request->validate([
+        $request->validate([
             'name' => 'required|string|max:255',
-            'type' => 'required|in:sms,whatsapp,email',
-            'content' => 'required|string',
-            'audience' => 'required|in:all_customers,recent_leads,custom',
-            'schedule_at' => 'nullable|date'
+            'type' => 'nullable|string',
+            'content' => 'nullable|string',
+            'message' => 'nullable|string',
+            'audience' => 'nullable',
+            'schedule_at' => 'nullable',
+            'scheduled_at' => 'nullable',
         ]);
+
+        $messageContent = $request->get('content') ?: ($request->get('message') ?: 'Promotional campaign message');
+        $scheduleTime = $request->get('schedule_at') ?: $request->get('scheduled_at');
 
         $campaign = MarketingCampaign::create([
             'user_id' => Auth::id(),
-            'name' => $validated['name'],
-            'message' => $validated['content'], // map content to message
-            'audience' => $validated['audience'],
-            'status' => isset($validated['schedule_at']) ? 'scheduled' : 'draft',
-            'scheduled_at' => $validated['schedule_at'] ?? null,
+            'name' => $request->name,
+            'type' => strtolower($request->get('type', 'email')),
+            'message' => $messageContent,
+            'audience' => is_array($request->audience) ? json_encode($request->audience) : (string)$request->get('audience', 'All Customers'),
+            'status' => 'active',
+            'scheduled_at' => $scheduleTime ? date('Y-m-d H:i:s', strtotime($scheduleTime)) : now(),
         ]);
 
-        return $this->success($campaign, 'Campaign created successfully', 201);
+        return $this->success($campaign, 'Campaign created and launched successfully', 201);
     }
 }

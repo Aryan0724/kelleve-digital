@@ -18,16 +18,22 @@ web-build/
 /.next/
 /out/
 
+# Database dumps & SQLite
+*.sql
+*.sql.gz
+*.sqlite
+*.sqlite3
+*.db
+
 # Environment Variables
 .env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
+.env.*
+!.env.example
 
 # Logs
 logs
 *.log
+*.txt
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -67,6 +73,7 @@ Thumbs.db
 /deep_*.py
 /e2e_*.py
 /final_*.py
+/scratch/
 
 # JSON dumps at repo root
 /*.json
@@ -74,4 +81,6 @@ Thumbs.db
 !/findmyinterior-backend/package.json
 !/findmyinterior-frontend/package.json
 !/findmyinterior-frontend/package-lock.json
+!/truedial-frontend/package.json
+!/truedial-frontend/package-lock.json
 !/truedial-mobile/package.json

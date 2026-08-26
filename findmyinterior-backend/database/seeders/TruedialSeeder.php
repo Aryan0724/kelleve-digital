@@ -1978,26 +1978,56 @@ class TruedialSeeder extends Seeder
             ]);
         }
 
-        if ($interiorListing && $customer2) {
-            $conv2 = Conversation::updateOrCreate([
-                'customer_id' => $customer2->id,
-                'vendor_id'   => $interiorListing->user_id,
-            ], [
-                'project_id'    => null,
-                'status'        => 'active',
-                'project_stage' => 'initiated',
-                'last_message_at' => now(),
-                'vendor_unread_count' => 1,
-            ]);
+        // Seed Multi-City Listings (Delhi NCR, Mumbai, Bengaluru) for search completeness across India
+        $metroLocations = [
+            ['city' => 'Delhi NCR', 'district' => 'Delhi NCR', 'state' => 'Delhi', 'address' => 'Connaught Place / Cyber Hub, Delhi NCR'],
+            ['city' => 'Delhi', 'district' => 'Delhi', 'state' => 'Delhi', 'address' => 'South Extension, New Delhi'],
+            ['city' => 'Mumbai', 'district' => 'Mumbai', 'state' => 'Maharashtra', 'address' => 'Bandra West, Linking Road, Mumbai'],
+            ['city' => 'Bengaluru', 'district' => 'Bengaluru', 'state' => 'Karnataka', 'address' => 'Indiranagar 100ft Road, Bengaluru'],
+        ];
 
-            Message::firstOrCreate([
-                'conversation_id' => $conv2->id,
-                'message' => 'Hi, I need a complete interior design quote for my 3BHK flat in Patna.',
-            ], [
-                'sender_id' => $customer2->id,
-                'message_type' => 'text',
-                'created_at' => now()->subHours(1),
-            ]);
+        foreach ($categoriesData as $catData) {
+            $cat = $categories[$catData['slug']] ?? null;
+            if (!$cat) continue;
+
+            foreach ($metroLocations as $mLoc) {
+                $mSlug = \Illuminate\Support\Str::slug($catData['name'] . ' ' . $mLoc['city'] . ' ' . rand(100, 999));
+                $mTitle = $catData['name'] . ' Premier (' . $mLoc['city'] . ')';
+
+                $listing = Listing::firstOrCreate(
+                    ['slug' => $mSlug, 'tenant_id' => $tenantId],
+                    [
+                        'user_id' => $vendor->id,
+                        'category_id' => $cat->id,
+                        'title' => $mTitle,
+                        'tagline' => 'Top Rated ' . $catData['name'] . ' in ' . $mLoc['city'],
+                        'description' => 'Providing verified and premium ' . $catData['name'] . ' services across ' . $mLoc['city'] . '.',
+                        'city' => $mLoc['city'],
+                        'district' => $mLoc['district'],
+                        'state' => $mLoc['state'],
+                        'address' => $mLoc['address'],
+                        'phone' => '+9198' . rand(10000000, 99999999),
+                        'whatsapp' => '9198' . rand(10000000, 99999999),
+                        'status' => 'active',
+                        'is_verified' => true,
+                        'is_featured' => true,
+                        'avg_rating' => (float)(rand(45, 49) / 10),
+                        'review_count' => rand(20, 80),
+                        'views_count' => rand(150, 600),
+                    ]
+                );
+
+                Offer::firstOrCreate(
+                    ['listing_id' => $listing->id, 'tenant_id' => $tenantId, 'title' => 'Flat 20% Privilege Discount'],
+                    [
+                        'promo_code' => 'TRUE20',
+                        'discount_type' => 'percentage',
+                        'discount_value' => 20,
+                        'status' => 'active',
+                        'valid_until' => now()->addMonths(3),
+                    ]
+                );
+            }
         }
     }
 }

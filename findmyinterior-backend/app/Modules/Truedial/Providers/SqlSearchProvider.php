@@ -8,29 +8,113 @@ use Illuminate\Support\Facades\DB;
 
 class SqlSearchProvider implements SearchProviderInterface
 {
+    private function resolveCategoryKeywords(string $input): array
+    {
+        $normalized = strtolower(trim($input));
+        $normalized = str_replace(['&', 'and', '+', '%20', '-'], ' ', $normalized);
+
+        $map = [
+            'restaurant' => ['restaurants', 'Restaurants & Cafes', 'restaurant', 'food', 'cafe', 'dining'],
+            'food' => ['restaurants', 'Restaurants & Cafes', 'restaurant', 'food', 'cafe'],
+            'hotel' => ['hotels-lodging', 'Hotels & Lodging', 'hotel', 'resort', 'stay'],
+            'lodging' => ['hotels-lodging', 'Hotels & Lodging', 'hotel', 'stay'],
+            'hospital' => ['hospitals-healthcare', 'Hospitals & Healthcare', 'doctor', 'clinic', 'hospital'],
+            'health' => ['hospitals-healthcare', 'Hospitals & Healthcare', 'doctor', 'clinic', 'healthcare'],
+            'doctor' => ['hospitals-healthcare', 'Hospitals & Healthcare', 'doctor', 'clinic'],
+            'education' => ['education-coaching', 'Education & Coaching', 'coaching', 'tuition', 'school', 'college'],
+            'coaching' => ['education-coaching', 'Education & Coaching', 'coaching', 'academy'],
+            'interior' => ['interior-architecture', 'Interior & Architecture', 'interior', 'architect', 'decor'],
+            'architect' => ['interior-architecture', 'Interior & Architecture', 'architect', 'interior'],
+            'repair' => ['repair-maintenance', 'Repair & Maintenance', 'repair', 'electrician', 'plumber', 'ac repair'],
+            'maintenance' => ['repair-maintenance', 'Repair & Maintenance', 'repair', 'maintenance'],
+            'digital' => ['digital-marketing-it', 'Digital Marketing & IT', 'marketing', 'seo', 'web development'],
+            'marketing' => ['digital-marketing-it', 'Digital Marketing & IT', 'marketing', 'agency'],
+            'fitness' => ['fitness-gyms', 'Fitness & Gyms', 'gym', 'fitness', 'crossfit', 'workout'],
+            'gym' => ['fitness-gyms', 'Fitness & Gyms', 'gym', 'fitness'],
+            'salon' => ['salons-beauty', 'Salons & Beauty', 'salon', 'beauty', 'spa', 'parlour'],
+            'beauty' => ['salons-beauty', 'Salons & Beauty', 'salon', 'beauty', 'spa'],
+            'automobile' => ['automobile-services', 'Automobile Services', 'car', 'bike', 'automobile', 'mechanic'],
+            'car' => ['automobile-services', 'Automobile Services', 'car', 'automobile', 'mechanic'],
+            'real estate' => ['real-estate-property', 'Real Estate & Property', 'property', 'real estate', 'plots', 'flats'],
+            'property' => ['real-estate-property', 'Real Estate & Property', 'property', 'real estate'],
+            'legal' => ['legal-financial', 'Legal & Financial Services', 'legal', 'tax', 'gst', 'ca', 'lawyer'],
+            'financial' => ['legal-financial', 'Legal & Financial Services', 'finance', 'tax', 'accounting'],
+            'grocery' => ['grocery-supermarket', 'Grocery & Supermarket', 'grocery', 'supermarket', 'mart'],
+            'pharmacy' => ['pharmacy-medical', 'Pharmacy & Medical Store', 'pharmacy', 'chemist', 'medicine'],
+            'electronic' => ['electronics-gadgets', 'Electronics & Gadgets', 'electronics', 'gadgets', 'appliances'],
+            'fashion' => ['clothing-fashion', 'Clothing & Fashion', 'clothing', 'fashion', 'boutique', 'wear'],
+            'clothing' => ['clothing-fashion', 'Clothing & Fashion', 'clothing', 'fashion'],
+            'furniture' => ['furniture-home-decor', 'Furniture & Home Decor', 'furniture', 'decor', 'sofa', 'wood'],
+            'photo' => ['photography-videography', 'Photography & Videography', 'photography', 'wedding shoot', 'photographer'],
+            'packer' => ['packers-movers', 'Packers & Movers', 'packers', 'movers', 'relocation', 'transport'],
+            'tiffin' => ['catering-tiffin', 'Catering & Tiffin Service', 'catering', 'tiffin', 'food delivery'],
+            'cater' => ['catering-tiffin', 'Catering & Tiffin Service', 'catering', 'tiffin'],
+            'pet' => ['pet-services', 'Pet Services & Veterinary', 'pet', 'vet', 'dog', 'veterinary'],
+            'jewel' => ['jewellery-accessories', 'Jewellery & Accessories', 'jewellery', 'gold', 'diamond'],
+            'cake' => ['bakery-sweets', 'Bakery & Sweets', 'bakery', 'sweets', 'cake', 'pastry'],
+            'bakery' => ['bakery-sweets', 'Bakery & Sweets', 'bakery', 'sweets'],
+            'optical' => ['opticals-eyewear', 'Opticals & Eyewear', 'opticals', 'eyewear', 'glasses', 'lenses'],
+            'event' => ['event-management', 'Event Management', 'wedding', 'event', 'planner'],
+        ];
+
+        foreach ($map as $key => $keywords) {
+            if (str_contains($normalized, $key)) {
+                return $keywords;
+            }
+        }
+
+        return [$input, $normalized];
+    }
+
     public function search(?string $term, array $filters = [], int $perPage = 15): array
     {
         $query = Listing::query()
-            ->with(['category', 'media'])
+            ->with(['category', 'media', 'offers'])
             ->where('status', 'active');
 
         // Text Search
         if (!empty($term)) {
-            $query->search($term); // Uses existing scopeSearch for now
-        }
-
-        // Filters
-        if (!empty($filters['category_id'])) {
-            $query->whereIn('category_id', (array) $filters['category_id']);
-        } elseif (!empty($filters['category_name'])) {
-            $query->whereHas('category', function ($q) use ($filters) {
-                $q->where('name', 'like', '%' . $filters['category_name'] . '%')
-                  ->orWhere('slug', 'like', '%' . $filters['category_name'] . '%');
+            $query->where(function($q) use ($term) {
+                $q->where('title', 'like', "%{$term}%")
+                  ->orWhere('description', 'like', "%{$term}%")
+                  ->orWhere('tagline', 'like', "%{$term}%");
             });
         }
 
-        if (!empty($filters['city'])) {
-            $query->whereIn('city', (array) $filters['city']);
+        // Category Filter
+        $catParam = $filters['category_id'] ?? $filters['category_name'] ?? $filters['category'] ?? null;
+        if (!empty($catParam)) {
+            if (is_numeric($catParam)) {
+                $query->where('category_id', $catParam);
+            } else {
+                $keywords = $this->resolveCategoryKeywords($catParam);
+                $query->where(function ($b) use ($keywords, $catParam) {
+                    $b->whereHas('category', function ($c) use ($keywords, $catParam) {
+                        $c->where('slug', $catParam)
+                          ->orWhere('name', 'like', "%{$catParam}%");
+                        foreach ($keywords as $kw) {
+                            $c->orWhere('slug', 'like', "%{$kw}%")
+                              ->orWhere('name', 'like', "%{$kw}%");
+                        }
+                    })
+                    ->orWhere('title', 'like', "%{$catParam}%")
+                    ->orWhere('description', 'like', "%{$catParam}%");
+                });
+            }
+        }
+
+        // City Filter
+        if (!empty($filters['city']) && strtolower($filters['city']) !== 'all' && strtolower($filters['city']) !== 'india') {
+            $cityParam = is_array($filters['city']) ? $filters['city'][0] : $filters['city'];
+            $cleanCity = trim(str_ireplace(['NCR', 'Metro', 'City', 'Area', 'India'], '', $cityParam));
+            
+            $query->where(function ($b) use ($cityParam, $cleanCity) {
+                $b->where('city', 'like', "%{$cityParam}%")
+                  ->orWhere('district', 'like', "%{$cityParam}%")
+                  ->orWhere('address', 'like', "%{$cityParam}%")
+                  ->orWhere('city', 'like', "%{$cleanCity}%")
+                  ->orWhere('district', 'like', "%{$cleanCity}%");
+            });
         }
 
         if (!empty($filters['verified'])) {
@@ -47,111 +131,64 @@ class SqlSearchProvider implements SearchProviderInterface
 
         if (!empty($filters['offers'])) {
             $query->whereHas('offers', function($q) use ($filters) {
-                $q->where('status', 'active')
-                  ->where(function($sub) {
-                      $sub->whereNull('valid_until')->orWhere('valid_until', '>', now());
-                  });
-                
-                // If the user is filtering by a specific privilege card type
-                if (!empty($filters['card_type'])) {
-                    $q->whereIn('eligible_card_type', ['all', $filters['card_type']]);
-                }
+                $q->where('status', 'active');
             });
         }
 
-        // Distance / Haversine (if lat/lng provided)
-        $hasLocation = !empty($filters['lat']) && !empty($filters['lng']);
-        
-        // Define ranking score
-        // Score = (40 × Premium) + (20 × Featured) + (15 × Verified) + (10 × Rating) + (8 × Review Count) + (5 × Has Active Offer) + (2 × Completeness)
-        // In SQLite testing, boolean might be 0/1, in MySQL it's tinyint.
-        
-        $scoreRaw = "
-            (CASE 
-                WHEN subscription_plan = 'elite' THEN 50 
-                WHEN subscription_plan = 'professional' THEN 30 
-                WHEN subscription_plan = 'growth' THEN 10 
-                WHEN is_premium = 1 THEN 10
-                ELSE 0 
-            END) +
-            (IFNULL(is_featured, 0) * 20) +
-            (IFNULL(is_verified, 0) * 15) +
-            (IFNULL(avg_rating, 0) * 10) +
-            (IFNULL(review_count, 0) * 8) +
-            ((SELECT COUNT(*) FROM offers WHERE offers.listing_id = listings.id AND offers.status = 'active' AND (offers.valid_until IS NULL OR offers.valid_until > CURRENT_TIMESTAMP)) > 0) * 5
-        ";
-        
-        // We add this score as a selected column
-        $query->select('listings.*');
-        $query->selectRaw("({$scoreRaw}) as ranking_score");
+        $results = $query->orderByDesc('is_featured')
+                         ->orderByDesc('avg_rating')
+                         ->paginate($perPage);
 
-        if ($hasLocation) {
-            $lat = (float) $filters['lat'];
-            $lng = (float) $filters['lng'];
-            
-            // SQLite does not have native trigonometric functions (acos, cos, sin).
-            // For local development on SQLite, we bypass the math and return a dummy distance.
-            // In production (MySQL/PgSQL), we use the actual Haversine formula.
-            if ($query->getConnection()->getDriverName() === 'sqlite') {
-                $query->selectRaw("0 AS distance");
+        // Fallback: If specific city filter returned 0 results for a category,
+        // relax the city filter and return category results so search never returns an empty dead page!
+        if ($results->total() === 0 && !empty($catParam)) {
+            $fallbackQuery = Listing::query()
+                ->with(['category', 'media', 'offers'])
+                ->where('status', 'active');
+
+            if (is_numeric($catParam)) {
+                $fallbackQuery->where('category_id', $catParam);
             } else {
-                $query->selectRaw(
-                    "(6371 * acos(cos(radians(?)) * cos(radians(lat)) * cos(radians(lng) - radians(?)) + sin(radians(?)) * sin(radians(lat)))) AS distance",
-                    [$lat, $lng, $lat]
-                );
+                $keywords = $this->resolveCategoryKeywords($catParam);
+                $fallbackQuery->where(function ($b) use ($keywords, $catParam) {
+                    $b->whereHas('category', function ($c) use ($keywords, $catParam) {
+                        $c->where('slug', $catParam)
+                          ->orWhere('name', 'like', "%{$catParam}%");
+                        foreach ($keywords as $kw) {
+                            $c->orWhere('slug', 'like', "%{$kw}%")
+                              ->orWhere('name', 'like', "%{$kw}%");
+                        }
+                    });
+                });
             }
-            
-            // If distance filter is applied (Only works effectively on non-sqlite or if pre-calculated)
-            if (!empty($filters['max_distance']) && $query->getConnection()->getDriverName() !== 'sqlite') {
-                $query->having('distance', '<=', (float) $filters['max_distance']);
+
+            $fallbackResults = $fallbackQuery->orderByDesc('is_featured')
+                                             ->orderByDesc('avg_rating')
+                                             ->paginate($perPage);
+
+            if ($fallbackResults->total() > 0) {
+                return [
+                    'data' => $fallbackResults,
+                    'facets' => ['total' => $fallbackResults->total()]
+                ];
             }
-            
-            // Sort by distance first if requested, otherwise by ranking_score
-            if (!empty($filters['sort']) && $filters['sort'] === 'distance') {
-                $query->orderBy('distance', 'asc');
-            } else {
-                $query->orderBy('ranking_score', 'desc');
-            }
-        } else {
-            $query->orderBy('ranking_score', 'desc');
         }
 
-        $query->orderBy('created_at', 'desc'); // Tie breaker (Recency)
-
-        // Generate Facets
-        // In a real provider like Meilisearch, facets are returned in the single query.
-        // For SQL, we might have to run separate aggregates.
-        // For performance, we'll keep it simple here.
-        $facets = [
-            'total' => $query->count(),
-            // Add category counts etc. if needed later, skipped to save SQL load
-        ];
-
         return [
-            'data' => $query->paginate($perPage),
-            'facets' => $facets
+            'data' => $results,
+            'facets' => [
+                'total' => $results->total()
+            ]
         ];
     }
 
     public function autocomplete(string $term, int $limit = 8)
     {
         return Listing::query()
-            ->with(['category', 'media'])
             ->where('status', 'active')
-            ->search($term)
+            ->where('title', 'like', '%' . $term . '%')
+            ->select('id', 'title', 'slug', 'city')
             ->limit($limit)
-            ->get()
-            ->map(function ($listing) {
-                return [
-                    'id' => $listing->id,
-                    'title' => $listing->title,
-                    'slug' => $listing->slug,
-                    'category' => $listing->category?->name,
-                    'locality' => $listing->address ?? $listing->city,
-                    'rating' => $listing->avg_rating ?? 0,
-                    'is_verified' => $listing->is_verified,
-                    'cover_image' => collect($listing->media)->firstWhere('is_cover', true)?->url ?? collect($listing->media)->first()?->url ?? null,
-                ];
-            });
+            ->get();
     }
 }

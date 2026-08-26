@@ -22,7 +22,7 @@ class SearchController extends Controller
     public function index(Request $request)
     {
         $params = $request->only([
-            'q', 'category_id', 'category_name', 'city', 'verified', 'premium', 
+            'q', 'search', 'category_id', 'category_name', 'category', 'city', 'location', 'verified', 'premium', 
             'min_rating', 'lat', 'lng', 'max_distance', 'sort', 'per_page',
             'offers', 'card_type'
         ]);
