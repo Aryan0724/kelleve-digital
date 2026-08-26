@@ -10,7 +10,9 @@ class ListingPolicy
 {
     private function checkTenant(Listing $model): bool
     {
-        return $model->tenant_id === app(TenantContext::class)->getTenantId();
+        $tenantId = app(TenantContext::class)->getTenantId();
+        if (!$tenantId) return true;
+        return $model->tenant_id === $tenantId || $model->tenant_id === null;
     }
 
     public function viewAny(?User $user): bool
@@ -20,6 +22,9 @@ class ListingPolicy
 
     public function view(?User $user, Listing $model): bool
     {
+        if ($user && $user->id === $model->user_id) {
+            return true;
+        }
         return $this->checkTenant($model);
     }
 
@@ -30,12 +35,14 @@ class ListingPolicy
 
     public function update(User $user, Listing $model): bool
     {
-        if (!$this->checkTenant($model)) return false;
+        if ($user->id === $model->user_id) {
+            return true;
+        }
         
-        $roles = $user->roles->pluck('slug')->toArray();
-        $isAdmin = in_array('platform_admin', $roles) || in_array('tenant_admin', $roles) || in_array('admin', $roles);
+        $roles = $user->roles ? $user->roles->pluck('slug')->toArray() : [];
+        $isAdmin = in_array('platform_admin', $roles) || in_array('tenant_admin', $roles) || in_array('admin', $roles) || $user->role === 'admin';
         
-        return $isAdmin || ($user->id === $model->user_id);
+        return $isAdmin;
     }
 
     public function delete(User $user, Listing $model): bool

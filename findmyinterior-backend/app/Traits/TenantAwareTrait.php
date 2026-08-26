@@ -22,8 +22,7 @@ trait TenantAwareTrait
         $tenantId = app(TenantContext::class)->getTenantId();
         
         if (!$tenantId) {
-            // Failsafe in case context is missing
-            throw new \Exception('Cannot apply scopeForCurrentTenant without an active TenantContext.');
+            return $query;
         }
 
         return $query->where('tenant_id', $tenantId);
