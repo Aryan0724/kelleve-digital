@@ -44,15 +44,20 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withExceptions(function (Exceptions $exceptions): void {
         \Sentry\Laravel\Integration::handles($exceptions);
 
-        // Safety net: Catch the RouteNotFoundException thrown when Authenticate
-        // middleware tries to redirect to route('login') which doesn't exist.
+        // Always render AuthenticationException as 401 JSON for API
+        $exceptions->render(function (AuthenticationException $e, Request $request) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated. Please log in to continue.',
+            ], 401);
+        });
+
+        // Safety net: Catch RouteNotFoundException thrown if anything tries to redirect to route('login')
         $exceptions->render(function (RouteNotFoundException $e, Request $request) {
-            if ($request->is('api/*') || $request->expectsJson()) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Please log in to continue.',
-                ], 401);
-            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Unauthenticated. Please log in to continue.',
+            ], 401);
         });
 
         $exceptions->render(function (Throwable $e, Request $request) {
