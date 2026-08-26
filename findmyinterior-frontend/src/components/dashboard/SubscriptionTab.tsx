@@ -2,10 +2,11 @@
 
 import { useEffect, useState } from "react";
 import api from "@/lib/api";
-import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { CheckCircle, Crown, Loader2, CreditCard, Zap } from "lucide-react";
+import { 
+  Crown, Loader2, CreditCard, Zap, Rocket, BarChart3, 
+  Gem, ShieldCheck, Lock, RotateCcw, Headphones, Sparkles, Check
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -17,99 +18,122 @@ import { CheckoutButton } from "@/components/payments/CheckoutButton";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { toast } from "react-toastify";
 
-// Maps every role slug to a subscription plan category
-const ROLE_TO_CATEGORY: Record<string, "worker" | "professional" | "business"> = {
-  // Professional / Designer / Consultant
-  interior_designer: "professional",
-  interior_company: "professional",
-  architect: "professional",
-  builder: "professional",
-  contractor: "professional",
-  interior_contractor: "professional",
-  civil_contractor: "professional",
-  turnkey_contractor: "professional",
-  renovation_contractor: "professional",
-  demolition_contractor: "professional",
-  modular_kitchen_designer: "professional",
-  wardrobe_designer: "professional",
-  "2d_3d_designer": "professional",
-  space_planner: "professional",
-  structural_engineer: "professional",
-  civil_engineer: "professional",
-  mep_consultant: "professional",
-  landscape_designer: "professional",
-  vastu_consultant: "professional",
-  interior_project_consultant: "professional",
-  real_estate_developer: "professional",
-  pest_control: "professional",
-  deep_cleaning: "professional",
-  waterproofing: "professional",
-  home_renovation: "professional",
-  cctv_security: "professional",
-  home_automation: "professional",
-  solar_installation: "professional",
-  ac_installation: "professional",
-  packers_movers: "professional",
-  interior_material_transport: "professional",
-  equipment_rental: "professional",
-  // Supplier / Dealer / Business
-  material_supplier: "business",
-  supplier: "business",
-  business: "business",
-  plywood_dealer: "business",
-  laminate_dealer: "business",
-  tile_dealer: "business",
-  marble_granite_dealer: "business",
-  paint_dealer: "business",
-  hardware_supplier: "business",
-  lighting_supplier: "business",
-  electrical_supplier: "business",
-  sanitary_bathroom_supplier: "business",
-  modular_kitchen_material_supplier: "business",
-  glass_supplier: "business",
-  acp_aluminium_supplier: "business",
-  furniture_supplier: "business",
-  door_window_supplier: "business",
-  // Workers / Skilled
-  worker: "worker",
-  skilled_worker: "worker",
-  carpenter: "worker",
-  electrician: "worker",
-  plumber: "worker",
-  painter: "worker",
-  pop_false_ceiling_worker: "worker",
-  tile_marble_fitter: "worker",
-  granite_installer: "worker",
-  fabricator: "worker",
-  aluminium_fabricator: "worker",
-  glass_installer: "worker",
-  welder: "worker",
-  polish_worker: "worker",
-  wallpaper_installer: "worker",
-};
-
-function getRoleCategory(user: any): "worker" | "professional" | "business" {
-  // user.roles may be an array of slugs (from dashboard) or role objects
-  const rolesRaw = user?.roles;
-  const roleSlugs: string[] = Array.isArray(rolesRaw)
-    ? rolesRaw.map((r: any) => (typeof r === "string" ? r : r?.slug ?? ""))
-    : [];
-
-  // Also check user.role (single string from UserResource)
-  const primaryRole: string = user?.role ?? "";
-
-  // Check all available slugs
-  const allSlugs = [...new Set([primaryRole, ...roleSlugs].filter(Boolean))];
-
-  for (const slug of allSlugs) {
-    const cat = ROLE_TO_CATEGORY[slug];
-    if (cat) return cat;
-  }
-
-  return "worker"; // safe default
+interface PlanTier {
+  id?: number;
+  name: string;
+  slug: string;
+  badge: string;
+  badgeColor: string;
+  price: string;
+  numericPrice: number;
+  isPopular?: boolean;
+  themeColor: "purple" | "blue" | "orange" | "green" | "gray";
+  icon: any;
+  features: string[];
+  subtitle?: string;
 }
 
-const PLAN_ORDER = ["Starter", "Growth", "Professional", "Elite", "Elite Business"];
+const STATIC_PLANS: PlanTier[] = [
+  {
+    name: "Starter",
+    slug: "starter",
+    badge: "FREE",
+    badgeColor: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    price: "Free",
+    numericPrice: 0,
+    subtitle: "Get started with basic features",
+    themeColor: "purple",
+    icon: Rocket,
+    features: [
+      "1 Business Listing",
+      "Up to 10 Portfolio Images",
+      "Basic Lead Access",
+      "Standard Support",
+    ],
+  },
+  {
+    name: "QuickStart",
+    slug: "quickstart",
+    badge: "3 MONTHS",
+    badgeColor: "bg-purple-600 text-white",
+    price: "₹4,999.00",
+    numericPrice: 4999,
+    themeColor: "purple",
+    icon: Zap,
+    features: [
+      "3 Business Listings",
+      "Elite Professional Badge",
+      "Gold Verification",
+      "Early Lead Access",
+      "Real-time Notifications",
+      "Up to 30 Portfolio Images",
+      "Priority Support",
+    ],
+  },
+  {
+    name: "GrowthPlus",
+    slug: "growthplus",
+    badge: "6 MONTHS",
+    badgeColor: "bg-blue-600 text-white",
+    price: "₹9,999.00",
+    numericPrice: 9999,
+    themeColor: "blue",
+    icon: BarChart3,
+    features: [
+      "5 Business Listings",
+      "Elite Professional Badge",
+      "Gold Verification",
+      "Early Lead Access",
+      "Real-time Notifications",
+      "Website Link Integration",
+      "Up to 60 Portfolio Images",
+      "Priority Support",
+    ],
+  },
+  {
+    name: "ProBusiness",
+    slug: "probusiness",
+    badge: "1 YEAR",
+    badgeColor: "bg-orange-500 text-white",
+    price: "₹17,999.00",
+    numericPrice: 17999,
+    isPopular: true,
+    themeColor: "orange",
+    icon: Gem,
+    features: [
+      "10 Business Listings",
+      "Search Ranking Boost",
+      "Instant Lead Notifications",
+      "Website Link Integration",
+      "Up to 100 Portfolio Images",
+      "Detailed Lead Insights",
+      "Priority Support",
+      "Custom Profile URL",
+    ],
+  },
+  {
+    name: "EliteBusiness",
+    slug: "elitebusiness",
+    badge: "1 YEAR",
+    badgeColor: "bg-emerald-600 text-white",
+    price: "₹35,999.00",
+    numericPrice: 35999,
+    themeColor: "green",
+    icon: ShieldCheck,
+    features: [
+      "Unlimited Business Listings",
+      "Search Ranking Boost",
+      "Instant Lead Notifications",
+      "Website Link Integration",
+      "Up to 200 Portfolio Images",
+      "Detailed Lead Insights",
+      "Featured Listing",
+      "Dedicated Account Manager",
+      "Custom Profile URL",
+      "Premium Support",
+    ],
+  },
+];
 
 export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
   const { user } = useAuthStore();
@@ -130,31 +154,38 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
   const fetchPlans = async () => {
     try {
       const res = await api.get("/subscriptions/plans");
-      const allPlans: any[] = res.data.data || [];
+      const apiPlans: any[] = res.data.data || [];
 
-      const category = getRoleCategory(user);
-
-      // Strict filter — only show plans for this user's category
-      const filtered = allPlans.filter(
-        (p) => p.target_role_category === category
-      );
-
-      // Sort by a logical order
-      const sorted = filtered.sort((a, b) => {
-        const ai = PLAN_ORDER.indexOf(a.name);
-        const bi = PLAN_ORDER.indexOf(b.name);
-        return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
+      // Merge backend plans with rich UI definitions
+      const merged = STATIC_PLANS.map((staticPlan) => {
+        const matchingApiPlan = apiPlans.find(
+          (p) =>
+            p.slug?.toLowerCase().includes(staticPlan.slug.toLowerCase()) ||
+            p.name?.toLowerCase() === staticPlan.name.toLowerCase()
+        );
+        return {
+          ...staticPlan,
+          id: matchingApiPlan?.id || undefined,
+          features: matchingApiPlan?.features?.length > 0 ? matchingApiPlan.features : staticPlan.features,
+          price: matchingApiPlan?.formatted_price || staticPlan.price,
+          numericPrice: matchingApiPlan?.price || staticPlan.numericPrice,
+        };
       });
 
-      setPlans(sorted);
+      setPlans(merged);
     } catch (e) {
       console.error("Failed to fetch subscription plans:", e);
+      setPlans(STATIC_PLANS);
     } finally {
       setLoading(false);
     }
   };
 
   const handlePayWithWallet = async (plan: any) => {
+    if (!plan.id) {
+      toast.error("Plan ID missing. Please refresh the page.");
+      return;
+    }
     setIsProcessingWallet(true);
     try {
       const response = await api.post("/payments/pay-with-wallet", {
@@ -164,291 +195,275 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
       });
 
       if (response.data.success) {
-        toast.success("Successfully upgraded subscription using wallet!");
-        // Reload page to reflect new subscription state
+        toast.success(`Successfully upgraded to ${plan.name} using wallet!`);
         window.location.reload();
       }
     } catch (e: any) {
-      console.error(e);
-      const msg =
-        e.response?.data?.message ?? "Failed to process wallet payment.";
+      const msg = e.response?.data?.message ?? "Failed to process wallet payment.";
       toast.error(msg);
     } finally {
       setIsProcessingWallet(false);
     }
   };
 
-  if (loading)
+  if (loading) {
     return (
-      <div className="p-12 text-center text-slate-500 flex items-center justify-center gap-2">
-        <Loader2 className="h-5 w-5 animate-spin" /> Loading plans...
+      <div className="p-16 text-center text-slate-500 flex flex-col items-center justify-center gap-3">
+        <Loader2 className="h-8 w-8 animate-spin text-orange-500" />
+        <p className="font-semibold text-sm">Loading subscription plans...</p>
       </div>
     );
+  }
 
-  if (plans.length === 0)
-    return (
-      <div className="p-12 text-center text-slate-500">
-        <Crown className="h-12 w-12 mx-auto mb-4 text-slate-300" />
-        <p className="font-medium">No subscription plans found for your account type.</p>
-        <p className="text-sm mt-1">Please contact support if you believe this is an error.</p>
-      </div>
-    );
-
-  // Find the plan the user is currently subscribed to
-  const currentPlanObject =
-    plans.find(
-      (p) => p.name.toLowerCase() === currentPlanName.toLowerCase()
-    ) ?? null;
-
-  // "Most popular" = the 3rd plan (index 2) in the sorted list, or Growth if only 2
-  const mostPopularPlan = plans[Math.min(2, plans.length - 1)];
+  const isCurrentActive = (planName: string) => {
+    const normCurrent = currentPlanName.toLowerCase();
+    const normPlan = planName.toLowerCase();
+    if (normCurrent.includes("basic") || normCurrent.includes("free")) {
+      return normPlan.includes("starter") || normPlan.includes("basic");
+    }
+    return normCurrent.includes(normPlan);
+  };
 
   return (
     <div className="space-y-6">
-      {/* Current Plan Banner */}
-      <Card className="bg-gradient-to-r from-[#0b1b36] to-slate-800 text-white border-0">
-        <CardContent className="p-8 flex flex-col lg:flex-row items-center lg:items-start justify-between gap-8">
-          <div className="flex flex-col md:flex-row items-center md:items-start gap-6">
-            <div className="h-20 w-20 bg-white/10 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-inner">
-              <Crown className="h-10 w-10 text-orange-500 drop-shadow-md" />
+      
+      {/* ─── CURRENT PLAN TOP BANNER ─────────────────────────────────── */}
+      <div className="bg-[#0b1b36] text-white rounded-2xl p-6 md:p-8 shadow-md flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="flex items-center gap-5 w-full md:w-auto">
+          <div className="w-16 h-16 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 border border-white/10 shadow-inner">
+            <Crown className="w-9 h-9 text-[#ff6b00]" />
+          </div>
+          <div>
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">
+              CURRENT PLAN
             </div>
-            <div className="text-center md:text-left">
-              <h3 className="text-sm font-semibold text-slate-400 tracking-wider uppercase mb-1">
-                Current Plan
-              </h3>
-              <div className="text-3xl font-extrabold uppercase bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">
-                {currentPlanName}
-              </div>
-
-              <div className="mt-4 flex flex-wrap gap-2 justify-center md:justify-start">
-                <div className="bg-white/10 px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm border border-white/5 flex items-center gap-2">
-                  <span className="text-slate-400">Billing:</span>
-                  <span className="font-semibold text-white">
-                    {currentPlanName.toLowerCase().includes("basic") ||
-                    currentPlanName.toLowerCase().includes("free")
-                      ? "Free"
-                      : "Yearly"}
-                  </span>
-                </div>
-                {currentPlanObject?.is_featured_listing && (
-                  <div className="bg-orange-500/20 text-orange-400 border border-orange-500/30 px-3 py-1.5 rounded-lg text-sm backdrop-blur-sm flex items-center font-medium">
-                    Featured Listing Enabled
-                  </div>
-                )}
-              </div>
+            <h2 className="text-2xl md:text-3xl font-black tracking-tight uppercase">
+              {currentPlanName.toUpperCase()}
+            </h2>
+            <div className="mt-2 inline-flex items-center bg-white/10 px-3 py-1 rounded-full text-xs font-semibold text-slate-300 border border-white/10">
+              Billing: <span className="text-white ml-1 font-bold">{currentPlanName.toLowerCase().includes("free") || currentPlanName.toLowerCase().includes("basic") ? "Free" : "Active"}</span>
             </div>
           </div>
+        </div>
 
-          {currentPlanObject?.features?.length > 0 && (
-            <div className="bg-white/5 rounded-xl p-5 border border-white/10 w-full lg:w-1/2">
-              <h4 className="text-sm font-semibold text-slate-300 mb-4 border-b border-white/10 pb-2">
-                Your Active Benefits
-              </h4>
-              <ul className="grid grid-cols-1 sm:grid-cols-2 gap-y-3 gap-x-4">
-                {currentPlanObject.features.map((f: string, i: number) => (
-                  <li key={i} className="flex text-sm text-slate-200 items-start">
-                    <CheckCircle className="h-4 w-4 mr-2 shrink-0 mt-0.5 text-green-400" />
-                    <span>{f}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </CardContent>
-      </Card>
+        <div className="space-y-2 text-xs md:text-sm text-slate-300 font-medium w-full md:w-auto text-left md:text-right border-t md:border-t-0 pt-4 md:pt-0 border-slate-700/60">
+          <div className="flex items-center md:justify-end gap-2 text-slate-200">
+            <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Perfect for getting started</span>
+          </div>
+          <div className="flex items-center md:justify-end gap-2 text-slate-200">
+            <Check className="w-4 h-4 text-emerald-400 shrink-0" />
+            <span>Upgrade anytime to unlock more features</span>
+          </div>
+        </div>
+      </div>
 
-      {/* Plan Cards */}
-      <div className={`grid grid-cols-1 gap-6 items-stretch ${plans.length <= 2 ? 'md:grid-cols-2' : plans.length === 3 ? 'md:grid-cols-3' : 'md:grid-cols-4'}`}>
+      {/* ─── 5-TIER PRICING CARDS GRID ──────────────────────────────── */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
         {plans.map((plan) => {
-          const isCurrent =
-            currentPlanName.toLowerCase() === plan.name.toLowerCase();
-          const isMostPopular = plan.id === mostPopularPlan?.id;
-          const price = plan.price_yearly;
-          const monthlyPrice = plan.price_monthly;
-          const isFree = !price || Number(price) === 0;
+          const Icon = plan.icon;
+          const isCurrent = isCurrentActive(plan.name);
+          const isPopular = plan.isPopular;
+
+          // Theme styling helper
+          const getThemeStyles = () => {
+            if (isPopular) {
+              return {
+                cardBorder: "border-2 border-[#ff6b00] shadow-lg",
+                iconBg: "bg-orange-500 text-white",
+                accentColor: "text-[#ff6b00]",
+                dotColor: "bg-[#ff6b00]",
+                btnClass: "bg-[#ff6b00] hover:bg-orange-600 text-white shadow-md shadow-orange-500/20",
+              };
+            }
+            if (plan.themeColor === "purple") {
+              return {
+                cardBorder: "border border-slate-200 dark:border-slate-800",
+                iconBg: "bg-purple-100 text-purple-600 dark:bg-purple-950/50 dark:text-purple-400",
+                accentColor: "text-purple-600 dark:text-purple-400",
+                dotColor: "bg-purple-600",
+                btnClass: "bg-[#7c3aed] hover:bg-purple-700 text-white shadow-md shadow-purple-600/20",
+              };
+            }
+            if (plan.themeColor === "blue") {
+              return {
+                cardBorder: "border border-slate-200 dark:border-slate-800",
+                iconBg: "bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400",
+                accentColor: "text-blue-600 dark:text-blue-400",
+                dotColor: "bg-blue-600",
+                btnClass: "bg-[#0284c7] hover:bg-sky-700 text-white shadow-md shadow-sky-600/20",
+              };
+            }
+            if (plan.themeColor === "green") {
+              return {
+                cardBorder: "border border-slate-200 dark:border-slate-800",
+                iconBg: "bg-emerald-100 text-emerald-600 dark:bg-emerald-950/50 dark:text-emerald-400",
+                accentColor: "text-emerald-600 dark:text-emerald-400",
+                dotColor: "bg-emerald-600",
+                btnClass: "bg-[#16a34a] hover:bg-emerald-700 text-white shadow-md shadow-emerald-600/20",
+              };
+            }
+            return {
+              cardBorder: "border border-slate-200 dark:border-slate-800",
+              iconBg: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+              accentColor: "text-slate-700",
+              dotColor: "bg-slate-500",
+              btnClass: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-400",
+            };
+          };
+
+          const theme = getThemeStyles();
 
           return (
-            <Card
-              key={plan.id}
-              className={`flex flex-col relative overflow-hidden transition-all duration-200 ${
-                isCurrent
-                  ? "ring-2 ring-orange-500 shadow-lg z-10"
-                  : "hover:shadow-md border"
-              } ${
-                isMostPopular && !isCurrent
-                  ? "border-orange-400 shadow-md md:-translate-y-1"
-                  : ""
-              }`}
+            <div
+              key={plan.slug}
+              className={`bg-white dark:bg-slate-900 rounded-2xl flex flex-col justify-between overflow-hidden relative transition-all duration-300 hover:shadow-xl hover:-translate-y-1 ${theme.cardBorder}`}
             >
-              {isMostPopular && (
-                <div className="absolute top-0 right-0 bg-orange-500 text-white text-[10px] font-bold px-3 py-1 rounded-bl-lg tracking-wider flex items-center gap-1">
-                  <Zap className="h-3 w-3" /> MOST POPULAR
+              {/* Popular Ribbon */}
+              {isPopular && (
+                <div className="bg-[#ff6b00] text-white text-[11px] font-extrabold text-center py-1.5 uppercase tracking-wider flex items-center justify-center gap-1">
+                  <span>★ MOST POPULAR</span>
                 </div>
               )}
-              {isCurrent && (
-                <div className="absolute top-0 inset-x-0 h-1 bg-orange-500" />
-              )}
 
-              <CardHeader className="text-center pb-4 mt-2">
-                <Badge
-                  variant="outline"
-                  className={`mx-auto mb-2 capitalize ${
-                    isMostPopular ? "border-orange-500 text-orange-600" : ""
-                  }`}
-                >
-                  {plan.name}
-                </Badge>
+              <div className="p-5 flex-1 flex flex-col">
+                
+                {/* Duration Badge */}
+                <div className="flex justify-center mb-4">
+                  <span className={`text-[11px] font-extrabold px-3 py-1 rounded-md uppercase tracking-wider ${plan.badgeColor}`}>
+                    {plan.badge}
+                  </span>
+                </div>
 
-                {isFree ? (
-                  <div className="text-4xl font-extrabold text-slate-900 dark:text-white">
-                    Free
+                {/* Plan Icon */}
+                <div className="flex justify-center mb-4">
+                  <div className={`w-14 h-14 rounded-full flex items-center justify-center ${theme.iconBg} shadow-inner`}>
+                    <Icon className="w-7 h-7" />
                   </div>
-                ) : (
-                  <>
-                    <div
-                      className={`text-4xl font-extrabold ${
-                        isMostPopular
-                          ? "text-orange-500"
-                          : "text-slate-900 dark:text-white"
-                      }`}
-                    >
-                      ₹{price?.toLocaleString("en-IN")}
-                    </div>
-                    <p className="text-sm text-slate-500 mt-1 font-medium">
-                      / year
-                    </p>
-                    {monthlyPrice > 0 && (
-                      <p className="text-xs text-slate-400 mt-0.5">
-                        ₹{monthlyPrice?.toLocaleString("en-IN")} / month
-                      </p>
-                    )}
-                  </>
-                )}
-              </CardHeader>
+                </div>
 
-              <CardContent className="flex-1">
-                <ul className="space-y-2.5">
-                  {(plan.features || []).map((f: string, i: number) => (
-                    <li
-                      key={i}
-                      className="flex text-sm text-slate-600 dark:text-slate-300 items-start"
-                    >
-                      <CheckCircle
-                        className={`h-4 w-4 mr-2 shrink-0 mt-0.5 ${
-                          isMostPopular ? "text-orange-500" : "text-slate-400"
-                        }`}
-                      />
-                      <span>{f}</span>
+                {/* Plan Name & Price */}
+                <div className="text-center mb-4">
+                  <h3 className="font-extrabold text-lg text-slate-900 dark:text-white">
+                    {plan.name}
+                  </h3>
+                  <div className={`text-2xl font-black mt-1 ${theme.accentColor}`}>
+                    {plan.price}
+                  </div>
+                  {plan.subtitle && (
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 leading-snug">
+                      {plan.subtitle}
+                    </p>
+                  )}
+                </div>
+
+                {/* Decorative Sparkle Divider */}
+                <div className="flex items-center justify-center gap-2 my-2 text-slate-300 dark:text-slate-700">
+                  <div className="h-[1px] bg-slate-200 dark:bg-slate-800 flex-1"></div>
+                  <Sparkles className="w-3.5 h-3.5 text-slate-400" />
+                  <div className="h-[1px] bg-slate-200 dark:bg-slate-800 flex-1"></div>
+                </div>
+
+                {/* Features List */}
+                <ul className="space-y-2.5 my-4 flex-1 text-xs text-slate-700 dark:text-slate-300">
+                  {plan.features.map((feature: string, idx: number) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${theme.dotColor}`}></div>
+                      <span className="leading-snug">{feature}</span>
                     </li>
                   ))}
                 </ul>
-              </CardContent>
 
-              <CardFooter className="mt-auto pt-4">
+              </div>
+
+              {/* Bottom Action Button */}
+              <div className="p-5 pt-0">
                 {isCurrent ? (
-                  <Button className="w-full" variant="outline" disabled>
-                    ✓ Current Plan
-                  </Button>
-                ) : isFree ? (
-                  <Button className="w-full" variant="outline" disabled>
-                    Free Plan
+                  <Button
+                    disabled
+                    variant="outline"
+                    className="w-full h-11 rounded-xl font-bold text-xs bg-slate-50 dark:bg-slate-800 text-slate-400 border-slate-200 dark:border-slate-700 cursor-not-allowed"
+                  >
+                    Current Plan
                   </Button>
                 ) : (
                   <Button
-                    className="w-full bg-orange-600 hover:bg-orange-700 text-white"
                     onClick={() => setSelectedPlanForUpgrade(plan)}
+                    className={`w-full h-11 rounded-xl font-black text-xs transition-all active:scale-95 uppercase tracking-wide ${theme.btnClass}`}
                   >
-                    Upgrade to {plan.name}
+                    Choose Plan
                   </Button>
                 )}
-              </CardFooter>
-            </Card>
+              </div>
+
+            </div>
           );
         })}
       </div>
 
-      {/* Payment Method Dialog */}
-      <Dialog
-        open={!!selectedPlanForUpgrade}
-        onOpenChange={(open) => !open && setSelectedPlanForUpgrade(null)}
-      >
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Complete Your Upgrade</DialogTitle>
-            <DialogDescription>
-              Choose a payment method to upgrade to the{" "}
-              <strong>{selectedPlanForUpgrade?.name}</strong> plan at ₹
-              {selectedPlanForUpgrade?.price_yearly?.toLocaleString("en-IN")}/year.
-            </DialogDescription>
-          </DialogHeader>
+      {/* ─── BOTTOM TRUST BADGES ────────────────────────────────────── */}
+      <div className="border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-900 rounded-2xl p-4 flex flex-wrap items-center justify-around gap-4 text-xs font-semibold text-slate-600 dark:text-slate-300">
+        <div className="flex items-center gap-2">
+          <Lock className="w-4 h-4 text-slate-500" />
+          <span>Secure Payments</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <RotateCcw className="w-4 h-4 text-slate-500" />
+          <span>Cancel Anytime</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <Headphones className="w-4 h-4 text-slate-500" />
+          <span>24/7 Support</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <ShieldCheck className="w-4 h-4 text-slate-500" />
+          <span>Money Back Guarantee</span>
+        </div>
+      </div>
 
-          <div className="flex flex-col gap-4 py-4">
-            {/* Wallet Option */}
-            <div className="bg-slate-50 dark:bg-slate-900 p-4 rounded-lg border flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <div className="bg-orange-100 dark:bg-orange-900/30 p-2 rounded-full">
-                  <CreditCard className="h-5 w-5 text-orange-600 dark:text-orange-400" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium">Pay via Wallet</p>
-                  <p className="text-xs text-slate-500">
-                    Available: ₹{(user?.wallet_balance ?? 0).toLocaleString("en-IN")}
-                  </p>
-                </div>
+      {/* ─── UPGRADE PAYMENT DIALOG ──────────────────────────────────── */}
+      {selectedPlanForUpgrade && (
+        <Dialog open={!!selectedPlanForUpgrade} onOpenChange={() => setSelectedPlanForUpgrade(null)}>
+          <DialogContent className="sm:max-w-md bg-white dark:bg-slate-900 rounded-2xl">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <Crown className="w-5 h-5 text-orange-500" />
+                Upgrade to {selectedPlanForUpgrade.name}
+              </DialogTitle>
+              <DialogDescription className="text-xs text-slate-500">
+                Unlock higher search visibility, lead notifications, and verified enterprise badges.
+              </DialogDescription>
+            </DialogHeader>
+
+            <div className="my-4 bg-slate-50 dark:bg-slate-800/50 p-4 rounded-xl border space-y-2">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-semibold text-slate-600 dark:text-slate-400">Plan Duration:</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">{selectedPlanForUpgrade.badge}</span>
               </div>
-              <Button
-                onClick={() => handlePayWithWallet(selectedPlanForUpgrade)}
-                disabled={
-                  isProcessingWallet ||
-                  Number(user?.wallet_balance ?? 0) <
-                    Number(selectedPlanForUpgrade?.price_yearly ?? 0)
-                }
-                className="bg-orange-600 hover:bg-orange-700 shrink-0"
-              >
-                {isProcessingWallet ? (
-                  <Loader2 className="h-4 w-4 animate-spin mr-2" />
-                ) : null}
-                Pay ₹{selectedPlanForUpgrade?.price_yearly?.toLocaleString("en-IN")}
-              </Button>
-            </div>
-
-            {Number(user?.wallet_balance ?? 0) <
-              Number(selectedPlanForUpgrade?.price_yearly ?? 0) && (
-              <p className="text-xs text-amber-600 dark:text-amber-400 -mt-2 px-1">
-                Insufficient wallet balance. Add ₹
-                {(
-                  Number(selectedPlanForUpgrade?.price_yearly ?? 0) -
-                  Number(user?.wallet_balance ?? 0)
-                ).toLocaleString("en-IN")}{" "}
-                more to use this option.
-              </p>
-            )}
-
-            {/* Divider */}
-            <div className="relative my-1">
-              <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-slate-200 dark:border-slate-800" />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-white dark:bg-slate-950 px-2 text-slate-500">
-                  Or pay online
-                </span>
+              <div className="flex justify-between items-center text-sm font-black text-slate-900 dark:text-white pt-1 border-t border-slate-200 dark:border-slate-700">
+                <span>Total Amount:</span>
+                <span className="text-lg text-emerald-600 dark:text-emerald-400">{selectedPlanForUpgrade.price}</span>
               </div>
             </div>
 
-            {/* Razorpay Option */}
-            {selectedPlanForUpgrade && (
-              <div className="w-full">
+            <div className="space-y-3">
+              {/* Razorpay Online Checkout */}
+              {selectedPlanForUpgrade.id ? (
                 <CheckoutButton
                   planId={selectedPlanForUpgrade.id}
-                  amount={selectedPlanForUpgrade.price_yearly}
-                  label="Pay via Razorpay (Card / UPI / Net Banking)"
+                  amount={selectedPlanForUpgrade.numericPrice}
+                  label={selectedPlanForUpgrade.name}
                 />
-              </div>
-            )}
-          </div>
-        </DialogContent>
-      </Dialog>
+              ) : (
+                <div className="text-center text-xs text-red-500 font-semibold py-2">
+                  Plan configuration sync in progress...
+                </div>
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+
     </div>
   );
 }

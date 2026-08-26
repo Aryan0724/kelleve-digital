@@ -13,21 +13,21 @@ class SubscriptionPlanSeeder extends Seeder
         SubscriptionPlan::truncate();
         \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
 
-        $basePlans = [
-            'starter' => [
+        $plans = [
+            [
                 'name'                   => 'Starter',
+                'slug'                   => 'starter',
+                'target_role_category'   => 'professional',
                 'price_monthly'          => 0.00,
                 'price_yearly'           => 0.00,
                 'features'               => [
                     '1 Business Listing',
-                    '5 Portfolio Images',
-                    'View Projects',
-                    'Bid on Projects',
-                    'Contact Unlock (via Wallet)',
-                    '₹100 Welcome Wallet Bonus'
+                    'Up to 10 Portfolio Images',
+                    'Basic Lead Access',
+                    'Standard Support',
                 ],
                 'max_listings'           => 1,
-                'max_gallery_images'     => 5,
+                'max_gallery_images'     => 10,
                 'monthly_wallet_credit'  => 0,
                 'lead_notification_type' => 'none',
                 'early_lead_access_hours'=> null,
@@ -41,124 +41,135 @@ class SubscriptionPlanSeeder extends Seeder
                 'can_see_all_leads'      => false,
                 'is_active'              => true,
             ],
-            'growth' => [
-                'name'                   => 'Growth',
-                'price_monthly'          => 499.00,
-                'price_yearly'           => 4499.00,
+            [
+                'name'                   => 'QuickStart',
+                'slug'                   => 'quickstart',
+                'target_role_category'   => 'professional',
+                'price_monthly'          => 4999.00, // 3 Months Plan
+                'price_yearly'           => 4999.00,
                 'features'               => [
-                    '1 Business Listing',
-                    '15 Portfolio Images',
-                    '₹200 Monthly Wallet Credit',
-                    'Category-wise Lead Notifications',
-                    'Search Ranking Boost (+10)',
-                    'Recommendation Score +5',
-                    'WhatsApp Button',
-                    'Website Link',
-                    'Bid on Projects',
-                    '10% Discount on Contact Unlock'
+                    '3 Business Listings',
+                    'Elite Professional Badge',
+                    'Gold Verification',
+                    'Early Lead Access',
+                    'Real-time Notifications',
+                    'Up to 30 Portfolio Images',
+                    'Priority Support',
                 ],
-                'max_listings'           => 1,
-                'max_gallery_images'     => 15,
-                'monthly_wallet_credit'  => 200,
-                'lead_notification_type' => 'category',
-                'early_lead_access_hours'=> null,
-                'search_ranking_boost'   => 10,
-                'recommendation_score_boost' => 5,
+                'max_listings'           => 3,
+                'max_gallery_images'     => 30,
+                'monthly_wallet_credit'  => 300,
+                'lead_notification_type' => 'instant',
+                'early_lead_access_hours'=> 1,
+                'search_ranking_boost'   => 15,
+                'recommendation_score_boost' => 10,
                 'contact_unlock_discount_percent' => 10,
-                'badge_type'             => 'none',
+                'badge_type'             => 'elite',
+                'can_add_whatsapp'       => true,
+                'can_add_website'        => false,
+                'is_featured_listing'    => false,
+                'can_see_all_leads'      => false,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'GrowthPlus',
+                'slug'                   => 'growthplus',
+                'target_role_category'   => 'professional',
+                'price_monthly'          => 9999.00, // 6 Months Plan
+                'price_yearly'           => 9999.00,
+                'features'               => [
+                    '5 Business Listings',
+                    'Elite Professional Badge',
+                    'Gold Verification',
+                    'Early Lead Access',
+                    'Real-time Notifications',
+                    'Website Link Integration',
+                    'Up to 60 Portfolio Images',
+                    'Priority Support',
+                ],
+                'max_listings'           => 5,
+                'max_gallery_images'     => 60,
+                'monthly_wallet_credit'  => 600,
+                'lead_notification_type' => 'instant',
+                'early_lead_access_hours'=> 2,
+                'search_ranking_boost'   => 25,
+                'recommendation_score_boost' => 20,
+                'contact_unlock_discount_percent' => 15,
+                'badge_type'             => 'elite',
                 'can_add_whatsapp'       => true,
                 'can_add_website'        => true,
                 'is_featured_listing'    => false,
                 'can_see_all_leads'      => false,
                 'is_active'              => true,
             ],
-            'professional' => [
-                'name'                   => 'Professional',
-                'price_monthly'          => 999.00,
-                'price_yearly'           => 8999.00,
-                'features'               => [
-                    'Up to 3 Business Listings',
-                    '30 Portfolio Images',
-                    '₹500 Monthly Wallet Credit',
-                    'Instant Lead Notifications',
-                    'Early Lead Access (2 Hours)',
-                    'Search Ranking Boost (+30)',
-                    'Recommendation Score +15',
-                    'Trusted Professional Badge',
-                    'WhatsApp + Website',
-                    'Category Spotlight Placement',
-                    '20% Discount on Contact Unlock',
-                    'Weekly Profile Analytics'
-                ],
-                'max_listings'           => 3,
-                'max_gallery_images'     => 30,
-                'monthly_wallet_credit'  => 500,
-                'lead_notification_type' => 'instant',
-                'early_lead_access_hours'=> 2,
-                'search_ranking_boost'   => 30,
-                'recommendation_score_boost' => 15,
-                'contact_unlock_discount_percent' => 20,
-                'badge_type'             => 'trusted',
-                'can_add_whatsapp'       => true,
-                'can_add_website'        => true,
-                'is_featured_listing'    => true,
-                'can_see_all_leads'      => false,
-                'is_active'              => true,
-            ],
-            'elite' => [
-                'name'                   => 'Elite',
-                'price_monthly'          => 1999.00,
+            [
+                'name'                   => 'ProBusiness',
+                'slug'                   => 'probusiness',
+                'target_role_category'   => 'professional',
+                'price_monthly'          => 17999.00, // 1 Year Plan
                 'price_yearly'           => 17999.00,
                 'features'               => [
-                    'Up to 5 Business Listings',
-                    '60 Portfolio Images',
-                    '₹1,500 Monthly Wallet Credit',
-                    'Real-Time Lead Alerts',
-                    'Immediate Lead Access',
-                    'Top 3 Category Placement',
-                    'Recommendation Score +25',
-                    'Elite Professional Badge',
-                    'WhatsApp + Website',
-                    'Homepage Featured Slot',
-                    '30% Discount on Contact Unlock',
-                    'Full Analytics Dashboard',
-                    'Competitor Insights',
-                    'Priority Admin Support',
-                    '"Responds Fast" Badge'
+                    '10 Business Listings',
+                    'Search Ranking Boost',
+                    'Instant Lead Notifications',
+                    'Website Link Integration',
+                    'Up to 100 Portfolio Images',
+                    'Detailed Lead Insights',
+                    'Priority Support',
+                    'Custom Profile URL',
                 ],
-                'max_listings'           => 5,
-                'max_gallery_images'     => 60,
-                'monthly_wallet_credit'  => 1500,
-                'lead_notification_type' => 'real-time',
-                'early_lead_access_hours'=> 0,
-                'search_ranking_boost'   => 100,
-                'recommendation_score_boost' => 25,
-                'contact_unlock_discount_percent' => 30,
+                'max_listings'           => 10,
+                'max_gallery_images'     => 100,
+                'monthly_wallet_credit'  => 1200,
+                'lead_notification_type' => 'instant',
+                'early_lead_access_hours'=> 4,
+                'search_ranking_boost'   => 50,
+                'recommendation_score_boost' => 35,
+                'contact_unlock_discount_percent' => 25,
                 'badge_type'             => 'elite',
                 'can_add_whatsapp'       => true,
                 'can_add_website'        => true,
                 'is_featured_listing'    => true,
-                'can_see_all_leads'      => false,
+                'can_see_all_leads'      => true,
+                'is_active'              => true,
+            ],
+            [
+                'name'                   => 'EliteBusiness',
+                'slug'                   => 'elitebusiness',
+                'target_role_category'   => 'professional',
+                'price_monthly'          => 35999.00, // 1 Year Plan
+                'price_yearly'           => 35999.00,
+                'features'               => [
+                    'Unlimited Business Listings',
+                    'Search Ranking Boost',
+                    'Instant Lead Notifications',
+                    'Website Link Integration',
+                    'Up to 200 Portfolio Images',
+                    'Detailed Lead Insights',
+                    'Featured Listing',
+                    'Dedicated Account Manager',
+                    'Custom Profile URL',
+                    'Premium Support',
+                ],
+                'max_listings'           => 9999,
+                'max_gallery_images'     => 200,
+                'monthly_wallet_credit'  => 2500,
+                'lead_notification_type' => 'instant',
+                'early_lead_access_hours'=> 6,
+                'search_ranking_boost'   => 100,
+                'recommendation_score_boost' => 50,
+                'contact_unlock_discount_percent' => 35,
+                'badge_type'             => 'elite',
+                'can_add_whatsapp'       => true,
+                'can_add_website'        => true,
+                'is_featured_listing'    => true,
+                'can_see_all_leads'      => true,
                 'is_active'              => true,
             ],
         ];
 
-        $roles = ['worker', 'professional', 'business'];
-
-        foreach ($roles as $role) {
-            foreach ($basePlans as $tierKey => $tierData) {
-                $slug = "{$role}-{$tierKey}";
-                
-                // Adjust name for business elite for historical consistency, or just keep it 'Elite'
-                if ($role === 'business' && $tierKey === 'elite') {
-                    $tierData['name'] = 'Elite Business';
-                }
-
-                $tierData['slug'] = $slug;
-                $tierData['target_role_category'] = $role;
-                
-                SubscriptionPlan::create($tierData);
-            }
+        foreach ($plans as $p) {
+            SubscriptionPlan::create($p);
         }
     }
 }

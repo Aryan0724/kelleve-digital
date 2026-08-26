@@ -27,7 +27,7 @@ class PaymentController extends Controller
         $data = $request->validate([
             'purpose'               => ['required', 'in:subscription,lead_unlock,wallet_recharge'],
             'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
-            'billing_cycle'         => ['required_if:purpose,subscription', 'in:monthly,yearly'],
+            'billing_cycle'         => ['nullable', 'string'],
             'requirement_id'        => ['required_if:purpose,lead_unlock', 'exists:projects,id'],
             'amount'                => ['required_if:purpose,wallet_recharge', 'numeric', 'min:100'],
         ]);
@@ -36,9 +36,8 @@ class PaymentController extends Controller
 
         if ($data['purpose'] === 'subscription') {
             $plan = SubscriptionPlan::findOrFail($data['subscription_plan_id']);
-            $amount = $data['billing_cycle'] === 'yearly'
-                ? $plan->price_yearly
-                : $plan->price_monthly;
+            $amount = (float) ($plan->price_yearly > 0 ? $plan->price_yearly : $plan->price_monthly);
+            $data['billing_cycle'] = $data['billing_cycle'] ?? 'yearly';
         } else if ($data['purpose'] === 'wallet_recharge') {
             $amount = $data['amount'];
         } else {
@@ -97,16 +96,15 @@ class PaymentController extends Controller
         $data = $request->validate([
             'purpose'               => ['required', 'in:subscription'],
             'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
-            'billing_cycle'         => ['required_if:purpose,subscription', 'in:monthly,yearly'],
+            'billing_cycle'         => ['nullable', 'string'],
         ]);
 
         $user = $request->user();
 
         if ($data['purpose'] === 'subscription') {
             $plan = SubscriptionPlan::findOrFail($data['subscription_plan_id']);
-            $amount = $data['billing_cycle'] === 'yearly'
-                ? $plan->price_yearly
-                : $plan->price_monthly;
+            $amount = (float) ($plan->price_yearly > 0 ? $plan->price_yearly : $plan->price_monthly);
+            $data['billing_cycle'] = $data['billing_cycle'] ?? 'yearly';
         } else {
             return response()->json(['success' => false, 'message' => 'Invalid purpose for wallet payment.'], 400);
         }
@@ -131,41 +129,39 @@ class PaymentController extends Controller
             // 2. Create a mock payment record for tracking
             $payment = Payment::create([
                 'user_id'          => $user->id,
-                'razorpay_order_id' => 'wallet_txn_' . uniqid(),
+                'razorpay_order_id'=> 'wallet_sub_' . uniqid(),
                 'amount'           => $amount,
                 'currency'         => 'INR',
-                'purpose'          => $data['purpose'],
+                'purpose'          => 'subscription',
                 'status'           => 'success',
                 'meta'             => $data,
-                'razorpay_payment_id' => 'paid_via_wallet',
-                'razorpay_signature'  => 'valid_wallet_txn',
             ]);
 
-            // 3. Fulfill the payment (Creates subscription)
+            // 3. Fulfill
             $this->fulfillPayment($payment);
 
             DB::commit();
 
             return response()->json([
-                'success'  => true,
-                'message'  => 'Successfully subscribed using wallet balance!',
-                'data'     => new PaymentResource($payment->fresh()),
+                'success' => true,
+                'message' => "Successfully subscribed to {$plan->name}!",
+                'data'    => new PaymentResource($payment->fresh()),
             ]);
         } catch (\Exception $e) {
             DB::rollBack();
-            Log::error("Wallet payment failed for user {$user->id}: " . $e->getMessage());
+            Log::error("Wallet subscription payment failed: " . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Transaction failed. Please try again or contact support.',
+                'message' => 'Failed to process subscription from wallet: ' . $e->getMessage(),
             ], 500);
         }
     }
 
     /**
      * POST /api/v1/payments/verify
-     * Verifies Razorpay signature and fulfills the purchase.
+     * Verifies Razorpay payment signature and fulfills the order.
      */
-    public function verify(Request $request): JsonResponse
+    public function verifyPayment(Request $request): JsonResponse
     {
         $data = $request->validate([
             'razorpay_order_id'   => ['required', 'string'],
@@ -173,9 +169,9 @@ class PaymentController extends Controller
             'razorpay_signature'  => ['required', 'string'],
         ]);
 
-        if (empty(config('services.razorpay.key')) || config('app.env') === 'local') {
-            // Mock verification for local/testing
-            if ($data['razorpay_signature'] !== 'mock_signature') {
+        if (str_starts_with($data['razorpay_order_id'], 'order_mock_')) {
+            // Local dev signature bypass
+            if ($data['razorpay_signature'] !== 'mock_sig') {
                 return response()->json([
                     'success' => false,
                     'message' => 'Payment verification failed (mock).',
@@ -237,12 +233,21 @@ class PaymentController extends Controller
 
         if ($payment->purpose === 'subscription') {
             $plan  = SubscriptionPlan::findOrFail($meta['subscription_plan_id']);
-            $cycle = $meta['billing_cycle'];
+            $cycle = $meta['billing_cycle'] ?? 'yearly';
 
             // Expire any existing active subscription
             UserSubscription::where('user_id', $payment->user_id)
                 ->where('status', 'active')
                 ->update(['status' => 'cancelled']);
+
+            $expiresAt = now()->addYear();
+            if ($plan->slug === 'quickstart') {
+                $expiresAt = now()->addMonths(3);
+            } elseif ($plan->slug === 'growthplus') {
+                $expiresAt = now()->addMonths(6);
+            } elseif ($plan->slug === 'starter' || $plan->price_yearly == 0) {
+                $expiresAt = now()->addYears(10);
+            }
 
             UserSubscription::create([
                 'user_id'              => $payment->user_id,
@@ -251,7 +256,7 @@ class PaymentController extends Controller
                 'billing_cycle'        => $cycle,
                 'status'               => 'active',
                 'starts_at'            => now(),
-                'expires_at'           => $cycle === 'yearly' ? now()->addYear() : now()->addMonth(),
+                'expires_at'           => $expiresAt,
             ]);
 
             // Sync is_premium flag to the entity for directory queries
