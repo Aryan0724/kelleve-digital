@@ -86,13 +86,13 @@ export default async function Home() {
           
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {[
-              { title: "Pest Control", img: "/images/card-doctor.jpg", badge: "20% OFF" }, 
-              { title: "Packers & Movers", img: "/images/card-repair.jpg", badge: "Fast" },
-              { title: "Wedding Planners", img: "/images/card-b2b.jpg", badge: "Premium" },
-              { title: "Modular Kitchen", img: "/images/card-realestate.jpg", badge: "Trending" },
-              { title: "AC Repair", img: "/images/promo-banner.jpg", badge: "Summer" },
+              { title: "Pest Control", img: "https://images.unsplash.com/photo-1584697964190-7c152a488dc7?auto=format&fit=crop&q=80&w=800", badge: "20% OFF", link: "/search?category=Pest+Control&q=Pest+Control" }, 
+              { title: "Packers & Movers", img: "https://images.unsplash.com/photo-1600518464441-9154a4dea21b?auto=format&fit=crop&q=80&w=800", badge: "Fast", link: "/search?category=Packers+%26+Movers" },
+              { title: "Wedding Planners", img: "https://images.unsplash.com/photo-1519741497674-611481863552?auto=format&fit=crop&q=80&w=800", badge: "Premium", link: "/search?category=Event+Management&q=Wedding" },
+              { title: "Modular Kitchen", img: "https://images.unsplash.com/photo-1556911220-e15b29be8c8f?auto=format&fit=crop&q=80&w=800", badge: "Trending", link: "/search?category=Interior+Designers&q=Modular+Kitchen" },
+              { title: "AC Repair", img: "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&q=80&w=800", badge: "Services", link: "/search?category=Repair+%26+Maintenance&q=AC+Repair" },
             ].map((service, i) => (
-              <Link href="/search" key={i} className="group relative rounded-2xl overflow-hidden aspect-[4/3] block shadow-md hover:shadow-lg transition-shadow">
+              <Link href={service.link} key={i} className="group relative rounded-2xl overflow-hidden aspect-[4/3] block shadow-md hover:shadow-lg transition-shadow">
                 <Image src={service.img} alt={service.title} fill className="object-cover group-hover:scale-105 transition-transform duration-500" sizes="(max-width: 768px) 50vw, 20vw" />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
                 <div className="absolute top-3 left-3 bg-white/90 backdrop-blur-sm px-2.5 py-1 rounded text-[9px] font-black uppercase text-[#1E3A8A] tracking-wider shadow-sm">

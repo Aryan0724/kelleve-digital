@@ -30,10 +30,13 @@ export default function Footer() {
 
           <div className="grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
             <div className="col-span-1 md:col-span-1">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-8 h-8 bg-primary text-primary-foreground rounded-full flex items-center justify-center font-bold">T</div>
-                <span className="text-xl font-bold text-navy dark:text-white">truedial</span>
-              </div>
+              <Link href="/" className="inline-block mb-4">
+                <img
+                  src="/truedial-logo.png"
+                  alt="TrueDial"
+                  className="h-10 w-auto object-contain brightness-105"
+                />
+              </Link>
               <p className="text-xs text-muted-foreground leading-relaxed mb-6">
                 TRUEDIAL is India's emerging business growth platform helping businesses grow beyond listing with advanced marketing, technology and consulting solutions.
               </p>

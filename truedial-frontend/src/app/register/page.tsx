@@ -105,9 +105,12 @@ export default function RegisterPage() {
         <div className={`absolute inset-0 bg-gradient-to-tl ${accountType === 'business' ? 'from-[#E8701A] via-[#E8701A]/90 to-navy/30' : 'from-navy via-navy/90 to-primary/30'}`}></div>
         
         <div className="relative z-10 text-white max-w-lg">
-          <Link href="/" className="flex items-center gap-2 mb-12">
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg ${accountType === 'business' ? 'bg-white text-[#E8701A] shadow-white/20' : 'bg-primary text-white shadow-primary/20'}`}>T</div>
-            <span className="text-3xl font-bold">truedial</span>
+          <Link href="/" className="inline-block mb-12 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-xl">
+            <img
+              src="/truedial-logo.png"
+              alt="TrueDial"
+              className="h-10 w-auto object-contain"
+            />
           </Link>
           <h1 className="text-4xl font-bold mb-6 leading-tight">
             {accountType === 'business' ? "Grow your business beyond limits." : "Join India's most trusted network."}
@@ -138,8 +141,13 @@ export default function RegisterPage() {
         <div className="max-w-xl w-full mx-auto py-8">
           
           <div className="md:hidden flex items-center gap-2 mb-8">
-            <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-xl">T</div>
-            <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
+            <Link href="/">
+              <img
+                src="/truedial-logo.png"
+                alt="TrueDial"
+                className="h-9 w-auto object-contain"
+              />
+            </Link>
           </div>
 
           {/* STEP 1: Account Type Selection */}

@@ -223,10 +223,6 @@ export default function HeroSearch() {
                     onFocus={() => { if (query.trim().length >= 2) setShowDropdown(true); }}
                     className="flex-1 text-slate-900 text-[15px] font-medium outline-none bg-transparent placeholder:text-gray-400"
                     placeholder="Search for Restaurant, Hospital, Hotel, Service..." />
-                  {/* Mic icon */}
-                  <button type="button" className="shrink-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors">
-                    <Mic className="w-4 h-4 text-blue-500" />
-                  </button>
                 </div>
 
                 {/* Orange search button */}
@@ -276,7 +272,7 @@ export default function HeroSearch() {
           <div className="flex gap-3 pb-2 h-[220px]">
 
             {/* Left Promo Banner */}
-            <Link href="/business/register" className="w-[42%] relative rounded-2xl overflow-hidden group">
+            <Link href="/register?type=vendor" className="w-[42%] relative rounded-2xl overflow-hidden group">
               <Image 
                 src="/images/promo-banner.jpg" 
                 alt="Grow your business" 
@@ -311,6 +307,7 @@ export default function HeroSearch() {
                   bg: "linear-gradient(135deg,#1E40AF 0%,#1E3A8A 100%)",
                   badge: "Tenders",
                   image: "/images/card-b2b.jpg",
+                  link: "/search?category=Digital+Marketing+%26+IT&q=B2B",
                 },
                 {
                   title: "Repairs &\nServices",
@@ -318,6 +315,7 @@ export default function HeroSearch() {
                   bg: "linear-gradient(135deg,#0891B2 0%,#0E7490 100%)",
                   badge: "Home/Office",
                   image: "/images/card-repair.jpg",
+                  link: "/search?category=Repair+%26+Maintenance",
                 },
                 {
                   title: "Real\nEstate",
@@ -325,6 +323,7 @@ export default function HeroSearch() {
                   bg: "linear-gradient(135deg,#7C3AED 0%,#6D28D9 100%)",
                   badge: "Top Agents",
                   image: "/images/card-realestate.jpg",
+                  link: "/search?category=Real+Estate+%26+Property",
                 },
                 {
                   title: "Doctors &\nHospitals",
@@ -332,10 +331,11 @@ export default function HeroSearch() {
                   bg: "linear-gradient(135deg,#059669 0%,#047857 100%)",
                   badge: "Verified",
                   image: "/images/card-doctor.jpg",
+                  link: "/search?category=Hospitals+%26+Healthcare",
                 },
               ].map((card, i) => (
                 <Link
-                  href="/search"
+                  href={card.link}
                   key={i}
                   className="relative rounded-2xl overflow-hidden group cursor-pointer"
                   style={{ background: card.bg }}

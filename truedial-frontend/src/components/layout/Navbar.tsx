@@ -15,26 +15,12 @@ export default async function Navbar() {
       <div className="max-w-7xl mx-auto px-4 md:px-6 xl:px-8 py-2.5 flex items-center justify-between gap-4">
 
         {/* ── Logo ── */}
-        <Link href="/" className="flex items-center gap-2 group shrink-0">
-          {/* Orange badge icon */}
-          <div className="w-9 h-9 rounded-full bg-[#EA580C] flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform shrink-0">
-            <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V8h2v8zm4 0h-2V8h2v8z"/>
-            </svg>
-          </div>
-          {/* Brand text */}
-          <div className="flex flex-col leading-none">
-            <div className="flex items-baseline gap-0">
-              <span className="text-[20px] font-black text-[#1E40AF] tracking-tight">truedial</span>
-              <span className="text-[14px] font-black text-[#EA580C]">.com</span>
-            </div>
-            <div className="flex items-center gap-1 mt-0.5">
-              <svg className="w-2.5 h-2.5 text-[#1E40AF]" fill="currentColor" viewBox="0 0 24 24">
-                <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.25C17.25 22.15 21 17.25 21 12V7L12 2zm-1 14l-4-4 1.41-1.41L11 13.17l6.59-6.58L19 8l-8 8z"/>
-              </svg>
-              <span className="text-[9px] font-bold text-[#1E40AF] uppercase tracking-wider">100% Verified</span>
-            </div>
-          </div>
+        <Link href="/" className="flex items-center gap-2 group shrink-0 py-1">
+          <img
+            src="/truedial-logo.png"
+            alt="TrueDial 100% Verified"
+            className="h-9 md:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+          />
         </Link>
 
         {/* ── Center Nav Links (Desktop only) ── */}

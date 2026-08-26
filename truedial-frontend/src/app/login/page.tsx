@@ -72,9 +72,12 @@ function LoginForm() {
         <div className="absolute inset-0 bg-gradient-to-br from-navy via-navy/90 to-primary/30"></div>
         
         <div className="relative z-10 text-white max-w-lg">
-          <Link href="/" className="flex items-center gap-2 mb-12">
-            <div className="w-12 h-12 rounded-full flex items-center justify-center font-bold text-2xl shadow-lg bg-primary text-white shadow-primary/30">T</div>
-            <span className="text-3xl font-bold">truedial</span>
+          <Link href="/" className="inline-block mb-12 bg-white/95 backdrop-blur-md p-3 rounded-2xl shadow-xl">
+            <img
+              src="/truedial-logo.png"
+              alt="TrueDial"
+              className="h-10 w-auto object-contain"
+            />
           </Link>
           <h1 className="text-4xl font-bold mb-6 leading-tight">
             Welcome back to India's fastest growing network.
@@ -93,9 +96,14 @@ function LoginForm() {
       {/* Right Panel - Form */}
       <div className="flex-1 flex flex-col justify-center p-8 md:p-24 animate-fade-in-right">
         <div className="max-w-md w-full mx-auto">
-          <div className="md:hidden flex items-center gap-2 mb-12">
-            <div className="w-10 h-10 bg-primary text-white rounded-full flex items-center justify-center font-bold text-xl">T</div>
-            <span className="text-2xl font-bold text-navy dark:text-white">truedial</span>
+          <div className="md:hidden flex items-center gap-2 mb-8">
+            <Link href="/">
+              <img
+                src="/truedial-logo.png"
+                alt="TrueDial"
+                className="h-9 w-auto object-contain"
+              />
+            </Link>
           </div>
 
           <h2 className="text-3xl font-bold text-navy dark:text-white mb-2">Login to your account</h2>

@@ -107,10 +107,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="flex h-screen bg-background overflow-hidden">
       {/* Sidebar */}
       <aside className="w-64 bg-navy text-navy-foreground flex flex-col transition-all duration-300 shrink-0">
-        <Link href="/" className="p-6 border-b border-white/10 flex items-center gap-2 hover:opacity-90 transition">
-          <div className="w-8 h-8 bg-primary text-white rounded-full flex items-center justify-center font-bold">T</div>
-          <span className="text-xl font-bold">truedial</span>
-          <span className="text-[10px] ml-auto bg-white/10 px-2 py-0.5 rounded text-amber-300 font-semibold uppercase">Home</span>
+        <Link href="/" className="p-4 border-b border-white/10 flex items-center justify-between hover:opacity-90 transition bg-white/5">
+          <img
+            src="/truedial-logo.png"
+            alt="TrueDial"
+            className="h-8 w-auto object-contain brightness-105"
+          />
+          <span className="text-[10px] bg-white/10 px-2 py-0.5 rounded text-amber-300 font-semibold uppercase">Home</span>
         </Link>
         
         <nav className="flex-1 py-6 px-4 space-y-1 overflow-y-auto">
