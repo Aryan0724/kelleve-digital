@@ -8,8 +8,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
-        // Run in strict dependency order
         $this->call([
+            TenantSeeder::class,          // Essential for TenantResolverMiddleware
             AdminSeeder::class,           // Creates admin user
             DistrictSeeder::class,        // Bihar's 38 districts
             CitySeeder::class,            // Major cities per district
