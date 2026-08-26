@@ -116,6 +116,8 @@ class BusinessController extends Controller
             'social_links' => 'nullable|array',
             'services' => 'nullable|array',
             'professional_type' => 'nullable|string',
+            'gallery' => 'nullable|array',
+            'gallery.*' => 'nullable|string',
         ]);
 
         if (isset($validated['title']) && $validated['title'] !== $business->title) {
@@ -148,7 +150,23 @@ class BusinessController extends Controller
             unset($validated['professional_type']);
         }
 
+        $galleryData = $validated['gallery'] ?? null;
+        unset($validated['gallery']);
+
         $business->update($validated);
+
+        if (is_array($galleryData)) {
+            $business->media()->delete();
+            foreach ($galleryData as $index => $imgUrl) {
+                if (!empty($imgUrl)) {
+                    $business->media()->create([
+                        'url' => $imgUrl,
+                        'is_cover' => $index === 0,
+                        'sort_order' => $index,
+                    ]);
+                }
+            }
+        }
 
         \Illuminate\Support\Facades\Cache::forget("business_profile_{$business->slug}");
         \Illuminate\Support\Facades\Cache::forget("business_profile_data_{$business->slug}");

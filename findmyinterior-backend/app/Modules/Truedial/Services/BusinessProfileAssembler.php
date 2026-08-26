@@ -97,6 +97,19 @@ class BusinessProfileAssembler
         ];
 
         $media = MediaResource::collection($business->media)->resolve();
+        if (!empty($business->cover_image)) {
+            $hasCoverInMedia = collect($media)->contains(function($m) use ($business) {
+                return (!empty($m['is_cover']) && $m['is_cover']) || ($m['url'] ?? null) === $business->cover_image;
+            });
+            if (!$hasCoverInMedia) {
+                array_unshift($media, [
+                    'id' => 0,
+                    'url' => $business->cover_image,
+                    'is_cover' => true,
+                    'sort_order' => 0,
+                ]);
+            }
+        }
 
         return new BusinessProfileDTO([
             'basicInfo' => $basicInfo,

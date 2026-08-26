@@ -15,6 +15,10 @@ Route::prefix('v1/truedial')->middleware(['api'])->group(function () {
         Route::post('/otp/verify', [OtpController::class, 'verifyOtp']);
     });
     
+    // Direct Public Aliases
+    Route::get('/businesses', [BusinessDirectoryController::class, 'index']);
+    Route::get('/businesses/{slug}', [BusinessDirectoryController::class, 'show']);
+
     Route::prefix('public')->group(function () {
         Route::get('/businesses', [BusinessDirectoryController::class, 'index']);
         Route::get('/businesses/{slug}', [BusinessDirectoryController::class, 'show']);

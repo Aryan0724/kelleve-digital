@@ -231,6 +231,50 @@ export class TrueDialAPI {
     }
   }
 
+  // Public Business Profile & Offers
+  static async getListingBySlug(slug: string) {
+    try {
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/truedial/public/businesses/${slug}`, {
+        headers: {
+          'Accept': 'application/json',
+          'X-Platform': 'truedial',
+        },
+        cache: 'no-store'
+      });
+      if (!res.ok) {
+        // Fallback to direct alias
+        const fallbackRes = await fetch(`${baseUrl}/truedial/businesses/${slug}`, {
+          headers: { 'Accept': 'application/json', 'X-Platform': 'truedial' },
+          cache: 'no-store'
+        });
+        if (fallbackRes.ok) return await fallbackRes.json();
+      }
+      return await res.json();
+    } catch (error) {
+      console.error("getListingBySlug failed:", error);
+      return { success: false, data: null };
+    }
+  }
+
+  static async getBusinessOffers(slug: string) {
+    try {
+      const baseUrl = getApiBaseUrl();
+      const res = await fetch(`${baseUrl}/truedial/public/businesses/${slug}/offers`, {
+        headers: {
+          'Accept': 'application/json',
+          'X-Platform': 'truedial',
+        },
+        cache: 'no-store'
+      });
+      if (!res.ok) return { success: true, data: [] };
+      return await res.json();
+    } catch (error) {
+      console.error("getBusinessOffers failed:", error);
+      return { success: false, data: [] };
+    }
+  }
+
   // Vendor Business Management
   static async getMyBusiness() {
     try {

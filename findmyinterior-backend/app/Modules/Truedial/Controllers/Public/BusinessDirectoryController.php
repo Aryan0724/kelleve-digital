@@ -72,13 +72,17 @@ class BusinessDirectoryController extends Controller
     {
         $businessDTO = $this->businessPageService->getBusinessProfile($slug);
 
-        \App\Modules\Truedial\Services\AnalyticsEventService::track(
-            $this->tenantContext->getTenantId(),
-            \App\Modules\Truedial\Services\AnalyticsEventService::EVENT_BUSINESS_VIEW,
-            'listing',
-            $businessDTO->basicInfo['id'],
-            auth('sanctum')->id()
-        );
+        try {
+            \App\Modules\Truedial\Services\AnalyticsEventService::track(
+                $this->tenantContext->getTenantId() ?? 2,
+                \App\Modules\Truedial\Services\AnalyticsEventService::EVENT_BUSINESS_VIEW,
+                'listing',
+                $businessDTO->basicInfo['id'],
+                auth('sanctum')->id()
+            );
+        } catch (\Throwable $e) {
+            // Analytics tracking failsafe
+        }
 
         return $this->success($businessDTO);
     }

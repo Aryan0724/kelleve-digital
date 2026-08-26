@@ -191,12 +191,8 @@ export default function BusinessProfileClient({
     vendorGallery = business.media.map((m: any) => typeof m === 'string' ? m : m.url || '').filter(Boolean);
   }
 
-  if (vendorCover && !vendorGallery.includes(vendorCover)) {
-    vendorGallery = [vendorCover, ...vendorGallery];
-  }
-
   const gallery = vendorGallery.length > 0 
-    ? (vendorGallery.length < 4 ? [...vendorGallery, ...defaultImages].slice(0, 6) : vendorGallery)
+    ? vendorGallery 
     : defaultImages;
 
   // Real vendor services mapping
@@ -540,7 +536,7 @@ export default function BusinessProfileClient({
             <div className="w-full lg:w-[380px] h-[240px] sm:h-[260px] flex-shrink-0 grid grid-cols-3 grid-rows-2 gap-2 rounded-2xl overflow-hidden shadow-inner">
               <div 
                 onClick={() => { setLightboxIndex(0); setLightboxOpen(true); }}
-                className="col-span-2 row-span-2 relative group cursor-pointer overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800"
+                className={`${gallery.length === 1 ? 'col-span-3 row-span-2' : gallery.length === 2 ? 'col-span-2 row-span-2' : 'col-span-2 row-span-2'} relative group cursor-pointer overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800`}
               >
                 <img 
                   src={gallery[0]} 
@@ -553,31 +549,37 @@ export default function BusinessProfileClient({
                 </span>
               </div>
 
-              <div 
-                onClick={() => { setLightboxIndex(1); setLightboxOpen(true); }}
-                className="col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800"
-              >
-                <img 
-                  src={gallery[1]} 
-                  alt="Gallery 1" 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                />
-              </div>
-
-              <div 
-                onClick={() => { setLightboxIndex(2); setLightboxOpen(true); }}
-                className="col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800"
-              >
-                <img 
-                  src={gallery[2] || gallery[0]} 
-                  alt="Gallery 2" 
-                  className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
-                />
-                <div className="absolute inset-0 bg-black/60 hover:bg-black/70 flex flex-col items-center justify-center text-white transition-colors">
-                  <span className="text-sm font-extrabold">+{gallery.length}</span>
-                  <span className="text-[10px] font-bold">Photos</span>
+              {gallery.length > 1 && (
+                <div 
+                  onClick={() => { setLightboxIndex(1); setLightboxOpen(true); }}
+                  className={`${gallery.length === 2 ? 'col-span-1 row-span-2' : 'col-span-1 row-span-1'} relative group cursor-pointer overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800`}
+                >
+                  <img 
+                    src={gallery[1]} 
+                    alt="Gallery 1" 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                  />
                 </div>
-              </div>
+              )}
+
+              {gallery.length > 2 && (
+                <div 
+                  onClick={() => { setLightboxIndex(2); setLightboxOpen(true); }}
+                  className="col-span-1 row-span-1 relative group cursor-pointer overflow-hidden rounded-xl bg-slate-100 dark:bg-slate-800"
+                >
+                  <img 
+                    src={gallery[2]} 
+                    alt="Gallery 2" 
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" 
+                  />
+                  {gallery.length > 3 && (
+                    <div className="absolute inset-0 bg-black/60 hover:bg-black/70 flex flex-col items-center justify-center text-white transition-colors">
+                      <span className="text-sm font-extrabold">+{gallery.length - 2}</span>
+                      <span className="text-[10px] font-bold">Photos</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
           </div>
