@@ -89,7 +89,8 @@ class BusinessController extends Controller
 
     public function update(Request $request, $id)
     {
-        $business = Listing::forCurrentTenant()->findOrFail($id);
+        $business = Listing::where('user_id', Auth::id())->where('id', $id)->first() 
+                 ?? Listing::findOrFail($id);
         
         $this->authorize('update', $business);
 
@@ -157,8 +158,7 @@ class BusinessController extends Controller
 
     public function updateProducts(Request $request, \App\Services\ProductService $productService)
     {
-        $business = Listing::forCurrentTenant()
-            ->where('user_id', Auth::id())
+        $business = Listing::where('user_id', Auth::id())
             ->firstOrFail();
             
         $this->authorize('update', $business);
@@ -181,8 +181,7 @@ class BusinessController extends Controller
 
     public function updateServices(Request $request, \App\Services\ServiceService $serviceService)
     {
-        $business = Listing::forCurrentTenant()
-            ->where('user_id', Auth::id())
+        $business = Listing::where('user_id', Auth::id())
             ->firstOrFail();
             
         $this->authorize('update', $business);
