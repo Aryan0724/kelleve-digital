@@ -97,20 +97,32 @@ class BusinessProfileAssembler
             'services' => ServiceResource::collection($business->listingServices)->resolve(),
         ];
 
-        $media = MediaResource::collection($business->media)->resolve();
+        $media = [];
         if (!empty($business->cover_image)) {
-            $hasCoverInMedia = collect($media)->contains(function($m) use ($business) {
-                return (!empty($m['is_cover']) && $m['is_cover']) || ($m['url'] ?? null) === $business->cover_image;
-            });
-            if (!$hasCoverInMedia) {
-                array_unshift($media, [
-                    'id' => 0,
-                    'url' => $business->cover_image,
-                    'is_cover' => true,
-                    'sort_order' => 0,
-                ]);
+            $media[] = [
+                'id' => 0,
+                'url' => $business->cover_image,
+                'is_cover' => true,
+                'sort_order' => 0,
+            ];
+        }
+        if ($business->gallery && $business->gallery->isNotEmpty()) {
+            foreach ($business->gallery as $g) {
+                if (!empty($g->image_url) && $g->image_url !== $business->cover_image) {
+                    $media[] = [
+                        'id' => $g->id,
+                        'url' => $g->image_url,
+                        'is_cover' => false,
+                        'sort_order' => $g->sort_order,
+                    ];
+                }
             }
         }
+        if (empty($media)) {
+            $media = MediaResource::collection($business->media)->resolve();
+        }
+
+        $basicInfo['gallery'] = $media;
 
         return new BusinessProfileDTO([
             'basicInfo' => $basicInfo,

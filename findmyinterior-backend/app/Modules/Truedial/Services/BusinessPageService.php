@@ -22,6 +22,7 @@ class BusinessPageService
         $data = Cache::remember($cacheKey, now()->addHours(24), function () use ($slug) {
             $business = Listing::with([
                 'category',
+                'gallery',
                 'media' => function($query) {
                     $query->orderByDesc('is_cover')->orderBy('sort_order');
                 },

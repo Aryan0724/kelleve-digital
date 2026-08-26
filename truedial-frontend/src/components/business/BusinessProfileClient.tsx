@@ -197,8 +197,6 @@ export default function BusinessProfileClient({
 
   const gallery = vendorGallery.length > 0 
     ? vendorGallery 
-    : defaultImages;
-
   // Real vendor services mapping
   const rawServices = business?.catalog?.services || basicInfo.listing_services || [];
   let services: any[] = [];
@@ -209,8 +207,8 @@ export default function BusinessProfileClient({
           id: idx + 1,
           name: s,
           description: `Certified & professional ${s} service offered by ${title}.`,
-          price_from: 499,
-          price_to: 1999,
+          price_from: null,
+          price_to: null,
           duration: "Flexible"
         };
       }
@@ -218,95 +216,26 @@ export default function BusinessProfileClient({
     });
   } else if (rawServices.length > 0) {
     services = rawServices;
-  } else {
-    services = [
-      {
-        id: 1,
-        name: "Standard Membership / Service Session",
-        description: `Complete professional session and facility access with verified standards at ${title}.`,
-        price_from: 499,
-        price_to: 1499,
-        duration: "Flexible"
-      },
-      {
-        id: 2,
-        name: "Monthly Full Access Package",
-        description: `All-inclusive monthly package tailored to your exact requirements at ${title}.`,
-        price_from: 1499,
-        price_to: 3999,
-        duration: "1 Month"
-      },
-      {
-        id: 3,
-        name: "VIP Premium Consultation & Training",
-        description: `Dedicated specialist guidance with guaranteed satisfaction and priority assistance.`,
-        price_from: 2499,
-        price_to: 5999,
-        duration: "3 Months"
-      }
-    ];
   }
 
-  // Fallback Products / Menu if none from API
-  const rawProducts = business?.catalog?.products || basicInfo.listing_products || [];
-  const products = rawProducts.length > 0 ? rawProducts : [
-    {
-      id: 1,
-      name: "Signature Chef Special Platter",
-      description: "Handcrafted delicacy made with premium organic ingredients and rich spices.",
-      price: 450,
-      image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=600&auto=format&fit=crop",
-      is_veg: true
-    },
-    {
-      id: 2,
-      name: "Royal Gourmet Feast Selection",
-      description: "Award-winning specialty served with artisanal sides and freshly made dips.",
-      price: 680,
-      image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?q=80&w=600&auto=format&fit=crop",
-      is_veg: false
-    },
-    {
-      id: 3,
-      name: "Deluxe Refreshment Beverage",
-      description: "Chilled fresh blend infused with natural fruits and aromatic mint.",
-      price: 180,
-      image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?q=80&w=600&auto=format&fit=crop",
-      is_veg: true
-    }
-  ];
+  // Real Products / Catalog if any
+  const rawProducts = business?.catalog?.products || basicInfo.listing_products || basicInfo.products || [];
+  const products: any[] = Array.isArray(rawProducts) ? rawProducts : [];
 
-  // Active Offers
-  const offers = (initialOffers && initialOffers.length > 0) ? initialOffers : [
-    {
-      id: 1,
-      title: "Flat 20% Privilege Discount",
-      promo_code: "TRUE20",
-      discount_type: "percentage",
-      discount_value: 20,
-      description: "Valid for all TrueDial Privilege Card members on dine-in and services.",
-      valid_until: new Date(Date.now() + 60 * 24 * 3600 * 1000).toISOString(),
-    },
-    {
-      id: 2,
-      title: "Festive ₹150 Cashback Voucher",
-      promo_code: "FESTIVE150",
-      discount_type: "fixed",
-      discount_value: 150,
-      description: "Instant discount on minimum billing of ₹699. One-time use per user.",
-      valid_until: new Date(Date.now() + 30 * 24 * 3600 * 1000).toISOString(),
-    }
-  ];
+  // Active Offers if any
+  const rawOffers = (initialOffers && initialOffers.length > 0) ? initialOffers : (business?.offers || []);
+  const offers: any[] = Array.isArray(rawOffers) ? rawOffers : [];
 
-  // Timings Schedule
+  // Timings Schedule from availability
+  const userHours = basicInfo.availability || "Open Daily";
   const daysOfWeek = [
-    { day: "Monday", hours: "09:30 AM - 10:30 PM", isToday: new Date().getDay() === 1 },
-    { day: "Tuesday", hours: "09:30 AM - 10:30 PM", isToday: new Date().getDay() === 2 },
-    { day: "Wednesday", hours: "09:30 AM - 10:30 PM", isToday: new Date().getDay() === 3 },
-    { day: "Thursday", hours: "09:30 AM - 10:30 PM", isToday: new Date().getDay() === 4 },
-    { day: "Friday", hours: "09:30 AM - 11:00 PM", isToday: new Date().getDay() === 5 },
-    { day: "Saturday", hours: "09:00 AM - 11:30 PM", isToday: new Date().getDay() === 6 },
-    { day: "Sunday", hours: "09:00 AM - 11:30 PM", isToday: new Date().getDay() === 0 },
+    { day: "Monday", hours: userHours, isToday: new Date().getDay() === 1 },
+    { day: "Tuesday", hours: userHours, isToday: new Date().getDay() === 2 },
+    { day: "Wednesday", hours: userHours, isToday: new Date().getDay() === 3 },
+    { day: "Thursday", hours: userHours, isToday: new Date().getDay() === 4 },
+    { day: "Friday", hours: userHours, isToday: new Date().getDay() === 5 },
+    { day: "Saturday", hours: userHours, isToday: new Date().getDay() === 6 },
+    { day: "Sunday", hours: userHours, isToday: new Date().getDay() === 0 },
   ];
 
   const handleOpenQuote = (serviceTitle?: string) => {
@@ -594,8 +523,8 @@ export default function BusinessProfileClient({
           {[
             { id: "overview", label: "Overview", icon: Info },
             { id: "services", label: `Services (${services.length})`, icon: Wrench },
-            { id: "products", label: `Products & Menu (${products.length})`, icon: Utensils },
-            { id: "offers", label: `Deals & Offers (${offers.length})`, icon: Ticket },
+            ...(products.length > 0 ? [{ id: "products", label: `Products & Menu (${products.length})`, icon: Utensils }] : []),
+            ...(offers.length > 0 ? [{ id: "offers", label: `Deals & Offers (${offers.length})`, icon: Ticket }] : []),
             { id: "photos", label: `Photos (${gallery.length})`, icon: Eye },
             { id: "reviews", label: `Reviews (${reviewCount})`, icon: Star },
             { id: "location", label: "Map & Location", icon: MapPin },
@@ -844,9 +773,15 @@ export default function BusinessProfileClient({
                             {srv.name}
                           </h3>
                           <div className="text-right shrink-0">
-                            <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
-                              ₹{srv.price_from || srv.price || 499}
-                            </span>
+                            {srv.price_from || srv.price ? (
+                              <span className="text-sm font-black text-emerald-600 dark:text-emerald-400">
+                                ₹{srv.price_from || srv.price}
+                              </span>
+                            ) : (
+                              <span className="text-xs font-bold text-orange-600 dark:text-orange-400">
+                                Inquire for Price
+                              </span>
+                            )}
                             {srv.price_to && (
                               <span className="text-[10px] text-slate-400 block">- ₹{srv.price_to}</span>
                             )}

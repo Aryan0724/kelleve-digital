@@ -156,12 +156,12 @@ class BusinessController extends Controller
         $business->update($validated);
 
         if (is_array($galleryData)) {
-            $business->media()->delete();
+            $business->gallery()->delete();
             foreach ($galleryData as $index => $imgUrl) {
                 if (!empty($imgUrl)) {
-                    $business->media()->create([
-                        'url' => $imgUrl,
-                        'is_cover' => $index === 0,
+                    $business->gallery()->create([
+                        'image_url' => $imgUrl,
+                        'caption' => null,
                         'sort_order' => $index,
                     ]);
                 }
