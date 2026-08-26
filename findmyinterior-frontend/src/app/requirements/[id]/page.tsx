@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 import { toast } from "react-toastify";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
@@ -526,52 +527,83 @@ export default function RequirementDetail() {
               )}
 
               {/* CARD 2: BID FOR THIS PROJECT (ORANGE THEME) */}
-              <div className="bg-[#fff7ed] dark:bg-orange-950/20 border-2 border-[#fed7aa] dark:border-orange-900/50 rounded-2xl p-5 shadow-sm relative overflow-hidden transition-all hover:shadow-md">
-                <div className="flex justify-between items-start mb-3">
-                  <div>
-                    <h2 className="text-[#c2410c] dark:text-orange-400 font-black text-lg tracking-tight">BID FOR THIS PROJECT</h2>
-                    <p className="text-slate-600 dark:text-slate-400 text-xs font-medium">Send Quote & Get the Project</p>
+              {requirement?.is_early_access_locked ? (
+                <div className="bg-gradient-to-br from-amber-500/10 via-orange-500/10 to-amber-600/10 border-2 border-amber-400 dark:border-amber-600/60 rounded-2xl p-5 shadow-md relative overflow-hidden">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <div className="inline-flex items-center gap-1 bg-amber-500 text-slate-950 text-[10px] font-black uppercase px-2 py-0.5 rounded-md tracking-wider mb-1">
+                        <Sparkles className="w-3 h-3" /> PREMIUM EXCLUSIVE
+                      </div>
+                      <h2 className="text-slate-900 dark:text-white font-black text-lg tracking-tight">EARLY LEAD ACCESS</h2>
+                      <p className="text-slate-600 dark:text-slate-400 text-xs font-medium">Reserved for QuickStart & Pro Members</p>
+                    </div>
+                    <div className="w-11 h-11 bg-amber-500 rounded-full flex items-center justify-center shadow-sm shrink-0">
+                      <Lock className="w-5 h-5 text-slate-950" />
+                    </div>
                   </div>
-                  <div className="w-11 h-11 bg-[#ff6b00] rounded-full flex items-center justify-center shadow-sm shrink-0">
-                    <Gavel className="w-5 h-5 text-white" />
+
+                  <div className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-xl p-4 border border-amber-200 dark:border-amber-800 text-center space-y-3">
+                    <div className="text-xs font-bold text-amber-700 dark:text-amber-400 flex items-center justify-center gap-1.5">
+                      <Clock className="w-4 h-4 text-amber-500 animate-spin" /> Unlocks for Free Members in ~{requirement.early_access_remaining_minutes} min
+                    </div>
+                    <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
+                      Upgrade to a paid membership to bid immediately and get ahead of your competition.
+                    </p>
+                    <Link href="/dashboard?tab=subscription" className="block w-full">
+                      <Button className="w-full bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white font-black text-xs h-11 rounded-xl shadow-md uppercase tracking-wider">
+                        👑 Upgrade for Instant Access
+                      </Button>
+                    </Link>
                   </div>
                 </div>
-
-                {requirement?.has_bid ? (
-                  <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-orange-200 dark:border-orange-900/60 shadow-sm text-center space-y-2.5">
-                    <div className="text-sm font-bold text-green-700 dark:text-green-400 flex items-center justify-center gap-1.5">
-                      <CheckCircle2 className="w-4 h-4" /> Bid Submitted Successfully!
+              ) : (
+                <div className="bg-[#fff7ed] dark:bg-orange-950/20 border-2 border-[#fed7aa] dark:border-orange-900/50 rounded-2xl p-5 shadow-sm relative overflow-hidden transition-all hover:shadow-md">
+                  <div className="flex justify-between items-start mb-3">
+                    <div>
+                      <h2 className="text-[#c2410c] dark:text-orange-400 font-black text-lg tracking-tight">BID FOR THIS PROJECT</h2>
+                      <p className="text-slate-600 dark:text-slate-400 text-xs font-medium">Send Quote & Get the Project</p>
                     </div>
-                    <p className="text-xs text-slate-500">
-                      Your quotation has been sent to the client. You will be notified when they review it.
-                    </p>
-                    <Button disabled className="w-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold h-10 text-xs rounded-xl">
-                      <CheckCircle className="w-3.5 h-3.5 mr-1" /> BID SENT
-                    </Button>
+                    <div className="w-11 h-11 bg-[#ff6b00] rounded-full flex items-center justify-center shadow-sm shrink-0">
+                      <Gavel className="w-5 h-5 text-white" />
+                    </div>
                   </div>
-                ) : (
-                  <>
-                    <div className="my-3">
-                      <div className="flex items-baseline gap-1">
-                        <span className="text-3xl md:text-4xl font-black text-[#ff6b00] dark:text-orange-500">
-                          {displayBidPrice}
-                        </span>
-                        <span className="text-slate-600 dark:text-slate-400 font-bold text-sm">/bid</span>
-                      </div>
-                      <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                        Place your quote, showcase your profile & win this project.
-                      </p>
-                    </div>
 
-                    <Button 
-                      onClick={() => setShowBidForm(true)}
-                      className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-black text-sm h-11 rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-orange-500/20 active:scale-95 transition-all uppercase tracking-wide"
-                    >
-                      <Upload className="w-4 h-4" /> PLACE BID NOW
-                    </Button>
-                  </>
-                )}
-              </div>
+                  {requirement?.has_bid ? (
+                    <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-orange-200 dark:border-orange-900/60 shadow-sm text-center space-y-2.5">
+                      <div className="text-sm font-bold text-green-700 dark:text-green-400 flex items-center justify-center gap-1.5">
+                        <CheckCircle2 className="w-4 h-4" /> Bid Submitted Successfully!
+                      </div>
+                      <p className="text-xs text-slate-500">
+                        Your quotation has been sent to the client. You will be notified when they review it.
+                      </p>
+                      <Button disabled className="w-full bg-slate-100 dark:bg-slate-800 text-slate-500 font-bold h-10 text-xs rounded-xl">
+                        <CheckCircle className="w-3.5 h-3.5 mr-1" /> BID SENT
+                      </Button>
+                    </div>
+                  ) : (
+                    <>
+                      <div className="my-3">
+                        <div className="flex items-baseline gap-1">
+                          <span className="text-3xl md:text-4xl font-black text-[#ff6b00] dark:text-orange-500">
+                            {displayBidPrice}
+                          </span>
+                          <span className="text-slate-600 dark:text-slate-400 font-bold text-sm">/bid</span>
+                        </div>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+                          Place your quote, showcase your profile & win this project.
+                        </p>
+                      </div>
+
+                      <Button 
+                        onClick={() => setShowBidForm(true)}
+                        className="w-full bg-[#ff6b00] hover:bg-[#ea580c] text-white font-black text-sm h-11 rounded-xl flex items-center justify-center gap-2 shadow-md hover:shadow-orange-500/20 active:scale-95 transition-all uppercase tracking-wide"
+                      >
+                        <Upload className="w-4 h-4" /> PLACE BID NOW
+                      </Button>
+                    </>
+                  )}
+                </div>
+              )}
 
               {/* Received Bids Matrix for Owner / Admin */}
               {isOwner && bids.length > 0 && (

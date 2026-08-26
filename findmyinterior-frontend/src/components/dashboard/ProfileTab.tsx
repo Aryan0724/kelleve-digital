@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import {
   Camera, CheckCircle2, Loader2, ShieldCheck, Star, Upload,
-  User, Building2, MapPin, Phone, Globe, Briefcase, Users, Hash
+  User, Building2, MapPin, Phone, Globe, Briefcase, Users, Hash, ExternalLink
 } from "lucide-react";
 import api from "@/lib/api";
 import { useAuthStore } from "@/lib/store/useAuthStore";
@@ -292,6 +292,7 @@ export function ProfileTab() {
           team_size:        l.team_size          ?? "",
           gst_number:       l.gst_number         ?? "",
           pan_number:       l.pan_number         ?? "",
+          custom_slug:      l.slug               ?? "",
           category_id:      l.category?.id       ?? "",
         });
       }
@@ -393,6 +394,57 @@ export function ProfileTab() {
           </div>
         </CardContent>
       </Card>
+
+      {/* ─── CUSTOM PROFILE URL MANAGER (PRO & ELITE) ───────────── */}
+      {listing && (
+        <Card className="border-2 border-orange-200 dark:border-orange-950/60 bg-gradient-to-br from-orange-50/40 via-white to-amber-50/30 dark:from-slate-900 dark:to-slate-900 shadow-sm overflow-hidden">
+          <CardHeader className="pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <CardTitle className="text-base font-black flex items-center gap-2 text-slate-900 dark:text-white">
+                <Globe className="w-4 h-4 text-orange-600" />
+                Custom Profile URL Handle
+              </CardTitle>
+              {listing.is_premium || (user as any)?.subscription || (user as any)?.active_subscription ? (
+                <span className="text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-orange-100 text-orange-700 dark:bg-orange-950/60 dark:text-orange-400 border border-orange-200">
+                  ✨ PRO FEATURE ACTIVE
+                </span>
+              ) : (
+                <span className="text-[11px] font-extrabold uppercase px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-600 border border-slate-200">
+                  🔒 PRO & ELITE EXCLUSIVE
+                </span>
+              )}
+            </div>
+            <CardDescription className="text-xs">
+              Personalize your public profile address so clients can easily find and share your brand.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+              <div className="flex-1 flex items-center rounded-xl border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 px-3 py-2 text-xs font-mono">
+                <span className="text-slate-400 select-none hidden sm:inline">https://findmyinterior.com/professionals/</span>
+                <input
+                  name="custom_slug"
+                  value={formData.custom_slug || ""}
+                  onChange={handleChange}
+                  placeholder="your-custom-handle"
+                  className="flex-1 bg-transparent font-bold text-slate-900 dark:text-white outline-none"
+                />
+              </div>
+              <a
+                href={`/professionals/${listing.slug}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 rounded-xl transition-colors shrink-0"
+              >
+                <ExternalLink className="w-3.5 h-3.5 mr-1" /> View Live Profile
+              </a>
+            </div>
+            <p className="text-[11px] text-slate-500">
+              Only letters, numbers, and hyphens (e.g. <span className="font-mono text-slate-700 dark:text-slate-300">patna-luxury-interiors</span>). Must be unique.
+            </p>
+          </CardContent>
+        </Card>
+      )}
 
       {/* ─── Business Profile Form ─────────────────────────────── */}
       <Card>

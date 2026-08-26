@@ -26,6 +26,12 @@ class RequirementResource extends JsonResource
             $hasBid
         );
 
+        $isPremiumUser = $user && ($user->isAdmin() || $user->hasPremiumSubscription());
+        $earlyAccessHours = 2;
+        $unlocksAt = $this->created_at ? \Carbon\Carbon::parse($this->created_at)->addHours($earlyAccessHours) : null;
+        $isEarlyAccessLocked = !$isPremiumUser && $unlocksAt && $unlocksAt->isFuture() && ($user ? $user->id !== $this->user_id : true);
+        $remainingMinutes = $isEarlyAccessLocked ? (int) max(0, now()->diffInMinutes($unlocksAt, false)) : 0;
+
         return [
             'id'             => $this->id,
             'user_id'        => $this->user_id,
@@ -45,6 +51,10 @@ class RequirementResource extends JsonResource
             'views_count'    => $this->views_count ?? null,
             'image'          => $this->image,
             'images'         => RequirementImageResource::collection($this->whenLoaded('images')),
+            // Early Lead Access status
+            'is_early_access_locked'         => $isEarlyAccessLocked,
+            'early_access_unlocks_at'        => $isEarlyAccessLocked && $unlocksAt ? $unlocksAt->toIso8601String() : null,
+            'early_access_remaining_minutes' => $remainingMinutes,
             // Contact details — only for premium subscribers or admin
             'name'           => $canSeeContact ? ($this->user->name ?? $this->name) : '***',
             'phone'          => $canSeeContact ? ($this->user->phone ?? $this->phone) : substr($this->user->phone ?? $this->phone, 0, 2) . '********',

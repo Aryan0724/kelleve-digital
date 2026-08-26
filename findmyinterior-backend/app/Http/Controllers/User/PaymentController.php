@@ -259,19 +259,21 @@ class PaymentController extends Controller
                 'expires_at'           => $expiresAt,
             ]);
 
-            // Sync is_premium flag to the entity for directory queries
+            // Sync is_premium flag and verification badges to the entity
             $user = $payment->user;
             
             $updateData = [
                 'is_premium' => true,
             ];
             
-            // Sync is_featured and is_verified flags based on subscription plan promises
-            if ($plan->is_featured_listing) {
+            // Sync is_featured and is_gold_verified based on plan benefits
+            if ($plan->is_featured_listing || $plan->slug === 'elitebusiness') {
                 $updateData['is_featured'] = true;
             }
             if ($plan->price_yearly > 0 || $plan->price_monthly > 0) {
                 $updateData['is_verified'] = true;
+                $updateData['is_gold_verified'] = true;
+                $updateData['verification_level'] = 'verified_business';
             }
 
             if ($user->hasRole('builder') && $user->builder) {
@@ -280,13 +282,41 @@ class PaymentController extends Controller
                 $user->supplier->update($updateData);
             } elseif ($user->hasRole('worker') && $user->worker) {
                 $user->worker->update($updateData);
-            } elseif ($user->hasRole('business') && $user->listing) {
-                $user->listing->update($updateData);
+            }
+            
+            // Also update all user listings
+            \App\Models\Listing::where('user_id', $user->id)->update([
+                'is_premium'  => true,
+                'is_verified' => true,
+                'is_featured' => ($plan->is_featured_listing || $plan->slug === 'elitebusiness'),
+            ]);
+
+            // Create official in-app welcome conversation & message from FindMyInterior Concierge
+            try {
+                // Find or pick an admin user as sender
+                $adminUser = \App\Models\User::where('role', 'admin')->first() ?: $user;
+                
+                $conversation = \App\Models\Conversation::firstOrCreate([
+                    'customer_id' => $adminUser->id,
+                    'vendor_id'   => $user->id,
+                ], [
+                    'status'        => 'active',
+                    'project_stage' => 'lead',
+                    'last_message_at' => now(),
+                ]);
+
+                \App\Models\Message::create([
+                    'conversation_id' => $conversation->id,
+                    'sender_id'       => $adminUser->id,
+                    'message'         => "🎉 Welcome to FindMyInterior {$plan->name}!\n\nThank you for choosing FindMyInterior to scale your business. Your {$plan->name} membership is now active, unlocking:\n• " . implode("\n• ", $plan->features ?? ['Elite Verified Badge', 'Priority Lead Access', 'Increased Portfolio Limits']) . "\n\nWe are here to support your growth. Reach out to our dedicated concierge team anytime!",
+                ]);
+            } catch (\Exception $e) {
+                Log::warning("Could not create subscription welcome message: " . $e->getMessage());
             }
 
-            // Send notification
+            // Send in-app notification
             $user->notify(new \App\Notifications\SystemNotification(
-                "Your {$plan->name} subscription is now active! Enjoy your premium benefits.",
+                "🎉 Congratulations! Your {$plan->name} subscription is active. Enjoy your Elite badge & early lead access.",
                 'subscription_success',
                 'high'
             ));

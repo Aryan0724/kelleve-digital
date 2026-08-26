@@ -318,6 +318,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('users/{id}/wallet/adjust', [\App\Http\Controllers\Admin\AdminWalletController::class, 'adjustBalance']);
         
         Route::get('listings', [AdminController::class, 'listings']);
+        Route::get('subscriptions', [AdminController::class, 'subscriptions']);
         Route::patch('listings/{id}/verify', [AdminController::class, 'verifyListing']);
         Route::patch('listings/{id}/reject', [AdminController::class, 'rejectListing']);
         Route::patch('listings/{id}/feature', [AdminController::class, 'featureListing']);

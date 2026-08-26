@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import ReviewSection from "@/components/reviews/ReviewSection";
 import { Badge } from "@/components/ui/badge";
 import { MapPin, Star, ShieldCheck, Phone, Mail, Globe, CheckCircle2 } from "lucide-react";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -101,9 +102,16 @@ export default async function ProfessionalProfilePage({ params }: { params: Prom
                     <div className="flex flex-wrap items-center gap-2 mb-1">
                       <h1 className="text-3xl md:text-4xl font-bold text-slate-900">{listing.title}</h1>
                       <BookmarkButton id={listing.id} type="Listing" />
-                      {listing.verification_level === 'elite_professional' && <Badge className="bg-indigo-600 hover:bg-indigo-700 ml-2" title="Elite Professional">Elite</Badge>}
-                      {listing.verification_level === 'trusted_professional' && <Badge className="bg-blue-600 hover:bg-blue-700 ml-2" title="Trusted Professional">Trusted</Badge>}
-                      {(listing.verification_level === 'verified_business' || listing.is_verified) && <span title="Verified Business" className="flex-shrink-0 ml-2"><ShieldCheck className="h-8 w-8 text-green-500" /></span>}
+                      
+                      {/* Shiny Verified Badges */}
+                      {(listing.badge_type || listing.is_gold_verified || listing.is_verified) && (
+                        <VerifiedBadge 
+                          type={listing.badge_type || (listing.is_gold_verified ? "gold" : "verified")} 
+                          planName={listing.plan_name}
+                          size="md"
+                        />
+                      )}
+                      
                       {listing.is_premium && <Badge className="bg-orange-500 hover:bg-orange-600 ml-2" title="Premium Professional">Premium</Badge>}
                       {listing.response_time && (listing.response_time.toLowerCase().includes('hour') || listing.response_time.toLowerCase().includes('minutes')) && (
                         <Badge className="bg-emerald-500 hover:bg-emerald-600 ml-2 text-white" title="Fast Responder">⚡ Fast Responder</Badge>

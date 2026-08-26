@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star, TrendingUp } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star, TrendingUp, Crown } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
 import { WalletTab } from "@/components/dashboard/WalletTab";
@@ -145,6 +145,39 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
           </div>
 
           <div id="dashboard-content-area" className="lg:col-span-3 space-y-6">
+
+            {/* Celebratory Premium Status Banner */}
+            {data?.user?.subscription && !data.user.subscription.toLowerCase().includes("free") && (
+              <div className="bg-gradient-to-r from-[#0b1b36] via-slate-900 to-[#0b1b36] text-white rounded-2xl p-5 shadow-lg border border-amber-500/40 relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-amber-600 flex items-center justify-center text-slate-950 shadow-md shrink-0">
+                    <Crown className="w-7 h-7" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-black uppercase tracking-widest px-2 py-0.5 rounded bg-amber-400 text-slate-950">
+                        MEMBERSHIP ACTIVE
+                      </span>
+                      <span className="text-xs text-amber-300 font-semibold">✨ Gold Verified & Early Lead Access</span>
+                    </div>
+                    <h2 className="text-lg md:text-xl font-black tracking-tight text-white mt-1">
+                      {data.user.subscription.toUpperCase()}
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 w-full md:w-auto">
+                  <Button
+                    onClick={() => setActiveTab("subscription")}
+                    size="sm"
+                    variant="outline"
+                    className="border-amber-400 text-amber-300 hover:bg-amber-400 hover:text-slate-950 text-xs font-bold rounded-xl h-9 w-full md:w-auto"
+                  >
+                    Manage Plan
+                  </Button>
+                </div>
+              </div>
+            )}
 
             {activeTab === 'bookmarks' && (
               <SavedBookmarksTab />

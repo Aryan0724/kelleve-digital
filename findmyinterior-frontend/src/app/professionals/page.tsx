@@ -12,6 +12,7 @@ import { ProfessionalTypeSwitcher } from "@/components/professionals/Professiona
 import { AdSlot } from "@/components/ads/AdSlot";
 import { BookmarkButton } from "@/components/common/BookmarkButton";
 import { ContactProfessionalButton } from "@/components/professionals/ContactProfessionalButton";
+import { VerifiedBadge } from "@/components/ui/VerifiedBadge";
 import React from "react";
 
 export const metadata: Metadata = {
@@ -194,10 +195,17 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                       <div className="flex-1 p-6 flex flex-col justify-between">
                         <div>
                           <div className="flex justify-between items-start mb-1">
-                            <div className="flex items-center gap-2">
+                            <div className="flex flex-wrap items-center gap-2">
                               <h3 className="font-bold text-xl text-slate-900 dark:text-slate-100 group-hover:text-orange-600 transition-colors">
                                 {listing.title}
                               </h3>
+                              {(listing.badge_type || listing.is_gold_verified || listing.is_verified) && (
+                                <VerifiedBadge 
+                                  type={listing.badge_type || (listing.is_gold_verified ? "gold" : "verified")} 
+                                  planName={listing.plan_name}
+                                  size="sm"
+                                />
+                              )}
                             </div>
                             <div className="z-10">
                               <BookmarkButton id={listing.id} type="Listing" />

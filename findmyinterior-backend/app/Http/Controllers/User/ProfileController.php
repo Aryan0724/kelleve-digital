@@ -308,9 +308,34 @@ class ProfileController extends Controller
             'team_size'        => ['sometimes', 'nullable', 'integer'],
             'gst_number'       => ['sometimes', 'nullable', 'string', 'regex:/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/i'],
             'pan_number'       => ['sometimes', 'nullable', 'string', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
+            'custom_slug'      => ['sometimes', 'nullable', 'string', 'min:3', 'max:60', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/i'],
         ]);
 
-        $plan = $request->user()->activeSubscription?->plan;
+        $user = $request->user();
+        $plan = $user->activeSubscription?->plan;
+        $isProOrElite = $user->isAdmin() || in_array($plan?->slug, ['probusiness', 'elitebusiness']);
+
+        if (!empty($data['custom_slug'])) {
+            if (!$isProOrElite) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Custom Profile URLs are exclusively available for ProBusiness and EliteBusiness subscribers. Please upgrade your plan.',
+                ], 403);
+            }
+
+            $sanitizedSlug = \Illuminate\Support\Str::slug($data['custom_slug']);
+            // Check uniqueness
+            $exists = Listing::where('slug', $sanitizedSlug)->where('id', '!=', $listing->id)->exists();
+            if ($exists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "The URL handle '{$sanitizedSlug}' is already claimed. Please pick another unique handle.",
+                ], 422);
+            }
+            $data['slug'] = $sanitizedSlug;
+            unset($data['custom_slug']);
+        }
+
         if (!$plan || !$plan->can_add_website) {
             unset($data['website']);
             $data['website'] = null; // force null if they previously had it but downgraded

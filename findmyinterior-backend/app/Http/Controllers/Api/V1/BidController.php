@@ -69,6 +69,22 @@ class BidController extends Controller
         $validated['requirement_type'] = $morphType; // override for DB
         $validated['requirement_type_class'] = $modelClass;
 
+        // Early Lead Access exclusivity check (first 2 hours for premium members)
+        $targetRequirement = $modelClass::find($validated['requirement_id']);
+        if ($targetRequirement) {
+            $isPremium = $user->isAdmin() || $user->hasPremiumSubscription();
+            $earlyAccessHours = 2;
+            $unlocksAt = $targetRequirement->created_at ? \Carbon\Carbon::parse($targetRequirement->created_at)->addHours($earlyAccessHours) : null;
+            if (!$isPremium && $unlocksAt && $unlocksAt->isFuture() && $targetRequirement->user_id !== $user->id) {
+                $remainingMin = (int) max(1, now()->diffInMinutes($unlocksAt, false));
+                return response()->json([
+                    'success' => false,
+                    'code'    => 'EARLY_ACCESS_RESTRICTED',
+                    'message' => "Early Lead Access is exclusively reserved for Premium members for the first 2 hours. This lead unlocks for free members in {$remainingMin} minutes. Upgrade to QuickStart or Pro to bid immediately.",
+                ], 403);
+            }
+        }
+
         // Attempt to auto-fill business details from the user's listing
         $listing = \App\Models\Listing::where('user_id', $request->user()->id)
             ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))

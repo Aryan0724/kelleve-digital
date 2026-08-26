@@ -700,6 +700,29 @@ class AdminController extends Controller
 
     // ─── God Mode Enhancements ───────────────────────────────────────────────
 
+    public function subscriptions(Request $request): JsonResponse
+    {
+        $query = UserSubscription::with(['user', 'plan', 'payment'])
+            ->orderBy('id', 'desc');
+
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+
+        $subscriptions = $query->paginate($request->get('per_page', 20));
+
+        return response()->json([
+            'success' => true,
+            'data'    => $subscriptions->items(),
+            'meta'    => [
+                'current_page' => $subscriptions->currentPage(),
+                'per_page'     => $subscriptions->perPage(),
+                'total'        => $subscriptions->total(),
+                'last_page'    => $subscriptions->lastPage(),
+            ],
+        ]);
+    }
+
     public function updateSubscriptionPlan(Request $request, int $id): JsonResponse
     {
         $data = $request->validate([
