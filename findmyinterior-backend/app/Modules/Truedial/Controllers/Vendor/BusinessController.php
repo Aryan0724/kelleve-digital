@@ -21,8 +21,7 @@ class BusinessController extends Controller
 
     public function myBusiness()
     {
-        $business = Listing::forCurrentTenant()
-            ->where('user_id', Auth::id())
+        $business = Listing::where('user_id', Auth::id())
             ->with(['category', 'city', 'gallery', 'listingProducts.media', 'listingServices.media'])
             ->first();
 
@@ -35,11 +34,9 @@ class BusinessController extends Controller
 
     public function store(Request $request)
     {
-        $tenantId = $this->tenantContext->getTenantId();
-        
-        $existing = Listing::forCurrentTenant()->where('user_id', Auth::id())->first();
+        $existing = Listing::where('user_id', Auth::id())->first();
         if ($existing) {
-            return $this->error('You already have a business listing', 400);
+            return $this->update($request, $existing->id);
         }
 
         // Default missing required fields for TrueDial

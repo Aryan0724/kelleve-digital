@@ -28,7 +28,6 @@ class BusinessPageService
                 'listingProducts.media',
                 'listingServices.media',
             ])->where('slug', $slug)
-              ->where('status', 'active')
               ->firstOrFail();
 
             return $this->assembler->assemble($business)->toArray();
