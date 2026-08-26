@@ -195,8 +195,8 @@ export default function BusinessProfileClient({
     vendorGallery = [vendorCover, ...vendorGallery.filter((img: string) => img !== vendorCover)];
   }
 
-  const gallery = vendorGallery.length > 0 
-    ? vendorGallery 
+  const gallery = vendorGallery.length > 0 ? vendorGallery : (vendorCover ? [vendorCover] : []);
+
   // Real vendor services mapping
   const rawServices = business?.catalog?.services || basicInfo.listing_services || [];
   let services: any[] = [];
