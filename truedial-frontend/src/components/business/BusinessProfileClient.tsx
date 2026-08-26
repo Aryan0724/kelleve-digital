@@ -47,19 +47,22 @@ export default function BusinessProfileClient({
   const [showAllTimings, setShowAllTimings] = useState(false);
 
   // Extract info safely with rich fallbacks
+  // Extract info safely with realistic data mappings
   const basicInfo = business?.basicInfo || business || {};
   const slug = basicInfo.slug || "business";
   const title = basicInfo.title || "Premier Verified Business";
-  const category = basicInfo.category?.name || basicInfo.category || "Professional Services";
+  const category = basicInfo.category?.name || basicInfo.category_name || (typeof basicInfo.category === 'string' ? basicInfo.category : '') || basicInfo.professional_type?.replace(/_/g, ' ') || "Verified Business";
   const city = basicInfo.city || "Delhi NCR";
   const address = basicInfo.address || `${city}, India`;
   const phone = basicInfo.phone || "+91 98765 43210";
   const whatsapp = basicInfo.whatsapp || phone;
   const website = basicInfo.website || (basicInfo.slug ? `https://${basicInfo.slug}.truedial.in` : "");
-  const rating = Number(business?.metrics?.rating || basicInfo.avg_rating || 4.8);
-  const reviewCount = Number(business?.metrics?.reviews_count || basicInfo.review_count || 128);
+  
+  // Real rating stats without hardcoding 4.8 / 128 reviews
+  const rating = Number(business?.metrics?.rating ?? basicInfo.avg_rating ?? 0);
+  const reviewCount = Number(business?.metrics?.reviews_count ?? basicInfo.review_count ?? (Array.isArray(initialReviews) ? initialReviews.length : 0));
   const isVerified = basicInfo.verified ?? basicInfo.is_verified ?? true;
-  const isPremium = basicInfo.is_premium ?? true;
+  const isPremium = basicInfo.is_premium ?? (basicInfo.subscription_plan === 'pro' || basicInfo.subscription_plan === 'enterprise');
 
   // Check saved state from localStorage
   useEffect(() => {
@@ -127,19 +130,63 @@ export default function BusinessProfileClient({
     window.open(mapUrl, "_blank", "noopener,noreferrer");
   };
 
-  // Fallback Galleries tailored by category
-  const defaultImages = [
-    "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1000&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1000&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1559339352-11d035aa65de?q=80&w=1000&auto=format&fit=crop",
+  // Category-specific high-quality imagery fallbacks (used ONLY when business has NO uploaded photos)
+  const catLower = category.toLowerCase();
+  const isGym = catLower.includes("gym") || catLower.includes("fit") || catLower.includes("crossfit") || catLower.includes("workout");
+  const isInterior = catLower.includes("interior") || catLower.includes("architect") || catLower.includes("decor") || catLower.includes("design");
+  const isHealthcare = catLower.includes("health") || catLower.includes("clinic") || catLower.includes("hospital") || catLower.includes("doctor");
+  const isSalon = catLower.includes("salon") || catLower.includes("beauty") || catLower.includes("spa");
+  const isFood = catLower.includes("rest") || catLower.includes("cafe") || catLower.includes("dine") || catLower.includes("food");
+
+  let defaultImages = [
     "https://images.unsplash.com/photo-1497366216548-37526070297c?q=80&w=1000&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1497215728101-856f4ea42174?q=80&w=1000&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?q=80&w=1000&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1499750310107-5fef28a66643?q=80&w=1000&auto=format&fit=crop",
   ];
+
+  if (isGym) {
+    defaultImages = [
+      "https://images.unsplash.com/photo-1534438327276-14e5300c3a48?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1581009146145-b5ef050c2e1e?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1540497077202-7c8a3999166f?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1517838277536-f5f99be501cd?q=80&w=1000&auto=format&fit=crop",
+    ];
+  } else if (isInterior) {
+    defaultImages = [
+      "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600210492486-724fe5c67fb0?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?q=80&w=1000&auto=format&fit=crop",
+    ];
+  } else if (isHealthcare) {
+    defaultImages = [
+      "https://images.unsplash.com/photo-1586773860418-d37222d8fce3?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1629909613654-28e377c37b09?q=80&w=1000&auto=format&fit=crop",
+    ];
+  } else if (isSalon) {
+    defaultImages = [
+      "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?q=80&w=1000&auto=format&fit=crop",
+    ];
+  } else if (isFood) {
+    defaultImages = [
+      "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=1000&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=1000&auto=format&fit=crop",
+    ];
+  }
+
+  // If vendor has an uploaded cover_image, place it first
+  const vendorCover = basicInfo.cover_image 
+    ? (basicInfo.cover_image.startsWith("http") ? basicInfo.cover_image : `https://findmyinterior.com${basicInfo.cover_image}`) 
+    : null;
 
   const rawGallery = business?.media && business.media.length > 0 
     ? business.media.map((m: any) => m.url || m)
-    : (basicInfo.gallery && basicInfo.gallery.length > 0 ? basicInfo.gallery.map((g: any) => g.url || g) : defaultImages);
+    : (basicInfo.gallery && basicInfo.gallery.length > 0 ? basicInfo.gallery.map((g: any) => g.url || g) : (vendorCover ? [vendorCover, ...defaultImages] : defaultImages));
 
   const gallery = rawGallery.length >= 3 ? rawGallery : [...rawGallery, ...defaultImages].slice(0, 6);
 
@@ -315,18 +362,37 @@ export default function BusinessProfileClient({
               </div>
 
               {/* Rating & Stats Row */}
-              <div className="flex flex-wrap items-center gap-4 py-1">
-                <div className="flex items-center gap-1.5 bg-emerald-500 text-white px-2.5 py-1 rounded-xl font-black text-sm shadow-sm">
-                  <span>{rating.toFixed(1)}</span>
-                  <Star className="w-3.5 h-3.5 fill-white" />
-                </div>
+              <div className="flex flex-wrap items-center gap-3 py-1">
+                {rating > 0 ? (
+                  <div className="flex items-center gap-1.5 bg-emerald-500 text-white px-2.5 py-1 rounded-xl font-black text-sm shadow-sm">
+                    <span>{rating.toFixed(1)}</span>
+                    <Star className="w-3.5 h-3.5 fill-white" />
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-1.5 bg-blue-500 text-white px-2.5 py-1 rounded-xl font-black text-xs shadow-sm uppercase tracking-wider">
+                    <span>New</span>
+                    <Sparkles className="w-3.5 h-3.5 fill-white" />
+                  </div>
+                )}
+
                 <div className="text-xs font-bold text-slate-600 dark:text-slate-300">
-                  <span className="text-slate-900 dark:text-white font-extrabold">{reviewCount}</span> Verified Ratings & Reviews
+                  {reviewCount > 0 ? (
+                    <>
+                      <span className="text-slate-900 dark:text-white font-extrabold">{reviewCount}</span> Verified {reviewCount === 1 ? "Rating & Review" : "Ratings & Reviews"}
+                    </>
+                  ) : (
+                    <span className="text-slate-500 font-medium">No reviews yet • Be the first to review</span>
+                  )}
                 </div>
-                <span className="text-slate-300 dark:text-slate-700">•</span>
-                <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
-                  <ThumbsUp className="w-3.5 h-3.5" /> 96% Highly Recommended
-                </div>
+
+                {reviewCount > 0 && (
+                  <>
+                    <span className="text-slate-300 dark:text-slate-700">•</span>
+                    <div className="flex items-center gap-1 text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                      <ThumbsUp className="w-3.5 h-3.5" /> {Math.min(100, Math.max(80, Math.round((rating / 5) * 100)))}% Highly Recommended
+                    </div>
+                  </>
+                )}
               </div>
 
               {/* Location & Status */}

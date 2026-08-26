@@ -121,25 +121,39 @@ export default async function Home() {
           
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {[
-              { name: "Sharma Packers & Movers", rating: "4.9", reviews: 128, location: "Andheri West, Mumbai", category: "Logistics" },
-              { name: "Apollo Diagnostics", rating: "4.8", reviews: 342, location: "Koramangala, Bangalore", category: "Healthcare" },
-              { name: "GreenLeaf Pest Control", rating: "4.7", reviews: 89, location: "Connaught Place, Delhi", category: "Home Services" },
-              { name: "Vivid Interior Designers", rating: "5.0", reviews: 56, location: "Banjara Hills, Hyderabad", category: "Interiors" },
+              { name: "Sharma Packers & Movers", slug: "sharma-packers-and-movers", rating: "4.9", reviews: 128, location: "Andheri West, Mumbai", category: "Logistics", phone: "+91 98765 43210" },
+              { name: "Apollo Diagnostics", slug: "apollo-diagnostics-koramangala", rating: "4.8", reviews: 342, location: "Koramangala, Bangalore", category: "Healthcare", phone: "+91 98765 43211" },
+              { name: "GreenLeaf Pest Control", slug: "greenleaf-pest-control-delhi", rating: "4.7", reviews: 89, location: "Connaught Place, Delhi", category: "Home Services", phone: "+91 98765 43212" },
+              { name: "Vivid Interior Designers", slug: "vivid-interior-designers-hyderabad", rating: "5.0", reviews: 56, location: "Banjara Hills, Hyderabad", category: "Interiors", phone: "+91 98765 43213" },
             ].map((biz, i) => (
-              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md border border-slate-100 dark:border-slate-700 transition-shadow">
-                <div className="flex justify-between items-start mb-3">
-                  <div className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-black text-xl rounded-xl flex items-center justify-center">
-                    {biz.name.charAt(0)}
+              <div key={i} className="bg-white dark:bg-slate-800 rounded-2xl p-5 shadow-sm hover:shadow-md border border-slate-100 dark:border-slate-700 transition-all flex flex-col justify-between group">
+                <div>
+                  <div className="flex justify-between items-start mb-3">
+                    <Link href={`/businesses/${biz.slug}`} className="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 font-black text-xl rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+                      {biz.name.charAt(0)}
+                    </Link>
+                    <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-2 py-1 rounded text-xs font-bold">
+                      {biz.rating} <Star className="w-3 h-3 fill-current" />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-1 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 px-2 py-1 rounded text-xs font-bold">
-                    {biz.rating} <Star className="w-3 h-3 fill-current" />
-                  </div>
+                  <Link href={`/businesses/${biz.slug}`}>
+                    <h3 className="font-bold text-[#0F172A] dark:text-white text-[16px] leading-tight mb-1 truncate hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                      {biz.name}
+                    </h3>
+                  </Link>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mb-4">{biz.category} • {biz.location}</p>
                 </div>
-                <h3 className="font-bold text-[#0F172A] dark:text-white text-[16px] leading-tight mb-1 truncate">{biz.name}</h3>
-                <p className="text-xs text-slate-500 mb-4">{biz.category} • {biz.location}</p>
-                <div className="flex gap-2">
-                  <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 rounded-lg text-xs transition">Call Now</button>
-                  <button className="flex-1 bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-700 dark:text-blue-400 dark:hover:bg-slate-600 font-bold py-2 rounded-lg text-xs transition">Get Quote</button>
+                <div className="flex gap-2 pt-2 border-t border-slate-100 dark:border-slate-700/50">
+                  <a href={`tel:${biz.phone.replace(/[^0-9+]/g, '')}`} className="flex-1">
+                    <button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs transition shadow-sm hover:shadow flex items-center justify-center gap-1">
+                      Call Now
+                    </button>
+                  </a>
+                  <Link href={`/businesses/${biz.slug}`} className="flex-1">
+                    <button className="w-full bg-blue-50 hover:bg-blue-100 text-blue-700 dark:bg-slate-700 dark:text-blue-300 dark:hover:bg-slate-600 font-bold py-2.5 rounded-xl text-xs transition flex items-center justify-center gap-1">
+                      Get Quote
+                    </button>
+                  </Link>
                 </div>
               </div>
             ))}

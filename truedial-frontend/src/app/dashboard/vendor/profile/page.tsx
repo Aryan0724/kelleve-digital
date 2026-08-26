@@ -41,6 +41,7 @@ export default function VendorProfilePage() {
   
   const [formData, setFormData] = useState({
     title: "",
+    tagline: "",
     description: "",
     phone: "",
     address: "",
@@ -86,6 +87,7 @@ export default function VendorProfilePage() {
 
         setFormData({
           title: res.data.title || "",
+          tagline: res.data.tagline || "",
           description: res.data.description || "",
           phone: res.data.phone || "",
           address: res.data.address || "",
@@ -187,8 +189,6 @@ export default function VendorProfilePage() {
       // Build final availability string
       const finalAvailability = `${openTime} to ${closeTime}`;
       
-      // We inject default category_id, city_id, district, state to satisfy backend validation
-      // if this is a brand new business creation.
       const payload = { 
         ...formData, 
         availability: finalAvailability,
@@ -233,6 +233,7 @@ export default function VendorProfilePage() {
   
   const currentType = formData.professional_type?.toLowerCase() || 'default';
   const availableSpecialties = PREDEFINED_SPECIALTIES[currentType] || PREDEFINED_SPECIALTIES['default'];
+  const publicSlug = business?.slug || (formData.title ? formData.title.toLowerCase().replace(/[^a-z0-9]+/g, '-') : 'my-business');
 
   return (
     <div className="space-y-8 max-w-5xl mx-auto pb-12 animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -245,10 +246,20 @@ export default function VendorProfilePage() {
             Manage your {user?.professional_type ? user.professional_type.replace('_', ' ') : 'business'} information, hours, and specialties.
           </p>
         </div>
-        <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-primary/25 transition-all w-full sm:w-auto">
-          {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
-          Save Changes
-        </Button>
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          <a 
+            href={`/businesses/${publicSlug}`} 
+            target="_blank" 
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-bold px-4 py-2.5 rounded-xl text-sm shadow-md hover:shadow-lg transition-all"
+          >
+            <Globe className="w-4 h-4" /> View Public Profile ↗
+          </a>
+          <Button onClick={handleSave} disabled={saving} className="bg-primary hover:bg-primary/90 text-white shadow-lg hover:shadow-primary/25 transition-all flex-1 sm:flex-none">
+            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
+            Save Changes
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -282,9 +293,14 @@ export default function VendorProfilePage() {
                       ))}
                     </optgroup>
                   ))}
+                  <option value="gym">Gym & Fitness Center</option>
+                  <option value="restaurant">Restaurant / Cafe</option>
+                  <option value="clinic">Clinic & Healthcare</option>
+                  <option value="salon">Salon & Spa</option>
+                  <option value="interior_designer">Interior Designer</option>
                   <option value="vendor">Other Business</option>
                 </select>
-                <p className="text-xs text-muted-foreground">Changing this will update your personalized sidebar tabs.</p>
+                <p className="text-xs text-muted-foreground">Select Gym, Restaurant, Clinic, Salon, or Interior Designer to tailor your listing.</p>
               </div>
 
               <div className="space-y-2">
@@ -294,8 +310,20 @@ export default function VendorProfilePage() {
                   value={formData.title}
                   onChange={handleChange}
                   className="bg-background/50 border-border focus:ring-primary/20 transition-all"
-                  placeholder="e.g. Royal Dental Clinic"
+                  placeholder="e.g. Integral Fitness & Gym"
                 />
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-sm font-medium text-foreground/80">Tagline / Slogan</label>
+                <Input 
+                  name="tagline"
+                  value={formData.tagline}
+                  onChange={handleChange}
+                  className="bg-background/50 border-border focus:ring-primary/20 transition-all"
+                  placeholder="e.g. Premier Unisex Gym & Strength Training Center in Patna"
+                />
+                <p className="text-xs text-muted-foreground">Appears directly below your business name on your public profile.</p>
               </div>
 
               <div className="space-y-2">
@@ -305,7 +333,7 @@ export default function VendorProfilePage() {
                   value={formData.description}
                   onChange={handleChange}
                   className="min-h-[120px] bg-background/50 border-border focus:ring-primary/20 transition-all"
-                  placeholder="Describe your history, mission, and what makes you unique..."
+                  placeholder="Describe your facilities, equipment, trainers, and what makes you unique..."
                 />
               </div>
 

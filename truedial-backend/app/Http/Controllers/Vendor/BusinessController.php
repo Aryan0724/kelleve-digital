@@ -74,9 +74,9 @@ class BusinessController extends Controller
 
         $validated = $request->validate([
             'title' => 'sometimes|required|string|max:255',
+            'tagline' => 'nullable|string|max:255',
             'category_id' => 'nullable|exists:categories,id',
             'description' => 'nullable|string',
-            'tagline' => 'nullable|string|max:255',
             'phone' => 'sometimes|required|string|max:20',
             'whatsapp' => 'nullable|string|max:20',
             'email' => 'nullable|email|max:255',

@@ -90,15 +90,16 @@ class BusinessController extends Controller
         $this->authorize('update', $business);
 
         $validated = $request->validate([
-            'category_id' => 'sometimes|required|exists:categories,id',
-            'city_id' => 'sometimes|required|exists:cities,id',
+            'category_id' => 'sometimes|nullable|exists:categories,id',
+            'city_id' => 'sometimes|nullable|exists:cities,id',
             'title' => 'sometimes|required|string|max:255',
+            'tagline' => 'nullable|string|max:255',
             'description' => 'sometimes|required|string',
             'phone' => 'sometimes|required|string',
             'address' => 'sometimes|required|string',
-            'district' => 'sometimes|required|string|max:100',
-            'state' => 'sometimes|required|string|max:100',
-            'website' => 'nullable|url',
+            'district' => 'sometimes|nullable|string|max:100',
+            'state' => 'sometimes|nullable|string|max:100',
+            'website' => 'nullable|string',
             'availability' => 'nullable|string',
             'response_time' => 'nullable|string',
             'social_links' => 'nullable|array',
@@ -110,15 +111,35 @@ class BusinessController extends Controller
             $validated['slug'] = \Illuminate\Support\Str::slug($validated['title']) . '-' . time();
         }
 
-        // Update professional_type on user if provided
+        // Map professional_type to category if present and category_id not explicitly set
         if (isset($validated['professional_type'])) {
             $business->user->update(['professional_type' => $validated['professional_type']]);
+            
+            // Try to resolve matching category if category_id not provided
+            if (empty($validated['category_id'])) {
+                $typeMap = [
+                    'gym' => 'Gyms & Fitness',
+                    'fitness' => 'Gyms & Fitness',
+                    'restaurant' => 'Restaurants & Cafes',
+                    'clinic' => 'Hospitals & Healthcare',
+                    'hospital' => 'Hospitals & Healthcare',
+                    'salon' => 'Salons & Beauty',
+                    'interior_designer' => 'Interior Designers',
+                ];
+                $matchedName = $typeMap[strtolower($validated['professional_type'])] ?? null;
+                if ($matchedName) {
+                    $cat = \App\Models\Category::where('name', 'like', "%{$matchedName}%")->first();
+                    if ($cat) {
+                        $validated['category_id'] = $cat->id;
+                    }
+                }
+            }
             unset($validated['professional_type']);
         }
 
         $business->update($validated);
 
-        return $this->success($business, 'Business updated successfully');
+        return $this->success($business->fresh(['category', 'city']), 'Business updated successfully');
     }
 
     public function updateProducts(Request $request, \App\Services\ProductService $productService)
