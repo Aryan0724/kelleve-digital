@@ -247,23 +247,6 @@ export class TrueDialAPI {
     }
   }
 
-  static async getBusinessOffers(slug: string) {
-    try {
-      const baseUrl = getApiBaseUrl();
-      const res = await fetch(`${baseUrl}/truedial/public/businesses/${slug}/offers`, {
-        headers: {
-          'Accept': 'application/json',
-          'X-Platform': 'truedial',
-        },
-        cache: 'no-store'
-      });
-      if (!res.ok) return { success: true, data: [] };
-      return await res.json();
-    } catch (error) {
-      console.error("getBusinessOffers failed:", error);
-      return { success: false, data: [] };
-    }
-  }
 
   // Vendor Business Management
   static async getMyBusiness() {
