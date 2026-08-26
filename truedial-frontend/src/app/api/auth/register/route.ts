@@ -54,6 +54,7 @@ export async function POST(request: Request) {
           id: data.data.user?.id,
           name: data.data.user?.name,
           email: data.data.user?.email,
+          professional_type: data.data.user?.professional_type || body.role,
         },
       });
     }
