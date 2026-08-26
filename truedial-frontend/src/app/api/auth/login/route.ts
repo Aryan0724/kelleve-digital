@@ -9,14 +9,13 @@ import { NextResponse } from "next/server";
  */
 
 function getServerApiBase(): string {
-  if (process.env.INTERNAL_API_URL && process.env.INTERNAL_API_URL.startsWith("http")) {
+  if (process.env.INTERNAL_API_URL && process.env.INTERNAL_API_URL.startsWith("http") && !process.env.INTERNAL_API_URL.includes("172.17.0.1") && !process.env.INTERNAL_API_URL.includes("fmi_nginx")) {
     return process.env.INTERNAL_API_URL;
   }
   if (process.env.NEXT_PUBLIC_API_URL && process.env.NEXT_PUBLIC_API_URL.startsWith("http")) {
     return process.env.NEXT_PUBLIC_API_URL;
   }
-  const backendUrl = process.env.TRUEDIAL_BACKEND_URL || (process.env.NODE_ENV === "production" ? "https://truedial.in" : "http://127.0.0.1:8001");
-  return `${backendUrl}/api/v1`;
+  return "https://findmyinterior.com/api/v1";
 }
 
 export async function POST(request: Request) {
