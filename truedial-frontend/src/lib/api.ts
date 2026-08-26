@@ -113,16 +113,6 @@ export class TrueDialAPI {
     }
   }
 
-  static async getListingBySlug(slug: string) {
-    try {
-      const res = await fetch(`${API_BASE_URL}/truedial/public/businesses/${slug}`, { next: { revalidate: 60 } });
-      if (!res.ok) throw new Error("Failed to fetch listing");
-      return await res.json();
-    } catch (error) {
-      console.error("API Fetch failed for getListingBySlug.", error);
-      return { success: false, data: null };
-    }
-  }
 
   // Auth (Sanctum)
   static async login(credentials: Record<string, string>) {
