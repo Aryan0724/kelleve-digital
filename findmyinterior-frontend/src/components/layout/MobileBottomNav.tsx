@@ -59,18 +59,17 @@ export function MobileBottomNav() {
           <span className="text-[10px] font-medium">Projects</span>
         </Link>
         
-        {/* Floating Action Button for Post Requirement */}
-        {(!user || user?.role === 'customer') && (
-          <div className="relative -top-5 flex justify-center w-16">
-            <Link 
-              href="/post-requirement" 
-              className="flex items-center justify-center w-14 h-14 bg-gradient-to-r from-[#E8701A] to-[#f08535] rounded-full shadow-lg shadow-orange-500/30 text-white transform hover:scale-105 transition-transform border-4 border-white dark:border-slate-900"
-            >
-              <Plus className="w-6 h-6" strokeWidth={2.5} />
-            </Link>
-            <span className="absolute -bottom-5 text-[10px] font-medium text-slate-500 dark:text-slate-400 whitespace-nowrap mt-1">Post Requirement</span>
-          </div>
-        )}
+        {/* Floating Action Button for Post Project */}
+        <div className="relative -top-4 flex flex-col items-center justify-center w-16">
+          <Link 
+            href="/post-requirement" 
+            className="flex items-center justify-center w-12 h-12 sm:w-13 sm:h-13 bg-gradient-to-r from-[#E8701A] to-[#f08535] rounded-full shadow-lg shadow-orange-500/30 text-white active:scale-95 transition-transform border-3 border-white dark:border-slate-900"
+            aria-label="Post Project"
+          >
+            <Plus className="w-6 h-6" strokeWidth={2.5} />
+          </Link>
+          <span className="text-[10px] font-bold text-slate-600 dark:text-slate-300 whitespace-nowrap mt-1">Post Project</span>
+        </div>
         
         <Link 
           href="/messages" 
@@ -91,17 +90,8 @@ export function MobileBottomNav() {
           onClick={() => router.push(user ? "/dashboard/profile" : "/login")}
           className={`flex flex-col items-center justify-center w-16 h-12 transition-colors ${isActive('/dashboard/profile') || isActive('/profile') ? 'text-[#E8701A]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}`}
         >
-          {user ? (
-            <>
-              <User className={`w-5 h-5 mb-1 ${isActive('/dashboard/profile') || isActive('/profile') ? 'fill-[#E8701A]/20' : ''}`} />
-              <span className="text-[10px] font-medium">Profile</span>
-            </>
-          ) : (
-            <>
-              <LogIn className="w-5 h-5 mb-1" />
-              <span className="text-[10px] font-bold text-[#E8701A]">Login</span>
-            </>
-          )}
+          <User className={`w-5 h-5 mb-1 ${isActive('/dashboard/profile') || isActive('/profile') ? 'fill-[#E8701A]/20' : ''}`} />
+          <span className="text-[10px] font-medium">Profile</span>
         </button>
       </div>
     </div>

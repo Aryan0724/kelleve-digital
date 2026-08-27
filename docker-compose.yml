@@ -58,6 +58,37 @@ services:
         limits:
           memory: 512M
 
+  # TrueDial Dedicated Laravel Backend (API)
+  truedial_backend:
+    build:
+      context: ./truedial-backend
+      dockerfile: Dockerfile
+    container_name: truedial_backend
+    restart: unless-stopped
+    ports:
+      - "8001:80"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      DB_HOST: db
+      DB_DATABASE: ${TRUEDIAL_DB_DATABASE:-truedial_db}
+      DB_USERNAME: ${DB_USERNAME:-fmi_user}
+      DB_PASSWORD: ${DB_PASSWORD:-secret}
+      CACHE_DRIVER: redis
+      QUEUE_CONNECTION: redis
+      REDIS_HOST: redis
+    volumes:
+      - truedial_storage_data:/var/www/html/storage/app/public
+    networks:
+      - fmi-network
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+
   # Next.js Frontend
   frontend:
     build:
@@ -103,6 +134,7 @@ volumes:
   dbdata:
   storage_data:
   backups_data:
+  truedial_storage_data:
 
 networks:
   fmi-network:

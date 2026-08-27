@@ -37,7 +37,8 @@ import {
   User,
   LocateFixed,
   Loader2,
-  LogIn
+  LogIn,
+  Mic
 } from "lucide-react";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { SmartSearch } from "./SmartSearch";
@@ -299,52 +300,101 @@ export function Navbar() {
           </div>
           
           {/* Mobile Layout (Visible only on mobile) */}
-          <div className="flex xl:hidden flex-col gap-3 w-full pb-1">
-            {/* Mobile Top Row: Menu, Logo, Bell */}
+          <div className="flex xl:hidden flex-col gap-2.5 w-full pb-1">
+            {/* Mobile Top Row: Hamburger, Logo, Bell with Badge, User */}
             <div className="flex items-center justify-between w-full">
-              <div className="flex items-center gap-3">
-                <button 
-                  className="p-1 text-slate-700 dark:text-slate-200"
-                  onClick={() => setIsMobileMenuOpen(true)}
-                  aria-label="Open menu"
-                >
-                  <Menu className="w-6 h-6" />
-                </button>
-                <Link href="/" className="flex items-center">
-                  <img src="/logo.jpg" alt="Find My Interior" className="h-9 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
-                </Link>
-              </div>
+              <button 
+                className="p-1 text-slate-800 dark:text-slate-200 active:scale-95 transition-transform"
+                onClick={() => setIsMobileMenuOpen(true)}
+                aria-label="Open menu"
+              >
+                <Menu className="w-6 h-6" />
+              </button>
               
-              <div className="flex items-center gap-2">
-                {(_hasHydrated || mounted) ? (
-                  isAuthenticated ? (
-                    <>
-                      <NotificationDropdown />
-                      <Link href="/dashboard" className="p-1.5 text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 rounded-full border border-slate-200 dark:border-slate-700 overflow-hidden">
-                        <User className="w-5 h-5 text-slate-500 dark:text-slate-400" />
-                      </Link>
-                    </>
-                  ) : (
-                    <div className="flex items-center gap-1.5">
-                      <Link href="/login">
-                        <button className="px-4 py-1.5 bg-[#0a1c3a] dark:bg-white text-white dark:text-[#0a1c3a] font-bold text-xs rounded-full shadow-sm hover:opacity-90 transition-all">
-                          Login
-                        </button>
-                      </Link>
-                      <Link href="/register">
-                        <button className="px-3 py-1.5 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-full hover:bg-slate-50 dark:hover:bg-slate-800 transition-all">
-                          Register
-                        </button>
-                      </Link>
-                    </div>
-                  )
-                ) : null}
+              <Link href="/" className="flex items-center">
+                <img src="/logo.jpg" alt="Find My Interior" className="h-9 w-auto dark:invert dark:hue-rotate-180 dark:mix-blend-screen" />
+              </Link>
+              
+              <div className="flex items-center gap-3">
+                {/* Bell Icon with orange notification badge */}
+                <div className="relative">
+                  <NotificationDropdown />
+                </div>
+                {/* User Avatar Circle */}
+                <Link 
+                  href={isAuthenticated ? "/dashboard" : "/login"} 
+                  className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-700 dark:text-slate-200 active:scale-95 transition-transform"
+                  aria-label="User Profile"
+                >
+                  <User className="w-4 h-4 text-slate-600 dark:text-slate-300" />
+                </Link>
               </div>
             </div>
             
-            {/* Mobile Search Row */}
-            <div className="mt-2" ref={mobileLocationRef}>
-              <SmartSearch compact={true} />
+            {/* Mobile Search & Location Row (Exact Dual Pill Layout from Mockup) */}
+            <div className="flex items-center gap-2 w-full mt-0.5">
+              {/* Location Pill */}
+              <div className="relative shrink-0" ref={mobileLocationRef}>
+                <button 
+                  type="button"
+                  onClick={() => setShowMobileLocationDropdown(!showMobileLocationDropdown)}
+                  className="flex items-center gap-1 px-3 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm text-xs font-bold text-slate-800 dark:text-slate-100 active:bg-slate-50 dark:active:bg-slate-700 transition-colors"
+                >
+                  <MapPin className="w-3.5 h-3.5 text-slate-600 dark:text-slate-300 shrink-0" />
+                  <span className="truncate max-w-[65px]">{selectedLocation}</span>
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                </button>
+
+                {showMobileLocationDropdown && (
+                  <div className="absolute top-11 left-0 z-50 w-56 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl p-2.5 animate-in fade-in zoom-in-95 duration-150">
+                    <button
+                      type="button"
+                      onClick={handleLocateMe}
+                      disabled={isLocating}
+                      className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-orange-50 dark:bg-orange-950/40 text-[#E8701A] hover:bg-orange-100 dark:hover:bg-orange-900/60 rounded-xl text-xs font-bold transition-colors mb-2"
+                    >
+                      {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <LocateFixed className="w-3.5 h-3.5" />}
+                      <span>Detect Current Location</span>
+                    </button>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1">Select City</div>
+                    <div className="grid grid-cols-1 gap-1 max-h-48 overflow-y-auto">
+                      {["Patna", "Gaya", "Muzaffarpur", "Bhagalpur", "Darbhanga", "Purnia", "All Bihar"].map((city) => (
+                        <button
+                          key={city}
+                          type="button"
+                          onClick={() => {
+                            setSelectedLocation(city);
+                            setShowMobileLocationDropdown(false);
+                          }}
+                          className={`text-left px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors flex items-center justify-between ${
+                            selectedLocation === city
+                              ? "bg-[#0a1c3a] text-white dark:bg-white dark:text-[#0a1c3a]"
+                              : "hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200"
+                          }`}
+                        >
+                          {city}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Search Bar Pill */}
+              <form onSubmit={handleSearch} className="flex-1 flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm px-3 py-1.5 focus-within:border-orange-300">
+                <Search className="w-4 h-4 text-slate-400 shrink-0 mr-2" />
+                <input 
+                  id="mobile-search-input"
+                  type="text" 
+                  placeholder="Search services, professionals..." 
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-transparent text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
+                />
+                <button type="button" onClick={() => handleSearch()} className="text-slate-400 hover:text-[#E8701A] shrink-0 ml-1 p-0.5" aria-label="Search with voice">
+                  <Mic className="w-4 h-4" />
+                </button>
+              </form>
             </div>
 
           </div>
