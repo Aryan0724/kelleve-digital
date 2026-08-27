@@ -238,4 +238,16 @@
   .animate-float {
     animation: float 3s ease-in-out infinite;
   }
+
+  /* Mobile grid utilities that can't be purged by Tailwind */
+  .mobile-grid-6 {
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .mobile-grid-4 {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 4px;
+  }
 }

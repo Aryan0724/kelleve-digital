@@ -121,17 +121,19 @@ export function Categories({ categories }: { categories?: Array<Record<string, u
             </Link>
           </div>
 
-          <div className="grid grid-cols-6 gap-1.5 sm:gap-2">
+          {/* Inline style guarantees 6-column grid regardless of Tailwind purge */}
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(6, minmax(0, 1fr))', gap: '6px' }}>
             {mobileCategories.map((cat, idx) => (
               <Link
                 key={idx}
                 href={cat.isMore ? "/professionals" : `/professionals?category=${cat.slug}`}
-                className="flex flex-col items-center justify-between p-1.5 sm:p-2 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/80 active:scale-95 transition-transform h-[88px] sm:h-[96px]"
+                className="flex flex-col items-center justify-between p-1.5 bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700/80 active:scale-95 transition-transform"
+                style={{ height: '88px' }}
               >
                 <div className="flex-1 flex items-center justify-center">
                   {cat.icon}
                 </div>
-                <span className="text-[9px] sm:text-[10px] font-bold text-center text-[#0a1c3a] dark:text-white leading-[1.15] line-clamp-2 px-0.5">
+                <span className="text-[9px] font-bold text-center text-[#0a1c3a] dark:text-white leading-[1.15] px-0.5" style={{ overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                   {cat.name}
                 </span>
               </Link>

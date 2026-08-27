@@ -41,7 +41,7 @@ export function Stats({ stats }: { stats?: any }) {
       {/* MOBILE VIEW: Exact 4-metric strip from reference mockup */}
       <div className="lg:hidden w-full py-2 my-2 transition-colors duration-300">
         <div className="container mx-auto px-4">
-          <div className="grid grid-cols-4 gap-1.5 sm:gap-2 bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl py-3 px-2 shadow-xs">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '6px' }} className="bg-white dark:bg-slate-900 border border-slate-100 dark:border-slate-800 rounded-2xl py-3 px-2 shadow-sm">
             {mobileStatItems.map((item, idx) => (
               <div key={idx} className="flex flex-col items-center justify-center text-center">
                 <div className="flex items-center gap-1 mb-0.5">

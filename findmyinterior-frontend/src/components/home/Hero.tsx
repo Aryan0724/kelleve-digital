@@ -73,7 +73,7 @@ export function Hero() {
 
         {/* Feature Trust Strip (Mobile) */}
         <div className="w-full bg-white dark:bg-slate-900 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800 py-3 px-2 mt-3">
-          <div className="grid grid-cols-4 gap-1 items-center justify-between">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '4px' }} className="items-center justify-between">
             <div className="flex items-center justify-center gap-1.5">
               <ShieldCheck className="w-4 h-4 shrink-0 text-[#E8701A]" strokeWidth={1.75} />
               <span className="text-[9px] sm:text-[10px] font-bold text-slate-700 dark:text-white leading-tight">Verified<br/>Professionals</span>

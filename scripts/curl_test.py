@@ -1,0 +1,16 @@
+import paramiko
+client = paramiko.SSHClient()
+client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+client.connect('187.127.164.142', username='root', password='Truedial@1111')
+def r(cmd):
+    i,o,e = client.exec_command(cmd)
+    print(o.read().decode('utf-8', errors='replace'))
+    print(e.read().decode('utf-8', errors='replace'))
+sftp = client.open_sftp()
+sftp.put(r'D:\find my interior\findmyinterior-backend\legacy_professional_data.json', '/root/legacy_professional_data.json')
+sftp.close()
+r('cd /var/www/find-my-interior && git pull origin main')
+r('docker cp /var/www/find-my-interior/findmyinterior-backend/app/Console/Commands/FixLegacyListingsData.php fmi_backend:/var/www/html/app/Console/Commands/FixLegacyListingsData.php')
+r('docker cp /root/legacy_professional_data.json fmi_backend:/var/www/html/legacy_professional_data.json')
+r('docker exec fmi_backend php artisan fmi:fix-legacy-listings-data')
+r('curl -s "http://localhost:8000/api/v1/listings?search=Interior+Designer" | python3 -c "import sys, json; data=json.load(sys.stdin); print(f\\"Success: {data.get(\'success\')} | Total: {data.get(\'meta\', {}).get(\'total\')}\\")"')

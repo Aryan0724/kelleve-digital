@@ -58,7 +58,7 @@ export function HowItWorksTimeline() {
         <div className="lg:hidden relative w-full pt-2 pb-2">
           <div className="absolute top-[26px] left-[12%] right-[12%] h-[1.5px] bg-slate-200 dark:bg-slate-700 z-0"></div>
 
-          <div className="grid grid-cols-4 gap-1 relative z-10">
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, minmax(0, 1fr))', gap: '4px' }} className="relative z-10">
             {steps.map((step, idx) => (
               <div key={idx} className="flex flex-col items-center text-center">
                 <div className="relative mb-2">

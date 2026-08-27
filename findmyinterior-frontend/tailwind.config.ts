@@ -83,6 +83,12 @@ const config: Config = {
     },
   },
   plugins: [require("tailwindcss-animate")],
+  safelist: [
+    "grid-cols-6",
+    "grid-cols-4",
+    "grid-cols-3",
+    "hide-scrollbar",
+  ],
 } satisfies Config;
 
 export default config;
