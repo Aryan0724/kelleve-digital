@@ -317,12 +317,32 @@ export default function RegisterPage() {
                   </div>
                 </div>
 
-                <div className="space-y-2">
-                  <label className="text-xs font-medium text-foreground">Phone Number</label>
-                  <div className="relative">
-                    <Phone className="absolute left-3 top-3 w-4 h-4 text-muted-foreground" />
-                    <Input type="tel" name="phone" placeholder="9876543210" className="pl-9 h-10 bg-background focus:ring-primary transition-colors" required disabled={isLoading} />
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-foreground">Mobile Number</label>
+                  <div className="flex items-stretch border border-input rounded-lg overflow-hidden focus-within:border-[#E8701A] focus-within:ring-1 focus-within:ring-[#E8701A]/20 transition-all">
+                    <div className="flex items-center justify-center bg-slate-50 dark:bg-slate-800 px-3 border-r border-input shrink-0 gap-1.5">
+                      <span className="text-base leading-none">🇮🇳</span>
+                      <span className="text-[13px] font-bold text-slate-500 dark:text-slate-400">+91</span>
+                    </div>
+                    <input
+                      type="tel"
+                      name="phone"
+                      inputMode="numeric"
+                      maxLength={10}
+                      placeholder="98765 43210"
+                      className="flex-1 h-10 px-3 bg-background text-foreground text-sm font-medium outline-none placeholder:text-muted-foreground"
+                      onChange={(e) => {
+                        // Auto-strip +91, 0 prefix, spaces, dashes
+                        const cleaned = e.target.value.replace(/[\s\-\(\)]/g, '').replace(/^(\+91|91|0)/, '');
+                        e.target.value = cleaned.replace(/\D/g, '').slice(0, 10);
+                      }}
+                      pattern="[6-9][0-9]{9}"
+                      title="Enter a valid 10-digit Indian mobile number starting with 6, 7, 8, or 9"
+                      required
+                      disabled={isLoading}
+                    />
                   </div>
+                  <p className="text-[11px] text-muted-foreground">Enter 10-digit mobile number (e.g. 98765 43210). Do not add +91.</p>
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">

@@ -6,6 +6,7 @@ import { TrueDialAPI } from "@/lib/api";
 import { Star, MapPin, Phone, MessageCircle, ShieldCheck, Heart, Share2, ThumbsUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { resolveImageUrl } from "@/utils/imageResolver";
 
 export interface BusinessCardProps {
   id: string | number;
@@ -34,7 +35,7 @@ export default function BusinessCard({
   phone,
   whatsapp,
 }: BusinessCardProps) {
-  const defaultImage = "https://images.unsplash.com/photo-1552566626-52f8b828add9?q=80&w=2070";
+  const imageUrl = resolveImageUrl(cover_image);
 
   return (
     <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl overflow-hidden hover:shadow-xl transition-shadow duration-300 p-4">
@@ -42,9 +43,10 @@ export default function BusinessCard({
         {/* Left: Thumbnail image */}
         <Link href={`/businesses/${slug}`} className="block relative w-full sm:w-48 h-48 sm:h-36 rounded-lg overflow-hidden flex-shrink-0">
           <img
-            src={cover_image || defaultImage}
+            src={imageUrl}
             alt={title}
             className="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
+            onError={(e) => { (e.target as HTMLImageElement).src = "/placeholder-business.svg"; }}
           />
           <div className="absolute top-2 left-2 flex flex-col gap-1.5">
             {is_premium && (

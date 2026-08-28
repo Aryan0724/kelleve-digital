@@ -34,7 +34,7 @@ export default function Footer() {
                 <img
                   src="/truedial-logo.png"
                   alt="TrueDial"
-                  className="h-10 w-auto object-contain brightness-105"
+                  className="h-14 w-auto object-contain brightness-105"
                 />
               </Link>
               <p className="text-xs text-muted-foreground leading-relaxed mb-6">

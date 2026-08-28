@@ -1,8 +1,9 @@
 import Link from "next/link";
 import {
-  ChevronDown, LayoutDashboard, LogOut, Menu, X, User,
+  LayoutDashboard, LogOut, Menu, X, User,
 } from "lucide-react";
 import { cookies } from "next/headers";
+import MoreMenu from "./MoreMenu";
 import { logout } from "@/app/actions/auth";
 
 export default async function Navbar() {
@@ -19,7 +20,7 @@ export default async function Navbar() {
           <img
             src="/truedial-logo.png"
             alt="TrueDial 100% Verified"
-            className="h-9 md:h-11 w-auto object-contain transition-transform group-hover:scale-105"
+            className="h-10 md:h-14 w-auto object-contain transition-transform group-hover:scale-105"
           />
         </Link>
 
@@ -40,9 +41,7 @@ export default async function Navbar() {
           <Link href="/academy"        className="px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent hover:border-[#1E40AF]/30 rounded-sm">Academy</Link>
           <Link href="/news"           className="px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent hover:border-[#1E40AF]/30 rounded-sm">News</Link>
           <Link href="/podcast"        className="px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent hover:border-[#1E40AF]/30 rounded-sm">Podcast</Link>
-          <button className="flex items-center gap-1 px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent">
-            More <ChevronDown className="w-3.5 h-3.5" />
-          </button>
+          <MoreMenu />
         </nav>
 
         {/* ── Right: Login + Hamburger ── */}
