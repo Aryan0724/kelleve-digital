@@ -4,6 +4,7 @@ namespace App\Modules\Truedial\Controllers\Vendor;
 
 use App\Http\Controllers\Controller;
 use App\Models\Listing;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use App\Core\Tenancy\TenantContext;
 use Illuminate\Support\Facades\Auth;
@@ -17,6 +18,108 @@ class BusinessController extends Controller
     public function __construct(TenantContext $tenantContext)
     {
         $this->tenantContext = $tenantContext;
+    }
+
+    /**
+     * Maps professional_type strings to category names.
+     * Returns the resolved category_id or null if not found.
+     */
+    private static function resolveCategoryFromProfessionalType(string $type): ?int
+    {
+        $typeMap = [
+            // Salons & Beauty
+            'hair_salon'         => 'Salons & Beauty',
+            'beauty_salon'       => 'Salons & Beauty',
+            'unisex_salon'       => 'Salons & Beauty',
+            'spa'                => 'Salons & Beauty',
+            'makeup_artist'      => 'Salons & Beauty',
+            'nail_studio'        => 'Salons & Beauty',
+            'barber'             => 'Salons & Beauty',
+            'mehndi_artist'      => 'Salons & Beauty',
+            'salon'              => 'Salons & Beauty',
+            'beauty'             => 'Salons & Beauty',
+            // Gyms & Fitness
+            'gym'                => 'Gyms & Fitness',
+            'fitness'            => 'Gyms & Fitness',
+            'crossfit'           => 'Gyms & Fitness',
+            'yoga_studio'        => 'Gyms & Fitness',
+            'yoga'               => 'Gyms & Fitness',
+            'zumba'              => 'Gyms & Fitness',
+            'pilates'            => 'Gyms & Fitness',
+            'martial_arts'       => 'Gyms & Fitness',
+            'personal_trainer'   => 'Gyms & Fitness',
+            // Restaurants & Cafes
+            'restaurant'         => 'Restaurants & Cafes',
+            'cafe'               => 'Restaurants & Cafes',
+            'dhaba'              => 'Restaurants & Cafes',
+            'food_truck'         => 'Restaurants & Cafes',
+            'catering'           => 'Restaurants & Cafes',
+            'cloud_kitchen'      => 'Restaurants & Cafes',
+            'bakery'             => 'Restaurants & Cafes',
+            'sweet_shop'         => 'Restaurants & Cafes',
+            'juice_bar'          => 'Restaurants & Cafes',
+            // Hospitals & Healthcare
+            'clinic'             => 'Hospitals & Healthcare',
+            'hospital'           => 'Hospitals & Healthcare',
+            'doctor'             => 'Hospitals & Healthcare',
+            'dentist'            => 'Hospitals & Healthcare',
+            'physiotherapist'    => 'Hospitals & Healthcare',
+            'optician'           => 'Hospitals & Healthcare',
+            'pharmacy'           => 'Hospitals & Healthcare',
+            'nursing_home'       => 'Hospitals & Healthcare',
+            'diagnostic_center'  => 'Hospitals & Healthcare',
+            // Interior Designers (ONLY actual interior types)
+            'interior_designer'  => 'Interior Designers',
+            'architect'          => 'Interior Designers',
+            'vastu_consultant'   => 'Interior Designers',
+            'modular_kitchen'    => 'Interior Designers',
+            'furniture'          => 'Interior Designers',
+            // Education & Coaching
+            'coaching_center'    => 'Education & Coaching',
+            'tutor'              => 'Education & Coaching',
+            'school'             => 'Education & Coaching',
+            'college'            => 'Education & Coaching',
+            'music_school'       => 'Education & Coaching',
+            'dance_academy'      => 'Education & Coaching',
+            'language_institute' => 'Education & Coaching',
+            // Hotels & Hospitality
+            'hotel'              => 'Hotels & Hospitality',
+            'resort'             => 'Hotels & Hospitality',
+            'guest_house'        => 'Hotels & Hospitality',
+            'pg'                 => 'Hotels & Hospitality',
+            'hostel'             => 'Hotels & Hospitality',
+            // Automobile
+            'car_service'        => 'Automobile',
+            'car_dealer'         => 'Automobile',
+            'bike_service'       => 'Automobile',
+            'driving_school'     => 'Automobile',
+            'auto_accessories'   => 'Automobile',
+            // Home Services
+            'plumber'            => 'Home Services',
+            'electrician'        => 'Home Services',
+            'carpenter'          => 'Home Services',
+            'painter'            => 'Home Services',
+            'ac_repair'          => 'Home Services',
+            'pest_control'       => 'Home Services',
+            'cleaning'           => 'Home Services',
+            // Real Estate
+            'real_estate_agent'  => 'Real Estate & Property',
+            'property_dealer'    => 'Real Estate & Property',
+            'builder'            => 'Real Estate & Property',
+        ];
+
+        $normalized = strtolower(trim($type));
+        $categoryName = $typeMap[$normalized] ?? null;
+
+        if (!$categoryName) {
+            return null; // Unknown type — let caller decide fallback
+        }
+
+        // Try exact name match first, then LIKE
+        $cat = Category::where('name', $categoryName)->first()
+            ?? Category::where('name', 'like', "%{$categoryName}%")->first();
+
+        return $cat?->id;
     }
 
     public function myBusiness()
@@ -41,7 +144,14 @@ class BusinessController extends Controller
 
         // Default missing required fields for TrueDial
         $data = $request->all();
-        if (!isset($data['category_id'])) $data['category_id'] = \App\Models\Category::first()->id ?? 1;
+
+        // Resolve category from professional_type BEFORE falling back to first category
+        if (!isset($data['category_id']) || empty($data['category_id'])) {
+            $profType = $data['professional_type'] ?? Auth::user()->professional_type ?? null;
+            $resolvedCategoryId = $profType ? self::resolveCategoryFromProfessionalType($profType) : null;
+            $data['category_id'] = $resolvedCategoryId ?? (Category::where('name', 'Interior Designers')->first()->id ?? 1);
+        }
+
         if (!isset($data['city_id'])) $data['city_id'] = \App\Models\City::first()->id ?? 1;
         if (!isset($data['district'])) $data['district'] = 'N/A';
         if (!isset($data['state'])) $data['state'] = 'N/A';
@@ -127,24 +237,12 @@ class BusinessController extends Controller
         // Map professional_type to category if present and category_id not explicitly set
         if (isset($validated['professional_type'])) {
             $business->user->update(['professional_type' => $validated['professional_type']]);
-            
-            // Try to resolve matching category if category_id not provided
+
+            // Resolve category from professional_type using comprehensive mapping
             if (empty($validated['category_id'])) {
-                $typeMap = [
-                    'gym' => 'Gyms & Fitness',
-                    'fitness' => 'Gyms & Fitness',
-                    'restaurant' => 'Restaurants & Cafes',
-                    'clinic' => 'Hospitals & Healthcare',
-                    'hospital' => 'Hospitals & Healthcare',
-                    'salon' => 'Salons & Beauty',
-                    'interior_designer' => 'Interior Designers',
-                ];
-                $matchedName = $typeMap[strtolower($validated['professional_type'])] ?? null;
-                if ($matchedName) {
-                    $cat = \App\Models\Category::where('name', 'like', "%{$matchedName}%")->first();
-                    if ($cat) {
-                        $validated['category_id'] = $cat->id;
-                    }
+                $resolvedId = self::resolveCategoryFromProfessionalType($validated['professional_type']);
+                if ($resolvedId) {
+                    $validated['category_id'] = $resolvedId;
                 }
             }
             unset($validated['professional_type']);
