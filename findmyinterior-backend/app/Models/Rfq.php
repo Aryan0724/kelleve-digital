@@ -66,7 +66,7 @@ class Rfq extends Model
 
     public function bids(): HasMany
     {
-        return $this->hasMany(RfqQuotation::class, 'requirement_id');
+        return $this->hasMany(Bid::class, 'requirement_id');
     }
 
     public function contactUnlocks(): HasMany

@@ -271,23 +271,13 @@ class DashboardController extends Controller
                     ->latest()
                     ->get();
                     
-                $jobApps = \App\Models\JobApplication::with('job')
-                    ->where('professional_id', $user->id)
-                    ->latest()
-                    ->get()
-                    ->map(function($app) {
-                        $app->requirement = $app->job; 
-                        return $app;
-                    });
+                $jobApps = \Illuminate\Support\Facades\Schema::hasTable('job_applications') 
+                    ? \App\Models\JobApplication::with('job')->where('professional_id', $user->id)->latest()->get()->map(function($app) { $app->requirement = $app->job; return $app; })
+                    : collect();
                     
-                $rfqQuotes = \App\Models\RfqQuotation::with('rfq')
-                    ->where('professional_id', $user->id)
-                    ->latest()
-                    ->get()
-                    ->map(function($quote) {
-                        $quote->requirement = $quote->rfq;
-                        return $quote;
-                    });
+                $rfqQuotes = \Illuminate\Support\Facades\Schema::hasTable('rfq_quotations')
+                    ? \App\Models\RfqQuotation::with('rfq')->where('professional_id', $user->id)->latest()->get()->map(function($quote) { $quote->requirement = $quote->rfq; return $quote; })
+                    : collect();
                     
                 $data['submitted_bids'] = $bids->concat($jobApps)->concat($rfqQuotes)->sortByDesc('created_at')->values();
                     
