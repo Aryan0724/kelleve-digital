@@ -65,11 +65,11 @@ export function GlobalLoginModal() {
         <form onSubmit={handleLogin} className="space-y-5 pt-4">
           {error && <div className="p-3 bg-red-50 text-red-600 text-sm rounded-md">{error}</div>}
           <div className="space-y-2">
-            <Label htmlFor="modal-email">Email</Label>
+            <Label htmlFor="modal-email">Email or Mobile Number</Label>
             <Input 
               id="modal-email" 
-              type="email" 
-              placeholder="m@example.com" 
+              type="text" 
+              placeholder="name@example.com or 10-digit mobile" 
               required 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
