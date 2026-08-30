@@ -30,11 +30,13 @@ interface Conversation {
     id: number;
     name: string;
     avatar?: string;
+    roles?: any[];
   };
   vendor: {
     id: number;
     name: string;
     avatar?: string;
+    roles?: any[];
   };
   project?: {
     id: number;
@@ -110,7 +112,7 @@ export default function InboxPage() {
                 const otherUser = isCurrentUserCustomer ? conv.vendor : conv.customer;
                 const unreadCount = isCurrentUserCustomer ? conv.customer_unread_count : conv.vendor_unread_count;
                 const lastMessage = conv.messages && conv.messages.length > 0 ? conv.messages[0] : null;
-                const isOfficial = otherUser?.id === 1 || otherUser?.roles?.some((r: any) => (r.slug || r.name || r) === 'admin');
+                const isOfficial = otherUser?.id === 1 || (otherUser as any)?.roles?.some((r: any) => (r.slug || r.name || r) === 'admin');
                 const displayName = isOfficial ? "FindMyInterior Admin" : (otherUser?.name || "User");
                 const conversationTitle = conv.project?.title || (isOfficial ? "FindMyInterior Official Welcome & Support" : "Direct Inquiry");
                 

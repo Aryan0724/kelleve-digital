@@ -17,10 +17,12 @@ interface Conversation {
   customer: {
     id: number;
     name: string;
+    roles?: any[];
   };
   vendor: {
     id: number;
     name: string;
+    roles?: any[];
   };
   project?: {
     id: number;
@@ -161,7 +163,7 @@ export default function ConversationPage() {
 
   const isCurrentUserCustomer = Number(user.id) === Number(conversation.customer_id);
   const otherUser = isCurrentUserCustomer ? conversation.vendor : conversation.customer;
-  const isOfficial = otherUser?.id === 1 || otherUser?.roles?.some((r: any) => (r.slug || r.name || r) === 'admin');
+  const isOfficial = otherUser?.id === 1 || (otherUser as any)?.roles?.some((r: any) => (r.slug || r.name || r) === 'admin');
   const displayName = isOfficial ? "FindMyInterior Admin" : (otherUser?.name || "User");
 
   return (
