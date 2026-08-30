@@ -106,28 +106,39 @@ export default function InboxPage() {
           ) : (
             <div className="divide-y">
               {conversations.map((conv) => {
-                const otherUser = isCustomer ? conv.vendor : conv.customer;
-                const unreadCount = isCustomer ? conv.customer_unread_count : conv.vendor_unread_count;
+                const isCurrentUserCustomer = Number(user.id) === Number(conv.customer_id);
+                const otherUser = isCurrentUserCustomer ? conv.vendor : conv.customer;
+                const unreadCount = isCurrentUserCustomer ? conv.customer_unread_count : conv.vendor_unread_count;
                 const lastMessage = conv.messages && conv.messages.length > 0 ? conv.messages[0] : null;
+                const isOfficial = otherUser?.id === 1 || otherUser?.roles?.some((r: any) => (r.slug || r.name || r) === 'admin');
+                const displayName = isOfficial ? "FindMyInterior Admin" : (otherUser?.name || "User");
+                const conversationTitle = conv.project?.title || (isOfficial ? "FindMyInterior Official Welcome & Support" : "Direct Inquiry");
                 
                 return (
                   <Link href={`/messages/${conv.id}`} key={conv.id} className="block hover:bg-slate-50 transition-colors p-4 md:p-6 border-l-4 border-transparent hover:border-orange-500">
                     <div className="flex gap-4 items-center">
                       <Avatar className="h-12 w-12 border-2 border-white shadow-sm shrink-0">
-                        <AvatarImage src={otherUser?.avatar} alt={otherUser?.name} />
-                        <AvatarFallback className="bg-orange-100 text-orange-600 font-semibold">
-                          {otherUser?.name ? otherUser.name.charAt(0).toUpperCase() : <UserIcon className="h-6 w-6" />}
+                        <AvatarImage src={otherUser?.avatar} alt={displayName} />
+                        <AvatarFallback className={isOfficial ? "bg-indigo-100 text-indigo-700 font-semibold" : "bg-orange-100 text-orange-600 font-semibold"}>
+                          {isOfficial ? "A" : (displayName.charAt(0).toUpperCase() || <UserIcon className="h-6 w-6" />)}
                         </AvatarFallback>
                       </Avatar>
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-1">
                           <div>
-                            <h3 className="font-bold text-slate-900 truncate">
-                              {conv.project?.title || "Direct Inquiry"}
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-slate-900 truncate">
+                                {conversationTitle}
+                              </h3>
+                              {isOfficial && (
+                                <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-50 text-indigo-700 border border-indigo-200 shrink-0">
+                                  Official
+                                </span>
+                              )}
+                            </div>
                             <div className="text-sm font-medium text-slate-700">
-                              {otherUser?.name || "User"}
+                              {displayName}
                             </div>
                           </div>
                           <div className="flex flex-col items-end gap-2">

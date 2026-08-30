@@ -159,8 +159,10 @@ export default function ConversationPage() {
     return <div className="p-20 text-center text-red-500 font-medium">Conversation not found.</div>;
   }
 
-  const isCustomer = user.role === 'customer';
-  const otherUser = isCustomer ? conversation.vendor : conversation.customer;
+  const isCurrentUserCustomer = Number(user.id) === Number(conversation.customer_id);
+  const otherUser = isCurrentUserCustomer ? conversation.vendor : conversation.customer;
+  const isOfficial = otherUser?.id === 1 || otherUser?.roles?.some((r: any) => (r.slug || r.name || r) === 'admin');
+  const displayName = isOfficial ? "FindMyInterior Admin" : (otherUser?.name || "User");
 
   return (
     <div className="bg-slate-50 fixed inset-0 h-[100dvh] flex flex-col z-50">
@@ -174,7 +176,14 @@ export default function ConversationPage() {
             <UserIcon className="h-5 w-5 text-orange-600" />
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="font-bold text-slate-900 truncate">{otherUser?.name || "User"}</h2>
+            <div className="flex items-center gap-2">
+              <h2 className="font-bold text-slate-900 truncate">{displayName}</h2>
+              {isOfficial && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 border border-indigo-200 shrink-0">
+                  Official Admin
+                </span>
+              )}
+            </div>
             <div className="text-xs text-slate-500 flex items-center">
               <span className="w-2 h-2 rounded-full bg-green-500 mr-2"></span>
               Online
