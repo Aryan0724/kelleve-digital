@@ -85,7 +85,10 @@ api.interceptors.response.use(
       }
     } else if (error.response?.status === 403) {
       if (typeof window !== 'undefined') {
-        toast.error('You do not have permission to perform this action.', { toastId: 'forbidden-error' });
+        const url = error.config?.url || '';
+        if (!url.includes('/unlock') && !url.includes('/bids')) {
+          toast.error(error.response?.data?.message || 'You do not have permission to perform this action.', { toastId: 'forbidden-error' });
+        }
       }
     } else if (error.response?.status === 404) {
       if (typeof window !== 'undefined') {

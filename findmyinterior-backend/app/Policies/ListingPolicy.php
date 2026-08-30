@@ -72,7 +72,7 @@ class ListingPolicy
             return false;
         }
 
-        // Homeowners/Customers can unlock professional contacts
-        return $user->hasRole('customer');
+        // Any authenticated user can unlock professional contacts
+        return true;
     }
 }

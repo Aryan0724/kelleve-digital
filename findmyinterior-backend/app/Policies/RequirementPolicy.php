@@ -26,11 +26,10 @@ class RequirementPolicy
 
     /**
      * Determine whether the user can create models.
-     * Only Homeowners (customers) or admins can create requirements.
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('customer') || $user->hasRole('admin');
+        return true;
     }
 
     /**
@@ -75,12 +74,7 @@ class RequirementPolicy
             return false;
         }
         
-        // Professionals can unlock projects/RFQs
-        $type = $model->requirement_type ?? 'project'; // fallback to project if missing
-        if ($type === 'project' || $type === 'rfq') {
-            return $user->hasRole('business') || $user->hasRole('builder') || $user->hasRole('supplier');
-        }
-
-        return false;
+        // Any authenticated user / professional can unlock leads/requirements
+        return true;
     }
 }

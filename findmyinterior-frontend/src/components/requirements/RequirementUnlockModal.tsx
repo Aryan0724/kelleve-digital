@@ -59,8 +59,9 @@ export function RequirementUnlockModal({
         return;
       }
 
+      const rzpKey = orderRes.data.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TRfrjzfAExcLjs";
       const options = {
-        key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID,
+        key: rzpKey,
         amount: amountInPaise.toString(),
         currency: "INR",
         name: "FindMyInterior",
@@ -110,6 +111,12 @@ export function RequirementUnlockModal({
       return;
     }
 
+    if (!isFree && user?.wallet_balance !== undefined && Number(user.wallet_balance) < displayPrice) {
+      toast.info(`Recharging wallet ₹${displayPrice} to unlock contact...`);
+      await startRazorpayPayment(displayPrice);
+      return;
+    }
+
     setLoading(true);
     try {
       const typeStr = requirementType ? `?requirement_type=${requirementType}` : '';
@@ -129,9 +136,14 @@ export function RequirementUnlockModal({
       onClose();
     } catch (err: any) {
       const msg = err.response?.data?.message || "";
-      if (err.response?.status === 402 || msg.toLowerCase().includes('balance')) {
-        toast.info("Opening Razorpay payment gateway...");
-        await startRazorpayPayment(unlockPrice);
+      const isBalance = err.response?.status === 402 || 
+                        err.response?.data?.needs_recharge || 
+                        msg.toLowerCase().includes('balance') || 
+                        msg.toLowerCase().includes('recharge') || 
+                        err.response?.status === 400;
+      if (isBalance) {
+        toast.info("Opening Razorpay to recharge wallet...");
+        await startRazorpayPayment(displayPrice);
       } else {
         toast.error(msg || "Failed to unlock contact.");
       }

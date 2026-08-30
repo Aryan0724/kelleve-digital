@@ -29,16 +29,32 @@ class UnlockController extends Controller
         
         $requirement = $modelClass::with('user')->findOrFail($requirementId);
         
-        $this->authorize('unlock', $requirement);
+        // Owner doesn't need to pay to view their own requirement contact details
+        if ($request->user()->id === $requirement->user_id) {
+            return response()->json([
+                'success' => true,
+                'message' => 'You are the owner of this requirement.',
+                'contact' => [
+                    'name'  => $requirement->user->name ?? $requirement->name ?? 'You',
+                    'phone' => $requirement->user->phone ?? $requirement->phone ?? null,
+                    'email' => $requirement->user->email ?? $requirement->email ?? null,
+                ]
+            ]);
+        }
         
         try {
             $result = $this->unlockService->unlockContact($request->user(), $requirement);
             return response()->json($result);
         } catch (\Exception $e) {
+            $msg = $e->getMessage();
+            $isBalance = str_contains(strtolower($msg), 'insufficient') || str_contains(strtolower($msg), 'balance');
             return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 400);
+                'success'        => false,
+                'message'        => $isBalance ? 'Insufficient wallet balance. Please recharge your wallet to unlock this contact.' : $msg,
+                'code'           => $isBalance ? 'INSUFFICIENT_BALANCE' : 'ERROR',
+                'needs_recharge' => $isBalance,
+                'required_amount'=> (float) ($requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00)),
+            ], $isBalance ? 402 : 400);
         }
     }
 
@@ -49,12 +65,19 @@ class UnlockController extends Controller
     {
         $listing = \App\Models\Listing::with('user')->findOrFail($listingId);
         
-        $this->authorize('unlock', $listing);
+        // Owner doesn't need to pay to view their own listing contact details
+        if ($request->user()->id === $listing->user_id) {
+            return response()->json([
+                'success' => true,
+                'message' => 'You are the owner of this listing.',
+                'contact' => [
+                    'name'  => $listing->user->name ?? $listing->title ?? 'You',
+                    'phone' => $listing->phone ?? $listing->user->phone ?? null,
+                    'email' => $listing->email ?? $listing->user->email ?? null,
+                ]
+            ]);
+        }
         
-        // Ensure Listing model has an unlock_price if we want dynamic pricing, 
-        // otherwise default config is used by UnlockService.
-        // If homeowners are unlocking, perhaps it should be free or a different fee?
-        // Let's set a default unlock_price of 49 if not present on Listing model.
         if (!isset($listing->unlock_price)) {
             $listing->unlock_price = 49.00;
         }
@@ -63,10 +86,15 @@ class UnlockController extends Controller
             $result = $this->unlockService->unlockContact($request->user(), $listing);
             return response()->json($result);
         } catch (\Exception $e) {
+            $msg = $e->getMessage();
+            $isBalance = str_contains(strtolower($msg), 'insufficient') || str_contains(strtolower($msg), 'balance');
             return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 400);
+                'success'        => false,
+                'message'        => $isBalance ? 'Insufficient wallet balance. Please recharge your wallet to unlock this contact.' : $msg,
+                'code'           => $isBalance ? 'INSUFFICIENT_BALANCE' : 'ERROR',
+                'needs_recharge' => $isBalance,
+                'required_amount'=> 49.00,
+            ], $isBalance ? 402 : 400);
         }
     }
 }

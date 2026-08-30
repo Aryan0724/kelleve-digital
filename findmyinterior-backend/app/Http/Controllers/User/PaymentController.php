@@ -29,7 +29,7 @@ class PaymentController extends Controller
             'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
             'billing_cycle'         => ['nullable', 'string'],
             'requirement_id'        => ['required_if:purpose,lead_unlock', 'exists:projects,id'],
-            'amount'                => ['required_if:purpose,wallet_recharge', 'numeric', 'min:100'],
+            'amount'                => ['required_if:purpose,wallet_recharge', 'numeric', 'min:1'],
         ]);
 
         $user = $request->user();
@@ -79,11 +79,12 @@ class PaymentController extends Controller
         ]);
 
         return response()->json([
-            'success'  => true,
-            'order_id' => $razorpayOrder['id'],
-            'amount'   => (int) ($amount * 100),
-            'currency' => 'INR',
+            'success'    => true,
+            'order_id'   => $razorpayOrder['id'],
+            'amount'     => (int) ($amount * 100),
+            'currency'   => 'INR',
             'payment_id' => $payment->id,
+            'key'        => config('services.razorpay.key') ?: env('NEXT_PUBLIC_RAZORPAY_KEY_ID'),
         ]);
     }
 

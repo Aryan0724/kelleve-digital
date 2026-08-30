@@ -101,11 +101,94 @@ export default function RequirementDetail() {
     }
   };
 
+const loadScript = (src: string) => {
+  return new Promise((resolve) => {
+    if (typeof document === 'undefined') return resolve(false);
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
+
+  const startRazorpayPayment = async (amountToRecharge: number = 49) => {
+    try {
+      const orderRes = await api.post("/payments/create-order", {
+        purpose: "wallet_recharge",
+        amount: amountToRecharge,
+      });
+      const orderId = orderRes.data.order_id;
+      const amountInPaise = orderRes.data.amount;
+      const rzpKey = orderRes.data.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TRfrjzfAExcLjs";
+
+      const scriptLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!scriptLoaded) {
+        toast.error("Razorpay SDK failed to load. Please check your internet connection.");
+        return;
+      }
+
+      const options = {
+        key: rzpKey,
+        amount: amountInPaise.toString(),
+        currency: "INR",
+        name: "FindMyInterior",
+        description: `Unlock Lead Contact: ₹${amountToRecharge}`,
+        order_id: orderId,
+        handler: async function (response: any) {
+          try {
+            await api.post("/payments/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            toast.success("Payment verified! Unlocking contact...");
+            const typeStr = reqType ? `?requirement_type=${reqType}` : '';
+            await api.post(`/requirements/${params.id}/unlock${typeStr}`);
+            setIsUnlocked(true);
+            toast.success("Contact unlocked successfully!");
+            setShowUnlockModal(false);
+            const res = await api.get(getEndpoint(params.id as string));
+            setRequirement(res.data.data);
+          } catch (verErr: any) {
+            toast.error(verErr.response?.data?.message || "Payment verification failed!");
+          }
+        },
+        prefill: {
+          name: user?.name || "User",
+          email: user?.email || "",
+          contact: user?.phone || "",
+        },
+        theme: {
+          color: "#ea580c",
+        },
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to initiate payment gateway.");
+    }
+  };
+
   const handleUnlockContact = async () => {
     if (!token) {
       setShowLoginModal(true, window.location.pathname);
       return;
     }
+
+    const unlockPrice = requirement?.unlock_price || 49;
+    const isWorker = user?.role === 'worker' || user?.role === 'skilled_worker';
+    if (!isWorker && user?.wallet_balance !== undefined && Number(user.wallet_balance) < unlockPrice) {
+      toast.info(`Recharging wallet ₹${unlockPrice} to unlock contact...`);
+      await startRazorpayPayment(unlockPrice);
+      return;
+    }
+
     setUnlockLoading(true);
     try {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
@@ -116,11 +199,17 @@ export default function RequirementDetail() {
       const res = await api.get(getEndpoint(params.id as string));
       setRequirement(res.data.data);
     } catch (err: any) {
-      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes('balance')) {
-        toast.error("Insufficient wallet balance. Redirecting to wallet recharge...");
-        router.push("/dashboard?tab=wallet");
+      const msg = err.response?.data?.message || "";
+      const isBalance = err.response?.status === 402 || 
+                        err.response?.data?.needs_recharge || 
+                        msg.toLowerCase().includes('balance') || 
+                        msg.toLowerCase().includes('recharge') || 
+                        err.response?.status === 400;
+      if (isBalance) {
+        toast.info("Opening Razorpay to recharge wallet...");
+        await startRazorpayPayment(unlockPrice);
       } else {
-        toast.error(err.response?.data?.message || "Failed to unlock contact.");
+        toast.error(msg || "Failed to unlock contact.");
       }
     } finally {
       setUnlockLoading(false);
