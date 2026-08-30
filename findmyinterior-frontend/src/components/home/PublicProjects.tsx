@@ -184,7 +184,8 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
                 </div>
               </div>
             </div>
-          ))}
+          );
+        })}
         </div>
       </div>
     </section>
