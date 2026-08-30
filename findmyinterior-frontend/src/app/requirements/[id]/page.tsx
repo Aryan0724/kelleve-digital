@@ -252,8 +252,8 @@ const loadScript = (src: string) => {
   const isProfessional = user && user.role !== 'customer';
   const isOwner = user?.id === requirement?.user_id;
   const isWorker = user?.roles?.some((r: any) => r.slug === 'worker' || r.slug === 'skilled_worker') || user?.role === 'worker' || user?.role === 'skilled_worker';
-  const displayUnlockPrice = isWorker ? "Free" : (requirement?.unlock_price ? `₹${requirement.unlock_price}` : "₹1499");
-  const displayBidPrice = requirement?.bid_fee ? `₹${requirement.bid_fee}` : "₹299";
+  const displayUnlockPrice = isWorker ? "Free" : (requirement?.unlock_price ? `₹${requirement.unlock_price}` : "₹49");
+  const displayBidPrice = requirement?.bid_fee ? `₹${requirement.bid_fee}` : "₹10";
 
   // Build images array
   const displayImages: string[] = [];
