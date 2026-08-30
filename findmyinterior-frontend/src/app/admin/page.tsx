@@ -98,8 +98,7 @@ export default function AdminDashboard() {
 
   const openPasswordModal = (targetUser: any) => {
     setPasswordModalUser(targetUser);
-    const randomSuffix = Math.floor(1000 + Math.random() * 9000);
-    setNewPasswordInput(`Pass@${randomSuffix}`);
+    setNewPasswordInput("findmyinterior");
     setCopiedPassword(false);
   };
 
@@ -120,15 +119,14 @@ export default function AdminDashboard() {
   };
 
   const handleImpersonate = async (targetUser: any) => {
-    if (!confirm(`Log in as "${targetUser.name}" (${targetUser.email || targetUser.phone})?`)) return;
+    if (!confirm(`Log in directly as "${targetUser.name}" (${targetUser.email || targetUser.phone})?`)) return;
     try {
       setBusyId(`impersonate-${targetUser.id}`);
       const res = await api.post(`/admin/users/${targetUser.id}/impersonate`);
       const { token: impToken, user: impUser } = res.data.data;
-      // Save current admin token to return if needed
       sessionStorage.setItem("fmi_admin_backup_token", token || "");
       useAuthStore.getState().setAuth(impUser, impToken);
-      router.push("/dashboard");
+      window.location.href = "/dashboard";
     } catch (e: any) {
       alert("Error logging in as user: " + (e.response?.data?.message || e.message));
     } finally {
@@ -906,33 +904,63 @@ export default function AdminDashboard() {
                   <RefreshCw className="w-4 h-4" />
                 </Button>
               </div>
+              <div className="flex items-center gap-2 pt-1 flex-wrap">
+                <span className="text-[11px] text-slate-400">Quick presets:</span>
+                <button
+                  type="button"
+                  onClick={() => setNewPasswordInput("findmyinterior")}
+                  className="text-[11px] px-2 py-0.5 bg-slate-100 dark:bg-slate-800 hover:bg-orange-50 hover:text-orange-600 rounded border font-mono"
+                >
+                  findmyinterior
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setNewPasswordInput("Truedial@1111")}
+                  className="text-[11px] px-2 py-0.5 bg-slate-100 dark:bg-slate-800 hover:bg-orange-50 hover:text-orange-600 rounded border font-mono"
+                >
+                  Truedial@1111
+                </button>
+              </div>
               <p className="text-[11px] text-slate-400">
-                Set a custom password or generate a random one to share with the user or use for login.
+                Passwords in the database are encrypted hashes (bcrypt) and cannot be decrypted. You can set or change the password above, or click below to log in directly.
               </p>
             </div>
 
-            <div className="flex items-center gap-2 pt-2">
+            <div className="space-y-2 pt-2">
+              <div className="flex items-center gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="flex-1 text-xs"
+                  onClick={() => {
+                    const creds = `Login ID: ${passwordModalUser.email || passwordModalUser.phone}\nPassword: ${newPasswordInput}`;
+                    navigator.clipboard.writeText(creds);
+                    setCopiedPassword(true);
+                    setTimeout(() => setCopiedPassword(false), 2000);
+                  }}
+                >
+                  {copiedPassword ? <Check className="w-3.5 h-3.5 mr-1 text-green-600" /> : <Copy className="w-3.5 h-3.5 mr-1" />}
+                  {copiedPassword ? "Copied!" : "Copy Login Info"}
+                </Button>
+                <Button
+                  type="button"
+                  className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs"
+                  disabled={busyId === "resetting-password" || !newPasswordInput}
+                  onClick={handleResetPassword}
+                >
+                  {busyId === "resetting-password" ? "Saving..." : "Save Password"}
+                </Button>
+              </div>
               <Button
                 type="button"
-                variant="outline"
-                className="flex-1 text-xs"
+                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs h-8"
                 onClick={() => {
-                  const creds = `Login ID: ${passwordModalUser.email || passwordModalUser.phone}\nPassword: ${newPasswordInput}`;
-                  navigator.clipboard.writeText(creds);
-                  setCopiedPassword(true);
-                  setTimeout(() => setCopiedPassword(false), 2000);
+                  const target = passwordModalUser;
+                  setPasswordModalUser(null);
+                  handleImpersonate(target);
                 }}
               >
-                {copiedPassword ? <Check className="w-3.5 h-3.5 mr-1 text-green-600" /> : <Copy className="w-3.5 h-3.5 mr-1" />}
-                {copiedPassword ? "Copied!" : "Copy Login Info"}
-              </Button>
-              <Button
-                type="button"
-                className="flex-1 bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs"
-                disabled={busyId === "resetting-password" || !newPasswordInput}
-                onClick={handleResetPassword}
-              >
-                {busyId === "resetting-password" ? "Saving..." : "Save Password"}
+                <LogIn className="w-3.5 h-3.5 mr-1" /> Log In Directly As This User
               </Button>
             </div>
           </div>

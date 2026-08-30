@@ -176,7 +176,7 @@ class AdminController extends Controller
             'message' => 'Impersonation token generated.',
             'data'    => [
                 'token' => $token,
-                'user'  => $targetUser,
+                'user'  => new \App\Http\Resources\UserResource($targetUser->load('activeSubscription.plan')),
             ]
         ]);
     }
