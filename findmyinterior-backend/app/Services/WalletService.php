@@ -56,11 +56,8 @@ class WalletService
                 'type' => 'debit',
                 'amount' => $amount,
                 'description' => $description,
-                'source' => $meta['source'] ?? null,
                 'reference_type' => $meta['reference_type'] ?? null,
                 'reference_id' => $meta['reference_id'] ?? null,
-                'status' => $meta['status'] ?? 'success',
-                'created_by' => $meta['created_by'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -100,11 +97,8 @@ class WalletService
                 'type' => 'credit',
                 'amount' => $amount,
                 'description' => $description,
-                'source' => $meta['source'] ?? null,
                 'reference_type' => $meta['reference_type'] ?? null,
                 'reference_id' => $meta['reference_id'] ?? null,
-                'status' => $meta['status'] ?? 'success',
-                'created_by' => $meta['created_by'] ?? null,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
