@@ -11,8 +11,9 @@ import { Checkbox } from "@/components/ui/checkbox";
 export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [open, setOpen] = useState(false);
   
-  const [locationInput, setLocationInput] = useState(searchParams.get("city") || "");
+  const [locationInput, setLocationInput] = useState(searchParams.get("city") || searchParams.get("location") || "");
   
   const createQueryString = useCallback(
     (updates: Record<string, string | null>) => {
@@ -31,11 +32,13 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
 
   const applyFilters = (updates: Record<string, string | null>) => {
     router.push("?" + createQueryString(updates));
+    if (isMobile) setOpen(false);
   };
 
   const handleReset = () => {
     setLocationInput("");
     router.push("/professionals");
+    if (isMobile) setOpen(false);
   };
 
   const hasActiveFilters = Array.from(searchParams.keys()).length > 0;
@@ -97,8 +100,8 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
             placeholder="Enter Location"
             value={locationInput}
             onChange={(e) => setLocationInput(e.target.value)}
-            onBlur={() => applyFilters({ city: locationInput })}
-            onKeyDown={(e) => e.key === 'Enter' && applyFilters({ city: locationInput })}
+            onBlur={() => applyFilters({ city: locationInput || null, location: locationInput || null })}
+            onKeyDown={(e) => e.key === 'Enter' && applyFilters({ city: locationInput || null, location: locationInput || null })}
             className="w-full pl-3 pr-10 py-2 text-sm border border-slate-200 dark:border-slate-700 rounded-md bg-white dark:bg-slate-800 focus:outline-none focus:border-orange-400 transition"
           />
           <Target className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
@@ -220,11 +223,7 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
         <Button 
           className="w-full bg-[#ea580c] hover:bg-[#c2410c] text-white font-bold"
           onClick={() => {
-            applyFilters({ location: locationInput });
-            if (isMobile) {
-              const sheetTrigger = document.querySelector('[data-state="open"]');
-              if (sheetTrigger) (sheetTrigger as HTMLElement).click();
-            }
+            applyFilters({ city: locationInput || null, location: locationInput || null });
           }}
         >
           Apply Filters
@@ -243,7 +242,7 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
 
   if (isMobile) {
     return (
-      <Sheet>
+      <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger className="w-full flex items-center justify-center gap-1.5 h-10 bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-200 border border-slate-200 dark:border-slate-700 font-medium text-sm shadow-sm hover:bg-slate-50 dark:hover:bg-slate-800 rounded-lg transition-colors">
           <Filter className="h-4 w-4 text-orange-500" /> 
           Filter Results

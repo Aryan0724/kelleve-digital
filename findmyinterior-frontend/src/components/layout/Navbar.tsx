@@ -50,12 +50,14 @@ export function Navbar() {
   const { theme, setTheme } = useTheme();
   const [searchQuery, setSearchQuery] = useState("");
   const [showMobileLocationDropdown, setShowMobileLocationDropdown] = useState(false);
+  const [showMobileSuggestions, setShowMobileSuggestions] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("Patna");
   const [isLocating, setIsLocating] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const desktopLocationRef = useRef<HTMLDivElement>(null);
   const mobileLocationRef = useRef<HTMLDivElement>(null);
+  const mobileSearchRef = useRef<HTMLDivElement>(null);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
@@ -65,9 +67,13 @@ export function Navbar() {
       const target = event.target as Node;
       const clickedDesktop = desktopLocationRef.current && desktopLocationRef.current.contains(target);
       const clickedMobile = mobileLocationRef.current && mobileLocationRef.current.contains(target);
+      const clickedMobileSearch = mobileSearchRef.current && mobileSearchRef.current.contains(target);
       
       if (!clickedDesktop && !clickedMobile) {
         setShowMobileLocationDropdown(false);
+      }
+      if (!clickedMobileSearch) {
+        setShowMobileSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside, { capture: true });
@@ -380,21 +386,75 @@ export function Navbar() {
                 )}
               </div>
 
-              {/* Search Bar Pill */}
-              <form onSubmit={handleSearch} className="flex-1 flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm px-3 py-1.5 focus-within:border-orange-300">
-                <Search className="w-4 h-4 text-slate-400 shrink-0 mr-2" />
-                <input 
-                  id="mobile-search-input"
-                  type="text" 
-                  placeholder="Search services, professionals..." 
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-transparent text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
-                />
-                <button type="button" onClick={() => handleSearch()} className="text-slate-400 hover:text-[#E8701A] shrink-0 ml-1 p-0.5" aria-label="Search with voice">
-                  <Mic className="w-4 h-4" />
-                </button>
-              </form>
+              {/* Search Bar Pill with Mobile Recommendations */}
+              <div className="flex-1 relative" ref={mobileSearchRef}>
+                <form onSubmit={handleSearch} className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm px-3 py-1.5 focus-within:border-orange-300">
+                  <Search className="w-4 h-4 text-slate-400 shrink-0 mr-2" />
+                  <input 
+                    id="mobile-search-input"
+                    type="text" 
+                    placeholder="Search services, professionals..." 
+                    value={searchQuery}
+                    onFocus={() => setShowMobileSuggestions(true)}
+                    onChange={(e) => {
+                      setSearchQuery(e.target.value);
+                      setShowMobileSuggestions(true);
+                    }}
+                    className="w-full bg-transparent text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
+                  />
+                  <button type="button" onClick={() => handleSearch()} className="text-slate-400 hover:text-[#E8701A] shrink-0 ml-1 p-0.5" aria-label="Search with voice">
+                    <Mic className="w-4 h-4" />
+                  </button>
+                </form>
+
+                {showMobileSuggestions && (
+                  <div className="absolute top-11 left-0 right-0 z-50 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-2xl p-2.5 max-h-72 overflow-y-auto animate-in fade-in zoom-in-95 duration-150">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2 py-1 flex items-center justify-between">
+                      <span>{searchQuery.trim() ? "Matching Recommendations" : `Popular in ${selectedLocation}`}</span>
+                      <span className="text-[9px] text-orange-500 lowercase font-normal">tap to search</span>
+                    </div>
+                    <div className="grid grid-cols-1 gap-1 mt-1">
+                      {[
+                        { title: "Interior Designers", icon: "🛋️", query: "Interior Designer" },
+                        { title: "Architects", icon: "🏛️", query: "Architect" },
+                        { title: "Building Contractors", icon: "🏗️", query: "Contractor" },
+                        { title: "Modular Kitchen Experts", icon: "🍳", query: "Modular Kitchen" },
+                        { title: "Skilled Workers", icon: "🔨", query: "Skilled Workers" },
+                        { title: "False Ceiling & POP", icon: "✨", query: "False Ceiling" },
+                        { title: "Painters & Wall Decorators", icon: "🎨", query: "Painter" },
+                        { title: "Material Suppliers & Hardware", icon: "🧱", query: "Material Supplier" },
+                        { title: "Pest Control Services", icon: "🛡️", query: "Pest Control" },
+                      ]
+                        .filter(item => 
+                          !searchQuery.trim() || 
+                          item.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          item.query.toLowerCase().includes(searchQuery.toLowerCase())
+                        )
+                        .map((rec) => (
+                          <button
+                            key={rec.title}
+                            type="button"
+                            onClick={() => {
+                              setSearchQuery(rec.query);
+                              setShowMobileSuggestions(false);
+                              const params = new URLSearchParams();
+                              params.set("search", rec.query);
+                              if (selectedLocation && selectedLocation !== "All Bihar") {
+                                params.set("city", selectedLocation);
+                              }
+                              router.push(`/professionals?${params.toString()}`);
+                            }}
+                            className="w-full text-left px-3 py-2 rounded-xl text-xs font-semibold hover:bg-orange-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 flex items-center gap-2.5 transition-colors group"
+                          >
+                            <span className="text-base shrink-0">{rec.icon}</span>
+                            <span className="flex-1 truncate group-hover:text-orange-600 dark:group-hover:text-orange-400">{rec.title}</span>
+                            <span className="text-[10px] text-slate-400 shrink-0">in {selectedLocation}</span>
+                          </button>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
           </div>

@@ -25,24 +25,42 @@ class ListingController extends Controller
             $catSlug = trim($request->category);
             $catAliases = [
                 'contractors'        => ['civil-contractors', 'contractors'],
+                'civil-contractors'  => ['civil-contractors', 'contractors'],
                 'material-suppliers' => ['suppliers-vendors', 'material-suppliers', 'material_supplier'],
+                'suppliers-vendors'  => ['suppliers-vendors', 'material-suppliers', 'material_supplier'],
                 'suppliers'          => ['suppliers-vendors', 'suppliers'],
                 'skilled-workers'    => ['skilled-workers', 'worker'],
                 'interior-designers' => ['interior-designers', 'interior-designer'],
                 'architects'         => ['architects', 'architect'],
                 'pest-control'       => ['pest-control', 'pest-control-services'],
+                'builders'           => ['builders', 'builder'],
             ];
             $targetSlugs = $catAliases[$catSlug] ?? [$catSlug];
             $cleanName = str_replace('-', ' ', strtolower($catSlug));
-            $query->where(function ($cq) use ($targetSlugs, $cleanName) {
-                $cq->whereHas('category', fn($q) => $q->whereIn('slug', $targetSlugs)->orWhereRaw('LOWER(categories.name) LIKE ?', ["%{$cleanName}%"]))
-                   ->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$cleanName}%"])
-                   ->orWhereRaw('LOWER(listings.keywords) LIKE ?', ["%{$cleanName}%"])
-                   ->orWhereRaw('LOWER(listings.title) LIKE ?', ["%{$cleanName}%"]);
+            $rootKeywords = match ($catSlug) {
+                'interior-designers', 'interior_designer', 'interior' => ['interior', 'design', 'decor'],
+                'architects', 'architect'                              => ['architect', 'architecture'],
+                'civil-contractors', 'contractors', 'contractor'       => ['contractor', 'civil', 'construction', 'builder'],
+                'suppliers-vendors', 'material-suppliers', 'suppliers' => ['supplier', 'vendor', 'material', 'hardware'],
+                'skilled-workers', 'worker'                            => ['worker', 'carpenter', 'electrician', 'plumber', 'painter'],
+                'pest-control'                                         => ['pest', 'termite'],
+                'builders'                                             => ['builder', 'developer', 'construction'],
+                default                                                => [$cleanName]
+            };
+
+            $query->where(function ($cq) use ($targetSlugs, $cleanName, $rootKeywords) {
+                $cq->whereHas('category', fn($q) => $q->whereIn('slug', $targetSlugs)->orWhereRaw('LOWER(categories.name) LIKE ?', ["%{$cleanName}%"]));
+                foreach ($rootKeywords as $kw) {
+                    $cq->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$kw}%"])
+                       ->orWhereRaw('LOWER(listings.keywords) LIKE ?', ["%{$kw}%"])
+                       ->orWhereRaw('LOWER(listings.title) LIKE ?', ["%{$kw}%"])
+                       ->orWhereRaw('LOWER(listings.description) LIKE ?', ["%{$kw}%"]);
+                }
             });
         }
-        if ($request->filled('city') && $request->city !== 'All Bihar' && strtolower($request->city) !== 'all') {
-            $cityVal = strtolower(trim($request->city));
+        $city = $request->input('city') ?: $request->input('location');
+        if ($city && $city !== 'All Bihar' && strtolower($city) !== 'all') {
+            $cityVal = strtolower(trim($city));
             $query->where(function ($lq) use ($cityVal) {
                 $lq->whereRaw('LOWER(listings.city) LIKE ?', ["%{$cityVal}%"])
                    ->orWhereRaw('LOWER(listings.district) LIKE ?', ["%{$cityVal}%"])
@@ -87,7 +105,11 @@ class ListingController extends Controller
             $query->whereRaw('LOWER(listings.title) LIKE ?', ["%{$nameVal}%"]);
         }
         if ($request->filled('min_rating') && $request->min_rating !== 'all' && (float)$request->min_rating > 0) {
-            $query->where('listings.avg_rating', '>=', (float) $request->min_rating);
+            $minR = (float) $request->min_rating;
+            $query->where(function ($rq) use ($minR) {
+                $rq->where('listings.avg_rating', '>=', $minR)
+                   ->orWhereHas('user', fn($uq) => $uq->whereRaw('(users.trust_score / 20) >= ?', [$minR]));
+            });
         }
         if ($request->filled('budget') && $request->budget !== 'All Budget') {
             $query->where('listings.budget_tier', $request->budget);
