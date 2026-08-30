@@ -26,7 +26,7 @@ const CATEGORY_FALLBACK_IMAGES: Record<string, string[]> = {
   ],
   construction: [
     "https://images.unsplash.com/photo-1503387762-592deb58ef4e?q=80&w=800&auto=format&fit=crop", // Blueprint & site
-    "https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?q=80&w=800&auto=format&fit=crop", // Modern building construction
+    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=800&auto=format&fit=crop", // Modern building construction
     "https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?q=80&w=800&auto=format&fit=crop", // Structural work
   ],
   furniture: [
@@ -40,7 +40,7 @@ const CATEGORY_FALLBACK_IMAGES: Record<string, string[]> = {
     "https://images.unsplash.com/photo-1615873968403-89e068629265?q=80&w=800&auto=format&fit=crop", // Wood & laminates
   ],
   workers: [
-    "https://images.unsplash.com/photo-1504307651254-35680f35eadf?q=80&w=800&auto=format&fit=crop", // Construction craftsman
+    "https://images.unsplash.com/photo-1581094794329-c8112a89af12?q=80&w=800&auto=format&fit=crop", // Construction craftsman
     "https://images.unsplash.com/photo-1621905251189-08b45d6a269e?q=80&w=800&auto=format&fit=crop", // Electrician & wiring
     "https://images.unsplash.com/photo-1581092160607-ee22621dd758?q=80&w=800&auto=format&fit=crop", // Skilled technician
   ]
@@ -48,8 +48,14 @@ const CATEGORY_FALLBACK_IMAGES: Record<string, string[]> = {
 
 function getProjectImage(project: any, type: string, index: number): string {
   const explicit = project.image || project.cover_image || project.images?.[0]?.image_url || project.images?.[0]?.url || project.attachments?.[0]?.url;
-  if (explicit && typeof explicit === 'string' && (explicit.startsWith('http') || explicit.startsWith('/'))) {
-    return explicit;
+  if (explicit && typeof explicit === 'string') {
+    const trimmed = explicit.trim();
+    if (trimmed.startsWith('data:image/') || trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('/')) {
+      return trimmed;
+    }
+    if (trimmed.startsWith('/9j/') || trimmed.startsWith('iVBORw0KGgo') || trimmed.length > 100) {
+      return `data:image/jpeg;base64,${trimmed}`;
+    }
   }
 
   const text = `${project.title || ''} ${project.category?.name || ''} ${project.description || ''}`.toLowerCase();
@@ -113,26 +119,23 @@ export function PublicProjects({ title, projects, type = "lead" }: { title: stri
               >
                 {/* Image Section */}
                 <div className="relative h-44 w-full bg-slate-200 dark:bg-slate-700 overflow-hidden">
-                  <Image 
+                  <img 
                     src={projectImg}
                     alt={project.title || "Project"}
-                    fill
-                    unoptimized
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-3 right-3 bg-white dark:bg-slate-800 px-2 py-1 rounded-md shadow-sm flex items-center gap-1">
+                  <div className="absolute top-3 right-3 bg-white/90 dark:bg-slate-800/90 backdrop-blur-sm px-2 py-1 rounded-md shadow-sm flex items-center gap-1 z-10">
                     <span className="text-amber-500 text-xs">★</span>
                     <span className="text-xs font-bold text-slate-800 dark:text-white">{rating}</span>
                   </div>
                   
                   {/* Avatar */}
-                  <div className="absolute -bottom-5 left-4">
-                    <div className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 overflow-hidden relative">
-                      <Image 
+                  <div className="absolute -bottom-5 left-4 z-10">
+                    <div className="w-12 h-12 rounded-full border-2 border-white dark:border-slate-800 bg-slate-100 overflow-hidden relative shadow-sm">
+                      <img 
                         src={`https://ui-avatars.com/api/?name=${encodeURIComponent(avatarName)}&background=random&color=fff&size=128&bold=true`}
                         alt="Avatar"
-                        fill
-                        unoptimized
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
