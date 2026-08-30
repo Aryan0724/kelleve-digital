@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Schema;
 use Exception;
 
 class WalletService
@@ -34,13 +35,15 @@ class WalletService
             }
 
             // Wallet Provenance Checks (if provenance table exists)
-            $provenance = DB::table('wallet_provenance')->where('wallet_id', $wallet->id)->first();
-            if ($provenance) {
-                if ($provenance->is_synthetic) {
-                    throw new Exception("This is a synthetic mock wallet and cannot be used for real transactions.");
-                }
-                if ($provenance->classification === 'UNVERIFIED_LEGACY_BALANCE') {
-                    throw new Exception("This wallet balance is restricted pending manual verification.");
+            if (Schema::hasTable('wallet_provenance')) {
+                $provenance = DB::table('wallet_provenance')->where('wallet_id', $wallet->id)->first();
+                if ($provenance) {
+                    if ($provenance->is_synthetic) {
+                        throw new Exception("This is a synthetic mock wallet and cannot be used for real transactions.");
+                    }
+                    if ($provenance->classification === 'UNVERIFIED_LEGACY_BALANCE') {
+                        throw new Exception("This wallet balance is restricted pending manual verification.");
+                    }
                 }
             }
 
