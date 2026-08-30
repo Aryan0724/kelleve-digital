@@ -55,10 +55,12 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Categories</SelectItem>
-            <SelectItem value="material-suppliers">Material Suppliers</SelectItem>
             <SelectItem value="interior-designers">Interior Designers</SelectItem>
             <SelectItem value="architects">Architects</SelectItem>
-            <SelectItem value="contractors">Contractors</SelectItem>
+            <SelectItem value="civil-contractors">Contractors</SelectItem>
+            <SelectItem value="suppliers-vendors">Material Suppliers & Vendors</SelectItem>
+            <SelectItem value="skilled-workers">Skilled Workers</SelectItem>
+            <SelectItem value="builders">Builders & Developers</SelectItem>
             <SelectItem value="pest-control">Pest Control</SelectItem>
           </SelectContent>
         </Select>
@@ -131,7 +133,7 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
             <span className="text-lg">★★★★☆</span>
           </div>
           <Select 
-            value={searchParams.get("min_rating") || "4"} 
+            value={searchParams.get("min_rating") || "all"} 
             onValueChange={(v) => applyFilters({ min_rating: v === "all" ? "" : v })}
           >
             <SelectTrigger className="w-32 h-8 text-xs">
@@ -216,8 +218,9 @@ export function ProfessionalsFilters({ isMobile }: { isMobile?: boolean }) {
       {/* ── Actions ── */}
       <div className="pt-4 flex flex-col gap-3">
         <Button 
-          className="w-full bg-[#ea580c] hover:bg-[#c2410c] text-white"
+          className="w-full bg-[#ea580c] hover:bg-[#c2410c] text-white font-bold"
           onClick={() => {
+            applyFilters({ location: locationInput });
             if (isMobile) {
               const sheetTrigger = document.querySelector('[data-state="open"]');
               if (sheetTrigger) (sheetTrigger as HTMLElement).click();

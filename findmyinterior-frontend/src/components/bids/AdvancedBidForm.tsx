@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import api from "@/lib/api";
 import { Button } from "@/components/ui/button";
@@ -8,11 +9,13 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Upload } from "lucide-react";
+import { Upload, Wallet, AlertCircle } from "lucide-react";
 
 export function AdvancedBidForm({ requirementId, requirementType = 'project', onSuccess }: { requirementId: number, requirementType?: string, onSuccess: () => void }) {
+  const router = useRouter();
   const { token, user } = useAuthStore();
   const [loading, setLoading] = useState(false);
+  const [insufficientBalanceError, setInsufficientBalanceError] = useState<string | null>(null);
   const [portfolioFiles, setPortfolioFiles] = useState<File[]>([]);
   const [portfolioPreview, setPortfolioPreview] = useState<string[]>([]);
   const [formData, setFormData] = useState({
@@ -92,7 +95,9 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
       alert("Bid submitted successfully!");
       onSuccess();
     } catch (err: any) {
-      if (err.response?.status === 422) {
+      if (err.response?.status === 402 || err.response?.data?.message?.toLowerCase().includes("insufficient wallet balance")) {
+        setInsufficientBalanceError(err.response?.data?.message || "Insufficient wallet balance to submit bid. Please recharge your wallet.");
+      } else if (err.response?.status === 422) {
         alert("Validation Error: " + JSON.stringify(err.response.data.errors));
       } else {
         alert(err.response?.data?.message || "Failed to submit bid.");
@@ -104,6 +109,22 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
 
   return (
     <form onSubmit={submitBid} className="space-y-6">
+      {insufficientBalanceError && (
+        <div className="p-4 bg-amber-50 dark:bg-amber-950/40 border border-amber-300 dark:border-amber-700 rounded-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-amber-900 dark:text-amber-200 animate-in fade-in duration-200">
+          <div className="flex items-center gap-2.5">
+            <AlertCircle className="w-5 h-5 text-amber-600 shrink-0" />
+            <span className="text-sm font-semibold">{insufficientBalanceError}</span>
+          </div>
+          <Button
+            type="button"
+            onClick={() => router.push("/dashboard?tab=wallet")}
+            className="bg-amber-600 hover:bg-amber-700 text-white shrink-0 text-xs font-bold shadow-sm"
+          >
+            <Wallet className="w-4 h-4 mr-1.5" />
+            Recharge Wallet
+          </Button>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
           <Label>

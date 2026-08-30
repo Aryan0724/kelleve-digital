@@ -67,7 +67,7 @@ class AdminController extends Controller
                         $q->whereIn('slug', ['business', 'worker', 'builder', 'supplier']);
                     })->where('is_active', true)->count(),
                     'total_requirements'    => \App\Models\Project::count() + \App\Models\WorkerJob::count() + \App\Models\Rfq::count(),
-                    'total_bids'            => \App\Models\Bid::count() + \App\Models\JobApplication::count() + \App\Models\RfqQuotation::count(),
+                    'total_bids'            => \App\Models\Bid::count(),
                     'open_requirements'     => \App\Models\Project::where('status', 'open')->count() + \App\Models\WorkerJob::where('status', 'open')->count() + \App\Models\Rfq::where('status', 'open')->count(),
                     'pending_reviews'       => Review::where('status', 'pending')->count(),
                     'pending_listings'      => Listing::where('is_verified', false)->count(),

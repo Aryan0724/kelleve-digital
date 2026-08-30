@@ -189,6 +189,11 @@ class User extends Authenticatable
         return $this->roles()->where('slug', $roleSlug)->exists();
     }
 
+    public function hasAnyRole(array $roleSlugs): bool
+    {
+        return $this->roles()->whereIn('slug', $roleSlugs)->exists();
+    }
+
     public function assignRole($role)
     {
         if (is_string($role)) {
@@ -208,22 +213,31 @@ class User extends Authenticatable
 
     public function isBuilder(): bool
     {
-        return $this->hasRole('builder');
+        return $this->hasAnyRole(['builder', 'real_estate_developer']);
     }
 
     public function isSupplier(): bool
     {
-        return $this->hasRole('supplier');
+        return $this->hasAnyRole([
+            'supplier', 'material_supplier', 'plywood_dealer', 'hardware_supplier',
+            'lighting_supplier', 'sanitary_bathroom_supplier', 'electrical_supplier'
+        ]);
     }
 
     public function isWorker(): bool
     {
-        return $this->hasRole('worker');
+        return $this->hasAnyRole([
+            'worker', 'skilled_worker', 'carpenter', 'electrician', 'plumber',
+            'painter', 'fabricator', 'tile_marble_fitter', 'welder'
+        ]);
     }
 
     public function isBusiness(): bool
     {
-        return $this->hasRole('business');
+        return $this->hasAnyRole([
+            'business', 'interior_designer', 'interior_company', 'contractor',
+            'architect', 'builder', 'supplier', 'material_supplier', 'worker', 'skilled_worker', 'professional'
+        ]);
     }
 
     public function hasPremiumSubscription(): bool

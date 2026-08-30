@@ -26,6 +26,7 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabParam || "dashboard");
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     if (tabParam) {
@@ -36,8 +37,12 @@ export function HomeownerDashboard({ data, fetchDashboard }: { data: any, fetchD
   }, [tabParam]);
 
   useEffect(() => {
-    // Auto-scroll to content area on mobile when tab changes
-    if (window.innerWidth < 1024) {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    // Only scroll on mobile when explicitly navigating to a sub-tab, never when on or switching to main dashboard
+    if (window.innerWidth < 1024 && activeTab !== 'dashboard') {
       setTimeout(() => {
         const contentArea = document.getElementById('dashboard-content-area');
         if (contentArea) {

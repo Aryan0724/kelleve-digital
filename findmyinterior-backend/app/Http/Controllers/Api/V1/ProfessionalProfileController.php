@@ -149,6 +149,13 @@ class ProfessionalProfileController extends Controller
         $profile = null;
         $type = $this->getProfileType($role);
 
+        if ($request->filled('website')) {
+            $rawWebsite = trim($request->input('website'));
+            if (!empty($rawWebsite) && !preg_match('#^https?://#i', $rawWebsite)) {
+                $request->merge(['website' => 'https://' . $rawWebsite]);
+            }
+        }
+
         if ($type === 'listing' || $type === 'none') {
             $data = $request->validate([
                 'title'            => ['nullable', 'string', 'max:255'],

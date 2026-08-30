@@ -87,10 +87,10 @@ export function MobileBottomNav() {
         </Link>
         
         <button 
-          onClick={() => router.push(user ? "/dashboard/profile" : "/login")}
-          className={`flex flex-col items-center justify-center w-16 h-12 transition-colors ${isActive('/dashboard/profile') || isActive('/profile') ? 'text-[#E8701A]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}`}
+          onClick={() => router.push(user ? "/dashboard?tab=profile" : "/login")}
+          className={`flex flex-col items-center justify-center w-16 h-12 transition-colors ${isActive('/dashboard') || isActive('/profile') ? 'text-[#E8701A]' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100'}`}
         >
-          <User className={`w-5 h-5 mb-1 ${isActive('/dashboard/profile') || isActive('/profile') ? 'fill-[#E8701A]/20' : ''}`} />
+          <User className={`w-5 h-5 mb-1 ${isActive('/dashboard') || isActive('/profile') ? 'fill-[#E8701A]/20' : ''}`} />
           <span className="text-[10px] font-medium">Profile</span>
         </button>
       </div>

@@ -29,7 +29,13 @@ class BidPolicy
      */
     public function create(User $user): bool
     {
-        return $user->hasRole('business') || $user->hasRole('builder') || $user->hasRole('supplier') || $user->hasRole('worker');
+        $allowedRoles = [
+            'business', 'builder', 'supplier', 'worker',
+            'contractor', 'architect', 'interior_designer', 'interior_company',
+            'material_supplier', 'skilled_worker', 'professional', 'admin'
+        ];
+
+        return $user->hasAnyRole($allowedRoles);
     }
 
     /**

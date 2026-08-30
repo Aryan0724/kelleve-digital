@@ -21,12 +21,33 @@ class ListingController extends Controller
             ->withCount(['approvedReviews as review_count', 'gallery as gallery_count']);
 
         // Filters
-        if ($request->filled('category')) {
-            $query->whereHas('category', fn($q) => $q->where('slug', $request->category));
+        if ($request->filled('category') && $request->category !== 'all') {
+            $catSlug = trim($request->category);
+            $catAliases = [
+                'contractors'        => ['civil-contractors', 'contractors'],
+                'material-suppliers' => ['suppliers-vendors', 'material-suppliers', 'material_supplier'],
+                'suppliers'          => ['suppliers-vendors', 'suppliers'],
+                'skilled-workers'    => ['skilled-workers', 'worker'],
+                'interior-designers' => ['interior-designers', 'interior-designer'],
+                'architects'         => ['architects', 'architect'],
+                'pest-control'       => ['pest-control', 'pest-control-services'],
+            ];
+            $targetSlugs = $catAliases[$catSlug] ?? [$catSlug];
+            $cleanName = str_replace('-', ' ', strtolower($catSlug));
+            $query->where(function ($cq) use ($targetSlugs, $cleanName) {
+                $cq->whereHas('category', fn($q) => $q->whereIn('slug', $targetSlugs)->orWhereRaw('LOWER(categories.name) LIKE ?', ["%{$cleanName}%"]))
+                   ->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$cleanName}%"])
+                   ->orWhereRaw('LOWER(listings.keywords) LIKE ?', ["%{$cleanName}%"])
+                   ->orWhereRaw('LOWER(listings.title) LIKE ?', ["%{$cleanName}%"]);
+            });
         }
-        if ($request->filled('city')) {
+        if ($request->filled('city') && $request->city !== 'All Bihar' && strtolower($request->city) !== 'all') {
             $cityVal = strtolower(trim($request->city));
-            $query->whereRaw('LOWER(listings.city) LIKE ?', ["%{$cityVal}%"]);
+            $query->where(function ($lq) use ($cityVal) {
+                $lq->whereRaw('LOWER(listings.city) LIKE ?', ["%{$cityVal}%"])
+                   ->orWhereRaw('LOWER(listings.district) LIKE ?', ["%{$cityVal}%"])
+                   ->orWhereRaw('LOWER(listings.address) LIKE ?', ["%{$cityVal}%"]);
+            });
         }
         if ($request->filled('district')) {
             $distVal = strtolower(trim($request->district));
@@ -65,8 +86,8 @@ class ListingController extends Controller
             $nameVal = strtolower(trim($request->name));
             $query->whereRaw('LOWER(listings.title) LIKE ?', ["%{$nameVal}%"]);
         }
-        if ($request->filled('min_rating')) {
-            $query->where('listings.avg_rating', '>=', $request->min_rating);
+        if ($request->filled('min_rating') && $request->min_rating !== 'all' && (float)$request->min_rating > 0) {
+            $query->where('listings.avg_rating', '>=', (float) $request->min_rating);
         }
         if ($request->filled('budget') && $request->budget !== 'All Budget') {
             $query->where('listings.budget_tier', $request->budget);
@@ -88,12 +109,20 @@ class ListingController extends Controller
         }
         if ($request->filled('material_type')) {
             $mtVal = strtolower(trim($request->material_type));
-            $query->whereRaw('LOWER(listings.products) LIKE ?', ["%{$mtVal}%"]);
+            $query->where(function ($mq) use ($mtVal) {
+                $mq->whereRaw('LOWER(listings.products) LIKE ?', ["%{$mtVal}%"])
+                   ->orWhereRaw('LOWER(listings.services) LIKE ?', ["%{$mtVal}%"])
+                   ->orWhereRaw('LOWER(listings.keywords) LIKE ?', ["%{$mtVal}%"])
+                   ->orWhereRaw('LOWER(listings.title) LIKE ?', ["%{$mtVal}%"])
+                   ->orWhereRaw('LOWER(listings.description) LIKE ?', ["%{$mtVal}%"]);
+            });
         }
         if ($request->filled('business_type')) {
             $btVal = strtolower(trim($request->business_type));
             $query->where(function ($q) use ($btVal) {
                 $q->whereRaw('LOWER(listings.services) LIKE ?', ["%{$btVal}%"])
+                  ->orWhereRaw('LOWER(listings.description) LIKE ?', ["%{$btVal}%"])
+                  ->orWhereRaw('LOWER(listings.title) LIKE ?', ["%{$btVal}%"])
                   ->orWhereHas('category', fn($cq) => $cq->whereRaw('LOWER(categories.name) LIKE ?', ["%{$btVal}%"]));
             });
         }

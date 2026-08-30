@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -34,9 +34,14 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
     }
   }, [tabParam]);
 
+  const isInitialMount = useRef(true);
+
   useEffect(() => {
-    // Auto-scroll to content area on mobile when tab changes
-    if (window.innerWidth < 1024) {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (window.innerWidth < 1024 && activeTab !== 'dashboard') {
       setTimeout(() => {
         const contentArea = document.getElementById('dashboard-content-area');
         if (contentArea) {

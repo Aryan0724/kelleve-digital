@@ -92,6 +92,10 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     Route::get('homepage', HomepageController::class);
     Route::get('search', SearchController::class);
     
+    // Academy & Podcast
+    Route::get('academy', [\App\Http\Controllers\Api\V1\AcademyController::class, 'index']);
+    Route::get('podcasts', [\App\Http\Controllers\Api\V1\PodcastController::class, 'index']);
+    
     // Dropdown Data
     Route::get('categories', function () {
         return \Illuminate\Support\Facades\Cache::remember('categories_dropdown', 3600, function() {
@@ -171,7 +175,10 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('bookmarks', [\App\Http\Controllers\Api\V1\BookmarkController::class, 'index']);
         Route::post('bookmarks/toggle', [\App\Http\Controllers\Api\V1\BookmarkController::class, 'toggle']);
         
-        Route::post('/verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
+        // Verification routes under /user
+        Route::get('verification/status', [\App\Http\Controllers\Api\V1\VerificationController::class, 'status']);
+        Route::post('verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
+        Route::delete('verification/document/{id}', [\App\Http\Controllers\Api\V1\VerificationController::class, 'destroy']);
         
         // Listing & Professional Profile management
         Route::get('listings', [ProfileController::class, 'listings']);
@@ -194,6 +201,10 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('ventures', [\App\Http\Controllers\Api\V1\VentureController::class, 'index']);
         Route::post('ventures', [\App\Http\Controllers\Api\V1\VentureController::class, 'store']);
         Route::delete('ventures/{id}', [\App\Http\Controllers\Api\V1\VentureController::class, 'destroy']);
+
+        // Privilege Card
+        Route::get('privilege-card', [\App\Http\Controllers\PrivilegeCardController::class, 'index']);
+        Route::post('privilege-card', [\App\Http\Controllers\PrivilegeCardController::class, 'store']);
     });
 
     // ─── Marketplace Engine (Protected) ───────────────────────────────────
@@ -239,6 +250,11 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::get('shortlists', [\App\Http\Controllers\ShortlistController::class, 'index']);
         Route::post('shortlists', [\App\Http\Controllers\ShortlistController::class, 'store']);
         Route::delete('shortlists/{professional_id}', [\App\Http\Controllers\ShortlistController::class, 'destroy']);
+
+        // Verification (Direct aliases for frontend compatibility)
+        Route::get('verification/status', [\App\Http\Controllers\Api\V1\VerificationController::class, 'status']);
+        Route::post('verification/upload', [\App\Http\Controllers\Api\V1\VerificationController::class, 'upload']);
+        Route::delete('verification/document/{id}', [\App\Http\Controllers\Api\V1\VerificationController::class, 'destroy']);
 
         // Messaging
         Route::get('/conversations', [\App\Http\Controllers\Api\V1\ConversationController::class, 'index']);

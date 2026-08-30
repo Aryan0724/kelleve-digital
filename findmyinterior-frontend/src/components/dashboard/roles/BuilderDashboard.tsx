@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
   const searchParams = useSearchParams();
   const tabParam = searchParams.get('tab');
   const [activeTab, setActiveTab] = useState(tabParam || "projects");
+  const isInitialMount = useRef(true);
 
   useEffect(() => {
     if (tabParam) {
@@ -41,8 +42,11 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
   }, [tabParam]);
 
   useEffect(() => {
-    // Auto-scroll to content area on mobile when tab changes
-    if (window.innerWidth < 1024) {
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    if (window.innerWidth < 1024 && activeTab !== 'projects' && activeTab !== 'dashboard') {
       setTimeout(() => {
         const contentArea = document.getElementById('dashboard-content-area');
         if (contentArea) {
@@ -242,7 +246,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
             {activeTab === 'wallet' && <WalletTab />}
 
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
-            {activeTab === 'business_profile' && <CompleteProfileTab />}
+            {(activeTab === 'business_profile' || activeTab === 'profile') && <CompleteProfileTab />}
             {activeTab === 'portfolio' && <PortfolioTab />}
 
             {activeTab === 'messages' && (
