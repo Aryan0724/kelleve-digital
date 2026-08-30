@@ -211,6 +211,39 @@ class ListingController extends Controller
             ->where('slug', $slug)
             ->first();
 
+        // 1b. Check if slug belongs to a Worker, Supplier, or Builder
+        $matchedUserId = null;
+        if (!$listing) {
+            $worker = \App\Models\Worker::where('slug', $slug)->first();
+            if ($worker) {
+                $matchedUserId = $worker->user_id;
+                $listing = Listing::withoutGlobalScopes()
+                    ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+                    ->where('user_id', $worker->user_id)
+                    ->first();
+            }
+        }
+        if (!$listing) {
+            $supplier = \App\Models\Supplier::where('slug', $slug)->first();
+            if ($supplier) {
+                $matchedUserId = $supplier->user_id;
+                $listing = Listing::withoutGlobalScopes()
+                    ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+                    ->where('user_id', $supplier->user_id)
+                    ->first();
+            }
+        }
+        if (!$listing) {
+            $builder = \App\Models\Builder::where('slug', $slug)->first();
+            if ($builder) {
+                $matchedUserId = $builder->user_id;
+                $listing = Listing::withoutGlobalScopes()
+                    ->with(['category', 'gallery', 'approvedReviews.reviewer', 'user'])
+                    ->where('user_id', $builder->user_id)
+                    ->first();
+            }
+        }
+
         // 2. If numeric, try exact ID or user_id match
         if (!$listing && is_numeric($slug)) {
             $listing = Listing::withoutGlobalScopes()
@@ -244,7 +277,7 @@ class ListingController extends Controller
 
         // 6. Fallback: User ID lookup & stub generation for workers/suppliers/builders
         if (!$listing) {
-            $userIdToFind = is_numeric($slug) ? $slug : null;
+            $userIdToFind = $matchedUserId ?? (is_numeric($slug) ? $slug : null);
             if (!$userIdToFind) {
                 $parts = explode('-', $slug);
                 foreach ($parts as $part) {

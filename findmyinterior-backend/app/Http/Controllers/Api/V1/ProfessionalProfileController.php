@@ -96,8 +96,24 @@ class ProfessionalProfileController extends Controller
                     ->with(['category', 'gallery'])
                     ->first();
 
-                // BUG FIX: Do NOT auto-create on GET. Return null and let frontend prompt the user.
-                // Auto-creating on GET causes race conditions, duplicate listings, and FK errors.
+                // If user is a professional and has no listing record yet, auto-create one so their profile is immediately live
+                if (!$profile && $role !== 'customer') {
+                    $catId = \App\Models\Category::where('slug', 'interior-designers')->value('id') ?? \App\Models\Category::value('id') ?? 1;
+                    $profile = Listing::create([
+                        'tenant_id'   => $tenantId ?? 1,
+                        'user_id'     => $user->id,
+                        'category_id' => $catId,
+                        'title'       => $user->name,
+                        'slug'        => Str::slug($user->name) . '-' . Str::random(6),
+                        'description' => 'Professional interior design and architectural services.',
+                        'phone'       => $user->phone ?? '0000000000',
+                        'city'        => $user->city ?? 'Patna',
+                        'district'    => $user->district ?? 'Patna',
+                        'state'       => 'Bihar',
+                        'status'      => 'active',
+                    ]);
+                    $profile->load(['category', 'gallery']);
+                }
             } elseif (in_array($type, ['worker', 'supplier', 'builder'])) {
                 if ($type === 'worker') {
                     $profile = Worker::where('user_id', $user->id)->first();
@@ -108,9 +124,33 @@ class ProfessionalProfileController extends Controller
                 }
 
                 $listing = Listing::where('user_id', $user->id)->with(['category', 'gallery'])->first();
+                if (!$listing) {
+                    $catSlug = $type === 'worker' ? 'skilled-workers' : ($type === 'supplier' ? 'material-suppliers' : 'builders');
+                    $catId = \App\Models\Category::where('slug', $catSlug)->value('id') ?? 1;
+                    $sharedSlug = $profile?->slug ?: (Str::slug($user->name) . '-' . Str::random(6));
+                    $listing = Listing::create([
+                        'tenant_id'   => 1,
+                        'user_id'     => $user->id,
+                        'category_id' => $catId,
+                        'title'       => $profile?->name ?? $profile?->company_name ?? $user->name,
+                        'slug'        => $sharedSlug,
+                        'description' => 'Professional ' . $type . ' services.',
+                        'phone'       => $profile?->phone ?? $user->phone ?? '0000000000',
+                        'city'        => $profile?->city ?? $user->city ?? 'Patna',
+                        'district'    => $profile?->district ?? $user->district ?? 'Patna',
+                        'state'       => 'Bihar',
+                        'status'      => 'active',
+                    ]);
+                    $listing->load(['category', 'gallery']);
+                }
+
                 if ($profile && $listing) {
                     $profile->address = $listing->address;
                     $profile->description = $listing->description;
+                    // Ensure profile slug matches listing slug for public routing
+                    if ($listing->slug) {
+                        $profile->slug = $listing->slug;
+                    }
                 } else {
                     $profile = $listing;
                 }
@@ -202,7 +242,7 @@ class ProfessionalProfileController extends Controller
                 $listing->cover_image = $data['cover_image'];
             }
             $listing->title = $data['title'];
-            $listing->slug = Str::slug($data['title']) . '-' . Str::random(6);
+            $listing->slug = $listing->slug ?: (Str::slug($data['title']) . '-' . Str::random(6));
             if (!$listing->exists) {
                 $listing->state = 'Bihar';
                 $listing->status = 'active';
@@ -234,6 +274,7 @@ class ProfessionalProfileController extends Controller
                 'social_links'     => ['nullable'],
             ]);
 
+            $existingListing = Listing::withoutGlobalScopes()->where('user_id', $user->id)->first();
             $worker = Worker::firstOrNew(['user_id' => $user->id]);
             $worker->fill(array_filter($data, fn($v) => !is_null($v)));
             
@@ -244,15 +285,14 @@ class ProfessionalProfileController extends Controller
             $worker->district = $data['district'] ?? $worker->district ?? $user->district ?? 'Patna';
             $worker->skill = $data['skill'] ?? $worker->skill ?? 'Unspecified';
             
-            if (!$worker->exists) {
-                $worker->slug = Str::slug($worker->name) . '-' . Str::random(6);
-                $worker->status = 'active';
-            }
+            $sharedSlug = $worker->slug ?: ($existingListing?->slug ?: (Str::slug($worker->name) . '-' . Str::random(6)));
+            $worker->slug = $sharedSlug;
+            $worker->status = 'active';
             $worker->save();
             $profile = $worker;
 
             // Sync to Listing model for public profile visibility
-            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listing = $existingListing ?? Listing::firstOrNew(['user_id' => $user->id]);
             $listing->title = $worker->name;
             $listing->description = $data['bio'] ?? 'Skilled worker profile.';
             $listing->phone = $worker->phone;
@@ -261,7 +301,7 @@ class ProfessionalProfileController extends Controller
             $listing->address = $data['address'] ?? $user->address;
             $listing->services = $data['services'] ?? (!empty($data['skill']) ? [$data['skill']] : []);
             $listing->status = 'active';
-            $listing->slug = Str::slug($listing->title) . '-' . Str::random(6);
+            $listing->slug = $sharedSlug;
             if (!$listing->exists) {
                 $listing->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId() ?? 1;
                 // BUG FIX: Don't hardcode category_id=1
@@ -290,18 +330,18 @@ class ProfessionalProfileController extends Controller
                 'social_links'     => ['nullable'],
             ]);
 
+            $existingListing = Listing::withoutGlobalScopes()->where('user_id', $user->id)->first();
             $supplier = Supplier::firstOrNew(['user_id' => $user->id]);
             $supplier->fill(array_filter($data, fn($v) => !is_null($v)));
-            if (!$supplier->exists) {
-                $supplier->slug = Str::slug($data['company_name'] ?? $user->name) . '-' . Str::random(6);
-                $supplier->status = 'active';
-                $supplier->email = $user->email;
-            }
+            $sharedSlug = $supplier->slug ?: ($existingListing?->slug ?: (Str::slug($data['company_name'] ?? $user->name) . '-' . Str::random(6)));
+            $supplier->slug = $sharedSlug;
+            $supplier->status = 'active';
+            $supplier->email = $user->email;
             $supplier->save();
             $profile = $supplier;
 
             // Sync to Listing model for public profile visibility
-            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listing = $existingListing ?? Listing::firstOrNew(['user_id' => $user->id]);
             $listing->title = $data['company_name'] ?? $user->name;
             $listing->description = $data['description'] ?? $data['tagline'] ?? 'Material supplier.';
             $listing->phone = $data['phone'] ?? $user->phone;
@@ -310,7 +350,7 @@ class ProfessionalProfileController extends Controller
             $listing->address = $data['address'] ?? $user->address;
             $listing->services = $data['services'] ?? [];
             $listing->status = 'active';
-            $listing->slug = Str::slug($listing->title) . '-' . Str::random(6);
+            $listing->slug = $sharedSlug;
             if (!$listing->exists) {
                 $listing->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId() ?? 1;
                 // BUG FIX: Don't hardcode category_id=1
@@ -340,18 +380,18 @@ class ProfessionalProfileController extends Controller
                 'social_links'     => ['nullable'],
             ]);
 
+            $existingListing = Listing::withoutGlobalScopes()->where('user_id', $user->id)->first();
             $builder = Builder::firstOrNew(['user_id' => $user->id]);
             $builder->fill(array_filter($data, fn($v) => !is_null($v)));
-            if (!$builder->exists) {
-                $builder->slug = Str::slug($data['company_name'] ?? $user->name) . '-' . Str::random(6);
-                $builder->status = 'active';
-                $builder->email = $user->email;
-            }
+            $sharedSlug = $builder->slug ?: ($existingListing?->slug ?: (Str::slug($data['company_name'] ?? $user->name) . '-' . Str::random(6)));
+            $builder->slug = $sharedSlug;
+            $builder->status = 'active';
+            $builder->email = $user->email;
             $builder->save();
             $profile = $builder;
 
             // Sync to Listing model for public profile visibility
-            $listing = Listing::firstOrNew(['user_id' => $user->id]);
+            $listing = $existingListing ?? Listing::firstOrNew(['user_id' => $user->id]);
             $listing->title = $data['company_name'] ?? $user->name;
             $listing->description = $data['description'] ?? $data['tagline'] ?? 'Real estate developer.';
             $listing->phone = $data['phone'] ?? $user->phone;
@@ -360,7 +400,7 @@ class ProfessionalProfileController extends Controller
             $listing->address = $data['address'] ?? $user->address;
             $listing->services = $data['services'] ?? [];
             $listing->status = 'active';
-            $listing->slug = Str::slug($listing->title) . '-' . Str::random(6);
+            $listing->slug = $sharedSlug;
             if (!$listing->exists) {
                 $listing->tenant_id = app(\App\Core\Tenancy\TenantContext::class)->getTenantId() ?? 1;
                 // BUG FIX: Don't hardcode category_id=1

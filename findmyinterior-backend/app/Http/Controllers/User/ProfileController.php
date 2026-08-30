@@ -153,13 +153,13 @@ class ProfileController extends Controller
         if (!empty($userFields)) {
             $user->update($userFields);
             
-            // Keep Listing title & slug in sync if user changes their name
+            // Keep Listing title in sync if user changes their name, but preserve existing slug!
             if (isset($userFields['name']) && !empty($userFields['name'])) {
                 $listing = Listing::where('user_id', $user->id)->first();
                 if ($listing) {
                     $listing->update([
                         'title' => $userFields['name'],
-                        'slug'  => \Illuminate\Support\Str::slug($userFields['name']) . '-' . \Illuminate\Support\Str::random(6),
+                        'slug'  => $listing->slug ?: (\Illuminate\Support\Str::slug($userFields['name']) . '-' . \Illuminate\Support\Str::random(6)),
                     ]);
                 }
             }
@@ -361,20 +361,25 @@ class ProfileController extends Controller
     public function uploadListingCover(Request $request, int $id): JsonResponse
     {
         $listing = Listing::where('user_id', $request->user()->id)
-            ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
-            ->findOrFail($id);
+            ->where('id', $id)
+            ->first()
+            ?? Listing::where('user_id', $request->user()->id)->first();
 
         $request->validate([
-            'cover_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'cover_image' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:10240'],
         ]);
 
         $file = $request->file('cover_image');
 
         $url = app(\App\Services\UnifiedStorageService::class)->storeFile($file, 'covers');
 
-        $listing->update(['cover_image' => $url]);
+        if ($listing) {
+            $listing->update(['cover_image' => $url]);
+        }
         
         $request->user()->update(['cover_image' => $url]);
+        \App\Models\Supplier::where('user_id', $request->user()->id)->update(['cover_image' => $url]);
+        \App\Models\Builder::where('user_id', $request->user()->id)->update(['cover_image' => $url]);
 
         return response()->json([
             'success' => true,

@@ -93,9 +93,9 @@ export function DashboardProfileCard({
                   <Loader2 className="w-3.5 h-3.5 animate-spin" />
                   Loading...
                 </span>
-              ) : listingSlug ? (
+              ) : (listingSlug || user?.id) ? (
                 <Link
-                  href={`/professionals/${listingSlug}`}
+                  href={`/professionals/${listingSlug || user?.id}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="flex items-center gap-1.5 px-4 py-1.5 bg-orange-600 hover:bg-orange-700 text-white rounded-full text-xs font-semibold transition-all shadow-sm"
@@ -103,11 +103,7 @@ export function DashboardProfileCard({
                   <ExternalLink className="w-3.5 h-3.5" />
                   View Public Listing
                 </Link>
-              ) : (
-                <span className="flex items-center gap-1.5 px-4 py-1.5 bg-slate-50 text-slate-400 rounded-full text-xs font-semibold border border-dashed border-slate-200">
-                  Complete profile to get public listing
-                </span>
-              )
+              ) : null
             )}
           </div>
         </div>

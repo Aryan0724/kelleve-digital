@@ -111,6 +111,10 @@ function AvatarUploader({ currentAvatar, userName }: { currentAvatar: string | n
   const [cropperOpen, setCropperOpen] = useState(false);
   const [cropperImageSrc, setCropperImageSrc] = useState("");
 
+  useEffect(() => {
+    setPreview(currentAvatar);
+  }, [currentAvatar]);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let file = e.target.files?.[0];
     if (!file) return;
@@ -215,6 +219,10 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
   const [cropperOpen, setCropperOpen] = useState(false);
   const [cropperImageSrc, setCropperImageSrc] = useState("");
 
+  useEffect(() => {
+    setPreview(currentCover);
+  }, [currentCover]);
+
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     let file = e.target.files?.[0];
     if (!file) return;
@@ -245,9 +253,16 @@ function CoverUploader({ currentCover, listingId }: { currentCover: string | nul
         endpoint = `/user/listings/${listingId}/cover`;
       }
       
-      const res = await api.post(endpoint, form, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
+      let res;
+      try {
+        res = await api.post(endpoint, form, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      } catch (subErr) {
+        res = await api.post(`/user/cover`, form, {
+          headers: { "Content-Type": "multipart/form-data" },
+        });
+      }
       setPreview(res.data.cover_image);
       // Ensure the auth store user object also updates so the global avatar/cover updates
       const meRes = await api.get('/auth/me');
