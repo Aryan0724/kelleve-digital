@@ -147,32 +147,121 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
       ? currentPlan
       : currentPlan?.plan?.name ?? currentPlan?.name ?? "Basic (Free)";
 
+  const determineUserCategory = (): "worker" | "business" | "professional" => {
+    const role = (user?.role || "").toLowerCase();
+    const profType = (user?.professional_type || "").toLowerCase();
+    const allRoles = (user?.roles || []).map((r: any) => (typeof r === "string" ? r : r.slug || r.name || "").toLowerCase());
+
+    const isWorker = 
+      role.includes("worker") || 
+      allRoles.some((r: string) => r.includes("worker") || r === "carpenter" || r === "electrician" || r === "plumber" || r === "painter") ||
+      profType.includes("worker");
+
+    if (isWorker) return "worker";
+
+    const isBusiness = 
+      role.includes("business") || 
+      role.includes("supplier") || 
+      role.includes("builder") ||
+      allRoles.some((r: string) => r.includes("business") || r.includes("supplier") || r.includes("builder"));
+
+    if (isBusiness) return "business";
+
+    return "professional";
+  };
+
   useEffect(() => {
     fetchPlans();
-  }, []);
+  }, [user]);
 
   const fetchPlans = async () => {
     try {
       const res = await api.get("/subscriptions/plans");
       const apiPlans: any[] = res.data.data || [];
+      const userCategory = determineUserCategory();
 
-      // Merge backend plans with rich UI definitions
-      const merged = STATIC_PLANS.map((staticPlan) => {
-        const matchingApiPlan = apiPlans.find(
-          (p) =>
-            p.slug?.toLowerCase().includes(staticPlan.slug.toLowerCase()) ||
-            p.name?.toLowerCase() === staticPlan.name.toLowerCase()
-        );
+      // Filter plans for this user's category (or fallback to all active plans if category not found)
+      const categoryPlans = apiPlans.filter((p: any) => {
+        const target = (p.target_role_category || "").toLowerCase();
+        return target === userCategory || target === "" || !p.target_role_category;
+      });
+
+      const candidatePlans = categoryPlans.length > 0 ? categoryPlans : apiPlans;
+
+      // Map backend plans into UI Tier objects
+      // Tiers in DB: Starter (₹0), Growth (₹4,499), Professional (₹8,999), Elite (₹17,999 or ₹35,999)
+      const UI_TIER_CONFIGS: Record<string, Partial<PlanTier>> = {
+        starter: {
+          badge: "FREE",
+          badgeColor: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+          subtitle: "Get started with basic features",
+          themeColor: "gray",
+          icon: Rocket,
+        },
+        growth: {
+          badge: "1 YEAR",
+          badgeColor: "bg-purple-600 text-white",
+          subtitle: "Ideal for growing businesses",
+          themeColor: "purple",
+          icon: Zap,
+        },
+        professional: {
+          badge: "1 YEAR",
+          badgeColor: "bg-orange-500 text-white",
+          subtitle: "Most popular for top designers",
+          isPopular: true,
+          themeColor: "orange",
+          icon: Gem,
+        },
+        elite: {
+          badge: "1 YEAR",
+          badgeColor: "bg-emerald-600 text-white",
+          subtitle: "Maximum visibility & instant leads",
+          themeColor: "green",
+          icon: ShieldCheck,
+        },
+      };
+
+      const resolvedPlans: PlanTier[] = candidatePlans.map((apiPlan: any) => {
+        const slug = (apiPlan.slug || "").toLowerCase();
+        let tierKey = "starter";
+        if (slug.includes("elite")) tierKey = "elite";
+        else if (slug.includes("professional") || slug.includes("pro")) tierKey = "professional";
+        else if (slug.includes("growth")) tierKey = "growth";
+        else if (slug.includes("quickstart")) tierKey = "growth";
+
+        const config = UI_TIER_CONFIGS[tierKey] || UI_TIER_CONFIGS.starter;
+        const numPrice = Number(apiPlan.price_yearly || apiPlan.price || 0);
+
         return {
-          ...staticPlan,
-          id: matchingApiPlan?.id || undefined,
-          features: matchingApiPlan?.features?.length > 0 ? matchingApiPlan.features : staticPlan.features,
-          price: matchingApiPlan?.formatted_price || staticPlan.price,
-          numericPrice: matchingApiPlan?.price || staticPlan.numericPrice,
+          id: apiPlan.id,
+          name: apiPlan.name || "Plan",
+          slug: apiPlan.slug,
+          badge: config.badge || "1 YEAR",
+          badgeColor: config.badgeColor || "bg-blue-600 text-white",
+          price: numPrice > 0 ? (apiPlan.formatted_price || `₹${numPrice.toLocaleString('en-IN')}`) : "Free",
+          numericPrice: numPrice,
+          isPopular: config.isPopular || false,
+          themeColor: config.themeColor || "blue",
+          icon: config.icon || Gem,
+          features: (apiPlan.features && apiPlan.features.length > 0) ? apiPlan.features : [
+            "Verified Business Profile",
+            "Priority Lead Notifications",
+            "Portfolio Showcase",
+            "Search Visibility Boost"
+          ],
+          subtitle: config.subtitle,
         };
       });
 
-      setPlans(merged);
+      // Sort by price ascending
+      resolvedPlans.sort((a, b) => a.numericPrice - b.numericPrice);
+
+      if (resolvedPlans.length > 0) {
+        setPlans(resolvedPlans);
+      } else {
+        setPlans(STATIC_PLANS);
+      }
     } catch (e) {
       console.error("Failed to fetch subscription plans:", e);
       setPlans(STATIC_PLANS);
@@ -215,13 +304,21 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
     );
   }
 
-  const isCurrentActive = (planName: string) => {
-    const normCurrent = currentPlanName.toLowerCase();
-    const normPlan = planName.toLowerCase();
-    if (normCurrent.includes("basic") || normCurrent.includes("free")) {
-      return normPlan.includes("starter") || normPlan.includes("basic");
+  const isCurrentActive = (plan: PlanTier) => {
+    const currentId = typeof currentPlan === "object" ? (currentPlan?.plan?.id ?? currentPlan?.id) : undefined;
+    if (currentId && plan.id && currentId === plan.id) {
+      return true;
     }
-    return normCurrent.includes(normPlan);
+
+    const normCurrent = (currentPlanName || "").toLowerCase();
+    const normPlanName = (plan.name || "").toLowerCase();
+    const normPlanSlug = (plan.slug || "").toLowerCase();
+
+    if (normCurrent.includes("basic") || normCurrent.includes("free")) {
+      return normPlanSlug.includes("starter") || normPlanName.includes("starter");
+    }
+
+    return normCurrent.includes(normPlanName) || normCurrent.includes(normPlanSlug);
   };
 
   return (
@@ -262,7 +359,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch">
         {plans.map((plan) => {
           const Icon = plan.icon;
-          const isCurrent = isCurrentActive(plan.name);
+          const isCurrent = isCurrentActive(plan);
           const isPopular = plan.isPopular;
 
           // Theme styling helper

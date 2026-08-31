@@ -162,7 +162,7 @@ class PaymentController extends Controller
      * POST /api/v1/payments/verify
      * Verifies Razorpay payment signature and fulfills the order.
      */
-    public function verifyPayment(Request $request): JsonResponse
+    public function verify(Request $request): JsonResponse
     {
         $data = $request->validate([
             'razorpay_order_id'   => ['required', 'string'],
@@ -226,6 +226,14 @@ class PaymentController extends Controller
     }
 
     /**
+     * Backward-compatible alias for verify()
+     */
+    public function verifyPayment(Request $request): JsonResponse
+    {
+        return $this->verify($request);
+    }
+
+    /**
      * Fulfill the payment based on its purpose.
      */
     private function fulfillPayment(Payment $payment): void
@@ -242,12 +250,14 @@ class PaymentController extends Controller
                 ->update(['status' => 'cancelled']);
 
             $expiresAt = now()->addYear();
-            if ($plan->slug === 'quickstart') {
-                $expiresAt = now()->addMonths(3);
-            } elseif ($plan->slug === 'growthplus') {
-                $expiresAt = now()->addMonths(6);
-            } elseif ($plan->slug === 'starter' || $plan->price_yearly == 0) {
+            if (str_contains($plan->slug, 'starter') || $plan->price_yearly == 0) {
                 $expiresAt = now()->addYears(10);
+            } elseif (str_contains($plan->slug, 'quickstart')) {
+                $expiresAt = now()->addMonths(3);
+            } elseif (str_contains($plan->slug, 'growthplus')) {
+                $expiresAt = now()->addMonths(6);
+            } elseif ($cycle === 'monthly') {
+                $expiresAt = now()->addMonth();
             }
 
             UserSubscription::create([
