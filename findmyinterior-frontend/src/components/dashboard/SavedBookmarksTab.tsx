@@ -93,11 +93,15 @@ export function SavedBookmarksTab() {
                   <Bookmark className="w-4 h-4 fill-current" />
                 </button>
               </div>
-              <h3 className="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 mb-1">{bookmark.title}</h3>
-              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">{bookmark.subtitle}</p>
+              <h3 className="font-bold text-lg text-slate-900 dark:text-white line-clamp-1 mb-1">
+                {typeof bookmark.title === 'string' ? bookmark.title : (bookmark.title?.name || 'Saved Item')}
+              </h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                {typeof bookmark.subtitle === 'string' ? bookmark.subtitle : (bookmark.subtitle?.name || '')}
+              </p>
               
               <div className="mt-auto pt-4 border-t dark:border-slate-800">
-                <Link href={bookmark.link} className="text-orange-600 font-medium text-sm flex items-center hover:underline">
+                <Link href={typeof bookmark.link === 'string' ? bookmark.link : '#'} className="text-orange-600 font-medium text-sm flex items-center hover:underline">
                   View Details <ArrowRight className="w-3 h-3 ml-1" />
                 </Link>
               </div>

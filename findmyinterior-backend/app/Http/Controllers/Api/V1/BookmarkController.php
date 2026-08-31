@@ -37,23 +37,23 @@ class BookmarkController extends Controller
             ];
             
             if ($type === 'Listing') {
-                $displayItem['title'] = $item->business_name;
-                $displayItem['subtitle'] = $item->category;
-                $displayItem['image'] = $item->cover_image;
-                $displayItem['link'] = "/professionals/" . $item->id;
+                $displayItem['title'] = $item->title ?? $item->business_name ?? $item->name ?? 'Professional';
+                $displayItem['subtitle'] = is_string($item->category) ? $item->category : ($item->category?->name ?? 'Professional Service');
+                $displayItem['image'] = $item->cover_image ?? $item->user?->avatar;
+                $displayItem['link'] = "/professionals/" . ($item->slug ?: $item->id);
             } elseif ($type === 'Worker') {
-                $displayItem['title'] = $item->user->name ?? 'Worker';
-                $displayItem['subtitle'] = $item->trade;
-                $displayItem['image'] = $item->user->avatar ?? null;
-                $displayItem['link'] = "/workers/" . $item->id;
+                $displayItem['title'] = $item->name ?? $item->user?->name ?? 'Worker';
+                $displayItem['subtitle'] = $item->skill ?? $item->trade ?? 'Skilled Worker';
+                $displayItem['image'] = $item->avatar ?? $item->user?->avatar ?? null;
+                $displayItem['link'] = "/workers/" . ($item->slug ?: $item->id);
             } elseif ($type === 'Requirement' || $type === 'Project') {
-                $displayItem['title'] = $item->title;
-                $displayItem['subtitle'] = $item->project_category ?? $item->type ?? 'Project';
+                $displayItem['title'] = $item->title ?? 'Project Requirement';
+                $displayItem['subtitle'] = is_string($item->project_category) ? $item->project_category : ($item->type ?? 'Project');
                 $displayItem['image'] = null;
                 $displayItem['link'] = "/projects/" . $item->id;
             } else {
-                $displayItem['title'] = $item->title ?? $item->name ?? 'Unknown';
-                $displayItem['subtitle'] = '';
+                $displayItem['title'] = $item->title ?? $item->name ?? 'Saved Item';
+                $displayItem['subtitle'] = is_string($item->subtitle ?? '') ? ($item->subtitle ?? '') : '';
                 $displayItem['image'] = null;
                 $displayItem['link'] = "#";
             }
