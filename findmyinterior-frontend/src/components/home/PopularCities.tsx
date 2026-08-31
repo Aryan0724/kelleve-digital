@@ -5,7 +5,7 @@ import { ArrowRight } from "lucide-react";
 
 export function PopularCities() {
   const cities = [
-    { name: "Patna", pros: "1,200+", img: "https://images.unsplash.com/photo-1598928506311-c55dd6584283?q=80&w=400&auto=format&fit=crop", span: "col-span-2 row-span-2" },
+    { name: "Patna", pros: "1,200+", img: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop", span: "col-span-2 row-span-2" },
     { name: "Gaya", pros: "450+", img: "https://images.unsplash.com/photo-1556910103-1c02745aae4d?q=80&w=400&auto=format&fit=crop", span: "col-span-1 row-span-1" },
     { name: "Muzaffarpur", pros: "320+", img: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=400&auto=format&fit=crop", span: "col-span-1 row-span-1" },
     { name: "Bhagalpur", pros: "280+", img: "https://images.unsplash.com/photo-1616594039964-ae9021a400a0?q=80&w=400&auto=format&fit=crop", span: "col-span-2 row-span-1" },

@@ -38,7 +38,7 @@ function generateFallbackBusiness(slug: string) {
     coverImage = "https://images.unsplash.com/photo-1560066984-138dadb4c035?q=80&w=1000&auto=format&fit=crop";
   } else if (isAuto) {
     category = "Automobile Services";
-    coverImage = "https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=1000&auto=format&fit=crop";
+    coverImage = "https://images.unsplash.com/photo-1487754180451-c456f719a1fc?q=80&w=1000&auto=format&fit=crop";
   }
 
   return {

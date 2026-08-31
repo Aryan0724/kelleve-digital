@@ -36,12 +36,25 @@ export function AvailableLeadsTab({ leads }: { leads?: any[] }) {
               const isBuilder = oppType === "BUILDER_PROJECT";
               const isWorkerJob = isJob || req.category?.slug === 'workers' || req.opportunity_type === 'WORKER_JOB';
 
-              const displayImage = req.images?.[0]?.image_url || req.image || (isRFQ ? "https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=400&q=80" : isJob ? "https://images.unsplash.com/photo-1504307651254-35680f356f27?w=400&q=80" : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=400&q=80");
+              const fallbackImg = isRFQ 
+                ? "https://images.unsplash.com/photo-1587293852726-70cdb56c2866?w=800&auto=format&fit=crop&q=80" 
+                : isJob 
+                  ? "https://images.unsplash.com/photo-1581578731548-c64695cc6952?w=800&auto=format&fit=crop&q=80" 
+                  : "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&auto=format&fit=crop&q=80";
+
+              const displayImage = req.images?.[0]?.image_url || req.image || fallbackImg;
 
               return (
                 <div key={req.id} className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 group flex flex-col h-full overflow-hidden">
                   <div className="relative h-48 w-full bg-slate-100 overflow-hidden">
-                    <img src={displayImage} alt={req.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                    <img 
+                      src={displayImage} 
+                      alt={req.title} 
+                      onError={(e) => {
+                        e.currentTarget.src = fallbackImg;
+                      }}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" 
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                     <div className="absolute top-3 left-3 flex gap-2">
                       <Badge variant="outline" className={`text-[10px] uppercase font-bold tracking-wider text-white border-white/20 shadow-sm backdrop-blur-md ${isRFQ ? 'bg-blue-600/80' : isJob ? 'bg-green-600/80' : isBuilder ? 'bg-purple-600/80' : 'bg-orange-600/80'}`}>

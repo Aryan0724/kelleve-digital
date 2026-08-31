@@ -64,7 +64,7 @@ export const mockBlogs: BlogPost[] = [
     authorAvatar: "https://i.pravatar.cc/150?u=priya",
     date: "Aug 12, 2026",
     readTime: "4 min read",
-    imageUrl: "https://images.unsplash.com/photo-1556761175-5973dc0f32b7?q=80&w=1200",
+    imageUrl: "https://images.unsplash.com/photo-1556761175-4b46a572b786?q=80&w=1200&auto=format&fit=crop",
     tags: ["Sales", "Conversion", "B2B"]
   },
   {

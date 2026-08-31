@@ -13,7 +13,7 @@ export function FeaturedProjects() {
       city: "Patna",
       budget: "₹2.8 Lakh",
       rating: "4.8",
-      img: "https://images.unsplash.com/photo-1598928506311-c55dd6584283?q=80&w=600&auto=format&fit=crop",
+      img: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop",
     },
     {
       title: "Luxury Kitchen",

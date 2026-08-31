@@ -51,7 +51,7 @@ class AdvertisementSeeder extends Seeder
             [
                 'title' => 'Kleve World - Modern Kitchen Solutions',
                 'location' => 'mid_page',
-                'banner_url' => 'https://images.unsplash.com/photo-1556910103-1c02745a872e?w=1200&h=300&fit=crop',
+                'banner_url' => 'https://images.unsplash.com/photo-1556911220-e15b29be8c8f?w=1200&h=300&fit=crop',
                 'media_type' => 'image',
                 'link' => 'https://kleveworld.in/',
                 'target_role' => 'customer',
@@ -62,7 +62,7 @@ class AdvertisementSeeder extends Seeder
             [
                 'title' => 'Partner with Kleve World',
                 'location' => 'mid_page',
-                'banner_url' => 'https://images.unsplash.com/photo-1556909212-d5b604d0c196?w=1200&h=300&fit=crop',
+                'banner_url' => 'https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=1200&h=300&fit=crop',
                 'media_type' => 'image',
                 'link' => 'https://kleveworld.in/',
                 'target_role' => 'interior_designer',
