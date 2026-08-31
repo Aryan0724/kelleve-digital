@@ -27,7 +27,7 @@ interface RequirementUnlockModalProps {
   requirementId: number;
   requirementType: string;
   unlockPrice?: number;
-  onUnlockSuccess?: () => void;
+  onUnlockSuccess?: (contact?: { name?: string; phone?: string; email?: string }) => void;
 }
 
 export function RequirementUnlockModal({ 
@@ -81,7 +81,7 @@ export function RequirementUnlockModal({
               useAuthStore.getState().updateUser({ ...user, wallet_balance: unlockRes.data.wallet_balance });
             }
             toast.success("Contact unlocked successfully!");
-            if (onUnlockSuccess) onUnlockSuccess();
+            if (onUnlockSuccess) onUnlockSuccess(unlockRes.data?.contact);
             onClose();
           } catch (verErr: any) {
             toast.error(verErr.response?.data?.message || "Payment verification failed!");
@@ -131,7 +131,7 @@ export function RequirementUnlockModal({
 
       toast.success("Contact unlocked successfully!");
       if (onUnlockSuccess) {
-        onUnlockSuccess();
+        onUnlockSuccess(response.data?.contact);
       }
       onClose();
     } catch (err: any) {

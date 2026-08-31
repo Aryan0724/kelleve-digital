@@ -29,7 +29,7 @@ export function PortfolioTab() {
       setLoading(true);
       const res = await api.get("/user/professional-profile");
       if (res.data?.data) {
-        setProfileId(res.data.data.id);
+        setProfileId(res.data.data.listing_id || res.data.data.id);
         setImages(res.data.data.gallery || []);
       }
     } catch (e) {

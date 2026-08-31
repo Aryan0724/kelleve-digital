@@ -148,12 +148,23 @@ const loadScript = (src: string) => {
             });
             toast.success("Payment verified! Unlocking contact...");
             const typeStr = reqType ? `?requirement_type=${reqType}` : '';
-            await api.post(`/requirements/${params.id}/unlock${typeStr}`);
+            const unlockRes = await api.post(`/requirements/${params.id}/unlock${typeStr}`);
             setIsUnlocked(true);
+            if (unlockRes.data?.contact) {
+              setRequirement((prev: any) => ({
+                ...prev,
+                is_unlocked: true,
+                phone: unlockRes.data.contact.phone || prev?.phone,
+                email: unlockRes.data.contact.email || prev?.email,
+                name: unlockRes.data.contact.name || prev?.name,
+              }));
+            }
             toast.success("Contact unlocked successfully!");
             setShowUnlockModal(false);
             const res = await api.get(getEndpoint(params.id as string));
-            setRequirement(res.data.data);
+            if (res.data?.data) {
+              setRequirement(res.data.data);
+            }
           } catch (verErr: any) {
             toast.error(verErr.response?.data?.message || "Payment verification failed!");
           }
@@ -192,12 +203,23 @@ const loadScript = (src: string) => {
     setUnlockLoading(true);
     try {
       const typeStr = reqType ? `?requirement_type=${reqType}` : '';
-      await api.post(`/requirements/${params.id}/unlock${typeStr}`);
+      const response = await api.post(`/requirements/${params.id}/unlock${typeStr}`);
       setIsUnlocked(true);
+      if (response.data?.contact) {
+        setRequirement((prev: any) => ({
+          ...prev,
+          is_unlocked: true,
+          phone: response.data.contact.phone || prev?.phone,
+          email: response.data.contact.email || prev?.email,
+          name: response.data.contact.name || prev?.name,
+        }));
+      }
       toast.success("Contact unlocked successfully!");
       setShowUnlockModal(false);
       const res = await api.get(getEndpoint(params.id as string));
-      setRequirement(res.data.data);
+      if (res.data?.data) {
+        setRequirement(res.data.data);
+      }
     } catch (err: any) {
       const msg = err.response?.data?.message || "";
       const isBalance = err.response?.status === 402 || 

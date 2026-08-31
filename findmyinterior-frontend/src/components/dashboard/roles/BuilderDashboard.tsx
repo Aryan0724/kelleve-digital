@@ -247,6 +247,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
 
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {(activeTab === 'business_profile' || activeTab === 'profile') && <CompleteProfileTab />}
+            {activeTab === 'bookmarks' && <SavedBookmarksTab />}
             {activeTab === 'portfolio' && <PortfolioTab />}
 
             {activeTab === 'messages' && (

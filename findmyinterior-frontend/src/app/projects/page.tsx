@@ -541,7 +541,16 @@ export default function ProjectsPage() {
           requirementId={unlockModalReq.id}
           requirementType={unlockModalReq.type}
           unlockPrice={unlockModalReq.price}
-          onUnlockSuccess={() => {
+          onUnlockSuccess={(contact) => {
+            if (unlockModalReq) {
+              setProjects((prev) =>
+                prev.map((p) =>
+                  p.id === unlockModalReq.id
+                    ? { ...p, is_unlocked: true, phone: contact?.phone || p.phone }
+                    : p
+                )
+              );
+            }
             fetchProjects();
           }}
         />

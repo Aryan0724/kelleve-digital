@@ -145,8 +145,12 @@ class ProfessionalProfileController extends Controller
                 }
 
                 if ($profile && $listing) {
+                    $profile->listing_id = $listing->id;
                     $profile->address = $listing->address;
                     $profile->description = $listing->description;
+                    $profile->cover_image = $listing->cover_image;
+                    $profile->setRelation('gallery', $listing->gallery);
+                    $profile->gallery = $listing->gallery;
                     // Ensure profile slug matches listing slug for public routing
                     if ($listing->slug) {
                         $profile->slug = $listing->slug;

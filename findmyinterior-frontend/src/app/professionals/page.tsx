@@ -177,11 +177,9 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                         ) : (
                           <div className="w-full h-full flex items-center justify-center bg-slate-200 dark:bg-slate-800 text-slate-400 dark:text-slate-500">No Image</div>
                         )}
-                        {(listing.is_verified || listing.verification_level === 'verified_business') && (
-                          <Badge className="absolute top-3 left-3 bg-green-600 hover:bg-green-700 text-white border-0">Verified</Badge>
-                        )}
+                        {/* Only show top badge if not verified in title */}
                         {listing.is_premium && (
-                          <Badge className="absolute top-10 left-3 bg-orange-500 hover:bg-orange-600 text-white border-0">Premium</Badge>
+                          <Badge className="absolute top-3 left-3 bg-orange-500 hover:bg-orange-600 text-white border-0">Premium</Badge>
                         )}
                         {(listing.gallery_count > 0 || listing.gallery?.length > 0) && (
                           <div className="absolute bottom-3 right-3 bg-black/60 backdrop-blur-sm text-white text-xs font-semibold px-2 py-1 rounded flex items-center gap-1">
@@ -238,26 +236,27 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                             </div>
                           )}
 
-                          <div className="flex flex-wrap gap-2 mb-4">
+                          <div className="flex flex-wrap items-center gap-2 mb-4">
                             {listing.years_experience > 0 && (
-                              <Badge variant="outline" className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1 font-medium border-slate-200 dark:border-slate-700">
+                              <Badge variant="outline" className="h-auto py-1 bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1 font-medium border-slate-200 dark:border-slate-700">
                                 <ShieldCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {listing.years_experience}+ Years
                               </Badge>
                             )}
                             {(listing.achievements && listing.achievements.length > 0) && (
-                              <Badge variant="outline" className="bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1 font-medium border-slate-200 dark:border-slate-700">
-                                <ShieldCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" /> {listing.achievements[0]}
+                              <Badge variant="outline" className="h-auto py-1 max-w-full sm:max-w-md bg-slate-50 dark:bg-slate-800 text-slate-700 dark:text-slate-300 flex items-center gap-1 font-medium border-slate-200 dark:border-slate-700">
+                                <ShieldCheck className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500 shrink-0" /> 
+                                <span className="truncate">{listing.achievements[0]}</span>
                               </Badge>
                             )}
                             {(listing.availability || listing.services?.includes('Delivery')) && (
-                              <Badge variant="outline" className="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center gap-1 font-medium border-green-200 dark:border-green-800">
-                                <ShieldCheck className="w-3.5 h-3.5 text-green-500 dark:text-green-400" /> {listing.availability?.includes('Delivery') ? listing.availability : 'Timely Delivery'}
+                              <Badge variant="outline" className="h-auto py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 flex items-center gap-1 font-medium border-green-200 dark:border-green-800">
+                                <ShieldCheck className="w-3.5 h-3.5 text-green-500 dark:text-green-400 shrink-0" /> {listing.availability?.includes('Delivery') ? listing.availability : 'Timely Delivery'}
                               </Badge>
                             )}
                           </div>
                         </div>
 
-                        <div className="flex flex-col xl:flex-row gap-6 mt-4 xl:items-end justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
+                        <div className="flex flex-col sm:flex-row gap-6 mt-4 sm:items-end justify-between border-t border-slate-100 dark:border-slate-800 pt-4">
                           <div className="flex-1">
                             <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-2 mb-3">
                               {listing.description || 'Verified professional ready to help with your next project.'}
@@ -272,18 +271,12 @@ export default async function ProfessionalsPage({ searchParams }: { searchParams
                             ) : null}
                           </div>
                           
-                            <div className="flex flex-col sm:flex-row gap-3 min-w-[200px] flex-shrink-0">
-                              <div className="flex flex-col gap-2 w-full">
-                                <Link href={`/professionals/${listing.slug}`} className="w-full">
-                                  <Button className="w-full bg-[#ea580c] hover:bg-[#c2410c] text-white rounded-lg">View Profile</Button>
-                                </Link>
-                                <div className="flex gap-2">
-                                  <div className="flex-1">
-                                    <ContactProfessionalButton slug={listing.slug} />
-                                  </div>
-                                </div>
-                              </div>
-                            </div>
+                          <div className="flex flex-col gap-2.5 w-full sm:w-auto min-w-[210px] shrink-0">
+                            <Link href={`/professionals/${listing.slug}`} className="w-full">
+                              <Button className="w-full bg-[#ea580c] hover:bg-[#c2410c] text-white rounded-lg px-4 font-semibold text-sm h-9">View Profile</Button>
+                            </Link>
+                            <ContactProfessionalButton slug={listing.slug} />
+                          </div>
                         </div>
                       </div>
                     </Card>

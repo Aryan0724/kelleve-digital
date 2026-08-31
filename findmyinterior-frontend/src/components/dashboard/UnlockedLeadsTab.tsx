@@ -90,87 +90,90 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
         <CardTitle>Unlocked Customer Contacts</CardTitle>
       </CardHeader>
       <CardContent>
-        {unlockedContacts && unlockedContacts.length > 0 ? (
-          <div className="space-y-4">
-            {unlockedContacts.map((unlock: any) => {
-              const isJob = unlock.requirement_type === 'App\\Models\\WorkerJob';
-              return (
-              <div key={unlock.id} className="p-4 border rounded-lg bg-white shadow-sm">
-                <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
-                  <div className="flex-1">
-                    <div className="flex justify-between">
-                      <h4 className="font-bold text-slate-900 text-lg mb-1">{unlock.requirement?.title}</h4>
-                      <Badge variant="outline" className={unlock.requirement?.status === 'open' ? 'text-green-600 border-green-200' : 'text-slate-500'}>
-                        Status: {unlock.requirement?.status}
-                      </Badge>
-                    </div>
-                    <div className="text-sm text-slate-500 mb-4">{locationName(unlock.requirement?.city)} • ₹{unlock.requirement?.budget_min} - ₹{unlock.requirement?.budget_max}</div>
+        {(() => {
+          const validContacts = (unlockedContacts || []).filter((u: any) => u && u.requirement);
+          return validContacts.length > 0 ? (
+            <div className="space-y-4">
+              {validContacts.map((unlock: any) => {
+                const isJob = unlock.requirement_type === 'App\\Models\\WorkerJob';
+                const reqId = unlock.requirement?.id;
+                return (
+                <div key={unlock.id} className="p-4 border rounded-lg bg-white shadow-sm">
+                  <div className="flex flex-col md:flex-row justify-between md:items-start gap-4">
+                    <div className="flex-1">
+                      <div className="flex justify-between">
+                        <h4 className="font-bold text-slate-900 text-lg mb-1">{unlock.requirement?.title}</h4>
+                        <Badge variant="outline" className={unlock.requirement?.status === 'open' ? 'text-green-600 border-green-200' : 'text-slate-500'}>
+                          Status: {unlock.requirement?.status}
+                        </Badge>
+                      </div>
+                      <div className="text-sm text-slate-500 mb-4">{locationName(unlock.requirement?.city)} • ₹{unlock.requirement?.budget_min} - ₹{unlock.requirement?.budget_max}</div>
 
-                    <div className="bg-green-50 border border-green-100 rounded-lg p-4 space-y-2 mb-4">
-                      <div className="font-semibold text-green-900 flex items-center mb-2">
-                        <User className="w-4 h-4 mr-2" /> Contact Details
+                      <div className="bg-green-50 border border-green-100 rounded-lg p-4 space-y-2 mb-4">
+                        <div className="font-semibold text-green-900 flex items-center mb-2">
+                          <User className="w-4 h-4 mr-2" /> Contact Details
+                        </div>
+                        <div className="flex items-center text-sm text-slate-700">
+                          <User className="w-4 h-4 mr-2 text-slate-400 shrink-0" />
+                          <span className="font-medium">{unlock.requirement?.name}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-slate-700">
+                          <Phone className="w-4 h-4 mr-2 text-slate-400 shrink-0" />
+                          <span className="font-medium">{unlock.requirement?.phone}</span>
+                        </div>
+                        <div className="flex items-center text-sm text-slate-700">
+                          <Mail className="w-4 h-4 mr-2 text-slate-400 shrink-0" />
+                          <span className="font-medium">{unlock.requirement?.email}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center text-sm text-slate-700">
-                        <User className="w-4 h-4 mr-2 text-slate-400 shrink-0" />
-                        <span className="font-medium">{unlock.requirement?.name}</span>
+                    </div>
+
+                    <div className="flex flex-col gap-2 md:w-48 shrink-0">
+                      <Link href={`/requirements/${reqId}?type=${unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project')}`}>
+                        <Button variant="outline" className="w-full">
+                          <ExternalLink className="w-4 h-4 mr-2" /> View Details
+                        </Button>
+                      </Link>
+                      {unlock.requirement?.status === 'open' && (
+                        <Button 
+                          onClick={() => setBiddingId(biddingId === reqId ? null : reqId)} 
+                          className="bg-orange-600 hover:bg-orange-700 w-full"
+                        >
+                          <Send className="w-4 h-4 mr-2" /> 
+                          {biddingId === reqId ? (isJob ? "Cancel Application" : "Cancel Bid") : (isJob ? "Apply for Job" : "Submit Bid")}
+                        </Button>
+                      )}
+                      {/* DEBUG INFO */}
+                      <div className="text-xs text-red-500">
+                        Req ID: {reqId} | 
+                        Req Status: {unlock.requirement?.status} | 
+                        Prof ID: {unlock.requirement?.professional_id} | 
+                        User ID: {user?.id}
                       </div>
-                      <div className="flex items-center text-sm text-slate-700">
-                        <Phone className="w-4 h-4 mr-2 text-slate-400 shrink-0" />
-                        <span className="font-medium">{unlock.requirement?.phone}</span>
-                      </div>
-                      <div className="flex items-center text-sm text-slate-700">
-                        <Mail className="w-4 h-4 mr-2 text-slate-400 shrink-0" />
-                        <span className="font-medium">{unlock.requirement?.email}</span>
-                      </div>
+                      {unlock.requirement?.status === 'awarded' && (Number(unlock.requirement?.professional_id) === Number(user?.id) || Number(unlock.requirement?.worker_id) === Number(user?.id) || Number(unlock.requirement?.supplier_id) === Number(user?.id) || Number(unlock.requirement?.awarded_vendor_id) === Number(user?.id)) && (
+                        <Button
+                          onClick={() => handleAcceptAward(reqId, unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project'))}
+                          className="bg-green-600 hover:bg-green-700 w-full text-white"
+                          disabled={acceptingId === reqId}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          {acceptingId === reqId ? "Accepting..." : "Accept Award"}
+                        </Button>
+                      )}
+                        <Button 
+                          size="sm" 
+                          variant="outline" 
+                          onClick={() => handleMessage(reqId, unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project'))}
+                          disabled={messaging === reqId}
+                        >
+                        <MessageSquare className="w-4 h-4 mr-2" /> 
+                        {messaging === reqId ? "Opening..." : "Message Customer"}
+                      </Button>
                     </div>
                   </div>
-
-                  <div className="flex flex-col gap-2 md:w-48 shrink-0">
-                    <Link href={`/requirements/${unlock.requirement?.id}?type=${unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project')}`}>
-                      <Button variant="outline" className="w-full">
-                        <ExternalLink className="w-4 h-4 mr-2" /> View Details
-                      </Button>
-                    </Link>
-                    {unlock.requirement?.status === 'open' && (
-                      <Button 
-                        onClick={() => setBiddingId(biddingId === unlock.requirement.id ? null : unlock.requirement.id)} 
-                        className="bg-orange-600 hover:bg-orange-700 w-full"
-                      >
-                        <Send className="w-4 h-4 mr-2" /> 
-                        {biddingId === unlock.requirement.id ? (isJob ? "Cancel Application" : "Cancel Bid") : (isJob ? "Apply for Job" : "Submit Bid")}
-                      </Button>
-                    )}
-                    {/* DEBUG INFO */}
-                    <div className="text-xs text-red-500">
-                      Req ID: {unlock.requirement?.id} | 
-                      Req Status: {unlock.requirement?.status} | 
-                      Prof ID: {unlock.requirement?.professional_id} | 
-                      User ID: {user?.id}
-                    </div>
-                    {unlock.requirement?.status === 'awarded' && (Number(unlock.requirement?.professional_id) === Number(user?.id) || Number(unlock.requirement?.worker_id) === Number(user?.id) || Number(unlock.requirement?.supplier_id) === Number(user?.id) || Number(unlock.requirement?.awarded_vendor_id) === Number(user?.id)) && (
-                      <Button
-                        onClick={() => handleAcceptAward(unlock.requirement.id, unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project'))}
-                        className="bg-green-600 hover:bg-green-700 w-full text-white"
-                        disabled={acceptingId === unlock.requirement.id}
-                      >
-                        <CheckCircle className="w-4 h-4 mr-2" />
-                        {acceptingId === unlock.requirement.id ? "Accepting..." : "Accept Award"}
-                      </Button>
-                    )}
-                      <Button 
-                        size="sm" 
-                        variant="outline" 
-                        onClick={() => handleMessage(unlock.requirement.id, unlock.requirement_type === 'App\\Models\\Rfq' ? 'rfq' : (unlock.requirement_type === 'App\\Models\\WorkerJob' ? 'job' : 'project'))}
-                        disabled={messaging === unlock.requirement.id}
-                      >
-                      <MessageSquare className="w-4 h-4 mr-2" /> 
-                      {messaging === unlock.requirement.id ? "Opening..." : "Message Customer"}
-                    </Button>
-                  </div>
-                </div>
 
                 {/* Inline Bid Form */}
-                {biddingId === unlock.requirement?.id && (
+                {biddingId === reqId && (
                   <div className="mt-4 border-t pt-4">
                     <h5 className="font-bold text-slate-800 mb-3">{isJob ? "Submit your application" : "Submit your bid"}</h5>
                     <div className="bg-indigo-50 border border-indigo-100 text-indigo-700 p-3 rounded-lg text-sm mb-4">
@@ -210,7 +213,7 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
                     </div>
                     <div className="flex justify-end gap-2">
                       <Button variant="ghost" onClick={() => setBiddingId(null)}>Cancel</Button>
-                      <Button onClick={() => handleSubmitBid(unlock.requirement.id)} className="bg-orange-600 hover:bg-orange-700" disabled={submitting}>
+                      <Button onClick={() => handleSubmitBid(reqId)} className="bg-orange-600 hover:bg-orange-700" disabled={submitting}>
                         {submitting ? (isJob ? "Applying..." : "Placing Bid...") : (isJob ? "Apply for Job" : "Submit Bid")}
                       </Button>
                     </div>
@@ -228,7 +231,8 @@ export function UnlockedLeadsTab({ unlockedContacts, onRefresh }: { unlockedCont
               You haven't unlocked any contacts yet. Go to Available Leads to find projects and unlock your first client!
             </p>
           </div>
-        )}
+        );
+      })()}
       </CardContent>
     </Card>
   );

@@ -18,6 +18,8 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
   const { token, setShowLoginModal } = useAuthStore();
   const [bidModalOpen, setBidModalOpen] = useState(false);
   const [unlockModalOpen, setUnlockModalOpen] = useState(false);
+  const [isUnlocked, setIsUnlocked] = useState(Boolean(req.is_unlocked));
+  const [contactPhone, setContactPhone] = useState(req.phone);
   const router = useRouter();
 
   const isJob = req.opportunity_type === "JOB";
@@ -35,13 +37,13 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
         >
           <Briefcase className="w-3.5 h-3.5" /> {isJob ? "Apply for Job" : "Place Bid"}
         </Button>
-        {req.is_unlocked ? (
-          <a href={`tel:${req.phone}`} className="w-full">
+        {isUnlocked ? (
+          <a href={`tel:${contactPhone || req.phone}`} className="w-full">
             <Button 
               variant="outline" 
               className="w-full border-green-500 text-green-600 hover:bg-green-50 font-bold h-9 text-xs flex items-center justify-center gap-2"
             >
-              <Phone className="w-3.5 h-3.5" /> {req.phone}
+              <Phone className="w-3.5 h-3.5" /> {contactPhone || req.phone || "Call Client"}
             </Button>
           </a>
         ) : (
@@ -82,7 +84,11 @@ export function LeadActionButtons({ req, className = "flex flex-col gap-2 w-full
           requirementId={req.id}
           requirementType={reqType}
           unlockPrice={req.unlock_price}
-          onUnlockSuccess={() => {
+          onUnlockSuccess={(contact) => {
+            setIsUnlocked(true);
+            if (contact?.phone) {
+              setContactPhone(contact.phone);
+            }
             router.refresh();
           }}
         />

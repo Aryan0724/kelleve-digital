@@ -33,6 +33,8 @@ class WorkerResource extends JsonResource
                 $this->shouldShowContact($request),
                 $this->phone
             ),
+            'cover_image'      => $this->listing?->cover_image,
+            'gallery'          => $this->listing?->gallery ?? [],
             'reviews'          => ReviewResource::collection($this->whenLoaded('approvedReviews')),
         ];
     }

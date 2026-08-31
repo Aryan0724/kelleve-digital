@@ -286,14 +286,14 @@ class DashboardController extends Controller
                     ->with('requirement.user')
                     ->latest()
                     ->get()
+                    ->filter(fn($unlock) => !is_null($unlock->requirement))
                     ->map(function($unlock) {
-                        if ($unlock->requirement) {
-                            $unlock->requirement->name = $unlock->requirement->name ?? $unlock->requirement->user->name ?? 'Customer';
-                            $unlock->requirement->phone = $unlock->requirement->phone ?? $unlock->requirement->user->phone ?? null;
-                            $unlock->requirement->email = $unlock->requirement->email ?? $unlock->requirement->user->email ?? null;
-                        }
+                        $unlock->requirement->name = $unlock->requirement->name ?? $unlock->requirement->user->name ?? 'Customer';
+                        $unlock->requirement->phone = $unlock->requirement->phone ?? $unlock->requirement->user->phone ?? null;
+                        $unlock->requirement->email = $unlock->requirement->email ?? $unlock->requirement->user->email ?? null;
                         return $unlock;
-                    });
+                    })
+                    ->values();
 
                 // Fetch Vendor Metrics
                 $data['vendor_metrics'] = $user->vendorMetric;

@@ -29,6 +29,7 @@ class Worker extends Model
         'languages' => 'array',
         'social_links' => 'array',
     ];
+
     // ─── Relationships ────────────────────────────────────────────────────────
 
     public function user(): BelongsTo
@@ -59,6 +60,11 @@ class Worker extends Model
     public function inquiries(): MorphMany
     {
         return $this->morphMany(Inquiry::class, 'inquirable');
+    }
+
+    public function listing(): BelongsTo
+    {
+        return $this->belongsTo(Listing::class, 'user_id', 'user_id');
     }
 
     // ─── Scopes ───────────────────────────────────────────────────────────────
@@ -102,7 +108,9 @@ class Worker extends Model
     public function recalculateRating(): void
     {
         $stats = $this->approvedReviews()->selectRaw('AVG(rating) as avg, COUNT(*) as cnt')->first();
-        $this->update(['avg_rating' => round($stats->avg ?? 0, 2), 'review_count' => $stats->cnt ?? 0,
+        $this->update([
+            'avg_rating' => round($stats->avg ?? 0, 2),
+            'review_count' => $stats->cnt ?? 0,
         ]);
     }
 

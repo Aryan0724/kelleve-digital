@@ -68,7 +68,7 @@ class WorkerController extends Controller
     {
         $worker = Worker::active()
             ->where('slug', $slug)
-            ->with(['approvedReviews.reviewer'])
+            ->with(['approvedReviews.reviewer', 'listing.gallery'])
             ->firstOrFail();
 
         if ($worker->user_id !== $request->user()?->id) {

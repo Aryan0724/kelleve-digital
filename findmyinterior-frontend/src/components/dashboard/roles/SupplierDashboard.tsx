@@ -187,6 +187,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
             )}
 
             {(activeTab === 'business_profile' || activeTab === 'profile') && <CompleteProfileTab />}
+            {activeTab === 'bookmarks' && <SavedBookmarksTab />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'portfolio' && <PortfolioTab />}
 

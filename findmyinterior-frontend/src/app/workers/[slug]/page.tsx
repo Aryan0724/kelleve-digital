@@ -125,8 +125,34 @@ export default async function WorkerProfilePage({ params }: { params: Promise<{ 
               </div>
             </div>
             
+            {/* Portfolio / Gallery Section */}
+            {worker.gallery && worker.gallery.length > 0 && (
+              <div className="mt-12 border-t pt-8">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-xl font-bold text-slate-900">Work Portfolio & Projects</h3>
+                  <span className="text-sm font-medium text-slate-500">{worker.gallery.length} photos</span>
+                </div>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {worker.gallery.map((item: any, idx: number) => (
+                    <div key={item.id || idx} className="relative aspect-video rounded-xl overflow-hidden group shadow-sm bg-slate-100 border">
+                      <img 
+                        src={item.image_url} 
+                        alt={item.caption || `${worker.name} work sample`} 
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                      {item.caption && (
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <p className="text-xs text-white line-clamp-1">{item.caption}</p>
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Reviews Section */}
-            <div className="mt-12">
+            <div className="mt-12 border-t pt-8">
               <ReviewSection reviews={worker.reviews || []} reviewableType="worker" reviewableId={worker.id} />
             </div>
           </div>

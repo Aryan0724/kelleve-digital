@@ -156,6 +156,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             )}
 
             {(activeTab === 'business_profile' || activeTab === 'profile') && <CompleteProfileTab />}
+            {activeTab === 'bookmarks' && <SavedBookmarksTab />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'portfolio' && <PortfolioTab />}
 

@@ -202,6 +202,7 @@ export function WorkerDashboard({ data, fetchDashboard }: { data: any, fetchDash
             )}
 
             {activeTab === 'profile' && <CompleteProfileTab />}
+            {activeTab === 'bookmarks' && <SavedBookmarksTab />}
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {activeTab === 'messages' && (
               <Card>
