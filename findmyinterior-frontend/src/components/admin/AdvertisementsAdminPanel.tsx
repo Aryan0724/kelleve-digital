@@ -16,6 +16,7 @@ export function AdvertisementsAdminPanel() {
     location: "hero_banner",
     media_type: "image",
     banner_url: "",
+    banner_file: null as File | null,
     custom_code: "",
     link: "",
     target_city: "",
@@ -38,6 +39,7 @@ export function AdvertisementsAdminPanel() {
       location: "hero_banner",
       media_type: "image",
       banner_url: "",
+      banner_file: null,
       custom_code: "",
       link: "",
       target_city: "",
@@ -57,6 +59,7 @@ export function AdvertisementsAdminPanel() {
       location: ad.location || "hero_banner",
       media_type: ad.media_type || "image",
       banner_url: ad.banner_url || "",
+      banner_file: null,
       custom_code: ad.custom_code || "",
       link: ad.link || "",
       target_city: ad.target_city || "",
@@ -91,10 +94,23 @@ export function AdvertisementsAdminPanel() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const submitData = new FormData();
+      Object.entries(formData).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== '') {
+          submitData.append(key, value as any);
+        }
+      });
+
       if (editingId) {
-        await api.put(`/admin/advertisements/${editingId}`, formData);
+        // FormData with PUT in Laravel requires spoofing or using POST with _method
+        submitData.append('_method', 'PUT');
+        await api.post(`/admin/advertisements/${editingId}`, submitData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       } else {
-        await api.post("/admin/advertisements", formData);
+        await api.post("/admin/advertisements", submitData, {
+          headers: { 'Content-Type': 'multipart/form-data' }
+        });
       }
       resetForm();
       fetchAds();
@@ -218,9 +234,29 @@ export function AdvertisementsAdminPanel() {
               </div>
               
               {(formData.media_type === "image" || formData.media_type === "video") && (
-                <div>
-                  <label className="text-sm font-semibold">Media URL</label>
-                  <Input value={formData.banner_url} onChange={e => setFormData({...formData, banner_url: e.target.value})} required />
+                <div className="space-y-4">
+                  <div>
+                    <label className="text-sm font-semibold">Upload Creative File</label>
+                    <Input 
+                      type="file" 
+                      accept={formData.media_type === "image" ? "image/*" : "video/*"}
+                      onChange={e => {
+                        if (e.target.files && e.target.files.length > 0) {
+                          setFormData({...formData, banner_file: e.target.files[0], banner_url: ""});
+                        }
+                      }} 
+                    />
+                    <p className="text-xs text-muted-foreground mt-1">Upload an image or video directly, OR provide a URL below.</p>
+                  </div>
+                  <div>
+                    <label className="text-sm font-semibold text-muted-foreground">OR Media URL</label>
+                    <Input 
+                      value={formData.banner_url} 
+                      onChange={e => setFormData({...formData, banner_url: e.target.value})} 
+                      placeholder="https://example.com/image.jpg"
+                      disabled={!!formData.banner_file}
+                    />
+                  </div>
                 </div>
               )}
 

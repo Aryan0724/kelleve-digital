@@ -5,11 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Search, Gavel, CheckCircle2, MessageSquare, Wallet, User, LogOut, Package, ShieldCheck, LayoutDashboard , Star } from "lucide-react";
+import { Search, Gavel, CheckCircle2, MessageSquare, Crown, User, LogOut, Package, ShieldCheck, LayoutDashboard , Star } from "lucide-react";
 import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
-import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
@@ -108,14 +107,6 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                     </div>
                     <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
                   </div>
-                  
-                  <div className="w-full bg-green-50 border border-green-100 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-green-700 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
-                      <div className="font-bold text-slate-900">₹{data?.user?.wallet_balance || 0}</div>
-                    </div>
-                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-green-700 border-green-200" onClick={() => setActiveTab("wallet")}>Add</Button>
-                  </div>
                 </div>
               }
             />
@@ -130,8 +121,7 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("catalogue", <Package className="h-5 w-5" />, "Catalogue")}
                 {renderSidebarButton("products", <Package className="h-5 w-5" />, "Products")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
+                {renderSidebarButton("subscription", <Crown className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
@@ -148,7 +138,6 @@ export function SupplierDashboard({ data, fetchDashboard }: { data: any, fetchDa
             )}
             
             {activeTab === 'bids_submitted' && <MyBidsTab bids={data?.submitted_bids || []} />}
-            {activeTab === 'wallet' && <WalletTab />}
 
             {activeTab === 'orders' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="My Orders (Won Bids)" showAwardedOnly={true} />

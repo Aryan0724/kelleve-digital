@@ -5,10 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, Wallet, User, LogOut, ShieldCheck, Paintbrush, Star, TrendingUp, Crown } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, User, LogOut, ShieldCheck, Paintbrush, Star, TrendingUp, Crown } from "lucide-react";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
-import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 import { MyBidsTab } from "@/components/dashboard/MyBidsTab";
@@ -117,14 +116,6 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                       </div>
                       <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 border-orange-200 dark:border-slate-700" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
                     </div>
-                    
-                    <div className="w-full bg-green-50 dark:bg-green-950/30 border border-green-100 dark:border-green-900/50 rounded-lg p-3 text-left flex justify-between items-center">
-                      <div>
-                        <div className="text-xs text-green-700 dark:text-green-500 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
-                        <div className="font-bold text-slate-900 dark:text-white">₹{data?.user?.wallet_balance || 0}</div>
-                      </div>
-                      <Button variant="outline" size="sm" className="h-7 text-xs bg-white dark:bg-slate-800 text-green-700 dark:text-green-500 border-green-200 dark:border-slate-700" onClick={() => setActiveTab("wallet")}>Add</Button>
-                    </div>
                   </div>
                 </>
               }
@@ -140,8 +131,7 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
                 {renderSidebarButton("my_requirements", <LayoutDashboard className="h-5 w-5" />, "My Requirements")}
                 {renderSidebarButton("bookmarks", <Star className="h-5 w-5" />, "Saved Items")}
-                {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
+                {renderSidebarButton("subscription", <Crown className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
               </div>
@@ -308,8 +298,6 @@ export function DesignerDashboard({ data, fetchDashboard }: { data: any, fetchDa
                 </CardContent>
               </Card>
             )}
-
-            {activeTab === 'wallet' && <WalletTab />}
 
             {activeTab === 'subscription' && (
               <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />

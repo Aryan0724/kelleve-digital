@@ -242,7 +242,20 @@ class User extends Authenticatable
 
     public function hasPremiumSubscription(): bool
     {
-        return $this->activeSubscription?->plan?->can_see_all_leads ?? false;
+        $sub = $this->activeSubscription;
+        if (!$sub || $sub->isExpired()) {
+            return false;
+        }
+        $plan = $sub->plan;
+        if (!$plan) {
+            return false;
+        }
+        return (float) $plan->price_yearly > 0 || (float) $plan->price_monthly > 0 || (bool) $plan->can_see_all_leads;
+    }
+
+    public function canSeeAllLeads(): bool
+    {
+        return (bool) ($this->activeSubscription?->plan?->can_see_all_leads ?? false);
     }
 
     public function hasUnlockedRequirement(int $requirementId): bool

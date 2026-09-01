@@ -140,7 +140,6 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedPlanForUpgrade, setSelectedPlanForUpgrade] = useState<any>(null);
-  const [isProcessingWallet, setIsProcessingWallet] = useState(false);
 
   const currentPlanName =
     typeof currentPlan === "string"
@@ -270,30 +269,7 @@ export function SubscriptionTab({ currentPlan }: { currentPlan: any }) {
     }
   };
 
-  const handlePayWithWallet = async (plan: any) => {
-    if (!plan.id) {
-      toast.error("Plan ID missing. Please refresh the page.");
-      return;
-    }
-    setIsProcessingWallet(true);
-    try {
-      const response = await api.post("/payments/pay-with-wallet", {
-        purpose: "subscription",
-        subscription_plan_id: plan.id,
-        billing_cycle: "yearly",
-      });
 
-      if (response.data.success) {
-        toast.success(`Successfully upgraded to ${plan.name} using wallet!`);
-        window.location.reload();
-      }
-    } catch (e: any) {
-      const msg = e.response?.data?.message ?? "Failed to process wallet payment.";
-      toast.error(msg);
-    } finally {
-      setIsProcessingWallet(false);
-    }
-  };
 
   if (loading) {
     return (

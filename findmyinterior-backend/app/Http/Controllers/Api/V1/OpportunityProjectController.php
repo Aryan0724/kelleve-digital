@@ -183,6 +183,27 @@ class OpportunityProjectController extends Controller
             return $req;
         });
 
+        // Dispatch instant lead notifications to active subscription holders
+        try {
+            $subscribers = \App\Models\User::where('id', '!=', $user->id)
+                ->whereHas('activeSubscription.plan', function($q) {
+                    $q->where('lead_notification_type', 'instant')
+                      ->orWhere('slug', '!=', 'starter');
+                })
+                ->get();
+
+            foreach ($subscribers as $subscriber) {
+                $subscriber->notify(new \App\Notifications\NewLeadNotification([
+                    'title' => $requirement->title,
+                    'city'  => $requirement->city ?? 'your area',
+                    'id'    => $requirement->id,
+                    'type'  => $requirement->opportunity_type ?? 'PROJECT',
+                ]));
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Could not dispatch new lead notifications: " . $e->getMessage());
+        }
+
         return $this->success($requirement, 'Requirement created successfully', 201);
     }
 

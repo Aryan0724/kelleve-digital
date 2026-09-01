@@ -38,6 +38,34 @@ class ProjectModerationController extends Controller
 
         $requirement->update(['status' => $newState]);
 
+        if ($newState === 'open') {
+            // 1. Notify the requirement owner
+            if ($requirement->user) {
+                $requirement->user->notify(new \App\Notifications\RequirementApprovedNotification($requirement));
+            }
+
+            // 2. Dispatch instant lead notifications to active subscription holders
+            try {
+                $subscribers = \App\Models\User::where('id', '!=', $requirement->user_id)
+                    ->whereHas('activeSubscription.plan', function($q) {
+                        $q->where('lead_notification_type', 'instant')
+                          ->orWhere('slug', '!=', 'starter');
+                    })
+                    ->get();
+
+                foreach ($subscribers as $subscriber) {
+                    $subscriber->notify(new \App\Notifications\NewLeadNotification([
+                        'title' => $requirement->title,
+                        'city'  => $requirement->city ?? 'your area',
+                        'id'    => $requirement->id,
+                        'type'  => $requirement->opportunity_type ?? 'PROJECT',
+                    ]));
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::warning("Could not dispatch new lead notifications: " . $e->getMessage());
+            }
+        }
+
         ActivityLog::recordAdminAction(
             auth()->id(),
             $action,

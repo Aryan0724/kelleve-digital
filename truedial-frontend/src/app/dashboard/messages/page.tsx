@@ -6,45 +6,31 @@ import { useRole } from '@/context/RoleContext';
 import Link from 'next/link';
 import { MessageSquare, Search, Clock, Briefcase, FileText } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { TrueDialAPI } from '@/lib/api';
+import { formatDistanceToNow } from 'date-fns';
 
 export default function MessagesPage() {
-  const { user } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const { isCustomer } = useRole();
   const [conversations, setConversations] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Mock fetching conversations
-    setTimeout(() => {
-      setConversations([
-        {
-          id: 1,
-          with: isCustomer ? "SpaceCrafters Interiors" : "John Doe (Homeowner)",
-          project: {
-            title: "3BHK Full Interior Renovation",
-            type: "project"
-          },
-          lastMessage: "Sure, we can schedule a site visit this Saturday.",
-          timestamp: "10 mins ago",
-          unread: 2,
-          status: "active"
-        },
-        {
-          id: 2,
-          with: isCustomer ? "Modern Living Studio" : "Jane Smith (Homeowner)",
-          project: {
-            title: "Modular Kitchen Upgrade",
-            type: "rfq"
-          },
-          lastMessage: "I have shared the catalog with you.",
-          timestamp: "2 hours ago",
-          unread: 0,
-          status: "active"
-        }
-      ]);
-      setLoading(false);
-    }, 800);
-  }, [isCustomer]);
+    if (authLoading || !user) return;
+
+    const fetchConversations = async () => {
+      try {
+        const res = await (TrueDialAPI as any).get('/conversations');
+        setConversations(res.data?.data || res.data || []);
+      } catch (err) {
+        console.error("Failed to load conversations", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchConversations();
+  }, [user, authLoading]);
 
   return (
     <div className="max-w-5xl mx-auto space-y-6 animate-fade-in-up p-4 h-[calc(100vh-2rem)] flex flex-col">
@@ -83,47 +69,57 @@ export default function MessagesPage() {
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto divide-y divide-border">
-            {conversations.map(conv => (
-              <Link 
-                key={conv.id} 
-                href={`/dashboard/messages/${conv.id}`}
-                className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 hover:bg-muted/50 transition cursor-pointer group"
-              >
-                {/* Avatar */}
-                <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 relative">
-                  {conv.with.charAt(0)}
-                  {conv.unread > 0 && (
-                    <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-card flex items-center justify-center text-[10px] text-white font-bold">
-                      {conv.unread}
+            {conversations.map(conv => {
+              const otherUser = isCustomer ? conv.vendor : conv.customer;
+              const unreadCount = isCustomer ? conv.customer_unread_count : conv.vendor_unread_count;
+              const lastMessageObj = conv.messages && conv.messages.length > 0 ? conv.messages[0] : null;
+              const timestamp = lastMessageObj ? formatDistanceToNow(new Date(lastMessageObj.created_at), { addSuffix: true }) : formatDistanceToNow(new Date(conv.created_at), { addSuffix: true });
+              const lastMessage = lastMessageObj?.message || "Conversation started";
+              
+              return (
+                <Link 
+                  key={conv.id} 
+                  href={`/dashboard/messages/${conv.id}`}
+                  className="flex flex-col sm:flex-row sm:items-center gap-4 p-5 hover:bg-muted/50 transition cursor-pointer group"
+                >
+                  {/* Avatar */}
+                  <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center font-bold shrink-0 relative">
+                    {otherUser?.name?.charAt(0) || "U"}
+                    {unreadCount > 0 && (
+                      <div className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 rounded-full border-2 border-card flex items-center justify-center text-[10px] text-white font-bold">
+                        {unreadCount}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Info */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start mb-1">
+                      <h3 className="font-bold text-foreground truncate pr-4 group-hover:text-primary transition">
+                        {otherUser?.name || "User"}
+                      </h3>
+                      <span className="text-xs text-muted-foreground whitespace-nowrap flex items-center gap-1 shrink-0">
+                        <Clock className="w-3 h-3" /> {timestamp}
+                      </span>
                     </div>
-                  )}
-                </div>
+                    
+                    {/* Contextual Project Tag */}
+                    {conv.project && (
+                      <div className="flex items-center gap-1.5 mb-1.5">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-sm inline-flex items-center gap-1">
+                          {conv.project.type === 'project' ? <Briefcase className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
+                          {conv.project.title || "Project"}
+                        </span>
+                      </div>
+                    )}
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex justify-between items-start mb-1">
-                    <h3 className="font-bold text-foreground truncate pr-4 group-hover:text-primary transition">
-                      {conv.with}
-                    </h3>
-                    <span className="text-xs text-muted-foreground whitespace-nowrap flex items-center gap-1 shrink-0">
-                      <Clock className="w-3 h-3" /> {conv.timestamp}
-                    </span>
+                    <p className={`text-sm truncate ${unreadCount > 0 ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
+                      {lastMessage}
+                    </p>
                   </div>
-                  
-                  {/* Contextual Project Tag */}
-                  <div className="flex items-center gap-1.5 mb-1.5">
-                    <span className="text-[10px] font-semibold uppercase tracking-wider text-primary bg-primary/10 px-2 py-0.5 rounded-sm inline-flex items-center gap-1">
-                      {conv.project.type === 'project' ? <Briefcase className="w-3 h-3" /> : <FileText className="w-3 h-3" />}
-                      {conv.project.title}
-                    </span>
-                  </div>
-
-                  <p className={`text-sm truncate ${conv.unread > 0 ? 'text-foreground font-semibold' : 'text-muted-foreground'}`}>
-                    {conv.lastMessage}
-                  </p>
-                </div>
-              </Link>
-            ))}
+                </Link>
+              );
+            })}
           </div>
         )}
       </div>

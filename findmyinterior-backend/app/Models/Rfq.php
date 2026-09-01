@@ -77,6 +77,15 @@ class Rfq extends Model
 
     public function isUnlockedBy(User $user): bool
     {
+        if ($user->isAdmin() || $user->id === $this->user_id) {
+            return true;
+        }
+        if ($user->canSeeAllLeads()) {
+            return true;
+        }
+        if ($user->hasRole('worker') || $user->hasRole('skilled_worker')) {
+            return true;
+        }
         return $this->contactUnlocks()->where('user_id', $user->id)->exists();
     }
 }

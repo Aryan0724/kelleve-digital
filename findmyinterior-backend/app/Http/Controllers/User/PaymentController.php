@@ -28,8 +28,9 @@ class PaymentController extends Controller
             'purpose'               => ['required', 'in:subscription,lead_unlock,wallet_recharge'],
             'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
             'billing_cycle'         => ['nullable', 'string'],
-            'requirement_id'        => ['required_if:purpose,lead_unlock', 'exists:projects,id'],
-            'amount'                => ['required_if:purpose,wallet_recharge', 'numeric', 'min:1'],
+            'requirement_id'        => ['required_if:purpose,lead_unlock', 'integer'],
+            'requirement_type'      => ['nullable', 'string'],
+            'amount'                => ['nullable', 'numeric', 'min:1'],
         ]);
 
         $user = $request->user();
@@ -39,10 +40,28 @@ class PaymentController extends Controller
             $amount = (float) ($plan->price_yearly > 0 ? $plan->price_yearly : $plan->price_monthly);
             $data['billing_cycle'] = $data['billing_cycle'] ?? 'yearly';
         } else if ($data['purpose'] === 'wallet_recharge') {
-            $amount = $data['amount'];
+            $amount = $data['amount'] ?? 100;
         } else {
-            // lead_unlock: flat ₹49 per contact
-            $amount = 49.00;
+            // lead_unlock: check custom requirement unlock_price, or global setting contact_unlock_fee from Admin Panel, or fallback to passed amount / 49.00
+            $globalUnlockFee = (float) (\App\Models\Setting::where('key', 'contact_unlock_fee')->value('value') 
+                ?? \App\Models\Setting::where('key', 'lead_price')->value('value') 
+                ?? config('marketplace.unlock_fee', 49.00));
+
+            $customPrice = null;
+            if (!empty($data['requirement_id'])) {
+                $reqType = strtolower($data['requirement_type'] ?? 'project');
+                $fullClass = \App\Models\Requirement::class;
+                if ($reqType === 'rfq') $fullClass = \App\Models\Rfq::class;
+                elseif ($reqType === 'job' || $reqType === 'workerjob' || $reqType === 'worker_job') $fullClass = \App\Models\WorkerJob::class;
+                elseif ($reqType === 'listing') $fullClass = \App\Models\Listing::class;
+
+                $targetEntity = $fullClass::find($data['requirement_id']);
+                if ($targetEntity && isset($targetEntity->unlock_price) && (float)$targetEntity->unlock_price > 0) {
+                    $customPrice = (float)$targetEntity->unlock_price;
+                }
+            }
+
+            $amount = $customPrice ?? (isset($data['amount']) && (float)$data['amount'] > 0 ? (float)$data['amount'] : $globalUnlockFee);
         }
 
         if (empty(config('services.razorpay.key')) || config('app.env') === 'local') {
@@ -90,72 +109,14 @@ class PaymentController extends Controller
 
     /**
      * POST /api/v1/payments/pay-with-wallet
-     * Pays for a subscription directly using the user's wallet balance.
+     * Deprecated: System transitioned to direct per-workflow payments.
      */
     public function payWithWallet(Request $request): JsonResponse
     {
-        $data = $request->validate([
-            'purpose'               => ['required', 'in:subscription'],
-            'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
-            'billing_cycle'         => ['nullable', 'string'],
-        ]);
-
-        $user = $request->user();
-
-        if ($data['purpose'] === 'subscription') {
-            $plan = SubscriptionPlan::findOrFail($data['subscription_plan_id']);
-            $amount = (float) ($plan->price_yearly > 0 ? $plan->price_yearly : $plan->price_monthly);
-            $data['billing_cycle'] = $data['billing_cycle'] ?? 'yearly';
-        } else {
-            return response()->json(['success' => false, 'message' => 'Invalid purpose for wallet payment.'], 400);
-        }
-
-        $walletService = app(\App\Services\WalletService::class);
-        $balance = $walletService->getBalance($user);
-
-        if ($balance < $amount) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Insufficient wallet balance. You need ₹' . $amount . ' but you have ₹' . $balance,
-                'required' => $amount,
-                'balance' => $balance
-            ], 422);
-        }
-
-        DB::beginTransaction();
-        try {
-            // 1. Deduct from wallet
-            $walletService->deduct($user, $amount, "Subscription Upgrade: {$plan->name}");
-
-            // 2. Create a mock payment record for tracking
-            $payment = Payment::create([
-                'user_id'          => $user->id,
-                'razorpay_order_id'=> 'wallet_sub_' . uniqid(),
-                'amount'           => $amount,
-                'currency'         => 'INR',
-                'purpose'          => 'subscription',
-                'status'           => 'success',
-                'meta'             => $data,
-            ]);
-
-            // 3. Fulfill
-            $this->fulfillPayment($payment);
-
-            DB::commit();
-
-            return response()->json([
-                'success' => true,
-                'message' => "Successfully subscribed to {$plan->name}!",
-                'data'    => new PaymentResource($payment->fresh()),
-            ]);
-        } catch (\Exception $e) {
-            DB::rollBack();
-            Log::error("Wallet subscription payment failed: " . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Failed to process subscription from wallet: ' . $e->getMessage(),
-            ], 500);
-        }
+        return response()->json([
+            'success' => false,
+            'message' => 'Wallet balance payments have been deprecated. All transactions are processed securely via direct online checkout.',
+        ], 400);
     }
 
     /**
@@ -273,19 +234,28 @@ class PaymentController extends Controller
             // Sync is_premium flag and verification badges to the entity
             $user = $payment->user;
             
+            $verificationLevel = match($plan->slug) {
+                'elitebusiness' => 'elite_professional',
+                'probusiness'   => 'elite_professional',
+                'growthplus'    => 'trusted_professional',
+                default         => 'verified_business',
+            };
+
+            $isFeatured = (bool) ($plan->is_featured_listing || in_array($plan->slug, ['elitebusiness', 'probusiness']));
+
+            // Update user record with verified flags, verification level and trust score boost
+            $user->update([
+                'is_verified'        => true,
+                'verification_level' => $verificationLevel,
+                'trust_score'        => max((int)($user->trust_score ?? 0), (int)($plan->recommendation_score_boost ?? 25)),
+            ]);
+
             $updateData = [
-                'is_premium' => true,
+                'is_premium'         => true,
+                'is_verified'        => true,
+                'is_featured'        => $isFeatured,
+                'verification_level' => $verificationLevel,
             ];
-            
-            // Sync is_featured and is_gold_verified based on plan benefits
-            if ($plan->is_featured_listing || $plan->slug === 'elitebusiness') {
-                $updateData['is_featured'] = true;
-            }
-            if ($plan->price_yearly > 0 || $plan->price_monthly > 0) {
-                $updateData['is_verified'] = true;
-                $updateData['is_gold_verified'] = true;
-                $updateData['verification_level'] = 'verified_business';
-            }
 
             if ($user->hasRole('builder') && $user->builder) {
                 $user->builder->update($updateData);
@@ -295,11 +265,11 @@ class PaymentController extends Controller
                 $user->worker->update($updateData);
             }
             
-            // Also update all user listings
+            // Also update all user listings with verified & premium badges and search boost
             \App\Models\Listing::where('user_id', $user->id)->update([
                 'is_premium'  => true,
                 'is_verified' => true,
-                'is_featured' => ($plan->is_featured_listing || $plan->slug === 'elitebusiness'),
+                'is_featured' => $isFeatured,
             ]);
 
             // Create official in-app welcome conversation & message from FindMyInterior Concierge
@@ -332,12 +302,42 @@ class PaymentController extends Controller
                 'high'
             ));
         } elseif ($payment->purpose === 'lead_unlock') {
+            $reqType = strtolower($meta['requirement_type'] ?? 'project');
+            $fullClass = \App\Models\Requirement::class;
+            if ($reqType === 'rfq') {
+                $fullClass = \App\Models\Rfq::class;
+            } elseif ($reqType === 'job' || $reqType === 'workerjob' || $reqType === 'worker_job') {
+                $fullClass = \App\Models\WorkerJob::class;
+            } elseif ($reqType === 'listing') {
+                $fullClass = \App\Models\Listing::class;
+            }
+
+            $morphType = (new $fullClass)->getMorphClass();
+
             ContactUnlock::firstOrCreate([
-                'user_id'        => $payment->user_id,
-                'requirement_id' => $meta['requirement_id'],
+                'user_id'          => $payment->user_id,
+                'requirement_id'   => $meta['requirement_id'],
+                'requirement_type' => $morphType,
             ], [
                 'payment_id' => $payment->id,
             ]);
+
+            try {
+                $reqItem = $fullClass::find($meta['requirement_id']);
+                if ($reqItem) {
+                    \Illuminate\Support\Facades\DB::table('activity_timelines')->insert([
+                        'entity_type' => $morphType,
+                        'entity_id' => $reqItem->id,
+                        'user_id' => $payment->user_id,
+                        'action' => 'contact_unlocked',
+                        'description' => "A vendor unlocked the customer's contact via direct payment.",
+                        'created_at' => now(),
+                        'updated_at' => now(),
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::warning("Lead unlock timeline log skipped: " . $e->getMessage());
+            }
         } elseif ($payment->purpose === 'wallet_recharge') {
             app(\App\Services\WalletService::class)->addFunds(
                 $payment->user,

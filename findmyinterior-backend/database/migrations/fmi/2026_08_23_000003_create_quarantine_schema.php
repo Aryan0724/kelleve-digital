@@ -29,6 +29,10 @@ return new class extends Migration
 
     public function up(): void
     {
+        if (!config()->has('database.connections.legacy_quarantine')) {
+            return;
+        }
+
         // ------------------------------------------------------------------
         // quarantine_projects
         // One row per legacy project that could not be migrated to restoration DB.
@@ -173,6 +177,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (!config()->has('database.connections.legacy_quarantine')) {
+            return;
+        }
+
         Schema::connection('legacy_quarantine')->dropIfExists('quarantine_migration_log');
         Schema::connection('legacy_quarantine')->dropIfExists('quarantine_unlocks');
         Schema::connection('legacy_quarantine')->dropIfExists('quarantine_bids');

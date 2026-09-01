@@ -18,14 +18,14 @@ return new class extends Migration
     public function up(): void
     {
         // ─── 1. Add missing columns to listings ──────────────────────────────
-        Schema::table('listings', function (Blueprint $table) {
-            if (!Schema::connection('fmi_mysql')->hasColumn('listings', 'achievements')) {
+        Schema::connection('truedial_mysql')->table('listings', function (Blueprint $table) {
+            if (!Schema::connection('truedial_mysql')->hasColumn('listings', 'achievements')) {
                 $table->json('achievements')->nullable()->after('availability');
             }
-            if (!Schema::connection('fmi_mysql')->hasColumn('listings', 'languages')) {
+            if (!Schema::connection('truedial_mysql')->hasColumn('listings', 'languages')) {
                 $table->json('languages')->nullable()->after('achievements');
             }
-            if (!Schema::connection('fmi_mysql')->hasColumn('listings', 'budget_tier')) {
+            if (!Schema::connection('truedial_mysql')->hasColumn('listings', 'budget_tier')) {
                 $table->string('budget_tier', 100)->nullable()->after('languages');
             }
         });
@@ -58,10 +58,10 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::table('listings', function (Blueprint $table) {
+        Schema::connection('truedial_mysql')->table('listings', function (Blueprint $table) {
             $cols = [];
             foreach (['achievements', 'languages', 'budget_tier'] as $col) {
-                if (Schema::connection('fmi_mysql')->hasColumn('listings', $col)) {
+                if (Schema::connection('truedial_mysql')->hasColumn('listings', $col)) {
                     $cols[] = $col;
                 }
             }

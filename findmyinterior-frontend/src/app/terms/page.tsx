@@ -28,7 +28,7 @@ export default function TermsPage() {
           Registration on the Platform is generally free. However, certain actions (like unlocking leads, submitting bids, or premium subscriptions) may incur fees.
         </p>
         <ul className="list-disc pl-6 space-y-2">
-          <li><strong>Wallet System:</strong> Users may add funds to their Find My Interior Wallet to pay for these services. Wallet funds are non-transferable and subject to our Refund Policy.</li>
+          <li><strong>Direct Gateway Payments:</strong> Users process direct, verified payments (via Razorpay, UPI, Netbanking, Credit/Debit cards) to unlock leads or purchase subscriptions. Transactions are non-transferable and subject to our Refund Policy.</li>
           <li><strong>Project Payments:</strong> Find My Interior may offer milestone-based escrow payments. In such cases, funds are held securely until the agreed-upon milestone is approved by the Customer.</li>
         </ul>
 

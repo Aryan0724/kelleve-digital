@@ -6,16 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    protected $connection = 'truedial_mysql';
     /**
      * Run the migrations.
      */
     public function up(): void
     {
-        Schema::table('listing_galleries', function (Blueprint $table) {
+        Schema::connection('truedial_mysql')->table('listing_galleries', function (Blueprint $table) {
             $table->string('storage_url')->nullable()->after('image_url');
         });
 
-        Schema::table('listings', function (Blueprint $table) {
+        Schema::connection('truedial_mysql')->table('listings', function (Blueprint $table) {
             $table->string('cover_image_url')->nullable()->after('cover_image');
         });
     }
@@ -25,11 +26,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('listing_galleries', function (Blueprint $table) {
+        Schema::connection('truedial_mysql')->table('listing_galleries', function (Blueprint $table) {
             $table->dropColumn('storage_url');
         });
 
-        Schema::table('listings', function (Blueprint $table) {
+        Schema::connection('truedial_mysql')->table('listings', function (Blueprint $table) {
             $table->dropColumn('cover_image_url');
         });
     }

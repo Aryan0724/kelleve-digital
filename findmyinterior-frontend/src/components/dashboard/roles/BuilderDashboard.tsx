@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Building, Wallet, User, LogOut, ShieldCheck , Star } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Building, Crown, User, LogOut, ShieldCheck , Star } from "lucide-react";
 import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
@@ -18,7 +18,6 @@ import Link from "next/link";
 import { UnverifiedBanner } from "@/components/dashboard/UnverifiedBanner";
 import { VerificationTab } from "@/components/dashboard/VerificationTab";
 import { SubscriptionTab } from "@/components/dashboard/SubscriptionTab";
-import { WalletTab } from "@/components/dashboard/WalletTab";
 import { DashboardProfileCard } from "@/components/dashboard/DashboardProfileCard";
 import { VentureSwitcher } from "@/components/dashboard/VentureSwitcher";
 import { PortfolioTab } from "@/components/dashboard/PortfolioTab";
@@ -109,14 +108,6 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
                     </div>
                     <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-orange-600 border-orange-200" onClick={() => setActiveTab("subscription")}>Upgrade</Button>
                   </div>
-                  
-                  <div className="w-full bg-green-50 border border-green-100 rounded-lg p-3 text-left flex justify-between items-center">
-                    <div>
-                      <div className="text-xs text-green-700 font-medium flex items-center"><Wallet className="w-3 h-3 mr-1"/> Wallet Balance</div>
-                      <div className="font-bold text-slate-900">₹{data?.user?.wallet_balance || 0}</div>
-                    </div>
-                    <Button variant="outline" size="sm" className="h-7 text-xs bg-white text-green-700 border-green-200" onClick={() => setActiveTab("wallet")}>Add</Button>
-                  </div>
                 </div>
               }
             />
@@ -130,7 +121,7 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
                 {renderSidebarButton("supplier_requests", <Search className="h-5 w-5" />, "Supplier Requests")}
                 {renderSidebarButton("worker_requests", <User className="h-5 w-5" />, "Worker Requests")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
+                {renderSidebarButton("subscription", <Crown className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "Business Profile")}
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
@@ -242,8 +233,6 @@ export function BuilderDashboard({ data, fetchDashboard }: { data: any, fetchDas
             {activeTab === 'subscription' && (
               <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />
             )}
-            
-            {activeTab === 'wallet' && <WalletTab />}
 
             {activeTab === 'verification' && <VerificationTab onSwitchTab={setActiveTab} profileData={data} />}
             {(activeTab === 'business_profile' || activeTab === 'profile') && <CompleteProfileTab />}

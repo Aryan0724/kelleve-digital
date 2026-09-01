@@ -36,11 +36,13 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
   const [loading, setLoading] = useState(false);
   const isFree = user?.role === 'worker' || user?.role === 'skilled_worker';
 
-  const startRazorpayPayment = async (amountToRecharge: number = 49) => {
+  const startRazorpayPayment = async (amountToPay: number = 49) => {
     try {
       const orderRes = await api.post("/payments/create-order", {
-        purpose: "wallet_recharge",
-        amount: amountToRecharge,
+        purpose: "lead_unlock",
+        requirement_id: listing.id,
+        requirement_type: "listing",
+        amount: amountToPay,
       });
       const orderId = orderRes.data.order_id;
       const amountInPaise = orderRes.data.amount;
@@ -57,7 +59,7 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
         amount: amountInPaise.toString(),
         currency: "INR",
         name: "FindMyInterior",
-        description: `Unlock Contact Details: ₹${amountToRecharge}`,
+        description: `Unlock Contact Details: ₹${amountToPay}`,
         order_id: orderId,
         handler: async function (response: any) {
           try {
@@ -96,6 +98,8 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
     }
   };
 
+  const displayPrice = listing?.unlock_price || 49;
+
   const handleUnlock = async () => {
     if (!token) {
       toast.info("Please log in to unlock this contact.");
@@ -103,10 +107,8 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
       return;
     }
 
-    // If user's wallet balance is known to be 0 or insufficient, open Razorpay directly
-    if (!isFree && user?.wallet_balance !== undefined && Number(user.wallet_balance) < 49) {
-      toast.info("Recharging wallet ₹49 to unlock contact...");
-      await startRazorpayPayment(49);
+    if (!isFree) {
+      await startRazorpayPayment(displayPrice);
       return;
     }
 
@@ -119,17 +121,7 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
       onClose();
     } catch (err: any) {
       const msg = err.response?.data?.message || "";
-      const isBalance = err.response?.status === 402 || 
-                        err.response?.data?.needs_recharge || 
-                        msg.toLowerCase().includes("balance") || 
-                        msg.toLowerCase().includes("recharge") || 
-                        err.response?.status === 400;
-      if (isBalance) {
-        toast.info("Opening Razorpay to recharge wallet...");
-        await startRazorpayPayment(49);
-      } else {
-        toast.error(msg || "Failed to unlock contact. Please try again.");
-      }
+      toast.error(msg || "Failed to unlock contact. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -145,7 +137,7 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
           </DialogTitle>
           <DialogDescription>
             Unlock {listing.title}'s phone and WhatsApp details. 
-            {!isFree && ` This requires a ₹49 fee which will be processed via Razorpay or your wallet balance.`}
+            {!isFree && ` This requires a ₹${displayPrice} fee processed directly via online payment.`}
           </DialogDescription>
         </DialogHeader>
         
@@ -162,7 +154,7 @@ export function UnlockContactModal({ isOpen, onClose, listing, onUnlockSuccess }
             className="w-full h-12 bg-[#25D366] hover:bg-[#128C7E] text-white font-bold text-base"
             disabled={loading}
           >
-            {loading ? "Processing..." : isFree ? "Unlock for Free" : "Pay ₹49 & Unlock Contact"}
+            {loading ? "Processing..." : isFree ? "Unlock for Free" : `Pay ₹${displayPrice} & Unlock Contact`}
           </Button>
           
           {!isFree && (

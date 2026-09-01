@@ -25,8 +25,11 @@ class UnlockService
     {
         $requirementType = $requirement->getMorphClass();
 
-        // 2. Fetch the fee from requirement or configuration (default ₹49)
-        $fee = (float) ($requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00));
+        // 2. Fetch the fee from requirement or configuration (defaults to Setting contact_unlock_fee or ₹49)
+        $globalFee = (float) (\App\Models\Setting::where('key', 'contact_unlock_fee')->value('value') 
+            ?? \App\Models\Setting::where('key', 'lead_price')->value('value') 
+            ?? config('marketplace.unlock_fee', 49.00));
+        $fee = (float) ($requirement->unlock_price ?? $globalFee);
 
         // Only the actual owner of the listing/requirement gets their own contact for free
         if ($vendor->id === ($requirement->user_id ?? null)) {

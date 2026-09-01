@@ -26,7 +26,8 @@ class UserAdvertisementController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'location' => 'required|string|max:100',
-            'banner_url' => 'nullable|required_if:media_type,image,video|string|max:255',
+            'banner_url' => 'nullable|string|max:255',
+            'banner_file' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,webm|max:10240',
             'media_type' => 'required|string|in:image,video,html',
             'custom_code' => 'nullable|required_if:media_type,html|string',
             'link' => 'nullable|string|max:255',
@@ -37,6 +38,14 @@ class UserAdvertisementController extends Controller
             'ends_at' => 'nullable|date'
         ]);
 
+        if ($request->hasFile('banner_file')) {
+            $validated['banner_url'] = \App\Helpers\ImageHelper::toStoragePath($request->file('banner_file'), 'advertisements');
+        }
+
+        if (in_array($validated['media_type'], ['image', 'video']) && empty($validated['banner_url'])) {
+            return response()->json(['message' => 'The banner file or banner URL is required for image/video media type.', 'errors' => ['banner_file' => ['File is required.']]], 422);
+        }
+
         $validated['user_id'] = $request->user()->id;
         $validated['created_by'] = $request->user()->id;
         $validated['is_active'] = false; // Requires admin approval or payment confirmation
@@ -44,7 +53,7 @@ class UserAdvertisementController extends Controller
 
         // In a real scenario, deduct budget from Wallet here.
 
-        $ad = Advertisement::create($validated);
+        $ad = Advertisement::create(\Illuminate\Support\Arr::except($validated, ['banner_file']));
 
         return response()->json([
             'status' => 'success',

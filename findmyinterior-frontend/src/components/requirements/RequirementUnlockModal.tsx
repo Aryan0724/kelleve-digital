@@ -44,11 +44,13 @@ export function RequirementUnlockModal({
   const isFree = user?.role === 'worker' || user?.role === 'skilled_worker';
   const displayPrice = isFree ? 0 : (unlockPrice ?? 49);
 
-  const startRazorpayPayment = async (amountToRecharge: number = unlockPrice || 49) => {
+  const startRazorpayPayment = async (amountToPay: number = unlockPrice || 49) => {
     try {
       const orderRes = await api.post("/payments/create-order", {
-        purpose: "wallet_recharge",
-        amount: amountToRecharge,
+        purpose: "lead_unlock",
+        requirement_id: requirementId,
+        requirement_type: requirementType || "project",
+        amount: amountToPay,
       });
       const orderId = orderRes.data.order_id;
       const amountInPaise = orderRes.data.amount;
@@ -65,7 +67,7 @@ export function RequirementUnlockModal({
         amount: amountInPaise.toString(),
         currency: "INR",
         name: "FindMyInterior",
-        description: `Unlock Requirement Contact: ₹${amountToRecharge}`,
+        description: `Unlock Requirement Contact: ₹${amountToPay}`,
         order_id: orderId,
         handler: async function (response: any) {
           try {
@@ -77,9 +79,6 @@ export function RequirementUnlockModal({
             toast.success("Payment verified! Unlocking contact...");
             const typeStr = requirementType ? `?requirement_type=${requirementType}` : '';
             const unlockRes = await api.post(`/requirements/${requirementId}/unlock${typeStr}`);
-            if (unlockRes.data?.wallet_balance !== undefined && user) {
-              useAuthStore.getState().updateUser({ ...user, wallet_balance: unlockRes.data.wallet_balance });
-            }
             toast.success("Contact unlocked successfully!");
             if (onUnlockSuccess) onUnlockSuccess(unlockRes.data?.contact);
             onClose();
@@ -111,8 +110,7 @@ export function RequirementUnlockModal({
       return;
     }
 
-    if (!isFree && user?.wallet_balance !== undefined && Number(user.wallet_balance) < displayPrice) {
-      toast.info(`Recharging wallet ₹${displayPrice} to unlock contact...`);
+    if (!isFree) {
       await startRazorpayPayment(displayPrice);
       return;
     }
@@ -122,13 +120,6 @@ export function RequirementUnlockModal({
       const typeStr = requirementType ? `?requirement_type=${requirementType}` : '';
       const response = await api.post(`/requirements/${requirementId}/unlock${typeStr}`);
       
-      if (response.data?.wallet_balance !== undefined && user) {
-        useAuthStore.getState().updateUser({
-          ...user,
-          wallet_balance: response.data.wallet_balance
-        });
-      }
-
       toast.success("Contact unlocked successfully!");
       if (onUnlockSuccess) {
         onUnlockSuccess(response.data?.contact);
@@ -136,17 +127,7 @@ export function RequirementUnlockModal({
       onClose();
     } catch (err: any) {
       const msg = err.response?.data?.message || "";
-      const isBalance = err.response?.status === 402 || 
-                        err.response?.data?.needs_recharge || 
-                        msg.toLowerCase().includes('balance') || 
-                        msg.toLowerCase().includes('recharge') || 
-                        err.response?.status === 400;
-      if (isBalance) {
-        toast.info("Opening Razorpay to recharge wallet...");
-        await startRazorpayPayment(displayPrice);
-      } else {
-        toast.error(msg || "Failed to unlock contact.");
-      }
+      toast.error(msg || "Failed to unlock contact.");
     } finally {
       setLoading(false);
     }

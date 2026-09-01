@@ -5,11 +5,10 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Truck, Wrench, Wallet, User, LogOut, ShieldCheck , Star } from "lucide-react";
+import { LayoutDashboard, MessageSquare, Search, Gavel, Trophy, HardHat, Truck, Wrench, Crown, User, LogOut, ShieldCheck , Star } from "lucide-react";
 import { SavedBookmarksTab } from "@/components/dashboard/SavedBookmarksTab";
 import { useAuthStore } from "@/lib/store/useAuthStore";
 import { handleLogoutAction } from "@/lib/auth";
-import { WalletTab } from "@/components/dashboard/WalletTab";
 import { CompleteProfileTab } from "@/components/dashboard/CompleteProfileTab";
 import { AvailableLeadsTab } from "@/components/dashboard/AvailableLeadsTab";
 
@@ -124,8 +123,7 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
                 {renderSidebarButton("material_requests", <Truck className="h-5 w-5" />, "Material Requests")}
                 {renderSidebarButton("subcontract_requests", <Wrench className="h-5 w-5" />, "Subcontract Requests")}
                 {renderSidebarButton("messages", <MessageSquare className="h-5 w-5" />, "Messages")}
-                {renderSidebarButton("wallet", <Wallet className="h-5 w-5" />, "Wallet")}
-                {renderSidebarButton("subscription", <Wallet className="h-5 w-5" />, "Subscription")}
+                {renderSidebarButton("subscription", <Crown className="h-5 w-5" />, "Subscription")}
                 {renderSidebarButton("verification", <ShieldCheck className="h-5 w-5" />, "Verification")}
                 {renderSidebarButton("business_profile", <User className="h-5 w-5" />, "My Business Listing")}
                 {renderSidebarButton("portfolio", <Paintbrush className="h-5 w-5" />, "Portfolio")}
@@ -148,8 +146,6 @@ export function ContractorDashboard({ data, fetchDashboard }: { data: any, fetch
             {activeTab === 'won_projects' && (
               <MyBidsTab bids={data?.submitted_bids || []} title="Won Projects" showAwardedOnly={true} />
             )}
-
-            {activeTab === 'wallet' && <WalletTab />}
 
             {activeTab === 'subscription' && (
               <SubscriptionTab currentPlan={data?.user?.subscription || "Free Plan"} />

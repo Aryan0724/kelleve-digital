@@ -24,19 +24,6 @@ const LocationContext = createContext<LocationContextType>({
   closeLocationModal: () => {},
 });
 
-const CITIES_COORDS: { name: string; lat: number; lng: number }[] = [
-  { name: "Mumbai", lat: 19.076, lng: 72.8777 },
-  { name: "Delhi NCR", lat: 28.7041, lng: 77.1025 },
-  { name: "Bangalore", lat: 12.9716, lng: 77.5946 },
-  { name: "Hyderabad", lat: 17.385, lng: 78.4867 },
-  { name: "Pune", lat: 18.5204, lng: 73.8567 },
-  { name: "Chennai", lat: 13.0827, lng: 80.2707 },
-  { name: "Kolkata", lat: 22.5726, lng: 88.3639 },
-  { name: "Ahmedabad", lat: 23.0225, lng: 72.5714 },
-  { name: "Jaipur", lat: 26.9124, lng: 75.7873 },
-  { name: "Surat", lat: 21.1702, lng: 72.8311 },
-];
-
 export function LocationProvider({ children }: { children: React.ReactNode }) {
   const [city, setCityState] = useState<string>(DEFAULT_CITY);
   const [isDetecting, setIsDetecting] = useState<boolean>(false);
@@ -71,28 +58,42 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 
     setIsDetecting(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
         const { latitude, longitude } = position.coords;
-        // Find closest city
-        let closestCity = "Mumbai";
-        let minDistance = Infinity;
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+            {
+              headers: {
+                'Accept-Language': 'en-US,en;q=0.9',
+                'User-Agent': 'TrueDialApp/1.0'
+              }
+            }
+          );
 
-        CITIES_COORDS.forEach((c) => {
-          const dist =
-            Math.pow(c.lat - latitude, 2) + Math.pow(c.lng - longitude, 2);
-          if (dist < minDistance) {
-            minDistance = dist;
-            closestCity = c.name;
-          }
-        });
+          if (!response.ok) throw new Error("Failed to fetch location data");
 
-        setCity(closestCity);
-        setIsDetecting(false);
+          const data = await response.json();
+          const address = data.address;
+          
+          const detectedCity = address.city || address.town || address.village || address.county || address.state_district || DEFAULT_CITY;
+          
+          setCity(detectedCity);
+          setIsDetecting(false);
+        } catch (error) {
+          console.error("Reverse geocoding error:", error);
+          setIsDetecting(false);
+          alert("Could not detect location automatically. Please select manually.");
+        }
       },
       (error) => {
         console.error("Geolocation error:", error);
         setIsDetecting(false);
-        alert("Could not detect location. Defaulting to Mumbai.");
+        let errorMessage = "Could not detect location. Defaulting to Mumbai.";
+        if (error.code === error.PERMISSION_DENIED) {
+           errorMessage = "Location access was denied. Please select city manually.";
+        }
+        alert(errorMessage);
       },
       { timeout: 8000, enableHighAccuracy: true }
     );
@@ -116,3 +117,4 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
 }
 
 export const useUserLocation = () => useContext(LocationContext);
+

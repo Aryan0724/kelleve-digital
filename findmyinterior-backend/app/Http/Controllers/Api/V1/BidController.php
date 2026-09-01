@@ -88,37 +88,7 @@ class BidController extends Controller
         $validated['experience_years'] = $listing ? $listing->years_experience : 0;
         $validated['previous_projects_count'] = 0; // Default or calculate from won bids
 
-        // Determine primary role to fetch specific bid fee
-        $userRoles = $request->user()->roles->pluck('slug')->toArray();
-        $primaryRole = count($userRoles) > 0 ? $userRoles[0] : 'worker';
-        if ($primaryRole === 'designer') $primaryRole = 'interior'; // Map designer to interior if needed
-        
-        if (in_array('skilled_worker', $userRoles) || in_array('worker', $userRoles)) {
-            $fee = 0;
-        } else {
-            $settingKey = 'bid_fee_' . $primaryRole;
-            $feeSetting = \App\Models\Setting::where('key', $settingKey)->first();
-            $fee = $feeSetting ? (float) $feeSetting->value : 10.00; // fallback to 10.00
-        }
-        
-        if ($fee > 0) {
-            $balance = $this->walletService->getBalance($request->user());
-            if ($balance < $fee) {
-                return $this->error("Insufficient wallet balance to submit bid. Please recharge ₹{$fee}.", 402);
-            }
-            
-            try {
-                $this->walletService->deduct(
-                    $request->user(), 
-                    $fee, 
-                    "Fee for submitting bid on requirement #{$validated['requirement_id']}",
-                    ['reference_type' => $morphType, 'reference_id' => $validated['requirement_id']]
-                );
-            } catch (\Exception $e) {
-                return $this->error('Failed to process bid fee: ' . $e->getMessage(), 400);
-            }
-        }
-
+        // Bid submissions are directly permitted for active professionals
         $bid = $this->bidService->submitBid($request->user()->id, $validated);
 
         return $this->success($bid, 'Bid submitted successfully', 201);

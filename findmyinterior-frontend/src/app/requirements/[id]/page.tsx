@@ -116,11 +116,13 @@ const loadScript = (src: string) => {
   });
 };
 
-  const startRazorpayPayment = async (amountToRecharge: number = 49) => {
+  const startRazorpayPayment = async (amountToPay: number = 49) => {
     try {
       const orderRes = await api.post("/payments/create-order", {
-        purpose: "wallet_recharge",
-        amount: amountToRecharge,
+        purpose: "lead_unlock",
+        requirement_id: Number(params.id),
+        requirement_type: reqType || "project",
+        amount: amountToPay,
       });
       const orderId = orderRes.data.order_id;
       const amountInPaise = orderRes.data.amount;
@@ -137,7 +139,7 @@ const loadScript = (src: string) => {
         amount: amountInPaise.toString(),
         currency: "INR",
         name: "FindMyInterior",
-        description: `Unlock Lead Contact: ₹${amountToRecharge}`,
+        description: `Unlock Lead Contact: ₹${amountToPay}`,
         order_id: orderId,
         handler: async function (response: any) {
           try {
@@ -194,8 +196,7 @@ const loadScript = (src: string) => {
 
     const unlockPrice = requirement?.unlock_price || 49;
     const isWorker = user?.role === 'worker' || user?.role === 'skilled_worker';
-    if (!isWorker && user?.wallet_balance !== undefined && Number(user.wallet_balance) < unlockPrice) {
-      toast.info(`Recharging wallet ₹${unlockPrice} to unlock contact...`);
+    if (!isWorker) {
       await startRazorpayPayment(unlockPrice);
       return;
     }
@@ -222,17 +223,7 @@ const loadScript = (src: string) => {
       }
     } catch (err: any) {
       const msg = err.response?.data?.message || "";
-      const isBalance = err.response?.status === 402 || 
-                        err.response?.data?.needs_recharge || 
-                        msg.toLowerCase().includes('balance') || 
-                        msg.toLowerCase().includes('recharge') || 
-                        err.response?.status === 400;
-      if (isBalance) {
-        toast.info("Opening Razorpay to recharge wallet...");
-        await startRazorpayPayment(unlockPrice);
-      } else {
-        toast.error(msg || "Failed to unlock contact.");
-      }
+      toast.error(msg || "Failed to unlock contact.");
     } finally {
       setUnlockLoading(false);
     }
@@ -861,7 +852,7 @@ const loadScript = (src: string) => {
                 <div className="space-y-2">
                   <div className="text-3xl font-black text-emerald-600 font-mono">{displayUnlockPrice}</div>
                   <p className="text-slate-600 dark:text-slate-400 text-xs leading-relaxed">
-                    Will be deducted from your wallet to instantly unlock the verified phone number, email, and direct WhatsApp channel.
+                    Processed securely via online payment to instantly unlock the verified phone number, email, and direct WhatsApp channel.
                   </p>
                 </div>
               )}

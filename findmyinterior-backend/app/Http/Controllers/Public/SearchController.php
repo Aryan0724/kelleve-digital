@@ -40,15 +40,10 @@ class SearchController extends Controller
                     ->active()
                     ->search($term)
                     ->with(['category', 'user.activeSubscription.plan'])
-                    ->orderByRaw("CASE 
-                        WHEN subscription_plan = 'elite' THEN 4
-                        WHEN subscription_plan = 'professional' THEN 3
-                        WHEN subscription_plan = 'growth' THEN 2
-                        WHEN is_premium = 1 THEN 1
-                        ELSE 0
-                    END DESC")
                     ->orderByDesc('is_featured')
+                    ->orderByDesc('is_premium')
                     ->orderByDesc('is_verified')
+                    ->orderByDesc('views_count')
                     ->orderByDesc('id')
                     ->distinct()
                     ->take(8)
@@ -60,6 +55,7 @@ class SearchController extends Controller
             $results['workers'] = WorkerResource::collection(
                 Worker::active()
                     ->search($term)
+                    ->orderByDesc('is_featured')
                     ->orderByDesc('is_verified')
                     ->orderByDesc('id')
                     ->take(6)
@@ -71,6 +67,7 @@ class SearchController extends Controller
             $results['builders'] = BuilderResource::collection(
                 Builder::active()
                     ->where('company_name', 'LIKE', "%{$term}%")
+                    ->orderByDesc('is_featured')
                     ->orderByDesc('is_verified')
                     ->orderByDesc('id')
                     ->take(4)
@@ -82,6 +79,7 @@ class SearchController extends Controller
             $results['suppliers'] = SupplierResource::collection(
                 Supplier::active()
                     ->where('company_name', 'LIKE', "%{$term}%")
+                    ->orderByDesc('is_featured')
                     ->orderByDesc('is_verified')
                     ->orderByDesc('id')
                     ->take(4)

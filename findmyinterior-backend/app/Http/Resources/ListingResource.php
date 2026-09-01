@@ -65,6 +65,7 @@ class ListingResource extends JsonResource
             'is_sponsored'     => $this->sponsored_until && $this->sponsored_until->isFuture(),
             'is_top_rated'     => $this->avg_rating >= 4.5 && $this->review_count >= 5,
             'status'           => $this->status,
+            'unlock_price'     => (float) ($this->unlock_price ?? \App\Models\Setting::where('key', 'contact_unlock_fee')->value('value') ?? \App\Models\Setting::where('key', 'lead_price')->value('value') ?? 49.00),
             'views_count'      => $this->views_count,
             'trust_score'      => $this->trust_score ?? $ownerUser?->trust_score ?? 0,
             'profile_completion_score' => $this->profile_completion_score ?? $ownerUser?->profile_completion_score ?? 0,

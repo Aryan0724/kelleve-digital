@@ -72,7 +72,7 @@ export function ContactButtons({ listing }: { listing: any }) {
         <div className="min-w-0">
           <div className="text-xs text-slate-500 font-medium">Phone Number</div>
           <div className={`font-semibold truncate ${hasPhone ? "text-green-700" : "text-slate-700 text-sm"}`}>
-            {hasPhone ? phoneDisplay : "Unlock Contact (₹49)"}
+            {hasPhone ? phoneDisplay : `Unlock Contact (₹${listing.unlock_price || 49})`}
           </div>
         </div>
       </div>

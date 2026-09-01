@@ -413,15 +413,15 @@ class ProfileController extends Controller
             return response()->json(['success' => false, 'message' => 'Listing profile not found.'], 404);
         }
 
-        // Check gallery image limit (default 50 images per gallery)
-        $maxImages = $request->user()->role === 'admin' ? 100 : ($request->user()->activeSubscription?->plan?->max_gallery_images ?? 50);
+        // Check gallery image limit based on active subscription plan (Starter: 10, QuickStart: 30, GrowthPlus: 60, ProBusiness: 100, EliteBusiness: 200)
+        $maxImages = $request->user()->isAdmin() ? 200 : ($request->user()->activeSubscription?->plan?->max_gallery_images ?? 10);
         $currentCount = ListingGallery::where('listing_id', $listing->id)->count();
-        $allowed = max(1, $maxImages - $currentCount);
+        $allowed = $maxImages - $currentCount;
 
         if ($allowed <= 0) {
             return response()->json([
                 'success' => false,
-                'message' => "You have reached your gallery limit ($maxImages). Please upgrade your plan."
+                'message' => "You have reached your portfolio limit of {$maxImages} images. Please upgrade your subscription plan to add more."
             ], 403);
         }
 

@@ -1,10 +1,11 @@
 import Link from "next/link";
 import {
-  LayoutDashboard, LogOut, Menu, X, User,
+  LayoutDashboard, LogOut, Menu, X, User, Sparkles
 } from "lucide-react";
 import { cookies } from "next/headers";
 import MoreMenu from "./MoreMenu";
 import { logout } from "@/app/actions/auth";
+import LocationDisplay from "./LocationDisplay";
 
 export default async function Navbar() {
   const cookieStore = await cookies();
@@ -15,14 +16,17 @@ export default async function Navbar() {
     <header className="w-full z-50 sticky top-0 bg-white shadow-sm border-b border-slate-100">
       <div className="max-w-7xl mx-auto px-4 md:px-6 xl:px-8 py-2.5 flex items-center justify-between gap-4">
 
-        {/* ── Logo ── */}
-        <Link href="/" className="flex items-center gap-2 group shrink-0 py-1">
-          <img
-            src="/truedial-logo.png"
-            alt="TrueDial 100% Verified"
-            className="h-10 md:h-14 w-auto object-contain transition-transform group-hover:scale-105"
-          />
-        </Link>
+        {/* ── Logo & Location ── */}
+        <div className="flex items-center gap-4 shrink-0">
+          <Link href="/" className="flex items-center gap-2 group py-1">
+            <img
+              src="/truedial-logo.png"
+              alt="TrueDial 100% Verified"
+              className="h-10 md:h-14 w-auto object-contain transition-transform group-hover:scale-105"
+            />
+          </Link>
+          <LocationDisplay />
+        </div>
 
         {/* ── Center Nav Links (Desktop only) ── */}
         <nav className="hidden lg:flex items-center justify-center flex-1 gap-1 text-[13.5px] font-semibold text-slate-600">
@@ -37,6 +41,7 @@ export default async function Navbar() {
             Home
           </Link>
           <Link href="/search"         className="px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent hover:border-[#1E40AF]/30 rounded-sm">Find Business</Link>
+          <Link href="/pricing"        className="px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent hover:border-[#1E40AF]/30 rounded-sm text-[#E8701A] font-bold flex items-center gap-1"><Sparkles className="w-3.5 h-3.5" /> Pricing</Link>
           <Link href="/privilege-card" className="px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent hover:border-[#1E40AF]/30 rounded-sm">Privilege Card</Link>
           <Link href="/academy"        className="px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent hover:border-[#1E40AF]/30 rounded-sm">Academy</Link>
           <Link href="/news"           className="px-3 py-1.5 hover:text-[#1E40AF] transition-colors border-b-2 border-transparent hover:border-[#1E40AF]/30 rounded-sm">News</Link>
@@ -89,6 +94,7 @@ export default async function Navbar() {
                     Home
                   </Link>
                   <Link href="/search"         className="px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 border-b border-slate-50 block">Find Business</Link>
+                  <Link href="/pricing"        className="px-4 py-3 text-sm font-bold text-[#E8701A] hover:bg-slate-50 border-b border-slate-50 flex items-center gap-2"><Sparkles className="w-4 h-4" /> Pricing Plans</Link>
                   <Link href="/privilege-card" className="px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 border-b border-slate-50 block">Privilege Card</Link>
                   <Link href="/academy"        className="px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 border-b border-slate-50 block">Academy</Link>
                   <Link href="/news"           className="px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 border-b border-slate-50 block">News</Link>

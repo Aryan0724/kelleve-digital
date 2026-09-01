@@ -22,13 +22,13 @@ const SETTINGS_SCHEMA = {
     ]
   },
   fees: {
-    title: "Fees & Commissions",
+    title: "Fees & Global Pricing",
     icon: <ShieldAlert className="w-5 h-5 text-green-500" />,
-    description: "Configure platform revenue cuts and withdrawal thresholds.",
+    description: "Configure global contact unlock pricing, platform fees, and thresholds.",
     items: [
+      { key: "contact_unlock_fee", label: "Default Contact / Lead Unlock Fee (₹)", type: "number", defaultValue: "49" },
       { key: "commission_rate", label: "Base Commission Rate (%)", type: "number", defaultValue: "10" },
       { key: "minimum_withdrawal", label: "Min. Withdrawal Amount (₹)", type: "number", defaultValue: "1000" },
-      { key: "lead_price", label: "Default Lead Price (Credits)", type: "number", defaultValue: "50" },
     ]
   },
   features: {

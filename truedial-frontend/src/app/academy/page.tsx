@@ -1,143 +1,78 @@
 "use client";
 
-import { useState } from "react";
-import { BookOpen, Clock, PlayCircle, Star, Users, Award, ChevronRight, Lock, CheckCircle, Mic, TrendingUp, DollarSign, Megaphone, BarChart2, GraduationCap } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
+import { useState, useEffect } from "react";
+import { 
+  TrendingUp, DollarSign, Megaphone, BarChart2, 
+  GraduationCap, PlayCircle, CheckCircle, Clock, 
+  BookOpen, Users, Star, ChevronRight 
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { TrueDialAPI } from "@/lib/api";
 
-const CATEGORY_TABS = ["All", "Digital Marketing", "Sales & Leads", "Operations", "Finance", "Branding"];
-
-const COURSES = [
-  {
-    id: 1,
-    slug: "google-my-business-mastery",
-    title: "Google My Business Mastery",
-    subtitle: "Rank #1 Locally & Get 10x More Calls",
-    instructor: "Arjun Mehta",
-    instructorTitle: "SEO & Local Growth Expert",
-    duration: "3h 20min",
-    lessons: 18,
-    rating: 4.8,
-    students: 2340,
-    price: "Free",
-    category: "Digital Marketing",
-    level: "Beginner",
-    icon: TrendingUp,
-    color: "from-[#E8701A] to-[#f59e0b]",
-    topics: ["Profile optimization", "Review generation", "Q&A management", "Local SEO signals"],
-  },
-  {
-    id: 2,
-    slug: "closing-more-leads-phone",
-    title: "Close More Leads on the Phone",
-    subtitle: "Turn Every Inquiry into a Paying Customer",
-    instructor: "Meera Pillai",
-    instructorTitle: "Sales Trainer, 15yr Experience",
-    duration: "2h 45min",
-    lessons: 14,
-    rating: 4.9,
-    students: 1876,
-    price: "Free",
-    category: "Sales & Leads",
-    level: "Beginner",
-    icon: DollarSign,
-    color: "from-[#7c3aed] to-[#4f46e5]",
-    topics: ["Opening scripts", "Handling objections", "Pricing conversations", "Follow-up system"],
-  },
-  {
-    id: 3,
-    slug: "whatsapp-business-automation",
-    title: "WhatsApp Business Automation",
-    subtitle: "Build a 24/7 Lead Machine on WhatsApp",
-    instructor: "Ravi Shankar",
-    instructorTitle: "Digital Strategist",
-    duration: "2h 10min",
-    lessons: 12,
-    rating: 4.7,
-    students: 3102,
-    price: "Free",
-    category: "Digital Marketing",
-    level: "Beginner",
-    icon: Megaphone,
-    color: "from-[#059669] to-[#0d9488]",
-    topics: ["Catalog setup", "Quick replies", "Broadcast lists", "Auto-replies with WATI"],
-  },
-  {
-    id: 4,
-    slug: "pricing-for-profit",
-    title: "Pricing for Profit",
-    subtitle: "Stop Undercharging. Start Earning What You Deserve.",
-    instructor: "Neha Gupta",
-    instructorTitle: "Business Finance Coach",
-    duration: "1h 55min",
-    lessons: 10,
-    rating: 4.6,
-    students: 892,
-    price: "₹499",
-    category: "Finance",
-    level: "Intermediate",
-    icon: BarChart2,
-    color: "from-[#0891b2] to-[#1d4ed8]",
-    topics: ["Cost-based pricing", "Competitor benchmarking", "Value-based pricing", "Package offers"],
-  },
-  {
-    id: 5,
-    slug: "build-your-brand-identity",
-    title: "Build Your Brand Identity",
-    subtitle: "From Logo to Voice — A Complete Branding Bootcamp",
-    instructor: "Priya Nair",
-    instructorTitle: "Brand Designer & Strategist",
-    duration: "4h 05min",
-    lessons: 22,
-    rating: 4.8,
-    students: 1560,
-    price: "₹799",
-    category: "Branding",
-    level: "Beginner",
-    icon: Award,
-    color: "from-[#dc2626] to-[#9333ea]",
-    topics: ["Brand archetype", "Color & typography", "Logo brief", "Brand voice guide"],
-  },
-  {
-    id: 6,
-    slug: "staff-management-small-business",
-    title: "Managing Staff in a Small Business",
-    subtitle: "Hire Right. Retain Longer. Delegate Confidently.",
-    instructor: "Suresh Kumar",
-    instructorTitle: "Operations Consultant",
-    duration: "3h 30min",
-    lessons: 16,
-    rating: 4.5,
-    students: 724,
-    price: "Free",
-    category: "Operations",
-    level: "Intermediate",
-    icon: Users,
-    color: "from-[#d97706] to-[#b45309]",
-    topics: ["Job description writing", "Interview scripts", "SOP creation", "Performance reviews"],
-  },
-];
+const CATEGORY_TABS = ["All", "Sales", "Business", "Design", "Marketing", "Finance", "Branding"];
 
 const EXPERTS = [
-  { name: "Arjun Mehta", title: "Local SEO Expert", courses: 3, students: "5k+", color: "from-[#E8701A] to-[#f59e0b]" },
-  { name: "Meera Pillai", title: "Sales Trainer", courses: 2, students: "3.2k+", color: "from-[#7c3aed] to-[#4f46e5]" },
-  { name: "Neha Gupta", title: "Finance Coach", courses: 2, students: "1.8k+", color: "from-[#0891b2] to-[#1d4ed8]" },
-  { name: "Priya Nair", title: "Brand Strategist", courses: 1, students: "1.5k+", color: "from-[#dc2626] to-[#9333ea]" },
+  { name: "Rahul Sharma", title: "Sales Coach", courses: 5, students: "12k+", color: "from-blue-500 to-indigo-600" },
+  { name: "Priya Patel", title: "Digital Marketer", courses: 8, students: "20k+", color: "from-pink-500 to-rose-600" },
+  { name: "Amit Kumar", title: "Business Consultant", courses: 3, students: "5k+", color: "from-emerald-500 to-teal-600" },
+  { name: "Sneha Reddy", title: "Brand Strategist", courses: 4, students: "8k+", color: "from-orange-500 to-amber-600" }
 ];
 
 const TESTIMONIALS = [
-  { name: "Deepak Sharma", business: "Hair Salon, Jaipur", text: "The Google My Business course alone got me 3x more calls within a month. I was sceptical but it actually works.", stars: 5 },
-  { name: "Anjali Verma", business: "Restaurant, Lucknow", text: "Meera's phone sales training changed how my staff talks to customers. We're converting more inquiries now.", stars: 5 },
-  { name: "Manish Patel", business: "Electrical Contractor, Surat", text: "Finally understood how to price my services properly. Took the Finance course and added 30% to my margins.", stars: 5 },
+  { name: "Vikram S.", business: "Vikram Electronics", stars: 5, text: "The sales course completely changed how I pitch to clients. Revenue is up 30%!" },
+  { name: "Ananya D.", business: "Ananya Interiors", stars: 5, text: "TrueDial Academy's branding masterclass helped me stand out in a crowded market." },
+  { name: "Rajesh G.", business: "Rajesh Plumbing Services", stars: 4, text: "Practical, easy to understand, and highly actionable. Highly recommend it." }
 ];
 
 export default function AcademyPage() {
   const [activeTab, setActiveTab] = useState("All");
   const [playingCourse, setPlayingCourse] = useState<number | null>(null);
+  const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await TrueDialAPI.get('/academy');
+        if (res.success && res.data) {
+          // Map backend data to UI fields
+          const mapped = res.data.map((c: any, index: number) => {
+            const colors = [
+              "from-[#E8701A] to-[#f59e0b]",
+              "from-[#7c3aed] to-[#4f46e5]",
+              "from-[#059669] to-[#0d9488]",
+              "from-[#0891b2] to-[#1d4ed8]"
+            ];
+            const icons = [TrendingUp, DollarSign, Megaphone, BarChart2];
+            return {
+              ...c,
+              subtitle: "Premium TrueDial Academy Class",
+              instructorTitle: "Industry Expert",
+              lessons: 10 + (index * 2),
+              rating: 4.8,
+              students: 1200 + (index * 400),
+              price: "Free",
+              level: "Beginner",
+              icon: icons[index % icons.length],
+              color: colors[index % colors.length],
+              topics: ["Foundations", "Core principles", "Advanced techniques"]
+            };
+          });
+          setCourses(mapped);
+        }
+      } catch (err) {
+        console.error("Error fetching courses", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCourses();
+  }, []);
 
   const filtered = activeTab === "All"
-    ? COURSES
-    : COURSES.filter((c) => c.category === activeTab);
+    ? courses
+    : courses.filter((c) => c.category === activeTab);
 
   return (
     <div className="min-h-screen bg-slate-50 dark:bg-[#050f24]">
@@ -202,81 +137,84 @@ export default function AcademyPage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filtered.map((course) => {
-            const Icon = course.icon;
-            return (
-              <div
-                key={course.id}
-                className="group bg-white dark:bg-[#0a1c3a]/50 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col"
-              >
-                {/* Thumbnail */}
-                <div className={`h-44 bg-gradient-to-br ${course.color} relative flex items-center justify-center overflow-hidden`}>
-                  <div className="absolute inset-0 bg-black/10" />
-                  <Icon className="w-16 h-16 text-white/90 relative z-10 group-hover:scale-110 transition-transform duration-300" />
-                  <div className="absolute top-3 left-3 flex gap-2">
-                    <Badge className="bg-black/30 text-white border-0 text-[10px]">{course.level}</Badge>
-                    <Badge className={`${course.price === "Free" ? "bg-green-600" : "bg-[#E8701A]"} text-white border-0 text-[10px]`}>
-                      {course.price}
-                    </Badge>
-                  </div>
-                  <div className="absolute bottom-3 right-3">
-                    <button
-                      onClick={() => setPlayingCourse(course.id === playingCourse ? null : course.id)}
-                      className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 flex items-center justify-center transition-all border border-white/30"
-                    >
-                      <PlayCircle className="w-5 h-5 text-white" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Body */}
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <span className="text-[10px] font-bold text-[#E8701A] uppercase tracking-wider">{course.category}</span>
-                  </div>
-                  <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug mb-1 group-hover:text-[#E8701A] dark:group-hover:text-[#E8701A] transition-colors">
-                    {course.title}
-                  </h3>
-                  <p className="text-xs text-slate-500 dark:text-white/50 mb-3 line-clamp-1">{course.subtitle}</p>
-
-                  {/* Topics preview */}
-                  <ul className="space-y-1 mb-4">
-                    {course.topics.slice(0, 3).map((t) => (
-                      <li key={t} className="flex items-center gap-2 text-xs text-slate-600 dark:text-white/60">
-                        <CheckCircle className="w-3 h-3 text-green-500 shrink-0" />
-                        {t}
-                      </li>
-                    ))}
-                    {course.topics.length > 3 && (
-                      <li className="text-xs text-slate-400 pl-5">+{course.topics.length - 3} more topics</li>
-                    )}
-                  </ul>
-
-                  {/* Meta */}
-                  <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-white/40 mb-4 mt-auto border-t border-slate-100 dark:border-white/5 pt-3">
-                    <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{course.duration}</span>
-                    <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" />{course.lessons} lessons</span>
-                    <span className="flex items-center gap-1"><Users className="w-3 h-3" />{course.students.toLocaleString()}</span>
-                    <span className="flex items-center gap-1 ml-auto text-yellow-500 font-semibold"><Star className="w-3 h-3 fill-yellow-400" />{course.rating}</span>
-                  </div>
-
-                  {/* Instructor + CTA */}
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-xs font-bold text-slate-800 dark:text-white">{course.instructor}</p>
-                      <p className="text-[10px] text-slate-400">{course.instructorTitle}</p>
+        {loading ? (
+          <div className="flex justify-center py-20">
+            <div className="animate-spin w-8 h-8 border-4 border-[#E8701A] border-t-transparent rounded-full"></div>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filtered.map((course) => {
+              const Icon = course.icon;
+              return (
+                <div
+                  key={course.id}
+                  className="group bg-white dark:bg-[#0a1c3a]/50 rounded-2xl overflow-hidden border border-slate-200 dark:border-white/10 shadow-md hover:shadow-2xl transition-all duration-300 flex flex-col"
+                >
+                  {/* Thumbnail */}
+                  <div className={`h-44 bg-gradient-to-br ${course.color} relative flex items-center justify-center overflow-hidden`}>
+                    <div className="absolute inset-0 bg-black/10" />
+                    <Icon className="w-16 h-16 text-white/90 relative z-10 group-hover:scale-110 transition-transform duration-300" />
+                    <div className="absolute top-3 left-3 flex gap-2">
+                      <Badge className="bg-black/30 text-white border-0 text-[10px]">{course.level}</Badge>
+                      <Badge className={`${course.price === "Free" ? "bg-green-600" : "bg-[#E8701A]"} text-white border-0 text-[10px]`}>
+                        {course.price}
+                      </Badge>
                     </div>
-                    <button className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold text-white transition-all hover:scale-105 bg-gradient-to-r ${course.color}`}>
-                      {course.price === "Free" ? "Enroll Free" : `Buy ${course.price}`}
-                      <ChevronRight className="w-3 h-3" />
-                    </button>
+                    <div className="absolute bottom-3 right-3">
+                      <button
+                        onClick={() => setPlayingCourse(course.id === playingCourse ? null : course.id)}
+                        className="w-10 h-10 rounded-full bg-white/20 backdrop-blur-sm hover:bg-white/40 flex items-center justify-center transition-all border border-white/30"
+                      >
+                        <PlayCircle className="w-5 h-5 text-white" />
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Body */}
+                  <div className="p-5 flex flex-col flex-1">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <span className="text-[10px] font-bold text-[#E8701A] uppercase tracking-wider">{course.category}</span>
+                    </div>
+                    <h3 className="font-extrabold text-slate-900 dark:text-white text-base leading-snug mb-1 group-hover:text-[#E8701A] dark:group-hover:text-[#E8701A] transition-colors">
+                      {course.title}
+                    </h3>
+                    <p className="text-xs text-slate-500 dark:text-white/50 mb-3 line-clamp-1">{course.subtitle}</p>
+
+                    {/* Topics preview */}
+                    <ul className="space-y-1 mb-4">
+                      {course.topics.slice(0, 3).map((t: string) => (
+                        <li key={t} className="flex items-center gap-2 text-xs text-slate-600 dark:text-white/60">
+                          <CheckCircle className="w-3 h-3 text-green-500 shrink-0" />
+                          {t}
+                        </li>
+                      ))}
+                    </ul>
+
+                    {/* Meta */}
+                    <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-white/40 mb-4 mt-auto border-t border-slate-100 dark:border-white/5 pt-3">
+                      <span className="flex items-center gap-1"><Clock className="w-3 h-3" />{course.duration}</span>
+                      <span className="flex items-center gap-1"><BookOpen className="w-3 h-3" />{course.lessons} lessons</span>
+                      <span className="flex items-center gap-1"><Users className="w-3 h-3" />{course.students.toLocaleString()}</span>
+                      <span className="flex items-center gap-1 ml-auto text-yellow-500 font-semibold"><Star className="w-3 h-3 fill-yellow-400" />{course.rating}</span>
+                    </div>
+
+                    {/* Instructor + CTA */}
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="text-xs font-bold text-slate-800 dark:text-white">{course.instructor}</p>
+                        <p className="text-[10px] text-slate-400">{course.instructorTitle}</p>
+                      </div>
+                      <button className={`flex items-center gap-1.5 rounded-full px-4 py-2 text-xs font-bold text-white transition-all hover:scale-105 bg-gradient-to-r ${course.color}`}>
+                        {course.price === "Free" ? "Enroll Free" : `Buy ${course.price}`}
+                        <ChevronRight className="w-3 h-3" />
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </div>
 
       {/* ── Expert Instructors ── */}

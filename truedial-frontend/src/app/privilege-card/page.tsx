@@ -29,7 +29,7 @@ const CARD_TIERS = [
     ],
     popular: false,
     ctaText: "Claim Free Digital Card",
-    ctaLink: "/register"
+    ctaLink: "/privilege-card/checkout?plan=Classic"
   },
   {
     id: "gold",
@@ -52,7 +52,7 @@ const CARD_TIERS = [
     ],
     popular: true,
     ctaText: "Get Gold Privilege",
-    ctaLink: "/dashboard/user/privilege-card"
+    ctaLink: "/privilege-card/checkout?plan=Gold"
   },
   {
     id: "platinum",
@@ -75,7 +75,7 @@ const CARD_TIERS = [
     ],
     popular: false,
     ctaText: "Upgrade to Platinum VIP",
-    ctaLink: "/dashboard/user/privilege-card"
+    ctaLink: "/privilege-card/checkout?plan=Platinum"
   }
 ];
 
@@ -120,7 +120,7 @@ export default async function PublicPrivilegeCardPage() {
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Link href="/dashboard/user/privilege-card">
+              <Link href="/dashboard/user/privilege">
                 <Button variant="outline" className="border-slate-700 hover:bg-slate-800 text-white font-bold px-8 py-6 text-base rounded-2xl">
                   Manage Existing Card
                 </Button>

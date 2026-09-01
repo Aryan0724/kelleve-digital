@@ -1,93 +1,14 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import Link from "next/link";
 import { Play, Pause, SkipBack, SkipForward, Volume2, Mic, Clock, ExternalLink, ChevronRight, Headphones, Radio } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
-const CATEGORIES = ["All", "Founder Stories", "Retail Growth", "Restaurant Hacks", "Scaling Services", "B2B Insights", "Digital Marketing"];
+import { TrueDialAPI } from "@/lib/api";
 
-const EPISODES = [
-  {
-    id: 1,
-    title: "How Rajesh Scaled His Salon Chain from 1 to 12 Outlets",
-    guest: "Rajesh Sharma",
-    guestTitle: "Founder, GlowUp Salons",
-    category: "Founder Stories",
-    duration: "42 min",
-    date: "Aug 20, 2026",
-    description: "From a single chair in Lucknow to 12 premium salons across 4 cities — Rajesh shares the raw truth about hiring, cash flow, and customer retention.",
-    color: "from-[#E8701A] to-[#f59e0b]",
-    episode: "EP 24",
-    audioUrl: null,
-  },
-  {
-    id: 2,
-    title: "The Restaurant Owner's Guide to Getting Google Reviews",
-    guest: "Priya Malhotra",
-    guestTitle: "Co-founder, SpiceRoute Restaurants",
-    category: "Restaurant Hacks",
-    duration: "35 min",
-    date: "Aug 14, 2026",
-    description: "Priya grew her restaurant's reviews from 47 to 1,200+ in 8 months. She breaks down exactly how she did it — without paying for a single fake review.",
-    color: "from-[#7c3aed] to-[#4f46e5]",
-    episode: "EP 23",
-    audioUrl: null,
-  },
-  {
-    id: 3,
-    title: "B2B Leads on a Shoestring: What Actually Works in Tier-2 Cities",
-    guest: "Amit Gupta",
-    guestTitle: "Director, BuildRight Contractors",
-    category: "B2B Insights",
-    duration: "48 min",
-    date: "Aug 7, 2026",
-    description: "Amit closed ₹2Cr in B2B contracts last year from Jaipur — using WhatsApp, referrals, and one local directory. No paid ads. Hear the full strategy.",
-    color: "from-[#0891b2] to-[#1d4ed8]",
-    episode: "EP 22",
-    audioUrl: null,
-  },
-  {
-    id: 4,
-    title: "Digital Marketing for Offline Businesses: Stop Wasting Your Budget",
-    guest: "Sneha Kapoor",
-    guestTitle: "Growth Consultant, MarketWise",
-    category: "Digital Marketing",
-    duration: "39 min",
-    date: "Jul 30, 2026",
-    description: "Most small businesses waste 70% of their digital marketing spend. Sneha reveals the exact mistakes and the 3-step framework that actually drives footfall.",
-    color: "from-[#059669] to-[#0d9488]",
-    episode: "EP 21",
-    audioUrl: null,
-  },
-  {
-    id: 5,
-    title: "From Freelancer to 20-Person Agency: The Messy Middle",
-    guest: "Vikram Nair",
-    guestTitle: "CEO, DesignLabs India",
-    category: "Scaling Services",
-    duration: "55 min",
-    date: "Jul 23, 2026",
-    description: "Vikram went from solo freelancer to running a 20-person design agency. He's brutally honest about the failures, the near-bankruptcy, and the pivot that saved it all.",
-    color: "from-[#dc2626] to-[#9333ea]",
-    episode: "EP 20",
-    audioUrl: null,
-  },
-  {
-    id: 6,
-    title: "How a Kirana Store Added ₹40,000/Month with Zero Capex",
-    guest: "Suresh Patel",
-    guestTitle: "Owner, Patel General Stores",
-    category: "Retail Growth",
-    duration: "31 min",
-    date: "Jul 16, 2026",
-    description: "Suresh partnered with 3 delivery apps and added a WhatsApp ordering system. Now his neighbourhood store ships to a 5km radius. No investment, just hustle.",
-    color: "from-[#d97706] to-[#b45309]",
-    episode: "EP 19",
-    audioUrl: null,
-  },
-];
+const CATEGORIES = ["All", "Founder Stories", "Retail Growth", "Restaurant Hacks", "Scaling Services", "B2B Insights", "Digital Marketing"];
 
 const PLATFORMS = [
   { name: "Spotify", color: "#1DB954", icon: "🎵", url: "#" },
@@ -158,12 +79,54 @@ function MiniPlayer({ episode, onClose }: { episode: Episode; onClose: () => voi
 export default function PodcastPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [playingEpisode, setPlayingEpisode] = useState<Episode | null>(null);
+  const [episodes, setEpisodes] = useState<Episode[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchEpisodes = async () => {
+      try {
+        const res = await TrueDialAPI.get('/podcasts');
+        if (res.success && res.data) {
+          const mapped = res.data.map((ep: any, index: number) => {
+            const colors = [
+              "from-[#E8701A] to-[#f59e0b]",
+              "from-[#7c3aed] to-[#4f46e5]",
+              "from-[#0891b2] to-[#1d4ed8]"
+            ];
+            return {
+              ...ep,
+              guest: ep.guest_name || 'Guest',
+              guestTitle: 'Industry Leader',
+              category: CATEGORIES[(index % (CATEGORIES.length - 1)) + 1],
+              date: new Date(ep.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+              color: colors[index % colors.length],
+              episode: `EP ${ep.id}`,
+            };
+          });
+          setEpisodes(mapped);
+        }
+      } catch (err) {
+        console.error("Error fetching podcasts", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchEpisodes();
+  }, []);
 
   const filtered = activeCategory === "All"
-    ? EPISODES
-    : EPISODES.filter((e) => e.category === activeCategory);
+    ? episodes
+    : episodes.filter((e) => e.category === activeCategory);
 
-  const featured = EPISODES[0];
+  const featured = episodes[0];
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-[#050f24] flex items-center justify-center">
+        <div className="animate-spin w-8 h-8 border-4 border-[#E8701A] border-t-transparent rounded-full"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-[#050f24]">
@@ -214,33 +177,35 @@ export default function PodcastPage() {
       </div>
 
       {/* Featured Episode */}
-      <div className="max-w-7xl mx-auto px-6 -mt-8">
-        <div className={`rounded-2xl bg-gradient-to-r ${featured.color} p-0.5 shadow-2xl`}>
-          <div className="bg-[#0a1c3a] rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center">
-            <div className={`w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br ${featured.color} flex items-center justify-center shrink-0 shadow-lg`}>
-              <Headphones className="w-10 h-10 md:w-14 md:h-14 text-white" />
-            </div>
-            <div className="flex-1 text-center md:text-left">
-              <Badge className="bg-white/10 text-white text-xs border-0 mb-3">🎙 LATEST EPISODE · {featured.episode}</Badge>
-              <h2 className="text-xl md:text-2xl font-extrabold text-white mb-2 leading-snug">{featured.title}</h2>
-              <p className="text-white/60 text-sm mb-4">{featured.guest} — {featured.guestTitle}</p>
-              <div className="flex items-center justify-center md:justify-start gap-4">
-                <button
-                  onClick={() => setPlayingEpisode(featured)}
-                  className="flex items-center gap-2 bg-[#E8701A] hover:bg-[#c95d13] text-white rounded-full px-6 py-2.5 font-bold text-sm transition-all hover:scale-105 shadow-lg shadow-[#E8701A]/30"
-                >
-                  <Play className="w-4 h-4 fill-white" />
-                  Play Episode
-                </button>
-                <span className="flex items-center gap-1.5 text-white/40 text-sm">
-                  <Clock className="w-3.5 h-3.5" />
-                  {featured.duration}
-                </span>
+      {featured && (
+        <div className="max-w-7xl mx-auto px-6 -mt-8">
+          <div className={`rounded-2xl bg-gradient-to-r ${featured.color} p-0.5 shadow-2xl`}>
+            <div className="bg-[#0a1c3a] rounded-2xl p-6 md:p-8 flex flex-col md:flex-row gap-6 items-center">
+              <div className={`w-24 h-24 md:w-32 md:h-32 rounded-2xl bg-gradient-to-br ${featured.color} flex items-center justify-center shrink-0 shadow-lg`}>
+                <Headphones className="w-10 h-10 md:w-14 md:h-14 text-white" />
+              </div>
+              <div className="flex-1 text-center md:text-left">
+                <Badge className="bg-white/10 text-white text-xs border-0 mb-3">🎙 LATEST EPISODE · {featured.episode}</Badge>
+                <h2 className="text-xl md:text-2xl font-extrabold text-white mb-2 leading-snug">{featured.title}</h2>
+                <p className="text-white/60 text-sm mb-4">{featured.guest} — {featured.guestTitle}</p>
+                <div className="flex items-center justify-center md:justify-start gap-4">
+                  <button
+                    onClick={() => setPlayingEpisode(featured)}
+                    className="flex items-center gap-2 bg-[#E8701A] hover:bg-[#c95d13] text-white rounded-full px-6 py-2.5 font-bold text-sm transition-all hover:scale-105 shadow-lg shadow-[#E8701A]/30"
+                  >
+                    <Play className="w-4 h-4 fill-white" />
+                    Play Episode
+                  </button>
+                  <span className="flex items-center gap-1.5 text-white/40 text-sm">
+                    <Clock className="w-3.5 h-3.5" />
+                    {featured.duration}
+                  </span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
       {/* All Episodes */}
       <div className="max-w-7xl mx-auto px-6 py-16">

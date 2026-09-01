@@ -85,7 +85,7 @@ export function TopRibbonAd({ targetCity, targetCategoryId }: TopRibbonAdProps) 
 
           {ad.media_type === 'html' && ad.custom_code && (
             <div 
-              className="w-full" 
+              className="w-full text-slate-800 dark:text-slate-100 font-semibold [&_a]:text-slate-800 dark:[&_a]:text-slate-100 [&_a:hover]:text-orange-600 dark:[&_a:hover]:text-orange-400 [&_.group-hover\:text-white]:text-orange-600 dark:[&_.group-hover\:text-white]:text-orange-400 [&_.hover\:text-white]:text-orange-600 dark:[&_.hover\:text-white]:text-orange-400" 
               dangerouslySetInnerHTML={{ __html: ad.custom_code }} 
             />
           )}
