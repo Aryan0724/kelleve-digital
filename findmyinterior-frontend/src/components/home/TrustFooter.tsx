@@ -75,36 +75,30 @@ export function TrustFooter() {
           <div className="bg-[#E8701A] px-6 py-4 rounded-xl shrink-0 md:-mr-4 shadow-lg w-full md:w-auto">
             <p className="text-xs font-semibold text-white/90 mb-2 text-center">Need Help?</p>
             <div className="flex flex-col gap-2">
-              {/* Call 1 */}
+              {/* Call Only */}
               <a
                 href={`tel:${phone1}`}
-                className="flex items-center justify-between gap-2 bg-white/15 hover:bg-white/25 transition-colors rounded-lg px-3 py-2"
+                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 transition-colors rounded-lg px-3 py-2"
               >
-                <div className="flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-white shrink-0" />
+                <Phone className="w-4 h-4 text-white shrink-0" />
+                <div className="flex items-center justify-between w-full">
                   <span className="text-sm font-bold tracking-wide text-white">{phone1Display}</span>
+                  <span className="text-[10px] bg-white/20 text-white px-2 py-0.5 rounded font-medium ml-2">Call</span>
                 </div>
               </a>
-              {/* Call / WhatsApp 2 */}
-              <div className="flex items-center gap-1">
-                <a
-                  href={`tel:${phone2}`}
-                  className="flex-1 flex items-center justify-between gap-2 bg-white/15 hover:bg-white/25 transition-colors rounded-lg px-3 py-2"
-                >
-                  <div className="flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-white shrink-0" />
-                    <span className="text-sm font-bold tracking-wide text-white">{phone2Display}</span>
-                  </div>
-                </a>
-                <a
-                  href={`https://wa.me/${phone2}?text=Hi, I need help with FindMyInterior.`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center justify-center bg-[#25D366]/80 hover:bg-[#25D366] transition-colors rounded-lg px-3 py-2 shrink-0 h-full"
-                >
-                  <MessageCircle className="w-4 h-4 text-white shrink-0" />
-                </a>
-              </div>
+              {/* WhatsApp Only */}
+              <a
+                href={`https://wa.me/${phone2}?text=Hi, I need help with FindMyInterior.`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 bg-[#25D366]/90 hover:bg-[#25D366] transition-colors rounded-lg px-3 py-2"
+              >
+                <MessageCircle className="w-4 h-4 text-white shrink-0" />
+                <div className="flex items-center justify-between w-full">
+                  <span className="text-sm font-bold tracking-wide text-white">{phone2Display}</span>
+                  <span className="text-[10px] bg-black/20 text-white px-2 py-0.5 rounded font-medium ml-2">WhatsApp</span>
+                </div>
+              </a>
               {/* Contact Form */}
               <Link
                 href="/contact"

@@ -61,22 +61,16 @@ export default function HelpAndSupportPage() {
               <PhoneCall className="w-7 h-7 text-orange-600" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 mb-1">Call Us</h2>
-            <p className="text-slate-500 text-sm mb-3">Mon–Sat, 9am–6pm</p>
-            <div className="flex flex-col gap-2 w-full max-w-xs mb-3">
+            <p className="text-slate-500 text-sm mb-4">Mon–Sat, 9am–6pm (Call Only)</p>
+            <div className="w-full max-w-xs mb-3">
               <a
                 href="tel:+917070440365"
-                className="flex items-center justify-center gap-2 py-2 px-3 bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold rounded-xl text-base transition-colors"
+                className="flex items-center justify-center gap-2 py-3 px-4 bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold rounded-xl text-lg transition-colors shadow-sm"
               >
                 <span>+91 70704 40365</span>
               </a>
-              <a
-                href="tel:+919534900999"
-                className="flex items-center justify-center gap-2 py-2 px-3 bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold rounded-xl text-base transition-colors"
-              >
-                <span>+91 95349 00999</span>
-              </a>
             </div>
-            <span className="text-xs text-slate-400 font-medium">Click any number to call</span>
+            <span className="mt-auto text-xs bg-orange-100 text-orange-800 px-3 py-1 rounded-full font-medium">Tap to Call</span>
           </div>
 
           {/* WhatsApp Card */}
@@ -85,28 +79,25 @@ export default function HelpAndSupportPage() {
               <MessageCircle className="w-7 h-7 text-green-600" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 mb-1">WhatsApp</h2>
-            <p className="text-slate-500 text-sm mb-3">Get a reply within minutes</p>
-            <div className="flex flex-col gap-2 w-full max-w-xs mb-3">
+            <p className="text-slate-500 text-sm mb-4">Get a reply within minutes (WhatsApp Only)</p>
+            <div className="w-full max-w-xs mb-3">
               <a
                 href="https://wa.me/919534900999?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-between py-2 px-4 bg-green-50 hover:bg-green-100 text-green-700 font-bold rounded-xl text-base transition-colors"
+                className="flex items-center justify-center gap-2 py-3 px-4 bg-green-50 hover:bg-green-100 text-green-700 font-bold rounded-xl text-lg transition-colors shadow-sm"
               >
                 <span>+91 95349 00999</span>
-                <span className="text-[11px] bg-green-600 text-white px-2 py-0.5 rounded-full font-semibold">Chat</span>
-              </a>
-              <a
-                href="https://wa.me/917070440365?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-between py-2 px-4 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-base transition-colors"
-              >
-                <span>+91 70704 40365</span>
-                <span className="text-[11px] bg-slate-600 text-white px-2 py-0.5 rounded-full font-semibold">Chat</span>
               </a>
             </div>
-            <span className="text-xs text-slate-400 font-medium">Available on WhatsApp 24x7</span>
+            <a
+              href="https://wa.me/919534900999?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-auto text-xs bg-green-600 hover:bg-green-700 text-white px-4 py-1 rounded-full font-semibold transition-colors"
+            >
+              Chat on WhatsApp
+            </a>
           </div>
 
           {/* Email / Contact Form Card */}

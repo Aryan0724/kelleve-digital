@@ -58,9 +58,20 @@ export function Footer() {
             </li>
             <li className="flex items-start gap-2">
               <Phone className="h-4 w-4 shrink-0 text-orange-400 mt-0.5" />
-              <div className="flex flex-col gap-1">
-                <a href="tel:+917070440365" className="hover:text-white transition-colors">+91 70704 40365</a>
-                <a href="tel:+919534900999" className="hover:text-white transition-colors">+91 9534900999</a>
+              <div className="flex flex-col gap-1.5">
+                <a href="tel:+917070440365" className="hover:text-white transition-colors flex items-center gap-1.5">
+                  <span>+91 70704 40365</span>
+                  <span className="text-[10px] bg-orange-950 text-orange-400 border border-orange-800/60 px-1.5 py-0.2 rounded">Call</span>
+                </a>
+                <a
+                  href="https://wa.me/919534900999?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors flex items-center gap-1.5"
+                >
+                  <span>+91 95349 00999</span>
+                  <span className="text-[10px] bg-green-950 text-green-400 border border-green-800/60 px-1.5 py-0.2 rounded">WhatsApp</span>
+                </a>
               </div>
             </li>
             <li className="flex items-start gap-2">

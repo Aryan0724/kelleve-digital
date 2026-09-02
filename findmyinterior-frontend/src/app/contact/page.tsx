@@ -76,23 +76,28 @@ export default function ContactPage() {
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900">Phone &amp; WhatsApp</h3>
-                  <div className="flex flex-col gap-1.5 mt-2 text-sm">
-                    <a href="tel:+917070440365" className="text-slate-700 hover:text-orange-600 font-semibold transition-colors flex items-center gap-1.5">
-                      <span>+91 70704 40365</span>
-                    </a>
+                  <h3 className="font-bold text-slate-900">Contact Numbers</h3>
+                  <div className="flex flex-col gap-2 mt-2 text-sm">
                     <div className="flex items-center gap-2">
-                      <a href="tel:+919534900999" className="text-slate-700 hover:text-orange-600 font-semibold transition-colors">
-                        <span>+91 95349 00999</span>
+                      <a href="tel:+917070440365" className="text-slate-800 hover:text-orange-600 font-bold transition-colors">
+                        +91 70704 40365
                       </a>
+                      <span className="text-[11px] bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full font-semibold">
+                        Call Only
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
                       <a
                         href="https://wa.me/919534900999?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-[11px] bg-green-100 text-green-700 hover:bg-green-200 px-2 py-0.5 rounded-full font-bold transition-colors"
+                        className="text-slate-800 hover:text-green-600 font-bold transition-colors"
                       >
-                        WhatsApp
+                        +91 95349 00999
                       </a>
+                      <span className="text-[11px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full font-semibold">
+                        WhatsApp Only
+                      </span>
                     </div>
                   </div>
                 </div>

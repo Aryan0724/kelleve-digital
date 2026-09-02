@@ -6,7 +6,7 @@ import api from "@/lib/api";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Filter, Search, MapPin, IndianRupee, Layers, Briefcase, Ruler, ArrowRight, Grid, Phone, Lock, User, Clock, ChevronDown, CheckCircle2, List } from "lucide-react";
+import { Filter, Search, MapPin, IndianRupee, Layers, Briefcase, Ruler, ArrowRight, Grid, Phone, Lock, User, Clock, ChevronDown, CheckCircle2, List, MessageCircle } from "lucide-react";
 import { PlaceBidModal } from "@/components/requirements/PlaceBidModal";
 import { RequirementUnlockModal } from "@/components/requirements/RequirementUnlockModal";
 import Link from "next/link";
@@ -283,12 +283,16 @@ export default function ProjectsPage() {
             <h4 className="font-extrabold text-slate-800 text-sm mb-1">Need Help?</h4>
             <p className="text-xs text-slate-500 mb-4 font-medium">Our team is ready to help you</p>
             <div className="flex flex-col gap-2">
-              <Button variant="outline" className="w-full border-[#E8701A] text-[#E8701A] hover:bg-orange-50 font-bold h-10 rounded-lg flex items-center justify-center gap-2">
-                <Phone className="w-4 h-4" /> +91 9534900999
-              </Button>
-              <Button variant="outline" className="w-full border-[#E8701A] text-[#E8701A] hover:bg-orange-50 font-bold h-10 rounded-lg flex items-center justify-center gap-2">
-                <Phone className="w-4 h-4" /> +91 7070440365
-              </Button>
+              <a href="tel:+917070440365" className="w-full">
+                <Button variant="outline" className="w-full border-[#E8701A] text-[#E8701A] hover:bg-orange-50 font-bold h-10 rounded-lg flex items-center justify-center gap-2">
+                  <Phone className="w-4 h-4" /> Call: +91 70704 40365
+                </Button>
+              </a>
+              <a href="https://wa.me/919534900999?text=Hi,%20I%20need%20help%20with%20FindMyInterior." target="_blank" rel="noopener noreferrer" className="w-full">
+                <Button variant="outline" className="w-full border-green-600 text-green-700 hover:bg-green-50 font-bold h-10 rounded-lg flex items-center justify-center gap-2">
+                  <MessageCircle className="w-4 h-4 text-green-600" /> WhatsApp: +91 95349 00999
+                </Button>
+              </a>
             </div>
           </div>
         </div>
