@@ -10,6 +10,21 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Upload, AlertCircle } from "lucide-react";
+import { toast } from "react-toastify";
+
+const loadScript = (src: string) => {
+  return new Promise((resolve) => {
+    if (document.querySelector(`script[src="${src}"]`)) {
+      resolve(true);
+      return;
+    }
+    const script = document.createElement("script");
+    script.src = src;
+    script.onload = () => resolve(true);
+    script.onerror = () => resolve(false);
+    document.body.appendChild(script);
+  });
+};
 
 export function AdvancedBidForm({ requirementId, requirementType = 'project', onSuccess }: { requirementId: number, requirementType?: string, onSuccess: () => void }) {
   const router = useRouter();
@@ -64,14 +79,70 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
     setPortfolioPreview(prev => prev.filter((_, i) => i !== index));
   };
 
-  const submitBid = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!token) {
-      alert("Please login first.");
-      return;
-    }
+  const startRazorpayPayment = async (amountToPay: number, originalEvent: React.FormEvent) => {
+    try {
+      const orderRes = await api.post("/payments/create-order", {
+        purpose: "wallet_recharge", // Use wallet_recharge as purpose so the backend automatically adds funds
+        amount: amountToPay,
+      });
+      const orderId = orderRes.data.order_id;
+      const amountInPaise = orderRes.data.amount;
 
-    setLoading(true);
+      const scriptLoaded = await loadScript("https://checkout.razorpay.com/v1/checkout.js");
+      if (!scriptLoaded) {
+        toast.error("Razorpay SDK failed to load. Please check your internet connection.");
+        setLoading(false);
+        return;
+      }
+
+      const rzpKey = orderRes.data.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      const options = {
+        key: rzpKey,
+        amount: amountInPaise.toString(),
+        currency: "INR",
+        name: "FindMyInterior",
+        description: `Bid Fee: ₹${amountToPay}`,
+        order_id: orderId,
+        handler: async function (response: any) {
+          try {
+            await api.post("/payments/verify", {
+              razorpay_order_id: response.razorpay_order_id,
+              razorpay_payment_id: response.razorpay_payment_id,
+              razorpay_signature: response.razorpay_signature,
+            });
+            toast.success("Payment successful! Placing your bid now...");
+            // Retry the bid submission!
+            await performSubmitBid(originalEvent);
+          } catch (verErr: any) {
+            toast.error(verErr.response?.data?.message || "Payment verification failed!");
+            setLoading(false);
+          }
+        },
+        modal: {
+          ondismiss: function() {
+            setLoading(false);
+          }
+        },
+        prefill: {
+          name: user?.name || "User",
+          email: user?.email || "",
+          contact: user?.phone || "",
+        },
+        theme: {
+          color: "#ea580c",
+        },
+      };
+
+      const paymentObject = new (window as any).Razorpay(options);
+      paymentObject.open();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Failed to initiate payment gateway.");
+      setLoading(false);
+    }
+  };
+
+  const performSubmitBid = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
     try {
       const bidPayload = {
         requirement_id: requirementId,
@@ -87,21 +158,33 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
       };
 
       const bidResponse = await api.post("/bids", bidPayload);
-      const bidId = bidResponse.data?.bid?.id;
-
-      // Upload portfolio files if provided - Removed since backend doesn't support bid attachments yet
-
-      alert("Bid submitted successfully!");
+      
+      toast.success("Bid submitted successfully!");
       onSuccess();
     } catch (err: any) {
-      if (err.response?.status === 422) {
-        alert("Validation Error: " + JSON.stringify(err.response.data.errors));
+      if (err.response?.status === 402 || err.response?.data?.requires_payment) {
+        // Trigger razorpay payment flow
+        const amountToPay = err.response?.data?.amount || 10;
+        await startRazorpayPayment(amountToPay, e as React.FormEvent);
+      } else if (err.response?.status === 422) {
+        toast.error("Validation Error: " + JSON.stringify(err.response.data.errors));
+        setLoading(false);
       } else {
-        alert(err.response?.data?.message || "Failed to submit bid.");
+        toast.error(err.response?.data?.message || "Failed to submit bid.");
+        setLoading(false);
       }
-    } finally {
-      setLoading(false);
     }
+  };
+
+  const submitBid = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!token) {
+      toast.error("Please login first.");
+      return;
+    }
+
+    setLoading(true);
+    await performSubmitBid(e);
   };
 
   return (

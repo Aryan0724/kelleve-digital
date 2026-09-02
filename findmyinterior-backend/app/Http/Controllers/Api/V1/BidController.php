@@ -97,7 +97,9 @@ class BidController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Insufficient wallet balance. Please recharge your wallet to place a bid.'
+                'message' => 'Payment required to place a bid.',
+                'requires_payment' => true,
+                'amount' => $bidFee
             ], 402);
         }
 
