@@ -29,9 +29,15 @@ class VentureController extends Controller
             ->orderBy('created_at', 'desc')
             ->get();
 
+        $entitlementService = app(\App\Services\EntitlementService::class);
+        $user = $request->user();
+
         return response()->json([
-            'success' => true,
-            'data'    => $ventures,
+            'success'      => true,
+            'data'         => $ventures,
+            'entitlements' => [
+                'max_listings' => $entitlementService->getLimit($user, 'max_listings'),
+            ]
         ]);
     }
 

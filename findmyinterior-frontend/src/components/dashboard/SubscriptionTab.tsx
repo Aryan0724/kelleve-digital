@@ -46,7 +46,7 @@ const STATIC_PLANS: PlanTier[] = [
     icon: Rocket,
     features: [
       "1 Business Listing",
-      "Up to 10 Portfolio Images",
+      "Up to 5 Portfolio Images",
       "Basic Lead Access",
       "Standard Support",
     ],

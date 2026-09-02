@@ -88,6 +88,19 @@ class BidController extends Controller
         $validated['experience_years'] = $listing ? $listing->years_experience : 0;
         $validated['previous_projects_count'] = 0; // Default or calculate from won bids
 
+        $bidFee = $targetRequirement ? ($targetRequirement->bid_fee ?? 10) : 10;
+
+        try {
+            if ($bidFee > 0) {
+                $this->walletService->deduct($request->user(), $bidFee, "Fee for bidding on requirement ID: {$validated['requirement_id']}");
+            }
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Insufficient wallet balance. Please recharge your wallet to place a bid.'
+            ], 402);
+        }
+
         // Bid submissions are directly permitted for active professionals
         $bid = $this->bidService->submitBid($request->user()->id, $validated);
 

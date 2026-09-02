@@ -14,12 +14,32 @@ class OpportunityProjectController extends Controller
 
     public function index(Request $request)
     {
+        $user = Auth::guard('sanctum')->user();
+        $isAdmin = $user && in_array('admin', $user->roles->pluck('slug')->toArray());
+
+        $earlyAccessHours = 0;
+        if ($user && !$isAdmin) {
+            $earlyAccessHours = app(\App\Services\EntitlementService::class)->getLimit($user, 'early_lead_access_hours');
+        }
+
+        // Maximum early access offered by any plan (e.g. 6 hours).
+        // Delay applied to the user = (Max - UserAccess)
+        // A user with 6h access has 0 delay. A user with 0h access has 6h delay.
+        $maxSystemEarlyAccess = \Illuminate\Support\Facades\Cache::remember('max_early_access', 3600, function () {
+            return \App\Models\SubscriptionPlan::max('early_lead_access_hours') ?? 6;
+        });
+        
+        $delayHours = max(0, $maxSystemEarlyAccess - $earlyAccessHours);
+
         $projects = Requirement::where(function($q) {
                 $q->whereNull('opportunity_type')
                   ->orWhereNotIn('opportunity_type', ['JOB', 'WORKER_JOB', 'RFQ']);
             })
             ->whereDoesntHave('category', function($q) {
                 $q->where('slug', 'workers');
+            })
+            ->when(!$isAdmin && $delayHours > 0, function($q) use ($delayHours) {
+                $q->where('created_at', '<=', now()->subHours($delayHours));
             })
             ->latest()
             ->paginate($request->get('per_page', 20));

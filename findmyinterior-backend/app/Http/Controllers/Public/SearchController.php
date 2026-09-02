@@ -37,14 +37,27 @@ class SearchController extends Controller
         if (in_array($type, ['all', 'listings'])) {
             $results['listings'] = ListingResource::collection(
                 Listing::active()
-                    ->active()
                     ->search($term)
+                    ->join('users', 'users.id', '=', 'listings.user_id')
+                    ->leftJoin('user_subscriptions', function($join) {
+                        $join->on('user_subscriptions.user_id', '=', 'users.id')
+                            ->where('user_subscriptions.status', '=', 'active')
+                            ->where('user_subscriptions.expires_at', '>', now());
+                    })
+                    ->leftJoin('subscription_plans', 'subscription_plans.id', '=', 'user_subscriptions.subscription_plan_id')
+                    ->select(
+                        'listings.*', 
+                        \Illuminate\Support\Facades\DB::raw('(users.trust_score + COALESCE(subscription_plans.search_ranking_boost, 0)) as dynamic_trust_score'),
+                        \Illuminate\Support\Facades\DB::raw('COALESCE(subscription_plans.is_featured_listing, false) as dynamic_is_featured')
+                    )
                     ->with(['category', 'user.activeSubscription.plan'])
-                    ->orderByDesc('is_featured')
-                    ->orderByDesc('is_premium')
-                    ->orderByDesc('is_verified')
+                    ->orderByDesc('dynamic_is_featured')
+                    ->orderByDesc('listings.is_featured')
+                    ->orderByDesc('listings.is_premium')
+                    ->orderByDesc('listings.is_verified')
+                    ->orderByDesc('dynamic_trust_score')
                     ->orderByDesc('views_count')
-                    ->orderByDesc('id')
+                    ->orderByDesc('listings.id')
                     ->distinct()
                     ->take(8)
                     ->get()

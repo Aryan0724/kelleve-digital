@@ -103,31 +103,37 @@ export function RequirementUnlockModal({
     }
   };
 
-  const handleUnlock = async () => {
+  const handleUnlockAttempt = async () => {
     if (!token) {
       toast.info("Please log in to unlock this contact.");
       setShowLoginModal(true, window.location.pathname);
       return;
     }
 
-    if (!isFree) {
-      await startRazorpayPayment(displayPrice);
-      return;
-    }
-
     setLoading(true);
     try {
       const typeStr = requirementType ? `?requirement_type=${requirementType}` : '';
-      const response = await api.post(`/requirements/${requirementId}/unlock${typeStr}`);
+      const res = await api.post(`/requirements/${requirementId}/unlock${typeStr}`);
       
-      toast.success("Contact unlocked successfully!");
-      if (onUnlockSuccess) {
-        onUnlockSuccess(response.data?.contact);
+      if (res.data.requires_payment) {
+        // User has no quota, trigger Razorpay
+        await startRazorpayPayment(res.data.amount);
+      } else if (res.data.success) {
+        // User had free quota and it succeeded
+        toast.success("Contact unlocked successfully using your monthly quota!");
+        if (onUnlockSuccess) onUnlockSuccess(res.data.contact);
+        onClose();
+      } else {
+        toast.error(res.data.message || "Failed to unlock contact.");
       }
-      onClose();
     } catch (err: any) {
-      const msg = err.response?.data?.message || "";
-      toast.error(msg || "Failed to unlock contact.");
+      if (err.response?.status === 402 || err.response?.data?.needs_recharge || err.response?.data?.requires_payment) {
+         // Fallback for legacy errors
+         const amountToPay = err.response?.data?.required_amount || err.response?.data?.amount || unlockPrice || 49;
+         await startRazorpayPayment(amountToPay);
+      } else {
+        toast.error(err.response?.data?.message || "Failed to unlock contact.");
+      }
     } finally {
       setLoading(false);
     }
@@ -135,51 +141,41 @@ export function RequirementUnlockModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md">
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle className="text-xl font-bold flex items-center gap-2">
-            <Lock className="w-5 h-5 text-orange-600" /> Unlock Contact Details
-          </DialogTitle>
-          <DialogDescription className="text-slate-600 pt-2">
-            Get instant access to the client's direct phone number and message them to discuss the project.
-            {!isFree && ` This requires a ₹${displayPrice} fee.`}
+          <DialogTitle>Unlock Contact Details</DialogTitle>
+          <DialogDescription>
+            Get direct access to this client's phone number and email address.
           </DialogDescription>
         </DialogHeader>
-        
-        <div className="bg-orange-50 border border-orange-100 rounded-lg p-4 my-4 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="bg-orange-100 p-2 rounded-full">
-              <Phone className="w-5 h-5 text-orange-600" />
-            </div>
-            <div>
-              <p className="font-semibold text-slate-800">Direct Contact Number</p>
-              <p className="text-sm text-slate-500">Call or WhatsApp instantly</p>
-            </div>
+
+        <div className="py-6 flex flex-col items-center justify-center space-y-4">
+          <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mb-2">
+            <Lock className="w-8 h-8 text-orange-600" />
           </div>
-          <div className="text-right">
-            <div className="flex flex-col items-end">
-              {isFree ? (
-                <span className="font-bold text-green-600 text-lg">FREE</span>
-              ) : (
-                <>
-                  <span className="text-xs text-slate-500 line-through">₹99</span>
-                  <span className="font-bold text-slate-800">₹{displayPrice}</span>
-                </>
-              )}
-            </div>
+          
+          <div className="text-center space-y-2">
+            <p className="text-slate-600">
+              Unlock this lead to view complete contact details instantly.
+            </p>
           </div>
         </div>
 
-        <div className="flex gap-3 pt-2">
-          <Button variant="outline" className="flex-1" onClick={onClose} disabled={loading}>
+        <div className="flex flex-col sm:flex-row gap-3 pt-4 border-t">
+          <Button variant="outline" onClick={onClose} className="flex-1" disabled={loading}>
             Cancel
           </Button>
           <Button 
-            onClick={handleUnlock} 
-            disabled={loading}
+            onClick={handleUnlockAttempt} 
             className="flex-1 bg-orange-600 hover:bg-orange-700 text-white"
+            disabled={loading}
           >
-            {loading ? "Processing..." : isFree ? "Unlock for Free" : "Confirm Unlock"}
+            {loading ? "Processing..." : (
+              <span className="flex items-center">
+                <Phone className="w-4 h-4 mr-2" />
+                Unlock Now
+              </span>
+            )}
           </Button>
         </div>
       </DialogContent>

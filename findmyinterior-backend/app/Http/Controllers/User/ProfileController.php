@@ -226,18 +226,14 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        // Check plan listing limit
-        $activePlan = $user->activeSubscription?->plan;
-        $maxListings = $activePlan?->max_listings ?? 1;
+        $entitlement = app(\App\Services\EntitlementService::class);
+        $maxListings = $entitlement->getLimit($user, 'max_listings');
         $currentCount = Listing::where('user_id', $user->id)
             ->when(app(\App\Core\Tenancy\TenantContext::class)->getTenantId(), fn($q, $tid) => $q->where('tenant_id', $tid))
             ->where('status', 'active')->count();
 
         if ($currentCount >= $maxListings) {
-            return response()->json([
-                'success' => false,
-                'message' => "Your plan allows a maximum of {$maxListings} active listing(s). Please upgrade to add more.",
-            ], 403);
+            return $entitlement->generateErrorResponse('max_listings', $maxListings, $currentCount, "Your plan allows a maximum of {$maxListings} active listing(s).");
         }
 
         $data = $request->validate([
@@ -259,11 +255,11 @@ class ProfileController extends Controller
             'pan_number'       => ['nullable', 'string', 'regex:/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/i'],
         ]);
 
-        $plan = $user->activeSubscription?->plan;
-        if (!$plan || !$plan->can_add_website) {
+        $entitlement = app(\App\Services\EntitlementService::class);
+        if (!$entitlement->hasFeature($user, 'can_add_website')) {
             unset($data['website']);
         }
-        if (!$plan || !$plan->can_add_whatsapp) {
+        if (!$entitlement->hasFeature($user, 'can_add_whatsapp')) {
             unset($data['whatsapp']);
         }
 
@@ -336,11 +332,12 @@ class ProfileController extends Controller
             unset($data['custom_slug']);
         }
 
-        if (!$plan || !$plan->can_add_website) {
+        $entitlement = app(\App\Services\EntitlementService::class);
+        if (!$entitlement->hasFeature($user, 'can_add_website')) {
             unset($data['website']);
             $data['website'] = null; // force null if they previously had it but downgraded
         }
-        if (!$plan || !$plan->can_add_whatsapp) {
+        if (!$entitlement->hasFeature($user, 'can_add_whatsapp')) {
             unset($data['whatsapp']);
             $data['whatsapp'] = null;
         }
@@ -413,16 +410,14 @@ class ProfileController extends Controller
             return response()->json(['success' => false, 'message' => 'Listing profile not found.'], 404);
         }
 
-        // Check gallery image limit based on active subscription plan (Starter: 10, QuickStart: 30, GrowthPlus: 60, ProBusiness: 100, EliteBusiness: 200)
-        $maxImages = $request->user()->isAdmin() ? 200 : ($request->user()->activeSubscription?->plan?->max_gallery_images ?? 10);
+        // Check gallery image limit based on active subscription plan
+        $entitlement = app(\App\Services\EntitlementService::class);
+        $maxImages = $entitlement->getLimit($request->user(), 'max_gallery_images');
         $currentCount = ListingGallery::where('listing_id', $listing->id)->count();
-        $allowed = $maxImages - $currentCount;
+        $allowed = max(0, $maxImages - $currentCount);
 
         if ($allowed <= 0) {
-            return response()->json([
-                'success' => false,
-                'message' => "You have reached your portfolio limit of {$maxImages} images. Please upgrade your subscription plan to add more."
-            ], 403);
+            return $entitlement->generateErrorResponse('max_gallery_images', $maxImages, $currentCount, "You have reached your portfolio limit of {$maxImages} images.");
         }
 
         $request->validate([

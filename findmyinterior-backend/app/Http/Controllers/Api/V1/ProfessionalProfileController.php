@@ -163,10 +163,15 @@ class ProfessionalProfileController extends Controller
                 if ($profile) $type = 'listing';
             }
 
+            $galleryLimit = app(\App\Services\EntitlementService::class)->getLimit($user, 'max_gallery_images');
+
             return response()->json([
                 'success' => true,
                 'type'    => $type,
-                'data'    => $profile
+                'data'    => $profile,
+                'entitlements' => [
+                    'max_gallery_images' => $galleryLimit
+                ]
             ]);
         } catch (\Throwable $e) {
             \Illuminate\Support\Facades\Log::error('ProfessionalProfileController::show failed: ' . $e->getMessage(), [

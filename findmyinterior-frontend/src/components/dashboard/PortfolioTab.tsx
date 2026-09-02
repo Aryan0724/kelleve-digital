@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 
 export function PortfolioTab() {
   const [images, setImages] = useState<any[]>([]);
+  const [galleryLimit, setGalleryLimit] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [profileId, setProfileId] = useState<number | null>(null);
@@ -31,6 +32,9 @@ export function PortfolioTab() {
       if (res.data?.data) {
         setProfileId(res.data.data.listing_id || res.data.data.id);
         setImages(res.data.data.gallery || []);
+      }
+      if (res.data?.entitlements?.max_gallery_images !== undefined) {
+        setGalleryLimit(res.data.entitlements.max_gallery_images);
       }
     } catch (e) {
       console.error(e);
@@ -188,8 +192,27 @@ export function PortfolioTab() {
       {/* Header Actions */}
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-800">
         <div>
-          <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Project Portfolio</h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Project Portfolio</h2>
+            {galleryLimit > 0 && (
+              <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                images.length > galleryLimit 
+                  ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' 
+                  : images.length === galleryLimit
+                  ? 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400'
+                  : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+              }`}>
+                {images.length} / {galleryLimit} Images
+                {images.length > galleryLimit && " (Over Limit)"}
+              </span>
+            )}
+          </div>
           <p className="text-slate-500 dark:text-slate-400 text-sm mt-1">Showcase your best work to win 3x more bids.</p>
+          {images.length > galleryLimit && (
+            <p className="text-red-500 text-sm mt-2 font-medium">
+              You are currently over your subscription limit. New uploads are disabled. Please delete some images to continue or upgrade your plan.
+            </p>
+          )}
         </div>
         
         <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -197,7 +220,7 @@ export function PortfolioTab() {
             variant="outline" 
             className="flex-1 sm:flex-none border-dashed border-2 hover:bg-slate-50 dark:hover:bg-slate-800"
             onClick={() => setShowVideoModal(true)}
-            disabled={uploading}
+            disabled={uploading || (galleryLimit > 0 && images.length >= galleryLimit)}
           >
             <Video className="w-4 h-4 mr-2 text-indigo-500" /> Add Video
           </Button>
@@ -208,9 +231,9 @@ export function PortfolioTab() {
               accept="image/*" 
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
               onChange={handleFileUpload}
-              disabled={uploading}
+              disabled={uploading || (galleryLimit > 0 && images.length >= galleryLimit)}
             />
-            <Button className="w-full" disabled={uploading}>
+            <Button className="w-full" disabled={uploading || (galleryLimit > 0 && images.length >= galleryLimit)}>
               {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <ImageIcon className="w-4 h-4 mr-2" />}
               Upload Photo
             </Button>
@@ -311,14 +334,14 @@ export function PortfolioTab() {
                   accept="image/*" 
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                   onChange={handleFileUpload}
-                  disabled={uploading}
+                  disabled={uploading || (galleryLimit > 0 && images.length >= galleryLimit)}
                 />
-                <Button variant="default" size="lg" className="w-full rounded-full px-8 shadow-xl shadow-orange-500/20 bg-orange-600 hover:bg-orange-700 transition-all hover:-translate-y-0.5" disabled={uploading}>
+                <Button variant="default" size="lg" className="w-full rounded-full px-8 shadow-xl shadow-orange-500/20 bg-orange-600 hover:bg-orange-700 transition-all hover:-translate-y-0.5" disabled={uploading || (galleryLimit > 0 && images.length >= galleryLimit)}>
                   {uploading ? <Loader2 className="w-5 h-5 mr-2 animate-spin" /> : <ImageIcon className="w-5 h-5 mr-2" />} 
                   Upload Photo
                 </Button>
               </div>
-              <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full px-8 shadow-sm border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all" onClick={() => setShowVideoModal(true)} disabled={uploading}>
+              <Button variant="outline" size="lg" className="w-full sm:w-auto rounded-full px-8 shadow-sm border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 transition-all" onClick={() => setShowVideoModal(true)} disabled={uploading || (galleryLimit > 0 && images.length >= galleryLimit)}>
                 <Video className="w-5 h-5 mr-2 text-indigo-500" /> 
                 Add Video Link
               </Button>

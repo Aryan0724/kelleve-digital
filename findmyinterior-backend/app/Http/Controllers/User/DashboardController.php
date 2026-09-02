@@ -322,9 +322,18 @@ class DashboardController extends Controller
                     }
                     $validReqTypes = array_unique($validReqTypes);
 
+                    $earlyAccessHours = app(\App\Services\EntitlementService::class)->getLimit($user, 'early_lead_access_hours');
+                    $maxSystemEarlyAccess = \Illuminate\Support\Facades\Cache::remember('max_early_access', 3600, function () {
+                        return \App\Models\SubscriptionPlan::max('early_lead_access_hours') ?? 6;
+                    });
+                    $delayHours = max(0, $maxSystemEarlyAccess - $earlyAccessHours);
+
                     // Base query: open or bidding requirements matching role
                     $query = \App\Models\Requirement::with(['category', 'user'])
-                        ->whereIn('status', ['open', 'bidding', 'active', 'published']);
+                        ->whereIn('status', ['open', 'bidding', 'active', 'published'])
+                        ->when($delayHours > 0, function($q) use ($delayHours) {
+                            $q->where('created_at', '<=', now()->subHours($delayHours));
+                        });
 
                     if (!empty($validReqTypes)) {
                         $query->where(function($q) use ($validReqTypes) {

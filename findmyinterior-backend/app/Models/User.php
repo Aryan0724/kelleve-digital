@@ -243,19 +243,19 @@ class User extends Authenticatable
     public function hasPremiumSubscription(): bool
     {
         $sub = $this->activeSubscription;
-        if (!$sub || $sub->isExpired()) {
+        if (!$sub || $sub->status !== 'active' || $sub->expires_at <= now()) {
             return false;
         }
         $plan = $sub->plan;
         if (!$plan) {
             return false;
         }
-        return (float) $plan->price_yearly > 0 || (float) $plan->price_monthly > 0 || (bool) $plan->can_see_all_leads;
+        return $plan->slug !== 'starter';
     }
 
     public function canSeeAllLeads(): bool
     {
-        return (bool) ($this->activeSubscription?->plan?->can_see_all_leads ?? false);
+        return app(\App\Services\EntitlementService::class)->hasFeature($this, 'can_see_all_leads');
     }
 
     public function hasUnlockedRequirement(int $requirementId): bool

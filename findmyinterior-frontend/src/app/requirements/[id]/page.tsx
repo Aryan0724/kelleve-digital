@@ -565,7 +565,7 @@ const loadScript = (src: string) => {
                     </div>
                   </div>
 
-                  {isUnlocked || user?.role === 'admin' || requirement?.has_bid ? (
+                  {isUnlocked || user?.role === 'admin' ? (
                     <div className="bg-white dark:bg-slate-900 rounded-xl p-4 border border-emerald-200 dark:border-emerald-900/60 shadow-sm text-center space-y-3">
                       <div className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-wider font-mono">
                         {requirement.phone || "+91 98765 43210"}

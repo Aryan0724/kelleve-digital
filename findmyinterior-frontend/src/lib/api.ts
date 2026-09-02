@@ -85,9 +85,22 @@ api.interceptors.response.use(
       }
     } else if (error.response?.status === 403) {
       if (typeof window !== 'undefined') {
-        const url = error.config?.url || '';
-        if (!url.includes('/unlock') && !url.includes('/bids')) {
-          toast.error(error.response?.data?.message || 'You do not have permission to perform this action.', { toastId: 'forbidden-error' });
+        const data = error.response?.data;
+        if (data?.entitlement_error) {
+          toast.error(
+            data.message || 'You have reached your subscription limit. Please upgrade your plan.',
+            { 
+              toastId: `entitlement-${data.feature}`,
+              onClick: () => window.location.href = '/pricing'
+            }
+          );
+          // Optional: we can also dispatch a custom event to open a modal
+          window.dispatchEvent(new CustomEvent('entitlement-limit-reached', { detail: data }));
+        } else {
+          const url = error.config?.url || '';
+          if (!url.includes('/unlock') && !url.includes('/bids')) {
+            toast.error(data?.message || 'You do not have permission to perform this action.', { toastId: 'forbidden-error' });
+          }
         }
       }
     } else if (error.response?.status === 404) {

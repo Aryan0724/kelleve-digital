@@ -11,15 +11,15 @@ use Exception;
 
 class UnlockService
 {
-    private WalletService $walletService;
+    private \App\Services\EntitlementService $entitlementService;
 
-    public function __construct(WalletService $walletService)
+    public function __construct(\App\Services\EntitlementService $entitlementService)
     {
-        $this->walletService = $walletService;
+        $this->entitlementService = $entitlementService;
     }
 
     /**
-     * Unlock a customer's contact for a specific requirement using the wallet.
+     * Unlock a customer's contact for a specific requirement.
      */
     public function unlockContact(User $vendor, $requirement): array
     {
@@ -30,6 +30,12 @@ class UnlockService
             ?? \App\Models\Setting::where('key', 'lead_price')->value('value') 
             ?? config('marketplace.unlock_fee', 49.00));
         $fee = (float) ($requirement->unlock_price ?? $globalFee);
+
+        // Apply subscription discount
+        $discountPercent = $this->entitlementService->getLimit($vendor, 'contact_unlock_discount_percent');
+        if ($discountPercent > 0) {
+            $fee = $fee * (1 - ($discountPercent / 100));
+        }
 
         // Only the actual owner of the listing/requirement gets their own contact for free
         if ($vendor->id === ($requirement->user_id ?? null)) {
@@ -77,19 +83,25 @@ class UnlockService
                 throw new Exception('This requirement has reached its maximum number of contact unlocks.');
             }
 
-            // 3. Deduct from wallet if fee is greater than 0
+            // 3. Check Subscription Quota
+            $quotaLimit = $this->entitlementService->getLimit($vendor, 'lead_unlocks_per_month');
+            $usedThisMonth = DB::table('contact_unlocks')
+                ->where('user_id', $vendor->id)
+                ->where('created_at', '>=', now()->startOfMonth())
+                ->where('unlock_reason', 'included_quota')
+                ->count();
+
+            $reason = 'paid';
+            if ($fee == 0) {
+                $reason = 'free_role';
+            } elseif ($usedThisMonth < $quotaLimit) {
+                $reason = 'included_quota';
+                $fee = 0; // consumed from quota
+            }
+
+            // If not free and no quota left, return a requires_payment flag so frontend initiates Razorpay
             if ($fee > 0) {
-                $this->walletService->deduct(
-                    $vendor,
-                    $fee,
-                    "Unlocked contact for requirement ID: {$requirement->id}",
-                    [
-                        'source' => 'CONTACT_UNLOCK',
-                        'reference_type' => $requirementType,
-                        'reference_id' => $requirement->id,
-                        'status' => 'success'
-                    ]
-                );
+                throw new \App\Exceptions\PaymentRequiredException("Insufficient quota. Please pay ₹{$fee} to unlock this contact.", $fee);
             }
 
             // 4. Create unlock record
@@ -97,6 +109,7 @@ class UnlockService
                 'user_id' => $vendor->id,
                 'requirement_id' => $requirement->id,
                 'requirement_type' => $requirementType,
+                'unlock_reason' => $reason,
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -107,7 +120,7 @@ class UnlockService
                 'entity_id' => $requirement->id,
                 'user_id' => $vendor->id,
                 'action' => 'contact_unlocked',
-                'description' => "A vendor unlocked the customer's contact.",
+                'description' => "A vendor unlocked the customer's contact via {$reason}.",
                 'created_at' => now(),
                 'updated_at' => now(),
             ]);
@@ -130,7 +143,7 @@ class UnlockService
             return [
                 'success' => true,
                 'message' => 'Contact unlocked successfully',
-                'wallet_balance' => $this->walletService->getBalance($vendor),
+                'unlock_reason' => $reason,
                 'contact' => [
                     'name' => $requirement->user->name ?? $requirement->name ?? 'Customer',
                     'phone' => $requirement->user->phone ?? $requirement->phone ?? null,

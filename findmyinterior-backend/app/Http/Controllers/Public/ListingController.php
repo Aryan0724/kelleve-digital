@@ -152,7 +152,19 @@ class ListingController extends Controller
         // Join users table to sort by trust metrics
         // Note: we must select listings.* ONLY to avoid column ambiguity (both tables have is_verified, status, etc.)
         $query->join('users', 'users.id', '=', 'listings.user_id')
-              ->select('listings.*', 'users.trust_score as user_trust_score', 'users.profile_completion_score as user_profile_score', 'users.verification_level as user_verification_level');
+              ->leftJoin('user_subscriptions', function($join) {
+                  $join->on('user_subscriptions.user_id', '=', 'users.id')
+                       ->where('user_subscriptions.status', '=', 'active')
+                       ->where('user_subscriptions.expires_at', '>', now());
+              })
+              ->leftJoin('subscription_plans', 'subscription_plans.id', '=', 'user_subscriptions.subscription_plan_id')
+              ->select(
+                  'listings.*', 
+                  \Illuminate\Support\Facades\DB::raw('(users.trust_score + COALESCE(subscription_plans.search_ranking_boost, 0)) as dynamic_trust_score'),
+                  'users.profile_completion_score as user_profile_score', 
+                  'users.verification_level as user_verification_level',
+                  \Illuminate\Support\Facades\DB::raw('COALESCE(subscription_plans.is_featured_listing, false) as dynamic_is_featured')
+              );
 
         // Sorting
         match ($request->get('sort', 'featured')) {
@@ -160,6 +172,7 @@ class ListingController extends Controller
             'newest'  => $query->orderByDesc('listings.created_at')->orderByDesc('listings.id'),
             'popular' => $query->orderByDesc('listings.views_count')->orderByDesc('listings.id'),
             default   => $query
+                ->orderByDesc('dynamic_is_featured')
                 ->orderByDesc('listings.is_featured')
                 ->orderByDesc('listings.is_verified')
                 ->orderByDesc('listings.is_premium')
@@ -172,7 +185,7 @@ class ListingController extends Controller
                         ELSE 0
                     END DESC
                 ")
-                ->orderByDesc('user_trust_score')
+                ->orderByDesc('dynamic_trust_score')
                 ->orderByDesc('user_profile_score')
                 ->orderByDesc('listings.avg_rating')
                 ->orderByDesc('listings.id'),

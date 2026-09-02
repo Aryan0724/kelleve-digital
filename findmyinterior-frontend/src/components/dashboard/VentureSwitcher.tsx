@@ -134,6 +134,7 @@ function AddVentureModal({ onClose, onAdded }: { onClose: () => void; onAdded: (
 
 export function VentureSwitcher() {
   const [ventures, setVentures] = useState<Venture[]>([]);
+  const [listingLimit, setListingLimit] = useState<number>(0);
   const [loading, setLoading] = useState(true);
   const [open, setOpen] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -143,6 +144,9 @@ export function VentureSwitcher() {
     try {
       const res = await api.get("/user/ventures");
       setVentures(res.data.data || []);
+      if (res.data.entitlements?.max_listings) {
+        setListingLimit(res.data.entitlements.max_listings);
+      }
       if (res.data.data?.length > 0 && !activeVenture) {
         setActiveVenture(res.data.data[0]);
       }
@@ -172,8 +176,17 @@ export function VentureSwitcher() {
 
         {open && (
           <div className="absolute top-full right-0 mt-1 w-64 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl shadow-2xl z-50 overflow-hidden">
-            <div className="p-2 border-b border-slate-100 dark:border-slate-800">
+            <div className="p-2 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
               <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider px-2 py-1">Your Ventures</p>
+              {listingLimit > 0 && listingLimit < 9999 && (
+                <span className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
+                  ventures.length >= listingLimit
+                    ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                    : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                }`}>
+                  {ventures.length} / {listingLimit} Used
+                </span>
+              )}
             </div>
 
             <div className="max-h-48 overflow-y-auto">
@@ -202,12 +215,17 @@ export function VentureSwitcher() {
 
             <div className="p-2 border-t border-slate-100 dark:border-slate-800">
               <button
+                disabled={listingLimit > 0 && listingLimit < 9999 && ventures.length >= listingLimit}
                 onClick={() => { setShowAddModal(true); setOpen(false); }}
-                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition font-medium"
+                className="w-full flex items-center gap-2 px-3 py-2 text-sm text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-900/20 rounded-lg transition font-medium disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Plus className="w-4 h-4" /> Add New Venture
               </button>
-              <p className="text-xs text-slate-400 px-3 mt-1">Multiple companies under one login</p>
+              {listingLimit > 0 && listingLimit < 9999 && ventures.length >= listingLimit ? (
+                <p className="text-xs text-red-500 px-3 mt-1">Listing limit reached. Upgrade plan.</p>
+              ) : (
+                <p className="text-xs text-slate-400 px-3 mt-1">Multiple companies under one login</p>
+              )}
             </div>
           </div>
         )}
