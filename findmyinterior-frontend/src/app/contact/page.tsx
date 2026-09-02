@@ -61,7 +61,7 @@ export default function ContactPage() {
                 <div>
                   <h3 className="font-bold text-slate-900">Our Office</h3>
                   <p className="text-slate-600 mt-1">
-                    <a href="https://maps.app.goo.gl/ryn1o8LZRaDzRiys6?g_st=ac" target="_blank" rel="noopener noreferrer" className="hover:text-orange-600 transition-colors">
+                    <a href="https://www.google.com/maps/search/?api=1&query=25.6217231,85.1083558" target="_blank" rel="noopener noreferrer" className="hover:text-orange-600 transition-colors">
                       2nd Floor, Usha Niketan, Above Havells Showroom<br/>
                       Boring Patliputra Rd, Near Pani Tanki, Patna, Bihar 800013
                     </a>

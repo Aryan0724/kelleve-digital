@@ -65,7 +65,7 @@ export function Footer() {
             </li>
             <li className="flex items-start gap-2">
               <MapPin className="h-4 w-4 shrink-0 text-orange-400 mt-0.5" />
-              <a href="https://maps.app.goo.gl/ryn1o8LZRaDzRiys6?g_st=ac" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
+              <a href="https://www.google.com/maps/search/?api=1&query=25.6217231,85.1083558" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
                 2nd Floor, Usha Niketan, Boring Patliputra Rd, Patna, Bihar 800013
               </a>
             </li>
