@@ -55,50 +55,88 @@ export default function HelpAndSupportPage() {
       <div className="container mx-auto px-4 max-w-5xl -mt-8 pb-20">
         {/* Contact Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-12">
-          {/* Call */}
-          <a
-            href={`tel:${phone}`}
-            className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md hover:border-orange-300 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mb-4 group-hover:bg-orange-200 transition-colors">
+          {/* Call Us Card */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md hover:border-orange-300 transition-all">
+            <div className="w-14 h-14 rounded-full bg-orange-100 flex items-center justify-center mb-4">
               <PhoneCall className="w-7 h-7 text-orange-600" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 mb-1">Call Us</h2>
-            <p className="text-slate-500 text-sm mb-4">Mon–Sat, 9am–6pm</p>
-            <span className="text-orange-600 font-bold text-lg">{phoneDisplay}</span>
-            <span className="mt-3 text-xs bg-orange-50 text-orange-700 px-3 py-1 rounded-full font-medium">Tap to Call</span>
-          </a>
+            <p className="text-slate-500 text-sm mb-3">Mon–Sat, 9am–6pm</p>
+            <div className="flex flex-col gap-2 w-full max-w-xs mb-3">
+              <a
+                href="tel:+917070440365"
+                className="flex items-center justify-center gap-2 py-2 px-3 bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold rounded-xl text-base transition-colors"
+              >
+                <span>+91 70704 40365</span>
+              </a>
+              <a
+                href="tel:+919534900999"
+                className="flex items-center justify-center gap-2 py-2 px-3 bg-orange-50 hover:bg-orange-100 text-orange-700 font-bold rounded-xl text-base transition-colors"
+              >
+                <span>+91 95349 00999</span>
+              </a>
+            </div>
+            <span className="text-xs text-slate-400 font-medium">Click any number to call</span>
+          </div>
 
-          <a
-            href={`https://wa.me/${whatsapp}?text=Hi, I need help with FindMyInterior.`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md hover:border-green-300 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-4 group-hover:bg-green-200 transition-colors">
+          {/* WhatsApp Card */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md hover:border-green-300 transition-all">
+            <div className="w-14 h-14 rounded-full bg-green-100 flex items-center justify-center mb-4">
               <MessageCircle className="w-7 h-7 text-green-600" />
             </div>
             <h2 className="text-lg font-bold text-slate-900 mb-1">WhatsApp</h2>
-            <p className="text-slate-500 text-sm mb-4">Get a reply within minutes</p>
-            <span className="text-green-700 font-bold text-lg">{whatsappDisplay}</span>
-            <span className="mt-3 text-xs bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium">Chat Now</span>
-          </a>
+            <p className="text-slate-500 text-sm mb-3">Get a reply within minutes</p>
+            <div className="flex flex-col gap-2 w-full max-w-xs mb-3">
+              <a
+                href="https://wa.me/919534900999?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between py-2 px-4 bg-green-50 hover:bg-green-100 text-green-700 font-bold rounded-xl text-base transition-colors"
+              >
+                <span>+91 95349 00999</span>
+                <span className="text-[11px] bg-green-600 text-white px-2 py-0.5 rounded-full font-semibold">Chat</span>
+              </a>
+              <a
+                href="https://wa.me/917070440365?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-between py-2 px-4 bg-slate-50 hover:bg-slate-100 text-slate-700 font-bold rounded-xl text-base transition-colors"
+              >
+                <span>+91 70704 40365</span>
+                <span className="text-[11px] bg-slate-600 text-white px-2 py-0.5 rounded-full font-semibold">Chat</span>
+              </a>
+            </div>
+            <span className="text-xs text-slate-400 font-medium">Available on WhatsApp 24x7</span>
+          </div>
 
-          {/* Email / Contact Form */}
-          <Link
-            href="/contact"
-            className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md hover:border-blue-300 transition-all group"
-          >
-            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-4 group-hover:bg-blue-200 transition-colors">
+          {/* Email / Contact Form Card */}
+          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md hover:border-blue-300 transition-all">
+            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center mb-4">
               <Mail className="w-7 h-7 text-blue-600" />
             </div>
-            <h2 className="text-lg font-bold text-slate-900 mb-1">Email / Contact Form</h2>
-            <p className="text-slate-500 text-sm mb-4">We reply within 24 hours</p>
-            <span className="text-blue-600 font-bold">Support@findmyinterior.com</span>
-            <span className="mt-3 text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium flex items-center gap-1">
+            <h2 className="text-lg font-bold text-slate-900 mb-1">Email &amp; Support</h2>
+            <p className="text-slate-500 text-sm mb-3">We reply within 24 hours</p>
+            <div className="flex flex-col gap-1.5 w-full max-w-xs mb-3 text-sm font-semibold">
+              <a
+                href="mailto:Support@findmyinterior.com"
+                className="py-1.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors break-all"
+              >
+                Support@findmyinterior.com
+              </a>
+              <a
+                href="mailto:Office@findmyinterior.com"
+                className="py-1.5 px-3 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded-lg transition-colors break-all"
+              >
+                Office@findmyinterior.com
+              </a>
+            </div>
+            <Link
+              href="/contact"
+              className="mt-auto text-xs bg-blue-600 hover:bg-blue-700 text-white px-4 py-1.5 rounded-full font-medium flex items-center gap-1.5 transition-colors"
+            >
               Open Contact Form <ExternalLink className="w-3 h-3" />
-            </span>
-          </Link>
+            </Link>
+          </div>
         </div>
 
         {/* Report Issue */}

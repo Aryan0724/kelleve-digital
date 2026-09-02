@@ -75,8 +75,25 @@ export default function ContactPage() {
                   <Phone className="w-6 h-6" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900">Phone</h3>
-                  <p className="text-slate-600 mt-1">+91 70704 40365<br/>+91 9534900999</p>
+                  <h3 className="font-bold text-slate-900">Phone &amp; WhatsApp</h3>
+                  <div className="flex flex-col gap-1.5 mt-2 text-sm">
+                    <a href="tel:+917070440365" className="text-slate-700 hover:text-orange-600 font-semibold transition-colors flex items-center gap-1.5">
+                      <span>+91 70704 40365</span>
+                    </a>
+                    <div className="flex items-center gap-2">
+                      <a href="tel:+919534900999" className="text-slate-700 hover:text-orange-600 font-semibold transition-colors">
+                        <span>+91 95349 00999</span>
+                      </a>
+                      <a
+                        href="https://wa.me/919534900999?text=Hi,%20I%20need%20help%20with%20FindMyInterior."
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[11px] bg-green-100 text-green-700 hover:bg-green-200 px-2 py-0.5 rounded-full font-bold transition-colors"
+                      >
+                        WhatsApp
+                      </a>
+                    </div>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -88,7 +105,14 @@ export default function ContactPage() {
                 </div>
                 <div>
                   <h3 className="font-bold text-slate-900">Email</h3>
-                  <p className="text-slate-600 mt-1">Support@findmyinterior.com<br/>Office@findmyinterior.com</p>
+                  <div className="flex flex-col gap-1.5 mt-2 text-sm">
+                    <a href="mailto:Support@findmyinterior.com" className="text-slate-700 hover:text-orange-600 font-semibold transition-colors break-all">
+                      Support@findmyinterior.com
+                    </a>
+                    <a href="mailto:Office@findmyinterior.com" className="text-slate-700 hover:text-orange-600 font-semibold transition-colors break-all">
+                      Office@findmyinterior.com
+                    </a>
+                  </div>
                 </div>
               </CardContent>
             </Card>
