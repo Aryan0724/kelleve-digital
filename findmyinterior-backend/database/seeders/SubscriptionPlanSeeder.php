@@ -28,7 +28,7 @@ class SubscriptionPlanSeeder extends Seeder
                 ],
                 'max_listings'           => 1,
                 'max_gallery_images'     => 5,
-                'monthly_wallet_credit'  => 0,
+                
                 'lead_notification_type' => 'none',
                 'early_lead_access_hours'=> null,
                 'search_ranking_boost'   => 0,
@@ -58,7 +58,7 @@ class SubscriptionPlanSeeder extends Seeder
                 ],
                 'max_listings'           => 3,
                 'max_gallery_images'     => 30,
-                'monthly_wallet_credit'  => 300,
+                
                 'lead_notification_type' => 'instant',
                 'early_lead_access_hours'=> 1,
                 'search_ranking_boost'   => 15,
@@ -89,7 +89,7 @@ class SubscriptionPlanSeeder extends Seeder
                 ],
                 'max_listings'           => 5,
                 'max_gallery_images'     => 60,
-                'monthly_wallet_credit'  => 600,
+                
                 'lead_notification_type' => 'instant',
                 'early_lead_access_hours'=> 2,
                 'search_ranking_boost'   => 25,
@@ -120,7 +120,7 @@ class SubscriptionPlanSeeder extends Seeder
                 ],
                 'max_listings'           => 10,
                 'max_gallery_images'     => 100,
-                'monthly_wallet_credit'  => 1200,
+                
                 'lead_notification_type' => 'instant',
                 'early_lead_access_hours'=> 4,
                 'search_ranking_boost'   => 50,
@@ -153,7 +153,7 @@ class SubscriptionPlanSeeder extends Seeder
                 ],
                 'max_listings'           => null,
                 'max_gallery_images'     => 200,
-                'monthly_wallet_credit'  => 2500,
+                
                 'lead_notification_type' => 'instant',
                 'early_lead_access_hours'=> 6,
                 'search_ranking_boost'   => 100,

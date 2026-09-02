@@ -7,14 +7,25 @@ use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Models\Requirement;
 use App\Services\UnlockService;
+use App\Services\EntitlementService;
 
 class UnlockController extends Controller
 {
     private UnlockService $unlockService;
+    private EntitlementService $entitlementService;
 
-    public function __construct(UnlockService $unlockService)
+    public function __construct(UnlockService $unlockService, EntitlementService $entitlementService)
     {
         $this->unlockService = $unlockService;
+        $this->entitlementService = $entitlementService;
+    }
+    
+    private function applyDiscount($user, $amount) {
+        $discountPercent = $this->entitlementService->getLimit($user, 'contact_unlock_discount_percent');
+        if ($discountPercent > 0) {
+            $amount = $amount * (1 - ($discountPercent / 100));
+        }
+        return $amount;
     }
 
     /**
@@ -48,13 +59,26 @@ class UnlockController extends Controller
         } catch (\Exception $e) {
             $msg = $e->getMessage();
             $isBalance = str_contains(strtolower($msg), 'insufficient') || str_contains(strtolower($msg), 'balance');
+            
+            // If the error is about funds, trigger a direct Razorpay payment flow instead of wallet recharge
+            if ($isBalance) {
+                return response()->json([
+                    'success'           => false,
+                    'message'           => 'Payment required to unlock this contact.',
+                    'code'              => 'PAYMENT_REQUIRED',
+                    'requires_payment'  => true,
+                    'purpose'           => 'lead_unlock',
+                    'requirement_id'    => $requirementId,
+                    'requirement_type'  => $type,
+                    'amount'            => $this->applyDiscount($request->user(), (float) ($requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00))),
+                ], 402);
+            }
+            
             return response()->json([
-                'success'        => false,
-                'message'        => $isBalance ? 'Insufficient wallet balance. Please recharge your wallet to unlock this contact.' : $msg,
-                'code'           => $isBalance ? 'INSUFFICIENT_BALANCE' : 'ERROR',
-                'needs_recharge' => $isBalance,
-                'required_amount'=> (float) ($requirement->unlock_price ?? config('marketplace.unlock_fee', 49.00)),
-            ], $isBalance ? 402 : 400);
+                'success' => false,
+                'message' => $msg,
+                'code'    => 'ERROR'
+            ], 400);
         }
     }
 
@@ -88,13 +112,26 @@ class UnlockController extends Controller
         } catch (\Exception $e) {
             $msg = $e->getMessage();
             $isBalance = str_contains(strtolower($msg), 'insufficient') || str_contains(strtolower($msg), 'balance');
+            
+            // Trigger direct Razorpay payment flow
+            if ($isBalance) {
+                return response()->json([
+                    'success'           => false,
+                    'message'           => 'Payment required to unlock this contact.',
+                    'code'              => 'PAYMENT_REQUIRED',
+                    'requires_payment'  => true,
+                    'purpose'           => 'lead_unlock',
+                    'requirement_id'    => $listingId,
+                    'requirement_type'  => 'listing',
+                    'amount'            => $this->applyDiscount($request->user(), 49.00),
+                ], 402);
+            }
+            
             return response()->json([
-                'success'        => false,
-                'message'        => $isBalance ? 'Insufficient wallet balance. Please recharge your wallet to unlock this contact.' : $msg,
-                'code'           => $isBalance ? 'INSUFFICIENT_BALANCE' : 'ERROR',
-                'needs_recharge' => $isBalance,
-                'required_amount'=> 49.00,
-            ], $isBalance ? 402 : 400);
+                'success' => false,
+                'message' => $msg,
+                'code'    => 'ERROR'
+            ], 400);
         }
     }
 }

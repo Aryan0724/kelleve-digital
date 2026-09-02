@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use \App\Models\Bid;
 use \App\Models\Requirement;
 use App\Services\BidService;
-use App\Services\WalletService;
+use App\Services\EntitlementService;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 
@@ -15,12 +15,12 @@ class BidController extends Controller
     use \App\Traits\ApiResponse;
 
     private BidService $bidService;
-    private WalletService $walletService;
+    private EntitlementService $entitlementService;
 
-    public function __construct(BidService $bidService, WalletService $walletService)
+    public function __construct(BidService $bidService, EntitlementService $entitlementService)
     {
         $this->bidService = $bidService;
-        $this->walletService = $walletService;
+        $this->entitlementService = $entitlementService;
     }
 
     /**
@@ -61,18 +61,27 @@ class BidController extends Controller
         $validated['requirement_type'] = $morphType; // override for DB
         $validated['requirement_type_class'] = $modelClass;
 
-        // Early Lead Access exclusivity check (first 2 hours for premium members)
+        // Early Lead Access exclusivity check — based on subscription plan entitlement
         $targetRequirement = $modelClass::find($validated['requirement_id']);
         if ($targetRequirement) {
-            $isPremium = $user->isAdmin() || $user->hasPremiumSubscription();
-            $earlyAccessHours = 2;
-            $unlocksAt = $targetRequirement->created_at ? \Carbon\Carbon::parse($targetRequirement->created_at)->addHours($earlyAccessHours) : null;
-            if (!$isPremium && $unlocksAt && $unlocksAt->isFuture() && $targetRequirement->user_id !== $user->id) {
+            $isAdmin = $user->isAdmin();
+            // How many hours of early access does this user's plan provide?
+            $userEarlyAccessHours = $isAdmin ? 999 : $this->entitlementService->getLimit($user, 'early_lead_access_hours');
+            // The maximum early access offered by any plan on the platform
+            $maxSystemEarlyAccess = \Illuminate\Support\Facades\Cache::remember('max_early_access', 3600, function () {
+                return \App\Models\SubscriptionPlan::max('early_lead_access_hours') ?? 6;
+            });
+            // A user with 0h access cannot bid during the full early-access window
+            $exclusivityWindowHours = $maxSystemEarlyAccess;
+            $unlocksAt = $targetRequirement->created_at
+                ? \Carbon\Carbon::parse($targetRequirement->created_at)->addHours($exclusivityWindowHours)
+                : null;
+            if (!$isAdmin && $userEarlyAccessHours <= 0 && $unlocksAt && $unlocksAt->isFuture() && $targetRequirement->user_id !== $user->id) {
                 $remainingMin = (int) max(1, now()->diffInMinutes($unlocksAt, false));
                 return response()->json([
                     'success' => false,
                     'code'    => 'EARLY_ACCESS_RESTRICTED',
-                    'message' => "Early Lead Access is exclusively reserved for Premium members for the first 2 hours. This lead unlocks for free members in {$remainingMin} minutes. Upgrade to QuickStart or Pro to bid immediately.",
+                    'message' => "This lead is in its early-access window for premium subscribers. It will open for all professionals in {$remainingMin} minutes. Upgrade your plan to bid instantly.",
                 ], 403);
             }
         }
@@ -86,20 +95,20 @@ class BidController extends Controller
         $validated['contact_person'] = $request->user()->name;
         $validated['category'] = collect($request->user()->roles)->first() ?? 'Professional';
         $validated['experience_years'] = $listing ? $listing->years_experience : 0;
-        $validated['previous_projects_count'] = 0; // Default or calculate from won bids
+        $validated['previous_projects_count'] = 0;
 
-        $bidFee = $targetRequirement ? ($targetRequirement->bid_fee ?? 10) : 10;
+        $bidFee = $targetRequirement ? (float)($targetRequirement->bid_fee ?? 0) : 0;
 
-        try {
-            if ($bidFee > 0) {
-                $this->walletService->deduct($request->user(), $bidFee, "Fee for bidding on requirement ID: {$validated['requirement_id']}");
-            }
-        } catch (\Exception $e) {
+        // If a bid fee is set, trigger direct Razorpay checkout instead of wallet deduction
+        if ($bidFee > 0) {
             return response()->json([
-                'success' => false,
-                'message' => 'Payment required to place a bid.',
+                'success'          => false,
+                'message'          => 'Payment required to place a bid.',
                 'requires_payment' => true,
-                'amount' => $bidFee
+                'purpose'          => 'lead_unlock',
+                'requirement_id'   => $validated['requirement_id'],
+                'requirement_type' => strtolower($validated['requirement_type']),
+                'amount'           => $bidFee,
             ], 402);
         }
 

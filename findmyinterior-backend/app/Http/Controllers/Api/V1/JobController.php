@@ -14,7 +14,26 @@ class JobController extends Controller
 
     public function index(Request $request)
     {
-        $paginator = WorkerJob::latest()->paginate($request->get('per_page', 20));
+        $user = Auth::guard('sanctum')->user();
+        $isAdmin = $user && in_array('admin', $user->roles->pluck('slug')->toArray());
+
+        $earlyAccessHours = 0;
+        if ($user && !$isAdmin) {
+            $earlyAccessHours = app(\App\Services\EntitlementService::class)->getLimit($user, 'early_lead_access_hours');
+        }
+
+        $maxSystemEarlyAccess = \Illuminate\Support\Facades\Cache::remember('max_early_access', 3600, function () {
+            return \App\Models\SubscriptionPlan::max('early_lead_access_hours') ?? 6;
+        });
+        
+        $delayHours = max(0, $maxSystemEarlyAccess - $earlyAccessHours);
+
+        $paginator = WorkerJob::when(!$isAdmin && $delayHours > 0, function($q) use ($delayHours) {
+                $q->where('created_at', '<=', now()->subHours($delayHours));
+            })
+            ->latest()
+            ->paginate($request->get('per_page', 20));
+
         return $this->success($paginator->items(), null, 200, [
             'current_page' => $paginator->currentPage(),
             'per_page'     => $paginator->perPage(),

@@ -62,6 +62,12 @@ class PaymentController extends Controller
             }
 
             $amount = $customPrice ?? (isset($data['amount']) && (float)$data['amount'] > 0 ? (float)$data['amount'] : $globalUnlockFee);
+
+            // Apply subscription discount
+            $discountPercent = app(\App\Services\EntitlementService::class)->getLimit($user, 'contact_unlock_discount_percent');
+            if ($discountPercent > 0) {
+                $amount = $amount * (1 - ($discountPercent / 100));
+            }
         }
 
         if (empty(config('services.razorpay.key')) || config('app.env') === 'local') {

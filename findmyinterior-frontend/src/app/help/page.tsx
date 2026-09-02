@@ -35,8 +35,10 @@ const FAQS = [
 ];
 
 export default function HelpAndSupportPage() {
-  const phone = "+919304355011";
-  const phoneDisplay = "+91 93043 55011";
+  const phone = "+917070440365";
+  const phoneDisplay = "+91 70704 40365";
+  const whatsapp = "+919534900999";
+  const whatsappDisplay = "+91 95349 00999";
 
   return (
     <div className="bg-slate-50 min-h-screen">
@@ -67,9 +69,8 @@ export default function HelpAndSupportPage() {
             <span className="mt-3 text-xs bg-orange-50 text-orange-700 px-3 py-1 rounded-full font-medium">Tap to Call</span>
           </a>
 
-          {/* WhatsApp */}
           <a
-            href={`https://wa.me/${phone}?text=Hi, I need help with FindMyInterior.`}
+            href={`https://wa.me/${whatsapp}?text=Hi, I need help with FindMyInterior.`}
             target="_blank"
             rel="noopener noreferrer"
             className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 flex flex-col items-center text-center hover:shadow-md hover:border-green-300 transition-all group"
@@ -79,7 +80,7 @@ export default function HelpAndSupportPage() {
             </div>
             <h2 className="text-lg font-bold text-slate-900 mb-1">WhatsApp</h2>
             <p className="text-slate-500 text-sm mb-4">Get a reply within minutes</p>
-            <span className="text-green-700 font-bold text-lg">{phoneDisplay}</span>
+            <span className="text-green-700 font-bold text-lg">{whatsappDisplay}</span>
             <span className="mt-3 text-xs bg-green-50 text-green-700 px-3 py-1 rounded-full font-medium">Chat Now</span>
           </a>
 
@@ -93,7 +94,7 @@ export default function HelpAndSupportPage() {
             </div>
             <h2 className="text-lg font-bold text-slate-900 mb-1">Email / Contact Form</h2>
             <p className="text-slate-500 text-sm mb-4">We reply within 24 hours</p>
-            <span className="text-blue-600 font-bold">support@findmyinterior.com</span>
+            <span className="text-blue-600 font-bold">Support@findmyinterior.com</span>
             <span className="mt-3 text-xs bg-blue-50 text-blue-700 px-3 py-1 rounded-full font-medium flex items-center gap-1">
               Open Contact Form <ExternalLink className="w-3 h-3" />
             </span>

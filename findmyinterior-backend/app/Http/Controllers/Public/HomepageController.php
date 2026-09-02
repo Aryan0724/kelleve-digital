@@ -42,13 +42,25 @@ class HomepageController extends Controller
             ->get();
 
         $featuredListings = Listing::active()
+            ->join('users', 'users.id', '=', 'listings.user_id')
+            ->leftJoin('user_subscriptions', function($join) {
+                $join->on('user_subscriptions.user_id', '=', 'users.id')
+                     ->where('user_subscriptions.status', '=', 'active')
+                     ->where('user_subscriptions.expires_at', '>', now());
+            })
+            ->leftJoin('subscription_plans', 'subscription_plans.id', '=', 'user_subscriptions.subscription_plan_id')
             ->where(function ($q) {
                 $q->where('listings.is_featured', true)
+                  ->orWhere('subscription_plans.is_featured_listing', true)
                   ->orWhere('listings.is_verified', true);
             })
-            ->join('users', 'users.id', '=', 'listings.user_id')
-            ->select('listings.*')
+            ->select(
+                'listings.*',
+                \Illuminate\Support\Facades\DB::raw('COALESCE(subscription_plans.is_featured_listing, false) as dynamic_is_featured')
+            )
             ->with(['category', 'user.activeSubscription.plan'])
+            ->orderByDesc('dynamic_is_featured')
+            ->orderByDesc('listings.is_featured')
             ->orderByRaw("
                 CASE users.verification_level
                     WHEN 'elite_professional' THEN 4

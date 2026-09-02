@@ -9,8 +9,10 @@ export function TrustFooter() {
     "Zero Degree", "Red Leaf"
   ];
 
-  const phone = "+919534900999";
-  const phoneDisplay = "+91 95349 00999";
+  const phone1 = "+917070440365";
+  const phone1Display = "+91 70704 40365";
+  const phone2 = "+919534900999";
+  const phone2Display = "+91 95349 00999";
 
   return (
     <section className="w-full flex flex-col font-sans">
@@ -73,24 +75,36 @@ export function TrustFooter() {
           <div className="bg-[#E8701A] px-6 py-4 rounded-xl shrink-0 md:-mr-4 shadow-lg w-full md:w-auto">
             <p className="text-xs font-semibold text-white/90 mb-2 text-center">Need Help?</p>
             <div className="flex flex-col gap-2">
-              {/* Call */}
+              {/* Call 1 */}
               <a
-                href={`tel:${phone}`}
-                className="flex items-center gap-2 bg-white/15 hover:bg-white/25 transition-colors rounded-lg px-3 py-2"
+                href={`tel:${phone1}`}
+                className="flex items-center justify-between gap-2 bg-white/15 hover:bg-white/25 transition-colors rounded-lg px-3 py-2"
               >
-                <Phone className="w-4 h-4 text-white shrink-0" />
-                <span className="text-sm font-bold tracking-wide text-white">{phoneDisplay}</span>
+                <div className="flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-white shrink-0" />
+                  <span className="text-sm font-bold tracking-wide text-white">{phone1Display}</span>
+                </div>
               </a>
-              {/* WhatsApp */}
-              <a
-                href={`https://wa.me/${phone}?text=Hi, I need help with FindMyInterior.`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center gap-2 bg-[#25D366]/80 hover:bg-[#25D366] transition-colors rounded-lg px-3 py-2"
-              >
-                <MessageCircle className="w-4 h-4 text-white shrink-0" />
-                <span className="text-sm font-bold text-white">Chat on WhatsApp</span>
-              </a>
+              {/* Call / WhatsApp 2 */}
+              <div className="flex items-center gap-1">
+                <a
+                  href={`tel:${phone2}`}
+                  className="flex-1 flex items-center justify-between gap-2 bg-white/15 hover:bg-white/25 transition-colors rounded-lg px-3 py-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <Phone className="w-4 h-4 text-white shrink-0" />
+                    <span className="text-sm font-bold tracking-wide text-white">{phone2Display}</span>
+                  </div>
+                </a>
+                <a
+                  href={`https://wa.me/${phone2}?text=Hi, I need help with FindMyInterior.`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center bg-[#25D366]/80 hover:bg-[#25D366] transition-colors rounded-lg px-3 py-2 shrink-0 h-full"
+                >
+                  <MessageCircle className="w-4 h-4 text-white shrink-0" />
+                </a>
+              </div>
               {/* Contact Form */}
               <Link
                 href="/contact"
