@@ -24,7 +24,27 @@ class EntitlementService
         }
 
         // Fallback to Starter plan definitions
-        return SubscriptionPlan::where('slug', 'starter')->first();
+        // Since starter plans are prefixed by type (e.g. professional-starter, worker-starter)
+        try {
+            $userRoles = $user->roles->pluck('slug')->toArray();
+            $role = $userRoles[0] ?? 'professional';
+            
+            $prefix = 'professional-';
+            if (in_array($role, ['worker', 'skilled_worker', 'carpenter', 'electrician', 'plumber', 'painter'])) {
+                $prefix = 'worker-';
+            } elseif (in_array($role, ['business', 'interior_company'])) {
+                $prefix = 'business-';
+            }
+            
+            $plan = SubscriptionPlan::where('slug', $prefix . 'starter')->first();
+            if ($plan) {
+                return $plan;
+            }
+        } catch (\Throwable $e) {
+            // ignore
+        }
+
+        return SubscriptionPlan::where('slug', 'like', '%starter')->first();
     }
 
     /**
