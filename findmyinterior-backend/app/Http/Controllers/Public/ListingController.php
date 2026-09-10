@@ -163,7 +163,9 @@ class ListingController extends Controller
                   \Illuminate\Support\Facades\DB::raw('(users.trust_score + COALESCE(subscription_plans.search_ranking_boost, 0)) as dynamic_trust_score'),
                   'users.profile_completion_score as user_profile_score', 
                   'users.verification_level as user_verification_level',
-                  \Illuminate\Support\Facades\DB::raw('COALESCE(subscription_plans.is_featured_listing, false) as dynamic_is_featured')
+                  \Illuminate\Support\Facades\DB::raw('COALESCE(subscription_plans.is_featured_listing, false) as dynamic_is_featured'),
+                  \Illuminate\Support\Facades\DB::raw("CASE WHEN subscription_plans.badge_type = 'elite' AND user_subscriptions.status = 'active' AND user_subscriptions.expires_at > NOW() THEN 1 ELSE 0 END as is_top3_eligible"),
+                  \Illuminate\Support\Facades\DB::raw("CASE WHEN subscription_plans.badge_type IN ('trusted', 'elite') AND user_subscriptions.status = 'active' AND user_subscriptions.expires_at > NOW() THEN 1 ELSE 0 END as is_spotlight_eligible")
               );
 
         // Sorting
@@ -172,22 +174,12 @@ class ListingController extends Controller
             'newest'  => $query->orderByDesc('listings.created_at')->orderByDesc('listings.id'),
             'popular' => $query->orderByDesc('listings.views_count')->orderByDesc('listings.id'),
             default   => $query
+                ->orderByDesc('is_top3_eligible')
+                ->orderByDesc('is_spotlight_eligible')
                 ->orderByDesc('dynamic_is_featured')
-                ->orderByDesc('listings.is_featured')
-                ->orderByDesc('listings.is_verified')
-                ->orderByDesc('listings.is_premium')
-                ->orderByRaw("
-                    CASE user_verification_level
-                        WHEN 'elite_professional' THEN 4
-                        WHEN 'trusted_professional' THEN 3
-                        WHEN 'verified_business' THEN 2
-                        WHEN 'basic_member' THEN 1
-                        ELSE 0
-                    END DESC
-                ")
                 ->orderByDesc('dynamic_trust_score')
-                ->orderByDesc('user_profile_score')
                 ->orderByDesc('listings.avg_rating')
+                ->orderByDesc('listings.views_count')
                 ->orderByDesc('listings.id'),
         };
 
@@ -388,5 +380,37 @@ class ListingController extends Controller
         $listing->increment($field);
 
         return response()->json(['success' => true]);
+    }
+
+    /**
+     * GET /api/v1/listings/featured-homepage
+     * Returns featured listings owned exclusively by active Elite subscribers.
+     */
+    public function featuredHomepage(Request $request): JsonResponse
+    {
+        $listings = Listing::active()
+            ->join('users', 'users.id', '=', 'listings.user_id')
+            ->join('user_subscriptions', function($join) {
+                $join->on('user_subscriptions.user_id', '=', 'users.id')
+                     ->where('user_subscriptions.status', '=', 'active')
+                     ->where('user_subscriptions.expires_at', '>', now());
+            })
+            ->join('subscription_plans', function($join) {
+                $join->on('subscription_plans.id', '=', 'user_subscriptions.subscription_plan_id')
+                     ->where('subscription_plans.is_featured_listing', true)
+                     ->where('subscription_plans.badge_type', 'elite');
+            })
+            ->with(['category', 'user.activeSubscription.plan'])
+            ->withCount(['approvedReviews as review_count', 'gallery as gallery_count'])
+            ->select('listings.*')
+            ->orderByDesc('listings.avg_rating')
+            ->orderByDesc('listings.views_count')
+            ->limit(8)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data'    => ListingResource::collection($listings),
+        ]);
     }
 }

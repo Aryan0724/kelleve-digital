@@ -16,6 +16,7 @@ class Inquiry extends Model
         'tenant_id',
         'user_id', 'inquirable_type', 'inquirable_id',
         'name', 'phone', 'email', 'message',
+        'priority',
         'is_read', 'whatsapp_sent', 'email_sent',
     ];
 
@@ -46,12 +47,5 @@ class Inquiry extends Model
     public function scopeNew($query)
     {
         return $query->where('is_read', false);
-    }
-
-    // ─── Helpers ──────────────────────────────────────────────────────────────
-
-    public function markAsRead(): void
-    {
-        $this->update(['is_read' => true]);
     }
 }

@@ -17,19 +17,36 @@ class OpportunityProjectController extends Controller
         $user = Auth::guard('sanctum')->user();
         $isAdmin = $user && in_array('admin', $user->roles->pluck('slug')->toArray());
 
-        $earlyAccessHours = 0;
+        $earlyAccessHours = null; // null = standard delay (no early access)
         if ($user && !$isAdmin) {
-            $earlyAccessHours = app(\App\Services\EntitlementService::class)->getLimit($user, 'early_lead_access_hours');
+            $plan = app(\App\Services\EntitlementService::class)->getActivePlan($user);
+            $earlyAccessHours = $plan?->early_lead_access_hours; // null/0/N
         }
 
-        // Maximum early access offered by any plan (e.g. 6 hours).
-        // Delay applied to the user = (Max - UserAccess)
-        // A user with 6h access has 0 delay. A user with 0h access has 6h delay.
+        // Delay semantics:
+        //   early_lead_access_hours = null  → no early access; show leads after full system delay
+        //   early_lead_access_hours = 0     → immediate access; show leads with zero delay (Elite)
+        //   early_lead_access_hours = N     → N hours of early access; delay = systemMax - N
+        // Admin sees everything immediately.
         $maxSystemEarlyAccess = \Illuminate\Support\Facades\Cache::remember('max_early_access', 3600, function () {
-            return \App\Models\SubscriptionPlan::max('early_lead_access_hours') ?? 6;
+            // Max among Professional-tier plans (excluding 0/null which represent special semantics)
+            return \App\Models\SubscriptionPlan::where('is_active', true)
+                ->where('is_archived', false)
+                ->whereNotNull('early_lead_access_hours')
+                ->where('early_lead_access_hours', '>', 0)
+                ->max('early_lead_access_hours') ?? 2;
         });
-        
-        $delayHours = max(0, $maxSystemEarlyAccess - $earlyAccessHours);
+
+        if ($isAdmin || $earlyAccessHours === 0) {
+            // Admin or Elite (explicit immediate): zero delay
+            $delayHours = 0;
+        } elseif ($earlyAccessHours === null) {
+            // Starter/Growth: standard delay = max system early access
+            $delayHours = $maxSystemEarlyAccess;
+        } else {
+            // Professional (N hours early): delay = systemMax - N
+            $delayHours = max(0, $maxSystemEarlyAccess - $earlyAccessHours);
+        }
 
         $projects = Requirement::where(function($q) {
                 $q->whereNull('opportunity_type')

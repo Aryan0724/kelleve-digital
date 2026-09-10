@@ -629,6 +629,98 @@ class AdminController extends Controller
     }
 
     /**
+     * DELETE /api/v1/admin/requirements/{id}
+     */
+    public function deleteRequirement(int $id): JsonResponse
+    {
+        $requirement = Requirement::withTrashed()->find($id);
+        if (!$requirement) {
+            return response()->json(['success' => false, 'message' => 'Requirement not found.'], 404);
+        }
+
+        // Cascade delete related bids, recommendations, unlocks
+        \App\Models\Bid::where(function($q) use ($id, $requirement) {
+            $q->where('requirement_id', $id)
+              ->whereIn('requirement_type', [
+                  get_class($requirement),
+                  'Requirement',
+                  'Project',
+                  'App\Models\Requirement',
+                  'App\Models\Project',
+              ]);
+        })->delete();
+
+        \Illuminate\Support\Facades\DB::table('requirement_recommendations')
+            ->where('requirement_id', $id)
+            ->delete();
+
+        \App\Models\ContactUnlock::where('requirement_id', $id)->delete();
+
+        $requirement->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Requirement deleted permanently.',
+        ]);
+    }
+
+    /**
+     * DELETE /api/v1/admin/worker-jobs/{id}
+     */
+    public function deleteWorkerJob(int $id): JsonResponse
+    {
+        $job = \App\Models\WorkerJob::withTrashed()->find($id);
+        if (!$job) {
+            return response()->json(['success' => false, 'message' => 'Worker Job not found.'], 404);
+        }
+
+        \App\Models\Bid::where(function($q) use ($id, $job) {
+            $q->where('requirement_id', $id)
+              ->whereIn('requirement_type', [
+                  get_class($job),
+                  'WorkerJob',
+                  'Job',
+                  'App\Models\WorkerJob',
+              ]);
+        })->delete();
+
+        $job->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Worker Job deleted permanently.',
+        ]);
+    }
+
+    /**
+     * DELETE /api/v1/admin/rfqs/{id}
+     */
+    public function deleteRfq(int $id): JsonResponse
+    {
+        $rfq = \App\Models\Rfq::withTrashed()->find($id);
+        if (!$rfq) {
+            return response()->json(['success' => false, 'message' => 'RFQ not found.'], 404);
+        }
+
+        \App\Models\Bid::where(function($q) use ($id, $rfq) {
+            $q->where('requirement_id', $id)
+              ->whereIn('requirement_type', [
+                  get_class($rfq),
+                  'Rfq',
+                  'RFQ',
+                  'App\Models\Rfq',
+              ]);
+        })->delete();
+
+        $rfq->forceDelete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'RFQ deleted permanently.',
+        ]);
+    }
+
+    /**
      * PATCH /api/v1/admin/users/{id}/verify
      */
     public function verifyUser(Request $request, int $id): JsonResponse
@@ -765,7 +857,9 @@ class AdminController extends Controller
 
     public function inquiries(Request $request): JsonResponse
     {
-        $inquiries = Inquiry::latest()->paginate(20);
+        $inquiries = Inquiry::orderByRaw("CASE WHEN priority = 'high' THEN 1 ELSE 2 END ASC")
+            ->latest()
+            ->paginate(20);
         return response()->json([
             'success' => true,
             'data' => $inquiries->items(),

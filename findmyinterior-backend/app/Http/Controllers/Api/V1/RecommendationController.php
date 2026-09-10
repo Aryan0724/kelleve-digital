@@ -38,17 +38,25 @@ class RecommendationController extends Controller
             ->get()
             ->keyBy('id');
 
-        $recommendations = $recs->map(function ($rec) use ($vendors) {
+        $entitlement = app(\App\Services\EntitlementService::class);
+
+        $recommendations = $recs->map(function ($rec) use ($vendors, $entitlement) {
             $vendor = $vendors->get($rec->vendor_id);
             if (!$vendor) return null;
 
             // Ensure metric exists even if empty
             $metric = $vendor->vendorMetric ?? new \App\Models\VendorMetric();
 
+            $breakdown = json_decode($rec->score_breakdown_json ?? '{}', true) ?: [];
+            $cachedBoost = (float) ($breakdown['subscription_boost'] ?? 0);
+            $baseScore = (float) $rec->match_score - $cachedBoost;
+            $liveBoost = (float) $entitlement->getLimit($vendor, 'recommendation_score_boost');
+            $effectiveScore = round(min(100, max(0, $baseScore + $liveBoost)), 2);
+
             return [
                 'id' => $rec->id ?? null,
                 'vendor_id' => $rec->vendor_id,
-                'match_score' => $rec->match_score,
+                'match_score' => $effectiveScore,
                 'invited_at' => $rec->invited_at,
                 'vendor' => [
                     'id' => $vendor->id,
@@ -58,7 +66,7 @@ class RecommendationController extends Controller
                     'vendorMetric' => $metric,
                 ]
             ];
-        })->filter()->values();
+        })->filter()->sortByDesc('match_score')->values();
 
         return response()->json([
             'success'         => true,

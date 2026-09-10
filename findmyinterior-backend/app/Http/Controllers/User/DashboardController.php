@@ -48,6 +48,54 @@ class DashboardController extends Controller
                 }),
             ];
 
+            // ─── Phase M: Subscription Usage ─────────────────────────────────
+            $entitlement = app(\App\Services\EntitlementService::class);
+            $plan = $entitlement->getActivePlan($user);
+            $activeSub = $user->activeSubscription()
+                ->where('status', 'active')
+                ->where('expires_at', '>', now())
+                ->first();
+
+            $listingsUsed = \App\Models\Listing::where('user_id', $user->id)
+                ->where('status', 'active')
+                ->count();
+            $listingsLimit = $entitlement->getLimit($user, 'max_listings');
+
+            $firstListing = \App\Models\Listing::where('user_id', $user->id)->first();
+            $imagesUsed = $firstListing 
+                ? \App\Models\ListingGallery::where('listing_id', $firstListing->id)->count()
+                : 0;
+            $imagesLimit = $entitlement->getLimit($user, 'max_gallery_images');
+
+            $features = [];
+            if ($plan?->can_add_whatsapp) $features[] = 'whatsapp';
+            if ($plan?->can_add_website) $features[] = 'website';
+            if ($plan?->badge_type && $plan->badge_type !== 'none') $features[] = $plan->badge_type . '_badge';
+            if ($plan?->early_lead_access_hours === 0) $features[] = 'instant_lead_access';
+            elseif ($plan?->early_lead_access_hours !== null) $features[] = 'early_lead_' . $plan->early_lead_access_hours . 'h';
+            if ($plan?->badge_type === 'trusted' || $plan?->badge_type === 'elite') $features[] = 'category_spotlight';
+            if ($plan?->badge_type === 'elite') {
+                $features[] = 'top3_guaranteed';
+                $features[] = 'featured_homepage';
+                $features[] = 'competitor_insights';
+                $features[] = 'priority_support';
+            }
+
+            $daysRemaining = $activeSub?->expires_at ? max(0, (int) now()->diffInDays($activeSub->expires_at, false)) : null;
+
+            $data['subscription_usage'] = [
+                'plan_name'      => $plan?->name ?? 'Starter',
+                'plan_slug'      => $plan?->slug ?? 'starter',
+                'expires_at'     => $activeSub?->expires_at?->toDateString(),
+                'days_remaining' => $daysRemaining,
+                'listings_used'  => $listingsUsed,
+                'listings_limit' => $listingsLimit,
+                'images_used'    => $imagesUsed,
+                'images_limit'   => $imagesLimit,
+                'analytics_tier' => $entitlement->getAnalyticsTier($user),
+                'features'       => $features,
+            ];
+
             $userRoles = $user->roles->pluck('slug')->toArray();
             $isHomeowner = in_array('homeowner', $userRoles) || in_array('customer', $userRoles);
             
@@ -123,7 +171,6 @@ class DashboardController extends Controller
                         }
                     })
                     ->latest()
-                    ->latest()
                     ->get();
                     
                 // Eager load requirement titles and worker profiles to avoid N+1
@@ -148,39 +195,25 @@ class DashboardController extends Controller
                             $requirementTypeLabel = 'RFQ';
                         } elseif (in_array($bid->requirement_type, ['WorkerJob', 'App\Models\WorkerJob'])) {
                             $requirementTitle = $workerJobs[$bid->requirement_id] ?? $requirementTitle;
-                            $requirementTypeLabel = 'Skilled Worker Job';
+                            $requirementTypeLabel = 'Job';
                         }
 
-                        // Get worker/professional profile for extra info
-                        $professional = $bid->professional;
-                        $workerProfile = $professional ? ($workerProfiles[$professional->id] ?? null) : null;
+                        $bid->requirement_title = $requirementTitle;
+                        $bid->requirement_type_label = $requirementTypeLabel;
 
-                        return [
-                            'id'                  => $bid->id,
-                            'status'              => $bid->status,
-                            'amount'              => $bid->amount,
-                            'timeline_days'       => $bid->timeline_days,
-                            'proposal_message'    => $bid->proposal_message,
-                            'smart_bid_score'     => $bid->smart_bid_score,
-                            'is_awarded'          => $bid->is_awarded,
-                            'created_at'          => $bid->created_at?->diffForHumans(),
-                            'requirement_title'   => $requirementTitle,
-                            'requirement_type'    => $requirementTypeLabel,
-                            'requirement_id'      => $bid->requirement_id,
-                            'professional' => $professional ? [
-                                'id'     => $professional->id,
-                                'name'   => $professional->name,
-                                'email'  => $professional->email,
-                                'avatar' => $professional->avatar,
-                                'skill'  => $workerProfile?->skill ?? null,
-                                'city'   => $workerProfile?->city ?? null,
-                                'experience_years' => $workerProfile?->experience_years ?? null,
-                                'avg_rating'       => $workerProfile?->avg_rating ?? 0,
-                            ] : null,
-                        ];
+                        if ($bid->professional) {
+                            $worker = $workerProfiles->get($bid->professional->id);
+                            if ($worker) {
+                                $bid->professional->daily_rate = $worker->daily_rate;
+                                $bid->professional->experience_years = $worker->experience_years;
+                                $bid->professional->skills = $worker->skills;
+                            }
+                        }
+
+                        return $bid;
                     });
                 } catch (\Exception $e) {
-                    \Illuminate\Support\Facades\Log::warning('Dashboard received_bids failed: ' . $e->getMessage());
+                    \Illuminate\Support\Facades\Log::warning('Failed to load received bids: ' . $e->getMessage());
                     $data['received_bids'] = collect([]);
                 }
             } // end else (has opportunities)
@@ -212,16 +245,31 @@ class DashboardController extends Controller
                 $data['total_reviews']   = $entity?->approvedReviews()->count() ?? 0;
                 $data['avg_rating']      = $entity?->avg_rating ?? 0;
                 
-                if (in_array('business', $userRoles) || in_array('interior_designer', $userRoles) || in_array('interior_company', $userRoles) || in_array('contractor', $userRoles) || in_array('architect', $userRoles)) {
+                // ─── Phase F: Analytics Subscription Gating ───────────────────
+                $analyticsTier = $entitlement->getAnalyticsTier($user);
+                $data['analytics_tier'] = $analyticsTier;
+
+                if ($analyticsTier === 'none') {
+                    // Starter / Growth: Analytics section is gated
                     $data['listing_count']   = $user->listings()->count();
-                    $data['total_views']     = $user->listings()->sum('views_count');
-                    $data['phone_clicks']    = $user->listings()->sum('phone_clicks');
-                    $data['whatsapp_clicks'] = $user->listings()->sum('whatsapp_clicks');
-                    $data['website_clicks']  = $user->listings()->sum('website_clicks');
+                    $data['total_views']     = 0;
+                    $data['phone_clicks']    = 0;
+                    $data['whatsapp_clicks'] = 0;
+                    $data['website_clicks']  = 0;
+                    $data['recent_visitors'] = [];
+                    $data['analytics_gated'] = true;
+                } else {
+                    // Professional ('summary') or Elite ('full')
+                    $data['listing_count']   = $user->listings()->count();
+                    $data['total_views']     = (int) $user->listings()->sum('views_count');
+                    $data['phone_clicks']    = (int) $user->listings()->sum('phone_clicks');
+                    $data['whatsapp_clicks'] = (int) $user->listings()->sum('whatsapp_clicks');
+                    $data['website_clicks']  = (int) $user->listings()->sum('website_clicks');
+                    $data['analytics_gated'] = false;
                     
                     // Recent profile viewers (logged-in users only)
                     $listingIds = $user->listings()->pluck('id');
-                    $data['recent_visitors'] = \Illuminate\Support\Facades\DB::table('analytics_events')
+                    $visitorsQuery = \Illuminate\Support\Facades\DB::table('analytics_events')
                         ->join('users', 'users.id', '=', 'analytics_events.user_id')
                         ->where('analytics_events.event_type', 'view')
                         ->where('analytics_events.entity_type', 'listing')
@@ -232,15 +280,15 @@ class DashboardController extends Controller
                             'users.id',
                             'users.name',
                             'users.avatar',
-                            
                             'analytics_events.created_at as viewed_at'
                         )
-                        ->orderByDesc('analytics_events.created_at')
-                        ->limit(10)
-                        ->get();
-                } else {
-                    $data['total_views']     = $entity?->views_count ?? 0;
-                    $data['recent_visitors'] = [];
+                        ->orderByDesc('analytics_events.created_at');
+
+                    if ($analyticsTier === 'summary') {
+                        $visitorsQuery->where('analytics_events.created_at', '>=', now()->subDays(7));
+                    }
+
+                    $data['recent_visitors'] = $visitorsQuery->limit(10)->get();
                 }
 
                 $data['recent_inquiries'] = $entity?->inquiries()
@@ -322,11 +370,16 @@ class DashboardController extends Controller
                     }
                     $validReqTypes = array_unique($validReqTypes);
 
-                    $earlyAccessHours = app(\App\Services\EntitlementService::class)->getLimit($user, 'early_lead_access_hours');
-                    $maxSystemEarlyAccess = \Illuminate\Support\Facades\Cache::remember('max_early_access', 3600, function () {
-                        return \App\Models\SubscriptionPlan::max('early_lead_access_hours') ?? 6;
-                    });
-                    $delayHours = max(0, $maxSystemEarlyAccess - $earlyAccessHours);
+                    // Semantic fix: 0 = immediate access (no delay), null = standard delay, N = N hours early access
+                    $earlyAccessHours = $plan?->early_lead_access_hours;
+                    $maxSystemEarlyAccess = 6;
+                    if ($earlyAccessHours === 0) {
+                        $delayHours = 0; // Elite: 0-delay immediate access
+                    } elseif ($earlyAccessHours === null) {
+                        $delayHours = $maxSystemEarlyAccess; // Standard delay
+                    } else {
+                        $delayHours = max(0, $maxSystemEarlyAccess - (int) $earlyAccessHours);
+                    }
 
                     // Base query: open or bidding requirements matching role
                     $query = \App\Models\Requirement::with(['category', 'user'])
@@ -420,5 +473,85 @@ class DashboardController extends Controller
             ]);
             return $this->error('Failed to load dashboard data: ' . $e->getMessage(), 500);
         }
+    }
+
+    /**
+     * GET /api/v1/user/analytics
+     * Gated endpoint for professional profile statistics and analytics.
+     * Starter / Growth: 403 Forbidden
+     * Professional: 200 OK with Profile Statistics (all-time counters + last 7 days visitors)
+     * Elite: 200 OK with Comprehensive Analytics (all-time counters + all-time visitors + events breakdown)
+     */
+    public function analytics(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $entitlement = app(\App\Services\EntitlementService::class);
+        $tier = $entitlement->getAnalyticsTier($user);
+
+        if ($tier === 'none') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Upgrade to Professional or Elite to access profile analytics and performance metrics.',
+                'code'    => 'ANALYTICS_UPGRADE_REQUIRED',
+            ], 403);
+        }
+
+        $listingIds = $user->listings()->pluck('id');
+
+        // Honest profile statistics from actual DB counters
+        $stats = [
+            'listing_count'   => $user->listings()->count(),
+            'total_views'     => (int) $user->listings()->sum('views_count'),
+            'phone_clicks'    => (int) $user->listings()->sum('phone_clicks'),
+            'whatsapp_clicks' => (int) $user->listings()->sum('whatsapp_clicks'),
+            'website_clicks'  => (int) $user->listings()->sum('website_clicks'),
+            'total_inquiries' => (int) \App\Models\Inquiry::whereIn('inquirable_id', $listingIds)
+                ->where('inquirable_type', \App\Models\Listing::class)
+                ->count(),
+        ];
+
+        $visitorsQuery = \Illuminate\Support\Facades\DB::table('analytics_events')
+            ->join('users', 'users.id', '=', 'analytics_events.user_id')
+            ->where('analytics_events.event_type', 'view')
+            ->where('analytics_events.entity_type', 'listing')
+            ->whereIn('analytics_events.entity_id', $listingIds)
+            ->whereNotNull('analytics_events.user_id')
+            ->where('analytics_events.user_id', '!=', $user->id)
+            ->select(
+                'users.id',
+                'users.name',
+                'users.avatar',
+                'analytics_events.created_at as viewed_at'
+            )
+            ->orderByDesc('analytics_events.created_at');
+
+        if ($tier === 'summary') {
+            $visitorsQuery->where('analytics_events.created_at', '>=', now()->subDays(7));
+        }
+
+        $recentVisitors = $visitorsQuery->limit(20)->get();
+
+        $payload = [
+            'tier'               => $tier,
+            'label'              => $tier === 'full' ? 'Comprehensive Analytics' : 'Profile Statistics',
+            'profile_statistics' => $stats,
+            'recent_visitors'    => $recentVisitors,
+        ];
+
+        if ($tier === 'full') {
+            $eventsBreakdown = \Illuminate\Support\Facades\DB::table('analytics_events')
+                ->whereIn('entity_id', $listingIds)
+                ->where('entity_type', 'listing')
+                ->select('event_type', \Illuminate\Support\Facades\DB::raw('count(*) as count'))
+                ->groupBy('event_type')
+                ->pluck('count', 'event_type');
+
+            $payload['events_breakdown'] = $eventsBreakdown;
+        }
+
+        return response()->json([
+            'success' => true,
+            'data'    => $payload,
+        ]);
     }
 }

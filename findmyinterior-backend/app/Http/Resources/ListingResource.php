@@ -11,8 +11,8 @@ class ListingResource extends JsonResource
 
     public function toArray(Request $request): array
     {
-        $ownerUser = $this->relationLoaded('user') ? $this->user : null;
-        $ownerPlan = $ownerUser ? $ownerUser->activeSubscription?->plan : null;
+        $ownerUser = $this->relationLoaded('user') ? $this->user : ($this->user_id ? $this->user : null);
+        $ownerPlan = $ownerUser ? app(\App\Services\EntitlementService::class)->getActivePlan($ownerUser) : null;
         
         $canHaveWebsite = $ownerPlan?->can_add_website ?? false;
         $canHaveWhatsapp = $ownerPlan?->can_add_whatsapp ?? false;
@@ -57,10 +57,20 @@ class ListingResource extends JsonResource
             'avg_rating'       => (float) $this->avg_rating,
             'review_count'     => $this->review_count,
             'is_verified'      => (bool) ($this->is_verified || $ownerUser?->is_verified || ($ownerPlan && $ownerPlan->price_yearly > 0)),
-            'is_featured'      => (bool) ($this->is_featured || ($ownerPlan?->slug === 'elitebusiness')),
+            // is_featured: derived from plan's is_featured_listing field (authoritative source)
+            // listing.is_featured field is only a cached legacy hint
+            'is_featured'      => (bool) ($ownerPlan?->is_featured_listing || $this->is_featured),
             'is_premium'       => (bool) ($this->is_premium || ($ownerPlan && $ownerPlan->price_yearly > 0)),
             'is_gold_verified' => (bool) ($ownerPlan?->is_gold_verified || $this->is_verified || ($ownerPlan && $ownerPlan->price_yearly > 0)),
-            'badge_type'       => $ownerPlan?->slug === 'elitebusiness' ? 'elite' : ($ownerPlan?->slug === 'probusiness' ? 'pro' : ($ownerPlan && $ownerPlan->price_yearly > 0 ? 'gold' : ($this->is_verified ? 'verified' : null))),
+            // badge_type: use plan's badge_type field directly — not hardcoded slug names
+            'badge_type'       => $ownerPlan?->badge_type && $ownerPlan->badge_type !== 'none'
+                ? $ownerPlan->badge_type
+                : ($this->is_verified ? 'verified' : null),
+            // responds_fast: computed from actual avg response time via EntitlementService
+            'responds_fast'    => $ownerUser ? app(\App\Services\EntitlementService::class)->hasRespondsFastBadge($ownerUser) : false,
+            // subscription placement: derived dynamically from plan fields
+            'is_top3_eligible'      => (bool) ($ownerPlan?->badge_type === 'elite'),
+            'is_spotlight_eligible' => (bool) ($ownerPlan && in_array($ownerPlan->badge_type, ['trusted', 'elite'])),
             'plan_name'        => $ownerPlan?->name ?? null,
             'is_sponsored'     => $this->sponsored_until && $this->sponsored_until->isFuture(),
             'is_top_rated'     => $this->avg_rating >= 4.5 && $this->review_count >= 5,

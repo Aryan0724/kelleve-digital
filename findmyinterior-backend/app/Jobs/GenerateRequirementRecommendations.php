@@ -14,6 +14,8 @@ class GenerateRequirementRecommendations implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, \App\Traits\TenantAwareJob;
 
+    public bool $deleteWhenMissingModels = true;
+
     protected $requirement;
 
     /**

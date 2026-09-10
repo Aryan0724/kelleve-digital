@@ -61,7 +61,8 @@ class PaymentController extends Controller
                 }
             }
 
-            $amount = $customPrice ?? (isset($data['amount']) && (float)$data['amount'] > 0 ? (float)$data['amount'] : $globalUnlockFee);
+            // Server-enforced pricing: never allow client-supplied amount to manipulate unlock fee
+            $amount = $customPrice ?? $globalUnlockFee;
 
             // Apply subscription discount
             $discountPercent = app(\App\Services\EntitlementService::class)->getLimit($user, 'contact_unlock_discount_percent');
@@ -72,7 +73,7 @@ class PaymentController extends Controller
 
         if (empty(config('services.razorpay.key')) || config('app.env') === 'local') {
             // Mock response for local environment testing when keys are missing or invalid
-            $razorpayOrder = ['id' => 'order_mock_' . time()];
+            $razorpayOrder = ['id' => 'order_mock_' . time() . '_' . bin2hex(random_bytes(4))];
         } else {
             $api  = new RazorpayApi(config('services.razorpay.key'), config('services.razorpay.secret'));
             // Razorpay expects paise (INR * 100)
@@ -163,8 +164,15 @@ class PaymentController extends Controller
             }
         }
 
-        return DB::transaction(function () use ($data) {
+        return DB::transaction(function () use ($data, $request) {
             $payment = Payment::where('razorpay_order_id', $data['razorpay_order_id'])->lockForUpdate()->firstOrFail();
+
+            if ($request->user() && $payment->user_id !== $request->user()->id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Unauthorized: payment belongs to another account.',
+                ], 403);
+            }
 
             if ($payment->status === 'success') {
                 return response()->json([
@@ -216,15 +224,16 @@ class PaymentController extends Controller
                 ->where('status', 'active')
                 ->update(['status' => 'cancelled']);
 
-            $expiresAt = now()->addYear();
-            if (str_contains($plan->slug, 'starter') || $plan->price_yearly == 0) {
-                $expiresAt = now()->addYears(10);
-            } elseif (str_contains($plan->slug, 'quickstart')) {
-                $expiresAt = now()->addMonths(3);
-            } elseif (str_contains($plan->slug, 'growthplus')) {
-                $expiresAt = now()->addMonths(6);
+            // Use billing_period_months from the plan definition.
+            // null = indefinite (e.g. Starter free plan — 10 years).
+            // Expiry is driven by plan data, not slug pattern matching.
+            $billingMonths = $plan->billing_period_months;
+            if ($plan->price_yearly == 0 || $billingMonths === null) {
+                $expiresAt = now()->addYears(10); // Starter: functionally unlimited
             } elseif ($cycle === 'monthly') {
                 $expiresAt = now()->addMonth();
+            } else {
+                $expiresAt = now()->addMonths($billingMonths); // e.g. 12 months for yearly plans
             }
 
             UserSubscription::create([
@@ -240,14 +249,16 @@ class PaymentController extends Controller
             // Sync is_premium flag and verification badges to the entity
             $user = $payment->user;
             
-            $verificationLevel = match($plan->slug) {
-                'elitebusiness' => 'elite_professional',
-                'probusiness'   => 'elite_professional',
-                'growthplus'    => 'trusted_professional',
-                default         => 'verified_business',
+            // Use badge_type field from the plan — not hardcoded slug names.
+            // Use badge_type field from the plan mapped to valid users.verification_level enum:
+            // ['unverified', 'mobile_verified', 'identity_verified', 'business_verified', 'site_verified']
+            $verificationLevel = match($plan->badge_type) {
+                'elite'   => 'site_verified',
+                default   => 'business_verified',
             };
 
-            $isFeatured = (bool) ($plan->is_featured_listing || in_array($plan->slug, ['elitebusiness', 'probusiness']));
+            // is_featured_listing is the canonical field — only Elite plan has this true.
+            $isFeatured = (bool) $plan->is_featured_listing;
 
             // Update user record with verified flags, verification level and trust score boost
             $user->update([

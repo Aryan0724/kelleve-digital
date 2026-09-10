@@ -43,6 +43,21 @@ class InquiryController extends Controller
         $data['inquirable_type'] = $morphMap[$data['inquirable_type']];
         $data['user_id'] = $request->user()?->id;
 
+        // Phase H: Priority Support — if recipient has active Elite subscription, set priority = 'high'
+        $priority = 'normal';
+        try {
+            $parentModel = $data['inquirable_type']::find($data['inquirable_id']);
+            $recipientUser = $parentModel?->user;
+            if ($recipientUser) {
+                $plan = app(\App\Services\EntitlementService::class)->getActivePlan($recipientUser);
+                if ($plan?->badge_type === 'elite') {
+                    $priority = 'high';
+                }
+            }
+        } catch (\Throwable $e) {}
+
+        $data['priority'] = $priority;
+
         $inquiry = Inquiry::create($data);
 
         // Fire notification — handled by InquiryReceivedNotification (WhatsApp + Email)

@@ -641,6 +641,21 @@ export default function AdminDashboard() {
                         </Button>
                       </>
                     )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to permanently delete requirement "${item.title}"?`)) {
+                          runAction(`delete-req-${item.id}`, async () => {
+                            await api.delete(`/admin/requirements/${item.id}`);
+                            setRequirements((prev) => prev.filter((r) => r.id !== item.id));
+                          });
+                        }
+                      }}
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      Delete
+                    </Button>
                   </div>,
                 ])}
               />
@@ -655,7 +670,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <AdminTable
-                headers={["Worker Job", "Customer", "Daily Rate", "Status", "Applications"]}
+                headers={["Worker Job", "Customer", "Daily Rate", "Status", "Applications", "Action"]}
                 rows={workerJobs.map((item) => [
                   <div key="req">
                     <div className="font-semibold">{item.title}</div>
@@ -665,6 +680,23 @@ export default function AdminDashboard() {
                   <div key="price" className="font-semibold text-slate-700">₹{item.daily_rate || "N/A"}</div>,
                   <Badge key="status" variant={item.status === "open" ? "default" : item.status === "pending" ? "destructive" : "secondary"} className="capitalize">{item.status}</Badge>,
                   <div key="bids">{item.bids_count || 0}</div>,
+                  <div key="actions" className="flex justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to permanently delete job "${item.title}"?`)) {
+                          runAction(`delete-job-${item.id}`, async () => {
+                            await api.delete(`/admin/worker-jobs/${item.id}`);
+                            setWorkerJobs((prev) => prev.filter((j) => j.id !== item.id));
+                          });
+                        }
+                      }}
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      Delete
+                    </Button>
+                  </div>,
                 ])}
               />
             </CardContent>
@@ -678,7 +710,7 @@ export default function AdminDashboard() {
             </CardHeader>
             <CardContent>
               <AdminTable
-                headers={["RFQ", "Customer", "Budget", "Status", "Quotes"]}
+                headers={["RFQ", "Customer", "Budget", "Status", "Quotes", "Action"]}
                 rows={rfqs.map((item) => [
                   <div key="req">
                     <div className="font-semibold">{item.title}</div>
@@ -688,6 +720,23 @@ export default function AdminDashboard() {
                   <div key="price" className="font-semibold text-slate-700">₹{item.budget_max || "N/A"}</div>,
                   <Badge key="status" variant={item.status === "open" ? "default" : item.status === "pending" ? "destructive" : "secondary"} className="capitalize">{item.status}</Badge>,
                   <div key="bids">{item.bids_count || 0}</div>,
+                  <div key="actions" className="flex justify-end gap-2">
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        if (confirm(`Are you sure you want to permanently delete RFQ "${item.title}"?`)) {
+                          runAction(`delete-rfq-${item.id}`, async () => {
+                            await api.delete(`/admin/rfqs/${item.id}`);
+                            setRfqs((prev) => prev.filter((r) => r.id !== item.id));
+                          });
+                        }
+                      }}
+                      className="text-red-600 border-red-200 hover:bg-red-50"
+                    >
+                      Delete
+                    </Button>
+                  </div>,
                 ])}
               />
             </CardContent>

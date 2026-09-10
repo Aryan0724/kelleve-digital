@@ -113,6 +113,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         });
     });
     Route::get('locations', [\App\Http\Controllers\LocationController::class, 'index']);
+    Route::get('listings/featured-homepage', [ListingController::class, 'featuredHomepage']);
     Route::apiResource('listings', ListingController::class)->only(['index', 'show']);
     Route::post('listings/{id}/click', [ListingController::class, 'trackClick']);
     Route::apiResource('builders', BuilderController::class)->only(['index', 'show']);
@@ -164,6 +165,8 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
     // ─── User Dashboard (Protected) ───────────────────────────────────────
     Route::middleware('auth:sanctum')->prefix('user')->group(function () {
         Route::get('dashboard', DashboardController::class);
+        Route::get('analytics', [DashboardController::class, 'analytics']);
+        Route::get('competitor-insights', [\App\Http\Controllers\User\CompetitorInsightsController::class, 'index']);
         
         Route::get('profile', [ProfileController::class, 'show']);
         Route::put('profile', [ProfileController::class, 'update']);
@@ -369,8 +372,11 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::patch('workers/{id}/verify', [AdminController::class, 'verifyWorker']);
         
         Route::get('requirements', [AdminController::class, 'requirements']);
+        Route::delete('requirements/{id}', [AdminController::class, 'deleteRequirement']);
         Route::get('worker-jobs', [AdminController::class, 'workerJobs']);
+        Route::delete('worker-jobs/{id}', [AdminController::class, 'deleteWorkerJob']);
         Route::get('rfqs', [AdminController::class, 'rfqs']);
+        Route::delete('rfqs/{id}', [AdminController::class, 'deleteRfq']);
         Route::patch('requirements/{id}/moderate', [\App\Http\Controllers\Admin\ProjectModerationController::class, 'moderate']);
         Route::patch('requirements/{id}/price', [AdminController::class, 'updateRequirementPrice']);
 

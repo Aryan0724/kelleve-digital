@@ -165,20 +165,50 @@ class RecommendationEngineService
             $breakdown['availability'] = 0;
         }
 
+        // 9. Subscription Boost (0 to 25 pts)
+        $entitlementService = app(\App\Services\EntitlementService::class);
+        $subscriptionBoost = (float) ($entitlementService->getLimit($vendor, 'recommendation_score_boost') ?? 0);
+        $score += $subscriptionBoost;
+        $breakdown['subscription_boost'] = $subscriptionBoost;
+
         return [
-            'score' => round($score, 2),
+            'score' => round(min(100, $score), 2),
             'breakdown' => $breakdown
         ];
     }
 
     /**
-     * Notify top vendors about the new requirement, respecting their daily limit.
+     * Notify top vendors about the new requirement, respecting their plan notification rules and daily limit.
      */
     protected function notifyTopVendors(array $topVendors, Requirement $requirement): void
     {
+        $entitlementService = app(\App\Services\EntitlementService::class);
+
         foreach ($topVendors as $row) {
             $vendor = User::find($row['vendor_id']);
             if (!$vendor) continue;
+
+            $plan = $entitlementService->getActivePlan($vendor);
+            $notificationType = $plan?->lead_notification_type ?? 'none';
+
+            // Starter ('none'): No notifications sent
+            if ($notificationType === 'none') {
+                continue;
+            }
+
+            // Growth ('category'): Send only if requirement category matches vendor's active listing category
+            if ($notificationType === 'category') {
+                $hasMatchingCategory = Listing::where('user_id', $vendor->id)
+                    ->where('category_id', $requirement->category_id)
+                    ->where('status', 'active')
+                    ->exists();
+
+                if (!$hasMatchingCategory) {
+                    continue;
+                }
+            }
+
+            // Professional / Elite ('instant'): Send immediately
 
             // Check daily notification count for today
             // Laravel notifications table uses notifiable_id, not user_id

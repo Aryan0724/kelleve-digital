@@ -1,105 +1,161 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { 
-  Rocket, Zap, BarChart3, Gem, ShieldCheck, Sparkles, Lock, RotateCcw, Headphones
+  Rocket, Zap, Gem, ShieldCheck, Sparkles, Lock, RotateCcw, Headphones, Check, Loader2
 } from "lucide-react";
 import Link from "next/link";
 import { Footer } from "@/components/layout/Footer";
 import { Navbar } from "@/components/layout/Navbar";
+import api from "@/lib/api";
+
+interface PlanItem {
+  id?: number;
+  name: string;
+  slug: string;
+  badge: string;
+  badgeColor: string;
+  price: string;
+  numericPrice: number;
+  subtitle: string;
+  isPopular?: boolean;
+  themeColor: "gray" | "purple" | "orange" | "green";
+  icon: any;
+  features: string[];
+}
+
+const CANONICAL_FALLBACK_PLANS: PlanItem[] = [
+  {
+    name: "Starter",
+    slug: "starter",
+    badge: "FREE",
+    badgeColor: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
+    price: "Free",
+    numericPrice: 0,
+    subtitle: "Essential tools to list your business",
+    themeColor: "gray",
+    icon: Rocket,
+    features: [
+      "1 Verified Business Listing",
+      "Up to 5 Portfolio Images",
+      "Standard Search Listing",
+      "Standard Customer Support",
+    ],
+  },
+  {
+    name: "Growth",
+    slug: "growth",
+    badge: "1 YEAR",
+    badgeColor: "bg-purple-600 text-white",
+    price: "₹4,499.00",
+    numericPrice: 4499,
+    subtitle: "Ideal for growing independent designers",
+    themeColor: "purple",
+    icon: Zap,
+    features: [
+      "1 Verified Business Listing",
+      "Up to 15 Portfolio Images",
+      "+5 Recommendation Score Boost",
+      "Category Matching Lead Alerts",
+      "10% Contact Unlock Discount",
+      "Standard Customer Support",
+    ],
+  },
+  {
+    name: "Professional",
+    slug: "professional",
+    badge: "1 YEAR",
+    badgeColor: "bg-orange-500 text-white",
+    price: "₹8,999.00",
+    numericPrice: 8999,
+    isPopular: true,
+    subtitle: "Most popular for established interior studios",
+    themeColor: "orange",
+    icon: Gem,
+    features: [
+      "Up to 3 Verified Business Listings",
+      "Up to 30 Portfolio Images",
+      "2-Hour Early Lead Access",
+      "Category Spotlight Placement",
+      "+15 Recommendation Score Boost",
+      "20% Contact Unlock Discount",
+      "Instant Lead Notifications",
+      "Summary Analytics & Profile Stats",
+    ],
+  },
+  {
+    name: "Elite",
+    slug: "elite",
+    badge: "1 YEAR",
+    badgeColor: "bg-emerald-600 text-white",
+    price: "₹17,999.00",
+    numericPrice: 17999,
+    subtitle: "Complete market domination & maximum leads",
+    themeColor: "green",
+    icon: ShieldCheck,
+    features: [
+      "Up to 5 Verified Business Listings",
+      "Up to 60 Portfolio Images",
+      "Immediate 0-Delay Lead Access",
+      "Reserved Top-3 Category Placement",
+      "Homepage Featured Slot Eligibility",
+      "+25 Recommendation Score Boost",
+      "30% Contact Unlock Discount",
+      "Full Deep-Dive & Competitor Insights",
+      "Responds Fast Badge Qualification",
+      "High Priority Inquiries Support",
+    ],
+  },
+];
 
 export default function PricingPage() {
-  const plans = [
-    {
-      name: "Starter",
-      badge: "FREE",
-      badgeColor: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-      price: "Free",
-      subtitle: "Get started with basic features",
-      themeColor: "purple",
-      icon: Rocket,
-      features: [
-        "1 Business Listing",
-        "Up to 5 Portfolio Images",
-        "Basic Lead Access",
-        "Standard Support",
-      ],
-    },
-    {
-      name: "QuickStart",
-      badge: "3 MONTHS",
-      badgeColor: "bg-purple-600 text-white",
-      price: "₹4,999.00",
-      themeColor: "purple",
-      icon: Zap,
-      features: [
-        "3 Business Listings",
-        "Elite Professional Badge",
-        "Gold Verification",
-        "Early Lead Access",
-        "Real-time Notifications",
-        "Up to 30 Portfolio Images",
-        "Priority Support",
-      ],
-    },
-    {
-      name: "GrowthPlus",
-      badge: "6 MONTHS",
-      badgeColor: "bg-blue-600 text-white",
-      price: "₹9,999.00",
-      themeColor: "blue",
-      icon: BarChart3,
-      features: [
-        "5 Business Listings",
-        "Elite Professional Badge",
-        "Gold Verification",
-        "Early Lead Access",
-        "Real-time Notifications",
-        "Website Link Integration",
-        "Up to 60 Portfolio Images",
-        "Priority Support",
-      ],
-    },
-    {
-      name: "ProBusiness",
-      badge: "1 YEAR",
-      badgeColor: "bg-orange-500 text-white",
-      price: "₹17,999.00",
-      isPopular: true,
-      themeColor: "orange",
-      icon: Gem,
-      features: [
-        "10 Business Listings",
-        "Search Ranking Boost",
-        "Instant Lead Notifications",
-        "Website Link Integration",
-        "Up to 100 Portfolio Images",
-        "Detailed Lead Insights",
-        "Priority Support",
-        "Custom Profile URL",
-      ],
-    },
-    {
-      name: "EliteBusiness",
-      badge: "1 YEAR",
-      badgeColor: "bg-emerald-600 text-white",
-      price: "₹35,999.00",
-      themeColor: "green",
-      icon: ShieldCheck,
-      features: [
-        "Unlimited Business Listings",
-        "Search Ranking Boost",
-        "Instant Lead Notifications",
-        "Website Link Integration",
-        "Up to 200 Portfolio Images",
-        "Detailed Lead Insights",
-        "Featured Listing",
-        "Dedicated Account Manager",
-        "Custom Profile URL",
-        "Premium Support",
-      ],
-    },
-  ];
+  const [plans, setPlans] = useState<PlanItem[]>(CANONICAL_FALLBACK_PLANS);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadPlans() {
+      try {
+        const res = await api.get("/subscriptions/plans");
+        const apiPlans = res.data?.data || [];
+        if (apiPlans.length > 0) {
+          // Filter to active plans and map
+          const mapped: PlanItem[] = apiPlans
+            .filter((p: any) => p.is_active && !p.is_archived)
+            .map((p: any) => {
+              const slug = (p.slug || "").toLowerCase();
+              let matched = CANONICAL_FALLBACK_PLANS.find(c => c.slug === slug);
+              const numPrice = Number(p.price_yearly || p.price_monthly || 0);
+
+              return {
+                id: p.id,
+                name: p.name || matched?.name || "Plan",
+                slug: p.slug,
+                badge: numPrice > 0 ? "1 YEAR" : "FREE",
+                badgeColor: matched?.badgeColor || "bg-blue-600 text-white",
+                price: numPrice > 0 ? (p.formatted_price || `₹${numPrice.toLocaleString('en-IN')}.00`) : "Free",
+                numericPrice: numPrice,
+                isPopular: matched?.isPopular || false,
+                subtitle: matched?.subtitle || "Annual subscription plan",
+                themeColor: matched?.themeColor || "purple",
+                icon: matched?.icon || Gem,
+                features: (p.features && p.features.length > 0) ? p.features : (matched?.features || []),
+              };
+            });
+
+          mapped.sort((a, b) => a.numericPrice - b.numericPrice);
+          if (mapped.length >= 4) {
+            setPlans(mapped);
+          }
+        }
+      } catch (err) {
+        console.warn("Using canonical fallback plans for pricing page:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadPlans();
+  }, []);
 
   return (
     <div className="bg-[#f8f9fa] dark:bg-slate-950 min-h-screen font-sans">
@@ -110,7 +166,7 @@ export default function PricingPage() {
         {/* Header */}
         <div className="text-center max-w-3xl mx-auto mb-12">
           <div className="inline-flex items-center gap-1.5 bg-orange-100 dark:bg-orange-950/40 text-orange-600 dark:text-orange-400 px-3.5 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-orange-200 dark:border-orange-800">
-            <Sparkles className="w-3.5 h-3.5" /> Professional Subscription Plans
+            <Sparkles className="w-3.5 h-3.5" /> Canonical Subscription Plans
           </div>
           <h1 className="text-3xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight mb-4">
             Grow Your Interior Business Faster
@@ -120,8 +176,8 @@ export default function PricingPage() {
           </p>
         </div>
 
-        {/* 5 Plans Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-stretch mb-16">
+        {/* 4 Canonical Plans Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch mb-16">
           {plans.map((plan) => {
             const Icon = plan.icon;
             const isPopular = plan.isPopular;
@@ -145,15 +201,6 @@ export default function PricingPage() {
                   btnClass: "bg-[#7c3aed] hover:bg-purple-700 text-white shadow-md shadow-purple-600/20",
                 };
               }
-              if (plan.themeColor === "blue") {
-                return {
-                  cardBorder: "border border-slate-200 dark:border-slate-800 shadow-sm",
-                  iconBg: "bg-blue-100 text-blue-600 dark:bg-blue-950/50 dark:text-blue-400",
-                  accentColor: "text-blue-600 dark:text-blue-400",
-                  dotColor: "bg-blue-600",
-                  btnClass: "bg-[#0284c7] hover:bg-sky-700 text-white shadow-md shadow-sky-600/20",
-                };
-              }
               if (plan.themeColor === "green") {
                 return {
                   cardBorder: "border border-slate-200 dark:border-slate-800 shadow-sm",
@@ -166,7 +213,7 @@ export default function PricingPage() {
               return {
                 cardBorder: "border border-slate-200 dark:border-slate-800 shadow-sm",
                 iconBg: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300",
-                accentColor: "text-slate-700",
+                accentColor: "text-slate-700 dark:text-slate-300",
                 dotColor: "bg-slate-500",
                 btnClass: "bg-slate-900 hover:bg-slate-800 text-white dark:bg-slate-800 dark:text-white",
               };
@@ -176,7 +223,7 @@ export default function PricingPage() {
 
             return (
               <div
-                key={plan.name}
+                key={plan.slug || plan.name}
                 className={`bg-white dark:bg-slate-900 rounded-2xl flex flex-col justify-between overflow-hidden relative transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 ${theme.cardBorder}`}
               >
                 {/* Popular Ribbon */}
@@ -203,7 +250,7 @@ export default function PricingPage() {
 
                   {/* Plan Name & Price */}
                   <div className="text-center mb-4">
-                    <h3 className="font-extrabold text-lg text-slate-900 dark:text-white">
+                    <h3 className="font-extrabold text-xl text-slate-900 dark:text-white">
                       {plan.name}
                     </h3>
                     <div className={`text-2xl font-black mt-1 ${theme.accentColor}`}>
@@ -227,7 +274,7 @@ export default function PricingPage() {
                   <ul className="space-y-2.5 my-4 flex-1 text-xs text-slate-700 dark:text-slate-300">
                     {plan.features.map((feature: string, idx: number) => (
                       <li key={idx} className="flex items-start gap-2">
-                        <div className={`w-1.5 h-1.5 rounded-full mt-1.5 shrink-0 ${theme.dotColor}`}></div>
+                        <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                         <span className="leading-snug">{feature}</span>
                       </li>
                     ))}
@@ -238,7 +285,7 @@ export default function PricingPage() {
                 <div className="p-5 pt-0">
                   <Link href="/dashboard?tab=subscription" className="w-full block">
                     <Button className={`w-full h-11 rounded-xl font-black text-xs transition-all active:scale-95 uppercase tracking-wide ${theme.btnClass}`}>
-                      Choose Plan
+                      {plan.numericPrice === 0 ? "Get Started Free" : "Upgrade Plan"}
                     </Button>
                   </Link>
                 </div>
@@ -248,44 +295,34 @@ export default function PricingPage() {
         </div>
 
         {/* Trust Badges Bar */}
-        <div className="border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-sm flex flex-wrap items-center justify-around gap-6 text-sm font-semibold text-slate-700 dark:text-slate-300">
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600">
-              <Lock className="w-5 h-5" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 bg-white dark:bg-slate-900 rounded-2xl p-6 border border-slate-200 dark:border-slate-800 shadow-sm max-w-4xl mx-auto">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-orange-100 text-orange-600 dark:bg-orange-950/40 dark:text-orange-400 flex items-center justify-center shrink-0">
+              <Lock className="w-6 h-6" />
             </div>
             <div>
-              <div className="font-bold text-slate-900 dark:text-white">100% Secure Payments</div>
-              <div className="text-xs text-slate-500">256-bit Encrypted Checkout</div>
+              <div className="font-bold text-sm text-slate-900 dark:text-white">Secure Payments</div>
+              <div className="text-xs text-slate-500">256-bit SSL encrypted via Razorpay</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-950/50 text-blue-600">
-              <RotateCcw className="w-5 h-5" />
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-blue-100 text-blue-600 dark:bg-blue-950/40 dark:text-blue-400 flex items-center justify-center shrink-0">
+              <RotateCcw className="w-6 h-6" />
             </div>
             <div>
-              <div className="font-bold text-slate-900 dark:text-white">Cancel Anytime</div>
-              <div className="text-xs text-slate-500">No Long-Term Lock-In</div>
+              <div className="font-bold text-sm text-slate-900 dark:text-white">Direct Lead Access</div>
+              <div className="text-xs text-slate-500">Zero commission on client deals</div>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-amber-100 dark:bg-amber-950/50 text-amber-600">
-              <Headphones className="w-5 h-5" />
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 dark:bg-purple-950/40 dark:text-purple-400 flex items-center justify-center shrink-0">
+              <Headphones className="w-6 h-6" />
             </div>
             <div>
-              <div className="font-bold text-slate-900 dark:text-white">24/7 Dedicated Support</div>
-              <div className="text-xs text-slate-500">Fast Resolution</div>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-3">
-            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-950/50 text-emerald-600">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <div className="font-bold text-slate-900 dark:text-white">Money Back Guarantee</div>
-              <div className="text-xs text-slate-500">Guaranteed Quality</div>
+              <div className="font-bold text-sm text-slate-900 dark:text-white">Dedicated Support</div>
+              <div className="text-xs text-slate-500">Fast assistance for verified pros</div>
             </div>
           </div>
         </div>

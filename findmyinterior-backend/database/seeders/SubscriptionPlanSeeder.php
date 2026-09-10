@@ -4,172 +4,188 @@ namespace Database\Seeders;
 
 use App\Models\SubscriptionPlan;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
+/**
+ * SubscriptionPlanSeeder — Canonical 4-Plan Definition
+ *
+ * This seeder uses updateOrCreate to insert or update canonical plans
+ * by slug. It does NOT truncate or delete any rows.
+ *
+ * Legacy plan rows (quickstart, growthplus, probusiness, elitebusiness)
+ * are marked as is_archived=true, is_active=false to preserve
+ * historical referential integrity while preventing new subscriptions.
+ *
+ * Canonical plans: starter, growth, professional, elite
+ */
 class SubscriptionPlanSeeder extends Seeder
 {
     public function run(): void
     {
-        \Illuminate\Support\Facades\Schema::disableForeignKeyConstraints();
-        SubscriptionPlan::truncate();
-        \Illuminate\Support\Facades\Schema::enableForeignKeyConstraints();
+        // ── Step 1: Archive all legacy plans (preserve rows, prevent selection) ──
+        DB::connection('fmi_mysql')
+            ->table('subscription_plans')
+            ->whereIn('slug', ['quickstart', 'growthplus', 'probusiness', 'elitebusiness'])
+            ->update([
+                'is_active'   => false,
+                'is_archived' => true,
+                'updated_at'  => now(),
+            ]);
 
-        $plans = [
+        // ── Step 2: Upsert canonical plans ────────────────────────────────────
+        $canonical = [
+            // ─── Starter (Free) ──────────────────────────────────────────────
             [
-                'name'                   => 'Starter',
-                'slug'                   => 'starter',
-                'target_role_category'   => 'professional',
-                'price_monthly'          => 0.00,
-                'price_yearly'           => 0.00,
-                'features'               => [
+                'name'                            => 'Starter',
+                'slug'                            => 'starter',
+                'target_role_category'            => 'professional',
+                'price_monthly'                   => 0.00,
+                'price_yearly'                    => 0.00,
+                'billing_period_months'           => null,   // indefinite
+                'features'                        => json_encode([
                     '1 Business Listing',
                     'Up to 5 Portfolio Images',
-                    'Basic Lead Access',
+                    'Standard Search Position',
                     'Standard Support',
-                ],
-                'max_listings'           => 1,
-                'max_gallery_images'     => 5,
-                
-                'lead_notification_type' => 'none',
-                'early_lead_access_hours'=> null,
-                'search_ranking_boost'   => 0,
-                'recommendation_score_boost' => 0,
+                ]),
+                'max_listings'                    => 1,
+                'max_gallery_images'              => 5,
+                'lead_notification_type'          => 'none',
+                'early_lead_access_hours'         => null,   // null = standard system delay
+                'search_ranking_boost'            => 0,
+                'recommendation_score_boost'      => 0,
                 'contact_unlock_discount_percent' => 0,
-                'badge_type'             => 'none',
-                'can_add_whatsapp'       => false,
-                'can_add_website'        => false,
-                'is_featured_listing'    => false,
-                'can_see_all_leads'      => false,
-                'is_active'              => true,
+                'badge_type'                      => 'none',
+                'can_add_whatsapp'                => false,
+                'can_add_website'                 => false,
+                'is_featured_listing'             => false,
+                'can_see_all_leads'               => false,
+                'is_active'                       => true,
+                'is_archived'                     => false,
             ],
+            // ─── Growth (₹4,499/yr) ──────────────────────────────────────────
             [
-                'name'                   => 'QuickStart',
-                'slug'                   => 'quickstart',
-                'target_role_category'   => 'professional',
-                'price_monthly'          => 4999.00, // 3 Months Plan
-                'price_yearly'           => 4999.00,
-                'features'               => [
-                    '3 Business Listings',
-                    'Elite Professional Badge',
-                    'Gold Verification',
-                    'Early Lead Access',
-                    'Real-time Notifications',
-                    'Up to 30 Portfolio Images',
-                    'Priority Support',
-                ],
-                'max_listings'           => 3,
-                'max_gallery_images'     => 30,
-                
-                'lead_notification_type' => 'instant',
-                'early_lead_access_hours'=> 1,
-                'search_ranking_boost'   => 15,
-                'recommendation_score_boost' => 10,
+                'name'                            => 'Growth',
+                'slug'                            => 'growth',
+                'target_role_category'            => 'professional',
+                'price_monthly'                   => 4499.00,
+                'price_yearly'                    => 4499.00,
+                'billing_period_months'           => 12,
+                'features'                        => json_encode([
+                    '1 Business Listing',
+                    'Up to 15 Portfolio Images',
+                    'WhatsApp Button',
+                    'Website Link',
+                    '+10 Search Ranking Boost',
+                    'Category Lead Notifications',
+                    '10% Contact Unlock Discount',
+                    'Standard Support',
+                ]),
+                'max_listings'                    => 1,
+                'max_gallery_images'              => 15,
+                'lead_notification_type'          => 'category', // only leads matching professional's category
+                'early_lead_access_hours'         => null,       // null = standard delay (Growth has no early access)
+                'search_ranking_boost'            => 10,
+                'recommendation_score_boost'      => 5,
                 'contact_unlock_discount_percent' => 10,
-                'badge_type'             => 'elite',
-                'can_add_whatsapp'       => true,
-                'can_add_website'        => false,
-                'is_featured_listing'    => false,
-                'can_see_all_leads'      => false,
-                'is_active'              => true,
+                'badge_type'                      => 'none',
+                'can_add_whatsapp'                => true,
+                'can_add_website'                 => true,
+                'is_featured_listing'             => false,
+                'can_see_all_leads'               => false,
+                'is_active'                       => true,
+                'is_archived'                     => false,
             ],
+            // ─── Professional (₹8,999/yr) ─────────────────────────────────────
             [
-                'name'                   => 'GrowthPlus',
-                'slug'                   => 'growthplus',
-                'target_role_category'   => 'professional',
-                'price_monthly'          => 9999.00, // 6 Months Plan
-                'price_yearly'           => 9999.00,
-                'features'               => [
-                    '5 Business Listings',
-                    'Elite Professional Badge',
-                    'Gold Verification',
-                    'Early Lead Access',
-                    'Real-time Notifications',
-                    'Website Link Integration',
+                'name'                            => 'Professional',
+                'slug'                            => 'professional',
+                'target_role_category'            => 'professional',
+                'price_monthly'                   => 8999.00,
+                'price_yearly'                    => 8999.00,
+                'billing_period_months'           => 12,
+                'features'                        => json_encode([
+                    'Up to 3 Business Listings',
+                    'Up to 30 Portfolio Images',
+                    'WhatsApp Button',
+                    'Website Link',
+                    '+30 Search Ranking Boost',
+                    'Instant Lead Notifications',
+                    '2-Hour Early Lead Access',
+                    'Trusted Professional Badge',
+                    'Category Spotlight',
+                    '20% Contact Unlock Discount',
+                    'Weekly Analytics',
+                    'Priority Support',
+                ]),
+                'max_listings'                    => 3,
+                'max_gallery_images'              => 30,
+                'lead_notification_type'          => 'instant', // all matching leads, instantly
+                'early_lead_access_hours'         => 2,         // 2h before standard delay users see leads
+                'search_ranking_boost'            => 30,
+                'recommendation_score_boost'      => 15,
+                'contact_unlock_discount_percent' => 20,
+                'badge_type'                      => 'trusted',
+                'can_add_whatsapp'                => true,
+                'can_add_website'                 => true,
+                'is_featured_listing'             => false,
+                'can_see_all_leads'               => false,
+                'is_active'                       => true,
+                'is_archived'                     => false,
+            ],
+            // ─── Elite (₹17,999/yr) ──────────────────────────────────────────
+            [
+                'name'                            => 'Elite',
+                'slug'                            => 'elite',
+                'target_role_category'            => 'professional',
+                'price_monthly'                   => 17999.00,
+                'price_yearly'                    => 17999.00,
+                'billing_period_months'           => 12,
+                'features'                        => json_encode([
+                    'Up to 5 Business Listings',
                     'Up to 60 Portfolio Images',
-                    'Priority Support',
-                ],
-                'max_listings'           => 5,
-                'max_gallery_images'     => 60,
-                
-                'lead_notification_type' => 'instant',
-                'early_lead_access_hours'=> 2,
-                'search_ranking_boost'   => 25,
-                'recommendation_score_boost' => 20,
-                'contact_unlock_discount_percent' => 15,
-                'badge_type'             => 'elite',
-                'can_add_whatsapp'       => true,
-                'can_add_website'        => true,
-                'is_featured_listing'    => false,
-                'can_see_all_leads'      => false,
-                'is_active'              => true,
-            ],
-            [
-                'name'                   => 'ProBusiness',
-                'slug'                   => 'probusiness',
-                'target_role_category'   => 'professional',
-                'price_monthly'          => 17999.00, // 1 Year Plan
-                'price_yearly'           => 17999.00,
-                'features'               => [
-                    '10 Business Listings',
-                    'Search Ranking Boost',
+                    'WhatsApp Button',
+                    'Website Link',
+                    '+25 Search Ranking Boost',
                     'Instant Lead Notifications',
-                    'Website Link Integration',
-                    'Up to 100 Portfolio Images',
-                    'Detailed Lead Insights',
+                    'Immediate Lead Access (0-delay)',
+                    'Elite Professional Badge',
+                    'Top-3 Category Placement',
+                    'Homepage Featured Slot',
+                    '30% Contact Unlock Discount',
+                    'Full Analytics Dashboard',
+                    'Competitor Insights',
                     'Priority Support',
-                    'Custom Profile URL',
-                ],
-                'max_listings'           => 10,
-                'max_gallery_images'     => 100,
-                
-                'lead_notification_type' => 'instant',
-                'early_lead_access_hours'=> 4,
-                'search_ranking_boost'   => 50,
-                'recommendation_score_boost' => 35,
-                'contact_unlock_discount_percent' => 25,
-                'badge_type'             => 'elite',
-                'can_add_whatsapp'       => true,
-                'can_add_website'        => true,
-                'is_featured_listing'    => true,
-                'can_see_all_leads'      => true,
-                'is_active'              => true,
-            ],
-            [
-                'name'                   => 'EliteBusiness',
-                'slug'                   => 'elitebusiness',
-                'target_role_category'   => 'professional',
-                'price_monthly'          => 35999.00, // 1 Year Plan
-                'price_yearly'           => 35999.00,
-                'features'               => [
-                    'Unlimited Business Listings',
-                    'Search Ranking Boost',
-                    'Instant Lead Notifications',
-                    'Website Link Integration',
-                    'Up to 200 Portfolio Images',
-                    'Detailed Lead Insights',
-                    'Featured Listing',
-                    'Dedicated Account Manager',
-                    'Custom Profile URL',
-                    'Premium Support',
-                ],
-                'max_listings'           => null,
-                'max_gallery_images'     => 200,
-                
-                'lead_notification_type' => 'instant',
-                'early_lead_access_hours'=> 6,
-                'search_ranking_boost'   => 100,
-                'recommendation_score_boost' => 50,
-                'contact_unlock_discount_percent' => 35,
-                'badge_type'             => 'elite',
-                'can_add_whatsapp'       => true,
-                'can_add_website'        => true,
-                'is_featured_listing'    => true,
-                'can_see_all_leads'      => true,
-                'is_active'              => true,
+                    'Responds Fast Badge (if eligible)',
+                ]),
+                'max_listings'                    => 5,
+                'max_gallery_images'              => 60,
+                'lead_notification_type'          => 'instant',
+                // 0 = immediate access — zero delay applied.
+                // Semantics: null=standard delay, 0=immediate, N=N hours early access.
+                // The OpportunityProjectController reads this explicitly.
+                'early_lead_access_hours'         => 0,
+                'search_ranking_boost'            => 25,
+                'recommendation_score_boost'      => 25,
+                'contact_unlock_discount_percent' => 30,
+                'badge_type'                      => 'elite',
+                'can_add_whatsapp'                => true,
+                'can_add_website'                 => true,
+                'is_featured_listing'             => true, // only canonical Elite gets featured
+                'can_see_all_leads'               => true,
+                'is_active'                       => true,
+                'is_archived'                     => false,
             ],
         ];
 
-        foreach ($plans as $p) {
-            SubscriptionPlan::create($p);
+        foreach ($canonical as $planData) {
+            SubscriptionPlan::updateOrCreate(
+                ['slug' => $planData['slug']],
+                $planData
+            );
         }
+
+        $this->command->info('✅ Canonical subscription plans seeded (Starter, Growth, Professional, Elite).');
+        $this->command->info('📦 Legacy plans (quickstart, growthplus, probusiness, elitebusiness) archived — rows preserved for referential integrity.');
     }
 }
