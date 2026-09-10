@@ -97,22 +97,65 @@ class BidController extends Controller
         $validated['experience_years'] = $listing ? $listing->years_experience : 0;
         $validated['previous_projects_count'] = 0;
 
-        $bidFee = $targetRequirement ? (float)($targetRequirement->bid_fee ?? 0) : 0;
+        $isOwner = $targetRequirement && $targetRequirement->user_id === $user->id;
+        $isAdmin = $user->isAdmin();
+        $isWorkerJob = ($validated['requirement_type'] === 'WorkerJob') && ($user->hasRole('worker') || $user->hasRole('skilled_worker'));
 
-        // If a bid fee is set, trigger direct Razorpay checkout instead of wallet deduction
-        if ($bidFee > 0) {
+        // Check if professional has already unlocked the contact for this requirement
+        $hasUnlocked = \App\Models\ContactUnlock::where('user_id', $user->id)
+            ->where('requirement_id', $validated['requirement_id'])
+            ->where(function ($q) use ($morphType, $modelClass) {
+                $q->where('requirement_type', $morphType)
+                  ->orWhere('requirement_type', $modelClass);
+            })
+            ->exists();
+
+        // Check if user already submitted a bid on this requirement (allow edit/update without re-charging)
+        $hasExistingBid = \App\Models\Bid::where('professional_id', $user->id)
+            ->where('requirement_id', $validated['requirement_id'])
+            ->exists();
+
+        // Check if professional has already paid the bid fee or lead unlock fee
+        $hasPaidBidFee = \App\Models\Payment::successful()
+            ->where('user_id', $user->id)
+            ->where(function ($q) {
+                $q->where('purpose', 'bid_fee')
+                  ->orWhere('purpose', 'lead_unlock');
+            })
+            ->where(function ($q) use ($validated) {
+                $reqId = $validated['requirement_id'];
+                $q->where('meta->requirement_id', (int) $reqId)
+                  ->orWhere('meta->requirement_id', (string) $reqId);
+            })
+            ->exists();
+
+        if (!$isOwner && !$isAdmin && !$isWorkerJob && !$hasUnlocked && !$hasExistingBid && !$hasPaidBidFee) {
+            $baseBidFee = $targetRequirement && isset($targetRequirement->bid_fee) && (float)$targetRequirement->bid_fee > 0
+                ? (float)$targetRequirement->bid_fee
+                : (float)(\App\Models\Setting::where('key', 'default_bid_fee')->value('value') 
+                    ?? \App\Models\Setting::where('key', 'bid_fee')->value('value') 
+                    ?? 10.00);
+
+            // Apply subscription discount
+            $discountPercent = $this->entitlementService->getLimit($user, 'contact_unlock_discount_percent');
+            $finalBidFee = $baseBidFee;
+            if ($discountPercent > 0) {
+                $finalBidFee = round($baseBidFee * (1 - ($discountPercent / 100)), 2);
+            }
+
             return response()->json([
                 'success'          => false,
-                'message'          => 'Payment required to place a bid.',
+                'code'             => 'PAYMENT_REQUIRED',
+                'message'          => 'Payment of ₹' . $finalBidFee . ' required to place a bid.',
                 'requires_payment' => true,
-                'purpose'          => 'lead_unlock',
-                'requirement_id'   => $validated['requirement_id'],
+                'purpose'          => 'bid_fee',
+                'requirement_id'   => (int) $validated['requirement_id'],
                 'requirement_type' => strtolower($validated['requirement_type']),
-                'amount'           => $bidFee,
+                'amount'           => $finalBidFee,
             ], 402);
         }
 
-        // Bid submissions are directly permitted for active professionals
+        // Bid submissions are directly permitted for active professionals once unlocked or paid
         $bid = $this->bidService->submitBid($request->user()->id, $validated);
 
         return $this->success($bid, 'Bid submitted successfully', 201);

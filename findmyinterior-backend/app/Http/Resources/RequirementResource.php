@@ -47,6 +47,7 @@ class RequirementResource extends JsonResource
             'district'       => $this->district,
             'status'         => $this->status,
             'unlock_price'   => (float) ($this->unlock_price ?? \App\Models\Setting::where('key', 'contact_unlock_fee')->value('value') ?? \App\Models\Setting::where('key', 'lead_price')->value('value') ?? 49.00),
+            'bid_fee'        => (float) ($this->bid_fee ?? \App\Models\Setting::where('key', 'default_bid_fee')->value('value') ?? \App\Models\Setting::where('key', 'bid_fee')->value('value') ?? 10.00),
             'views_count'    => $this->views_count ?? null,
             'image'          => $this->image,
             'images'         => RequirementImageResource::collection($this->whenLoaded('images')),

@@ -25,10 +25,10 @@ class PaymentController extends Controller
     public function createOrder(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'purpose'               => ['required', 'in:subscription,lead_unlock,wallet_recharge'],
+            'purpose'               => ['required', 'in:subscription,lead_unlock,wallet_recharge,bid_fee'],
             'subscription_plan_id'  => ['required_if:purpose,subscription', 'exists:subscription_plans,id'],
             'billing_cycle'         => ['nullable', 'string'],
-            'requirement_id'        => ['required_if:purpose,lead_unlock', 'integer'],
+            'requirement_id'        => ['required_if:purpose,lead_unlock,bid_fee', 'integer'],
             'requirement_type'      => ['nullable', 'string'],
             'amount'                => ['nullable', 'numeric', 'min:1'],
         ]);
@@ -41,6 +41,31 @@ class PaymentController extends Controller
             $data['billing_cycle'] = $data['billing_cycle'] ?? 'yearly';
         } else if ($data['purpose'] === 'wallet_recharge') {
             $amount = $data['amount'] ?? 100;
+        } else if ($data['purpose'] === 'bid_fee') {
+            $baseBidFee = (float) (\App\Models\Setting::where('key', 'default_bid_fee')->value('value') 
+                ?? \App\Models\Setting::where('key', 'bid_fee')->value('value') 
+                ?? 10.00);
+
+            $customPrice = null;
+            if (!empty($data['requirement_id'])) {
+                $reqType = strtolower($data['requirement_type'] ?? 'project');
+                $fullClass = \App\Models\Requirement::class;
+                if ($reqType === 'rfq') $fullClass = \App\Models\Rfq::class;
+                elseif ($reqType === 'job' || $reqType === 'workerjob' || $reqType === 'worker_job') $fullClass = \App\Models\WorkerJob::class;
+
+                $targetEntity = $fullClass::find($data['requirement_id']);
+                if ($targetEntity && isset($targetEntity->bid_fee) && (float)$targetEntity->bid_fee > 0) {
+                    $customPrice = (float)$targetEntity->bid_fee;
+                }
+            }
+
+            $amount = $customPrice ?? $baseBidFee;
+
+            // Apply subscription discount
+            $discountPercent = app(\App\Services\EntitlementService::class)->getLimit($user, 'contact_unlock_discount_percent');
+            if ($discountPercent > 0) {
+                $amount = round($amount * (1 - ($discountPercent / 100)), 2);
+            }
         } else {
             // lead_unlock: check custom requirement unlock_price, or global setting contact_unlock_fee from Admin Panel, or fallback to passed amount / 49.00
             $globalUnlockFee = (float) (\App\Models\Setting::where('key', 'contact_unlock_fee')->value('value') 
@@ -354,6 +379,33 @@ class PaymentController extends Controller
                 }
             } catch (\Exception $e) {
                 Log::warning("Lead unlock timeline log skipped: " . $e->getMessage());
+            }
+        } elseif ($payment->purpose === 'bid_fee') {
+            $reqType = strtolower($meta['requirement_type'] ?? 'project');
+            $fullClass = \App\Models\Requirement::class;
+            if ($reqType === 'rfq') {
+                $fullClass = \App\Models\Rfq::class;
+            } elseif ($reqType === 'job' || $reqType === 'workerjob' || $reqType === 'worker_job') {
+                $fullClass = \App\Models\WorkerJob::class;
+            }
+
+            $morphType = (new $fullClass)->getMorphClass();
+
+            try {
+                $reqItem = $fullClass::find($meta['requirement_id'] ?? null);
+                if ($reqItem) {
+                    \Illuminate\Support\Facades\DB::table('activity_timelines')->insert([
+                        'entity_type' => $morphType,
+                        'entity_id'   => $reqItem->id,
+                        'user_id'     => $payment->user_id,
+                        'action'      => 'bid_fee_paid',
+                        'description' => "A professional paid the bid fee (₹{$payment->amount}) to submit a proposal.",
+                        'created_at'  => now(),
+                        'updated_at'  => now(),
+                    ]);
+                }
+            } catch (\Exception $e) {
+                Log::warning("Bid fee timeline log skipped: " . $e->getMessage());
             }
         } elseif ($payment->purpose === 'wallet_recharge') {
             app(\App\Services\WalletService::class)->addFunds(

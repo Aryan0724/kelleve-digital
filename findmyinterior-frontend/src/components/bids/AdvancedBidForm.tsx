@@ -79,10 +79,18 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
     setPortfolioPreview(prev => prev.filter((_, i) => i !== index));
   };
 
-  const startRazorpayPayment = async (amountToPay: number, originalEvent: React.FormEvent) => {
+  const startRazorpayPayment = async (
+    amountToPay: number, 
+    originalEvent?: React.FormEvent, 
+    purpose: string = "bid_fee",
+    reqId: number = requirementId,
+    reqType: string = requirementType
+  ) => {
     try {
       const orderRes = await api.post("/payments/create-order", {
-        purpose: "wallet_recharge", // Use wallet_recharge as purpose so the backend automatically adds funds
+        purpose: purpose,
+        requirement_id: Number(reqId),
+        requirement_type: reqType,
         amount: amountToPay,
       });
       const orderId = orderRes.data.order_id;
@@ -95,7 +103,7 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
         return;
       }
 
-      const rzpKey = orderRes.data.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID;
+      const rzpKey = orderRes.data.key || process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID || "rzp_live_TRfrjzfAExcLjs";
       const options = {
         key: rzpKey,
         amount: amountInPaise.toString(),
@@ -110,7 +118,7 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
               razorpay_payment_id: response.razorpay_payment_id,
               razorpay_signature: response.razorpay_signature,
             });
-            toast.success("Payment successful! Placing your bid now...");
+            toast.success("Payment verified! Submitting your bid now...");
             // Retry the bid submission!
             await performSubmitBid(originalEvent);
           } catch (verErr: any) {
@@ -121,6 +129,7 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
         modal: {
           ondismiss: function() {
             setLoading(false);
+            toast.info("Payment cancelled. Bid was not submitted.");
           }
         },
         prefill: {
@@ -165,7 +174,10 @@ export function AdvancedBidForm({ requirementId, requirementType = 'project', on
       if (err.response?.status === 402 || err.response?.data?.requires_payment) {
         // Trigger razorpay payment flow
         const amountToPay = err.response?.data?.amount || 10;
-        await startRazorpayPayment(amountToPay, e as React.FormEvent);
+        const purpose = err.response?.data?.purpose || "bid_fee";
+        const reqId = err.response?.data?.requirement_id || requirementId;
+        const reqType = err.response?.data?.requirement_type || requirementType;
+        await startRazorpayPayment(amountToPay, e as React.FormEvent, purpose, reqId, reqType);
       } else if (err.response?.status === 422) {
         toast.error("Validation Error: " + JSON.stringify(err.response.data.errors));
         setLoading(false);
