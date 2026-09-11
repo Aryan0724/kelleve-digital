@@ -20,7 +20,7 @@ class AdvertisementSeeder extends Seeder
                 'title' => 'Kleve World | Premium Modular Kitchen Designers in Patna, Bihar & Across India',
                 'location' => 'top_ribbon',
                 'media_type' => 'html',
-                'custom_code' => '<a href="https://kleveworld.in/" target="_blank" class="block w-full h-full text-slate-900 dark:text-white group flex items-center justify-center text-center gap-3"><span class="font-bold bg-orange-600 text-white px-2 py-0.5 rounded uppercase text-xs shadow-sm tracking-wide shrink-0">Kleve World</span><span class="font-medium text-sm">Premium Modular Kitchen Designers in Patna, Bihar &amp; Across India</span><span class="hidden sm:inline-flex items-center gap-1 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-3 py-1 rounded-full transition-colors shrink-0">Visit Now &#8594;</span></a>',
+                'custom_code' => '<a href="https://kleveworld.in/" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;text-decoration:none;color:inherit;"><span style="font-weight:700;background:#ea580c;color:#fff;padding:2px 8px;border-radius:4px;font-size:11px;text-transform:uppercase;letter-spacing:0.05em;white-space:nowrap;">Kleve World</span><span style="font-size:13px;font-weight:500;">Premium Modular Kitchen Designers in Patna, Bihar &amp; Across India</span><span style="display:inline-flex;align-items:center;gap:4px;background:#ea580c;color:#fff;font-size:11px;font-weight:700;padding:4px 12px;border-radius:9999px;white-space:nowrap;text-decoration:none;">Visit Now &#8594;</span></a>',
                 'link' => 'https://kleveworld.in/',
                 'is_active' => true,
                 'priority' => 1,
