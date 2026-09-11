@@ -29,26 +29,31 @@ export function TopRibbonAd() {
 
   if (!ad || !visible) return null;
 
+  const handleAdClick = () => {
+    api.post(`/advertisements/${ad.id}/click`).catch(() => {});
+    if (ad.media_type !== "html" && ad.link) {
+      window.open(ad.link, "_blank", "noreferrer");
+    }
+  };
+
   return (
     <div className="bg-gradient-to-r from-orange-600 to-indigo-600 text-white relative flex items-center justify-center min-h-[40px] px-4 py-2 z-50">
-      <a 
-        href={ad.link || "#"} 
-        target="_blank" 
-        rel="noreferrer"
-        className="flex items-center justify-center w-full text-center hover:opacity-90 transition-opacity"
-        onClick={() => api.post(`/advertisements/${ad.id}/click`).catch(() => {})}
+      <div
+        className="flex items-center justify-center w-full text-center cursor-pointer"
+        onClick={handleAdClick}
       >
         {ad.media_type === "html" ? (
-          <div dangerouslySetInnerHTML={{ __html: ad.custom_code }} className="text-sm font-medium" />
+          <div dangerouslySetInnerHTML={{ __html: ad.custom_code }} className="text-sm font-medium w-full" />
         ) : ad.media_type === "image" && ad.banner_url ? (
           <img src={ad.banner_url} alt={ad.title} className="h-10 object-contain" />
         ) : (
           <span className="text-sm font-medium">{ad.title}</span>
         )}
-      </a>
-      <button 
-        onClick={() => setVisible(false)}
+      </div>
+      <button
+        onClick={(e) => { e.stopPropagation(); setVisible(false); }}
         className="absolute right-2 top-1/2 -translate-y-1/2 p-1 hover:bg-white/20 rounded-full transition-colors"
+        aria-label="Close"
       >
         <X className="w-4 h-4" />
       </button>
