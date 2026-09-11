@@ -69,7 +69,7 @@ export function TopRibbonAd({ targetCity, targetCategoryId }: TopRibbonAdProps) 
 
   return (
     <div 
-      className="w-full bg-primary/10 border-b border-primary/20 relative cursor-pointer group hover:bg-slate-900 dark:hover:bg-slate-800 transition-colors"
+      className="w-full bg-primary/10 dark:bg-slate-900 border-b border-primary/20 dark:border-white/10 relative cursor-pointer group hover:bg-primary/20 dark:hover:bg-white/5 transition-colors"
       onClick={handleClick}
     >
       <div className="container mx-auto px-4 py-2 flex items-center justify-center text-center relative">

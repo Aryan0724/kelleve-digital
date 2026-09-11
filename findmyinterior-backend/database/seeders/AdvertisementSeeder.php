@@ -20,7 +20,7 @@ class AdvertisementSeeder extends Seeder
                 'title' => 'Kleve World | Premium Modular Kitchen Designers in Patna, Bihar & Across India',
                 'location' => 'top_ribbon',
                 'media_type' => 'html',
-                'custom_code' => '<a href="https://kleveworld.in/" target="_blank" class="block w-full h-full text-slate-800 dark:text-slate-100 hover:text-orange-600 dark:hover:text-orange-400 group flex items-center justify-center text-center"><span><span class="font-bold bg-white text-orange-600 px-2 py-0.5 rounded mr-2 uppercase text-xs shadow-sm">Kleve World</span> Premium Modular Kitchen Designers in Patna, Bihar & Across India <span class="underline ml-2 text-orange-600 dark:text-orange-400 group-hover:text-orange-700 font-bold hidden sm:inline">Visit Now</span></span></a>',
+                'custom_code' => '<a href="https://kleveworld.in/" target="_blank" class="block w-full h-full text-slate-900 dark:text-white group flex items-center justify-center text-center gap-3"><span class="font-bold bg-orange-600 text-white px-2 py-0.5 rounded uppercase text-xs shadow-sm tracking-wide shrink-0">Kleve World</span><span class="font-medium text-sm">Premium Modular Kitchen Designers in Patna, Bihar &amp; Across India</span><span class="hidden sm:inline-flex items-center gap-1 bg-orange-600 hover:bg-orange-700 text-white text-xs font-bold px-3 py-1 rounded-full transition-colors shrink-0">Visit Now &#8594;</span></a>',
                 'link' => 'https://kleveworld.in/',
                 'is_active' => true,
                 'priority' => 1,
