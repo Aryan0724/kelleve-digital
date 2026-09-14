@@ -65,7 +65,7 @@ class Advertisement extends Model
     public function getBannerUrlAttribute($value)
     {
         if (empty($value)) {
-            return 'https://images.unsplash.com/photo-1556911220-bff31c812dba?w=1200&h=400&fit=crop';
+            return null;
         }
         if (str_starts_with($value, 'data:')) {
             return $value;

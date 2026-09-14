@@ -97,26 +97,33 @@ export function AdvertisementsAdminPanel() {
       const submitData = new FormData();
       Object.entries(formData).forEach(([key, value]) => {
         if (value !== null && value !== undefined && value !== '') {
-          submitData.append(key, value as any);
+          if (key === 'is_active') {
+            submitData.append(key, value ? '1' : '0');
+          } else {
+            submitData.append(key, value as any);
+          }
         }
       });
 
       if (editingId) {
-        // FormData with PUT in Laravel requires spoofing or using POST with _method
         submitData.append('_method', 'PUT');
-        await api.post(`/admin/advertisements/${editingId}`, submitData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post(`/admin/advertisements/${editingId}`, submitData);
       } else {
-        await api.post("/admin/advertisements", submitData, {
-          headers: { 'Content-Type': 'multipart/form-data' }
-        });
+        await api.post("/admin/advertisements", submitData);
       }
       resetForm();
       fetchAds();
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      alert(`Failed to ${editingId ? 'update' : 'save'} advertisement.`);
+      let errMsg = `Failed to ${editingId ? 'update' : 'save'} advertisement.`;
+      if (err.response?.data?.message) {
+        errMsg = err.response.data.message;
+      }
+      if (err.response?.data?.errors) {
+        const detail = Object.values(err.response.data.errors).flat().join('\n');
+        if (detail) errMsg += `\n${detail}`;
+      }
+      alert(errMsg);
     }
   };
 

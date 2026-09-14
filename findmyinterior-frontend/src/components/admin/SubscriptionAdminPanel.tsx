@@ -10,16 +10,40 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 
+function normalizeFeatures(feat: any): string[] {
+  if (Array.isArray(feat)) return feat;
+  if (typeof feat === 'string') {
+    try {
+      const parsed = JSON.parse(feat);
+      if (Array.isArray(parsed)) return parsed;
+      if (typeof parsed === 'string') {
+        const p2 = JSON.parse(parsed);
+        if (Array.isArray(p2)) return p2;
+      }
+    } catch {}
+    return feat.split('\n').map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+
 export function SubscriptionAdminPanel() {
   const [plans, setPlans] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
-  const [editingPlan, setEditingPlan] = useState<any>(null);
-  const [formData, setFormData] = useState({
+  const [editingPlan, setEditingPlan] = useState<any | null>(null);
+  const [formData, setFormData] = useState<{
+    name: string;
+    slug: string;
+    description: string;
+    price_monthly: number | string;
+    price_yearly: number | string;
+    features: string;
+    is_active: boolean;
+  }>({
     name: "",
     slug: "",
     description: "",
-    price_monthly: "",
-    price_yearly: "",
+    price_monthly: 0,
+    price_yearly: 0,
     features: "", // We'll parse to array of strings
     is_active: true
   });
@@ -31,10 +55,10 @@ export function SubscriptionAdminPanel() {
   const fetchPlans = async () => {
     setLoading(true);
     try {
-      const res = await api.get("/admin/subscription-plans");
+      const res = await api.get("/admin/subscriptions/plans");
       setPlans(res.data.data || []);
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
     } finally {
       setLoading(false);
     }
@@ -48,7 +72,7 @@ export function SubscriptionAdminPanel() {
       description: plan.description || "",
       price_monthly: plan.price_monthly,
       price_yearly: plan.price_yearly,
-      features: (plan.features || []).join("\n"),
+      features: normalizeFeatures(plan.features).join("\n"),
       is_active: plan.is_active
     });
   };
@@ -70,6 +94,8 @@ export function SubscriptionAdminPanel() {
     try {
       const payload = {
         ...formData,
+        price_monthly: Number(formData.price_monthly) || 0,
+        price_yearly: Number(formData.price_yearly) || 0,
         features: formData.features.split("\n").map(f => f.trim()).filter(f => f)
       };
 
@@ -122,7 +148,7 @@ export function SubscriptionAdminPanel() {
                   <div className="text-2xl font-bold">₹{plan.price_monthly}<span className="text-sm font-normal text-slate-500">/mo</span></div>
                   <div className="text-sm text-slate-500">₹{plan.price_yearly}/yr</div>
                   <ul className="text-sm space-y-2 mt-4 list-disc pl-4">
-                    {(plan.features || []).map((f: string, i: number) => (
+                    {normalizeFeatures(plan.features).map((f: string, i: number) => (
                       <li key={i}>{f}</li>
                     ))}
                   </ul>

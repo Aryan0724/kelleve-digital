@@ -109,6 +109,22 @@ const CANONICAL_FALLBACK_PLANS: PlanItem[] = [
   },
 ];
 
+function normalizeFeatures(feat: any): string[] {
+  if (Array.isArray(feat)) return feat;
+  if (typeof feat === 'string') {
+    try {
+      const parsed = JSON.parse(feat);
+      if (Array.isArray(parsed)) return parsed;
+      if (typeof parsed === 'string') {
+        const p2 = JSON.parse(parsed);
+        if (Array.isArray(p2)) return p2;
+      }
+    } catch {}
+    return feat.split('\n').map(s => s.trim()).filter(Boolean);
+  }
+  return [];
+}
+
 export default function PricingPage() {
   const [plans, setPlans] = useState<PlanItem[]>(CANONICAL_FALLBACK_PLANS);
   const [loading, setLoading] = useState(true);
@@ -125,7 +141,8 @@ export default function PricingPage() {
             .map((p: any) => {
               const slug = (p.slug || "").toLowerCase();
               let matched = CANONICAL_FALLBACK_PLANS.find(c => c.slug === slug);
-              const numPrice = Number(p.price_yearly || p.price_monthly || 0);
+              const numPrice = Number(p.price ?? p.price_yearly ?? p.price_monthly ?? 0);
+              const parsedFeatures = normalizeFeatures(p.features);
 
               return {
                 id: p.id,
@@ -139,7 +156,7 @@ export default function PricingPage() {
                 subtitle: matched?.subtitle || "Annual subscription plan",
                 themeColor: matched?.themeColor || "purple",
                 icon: matched?.icon || Gem,
-                features: (p.features && p.features.length > 0) ? p.features : (matched?.features || []),
+                features: parsedFeatures.length > 0 ? parsedFeatures : (matched?.features || []),
               };
             });
 
@@ -272,7 +289,7 @@ export default function PricingPage() {
 
                   {/* Features List */}
                   <ul className="space-y-2.5 my-4 flex-1 text-xs text-slate-700 dark:text-slate-300">
-                    {plan.features.map((feature: string, idx: number) => (
+                    {normalizeFeatures(plan.features).map((feature: string, idx: number) => (
                       <li key={idx} className="flex items-start gap-2">
                         <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                         <span className="leading-snug">{feature}</span>

@@ -100,6 +100,12 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
     return <>{fallback}</>;
   }
 
+  const bannerSrc = currentAd.banner_url?.startsWith('http') || currentAd.banner_url?.startsWith('data:')
+    ? currentAd.banner_url
+    : currentAd.banner_url
+      ? `https://findmyinterior.com/${currentAd.banner_url.replace(/^\/+/, '')}`
+      : null;
+
   return (
     <div 
       ref={containerRef} 
@@ -110,18 +116,19 @@ export function AdSlot({ location, targetCity, targetCategoryId, className = '',
         Ad
       </div>
       
-      {currentAd.media_type === 'image' && currentAd.banner_url && (
+      {currentAd.media_type === 'image' && bannerSrc && (
         <img 
-          src={currentAd.banner_url} 
+          src={bannerSrc} 
           alt={currentAd.title || "Advertisement"} 
           className="w-full h-full object-contain transition-transform duration-300 group-hover:scale-[1.02]" 
           loading="lazy"
+          onError={(e) => { e.currentTarget.style.display = 'none'; }}
         />
       )}
 
-      {currentAd.media_type === 'video' && currentAd.banner_url && (
+      {currentAd.media_type === 'video' && bannerSrc && (
         <video 
-          src={currentAd.banner_url} 
+          src={bannerSrc} 
           className="w-full h-full object-cover" 
           autoPlay 
           muted 

@@ -45,6 +45,7 @@ class ListingResource extends JsonResource
             'tagline'          => $this->tagline,
             'description'      => $this->description,
             'cover_image'      => $coverImage,
+            'avatar'           => $avatarImage,
             'category'         => new CategoryResource($this->whenLoaded('category')),
             'city'             => $this->city,
             'district'         => $this->district,

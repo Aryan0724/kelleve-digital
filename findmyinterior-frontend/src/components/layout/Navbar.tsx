@@ -40,6 +40,7 @@ import {
   LogIn,
   Mic
 } from "lucide-react";
+import { toast } from "react-toastify";
 import { NotificationDropdown } from "./NotificationDropdown";
 import { SmartSearch } from "./SmartSearch";
 
@@ -53,6 +54,8 @@ export function Navbar() {
   const [showMobileSuggestions, setShowMobileSuggestions] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("Patna");
   const [isLocating, setIsLocating] = useState(false);
+  const [isListening, setIsListening] = useState(false);
+  const recognitionRef = useRef<any>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [mounted, setMounted] = useState(false);
   const desktopLocationRef = useRef<HTMLDivElement>(null);
@@ -140,11 +143,12 @@ export function Navbar() {
     );
   };
 
-  const handleSearch = (e?: React.FormEvent) => {
+  const handleSearch = (e?: React.FormEvent, customQuery?: string) => {
     if (e) e.preventDefault();
+    const query = customQuery !== undefined ? customQuery : searchQuery;
     const params = new URLSearchParams();
-    if (searchQuery.trim()) {
-      params.set("search", searchQuery.trim());
+    if (query.trim()) {
+      params.set("search", query.trim());
     }
     if (selectedLocation && selectedLocation !== "All Bihar") {
       params.set("city", selectedLocation);
@@ -152,6 +156,59 @@ export function Navbar() {
     const queryString = params.toString();
     router.push(`/professionals${queryString ? `?${queryString}` : ""}`);
     setShowMobileLocationDropdown(false);
+    setShowMobileSuggestions(false);
+  };
+
+  const handleVoiceSearch = () => {
+    if (typeof window === "undefined") return;
+    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+    if (!SpeechRecognition) {
+      toast.info("Voice search is not supported by your browser. Please type your search query.");
+      return;
+    }
+
+    if (isListening && recognitionRef.current) {
+      recognitionRef.current.stop();
+      setIsListening(false);
+      return;
+    }
+
+    try {
+      const recognition = new SpeechRecognition();
+      recognitionRef.current = recognition;
+      recognition.lang = "en-IN";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      recognition.onstart = () => {
+        setIsListening(true);
+      };
+
+      recognition.onresult = (event: any) => {
+        const transcript = event.results?.[0]?.[0]?.transcript;
+        if (transcript) {
+          setSearchQuery(transcript);
+          setIsListening(false);
+          handleSearch(undefined, transcript);
+        }
+      };
+
+      recognition.onerror = (event: any) => {
+        setIsListening(false);
+        if (event.error === 'not-allowed') {
+          toast.error("Microphone access was denied. Please allow microphone access in your browser settings.");
+        }
+      };
+
+      recognition.onend = () => {
+        setIsListening(false);
+      };
+
+      recognition.start();
+    } catch (err) {
+      console.error("Failed to start speech recognition:", err);
+      setIsListening(false);
+    }
   };
 
   return (
@@ -388,12 +445,12 @@ export function Navbar() {
 
               {/* Search Bar Pill with Mobile Recommendations */}
               <div className="flex-1 relative" ref={mobileSearchRef}>
-                <form onSubmit={handleSearch} className="flex items-center bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-full shadow-sm px-3 py-1.5 focus-within:border-orange-300">
-                  <Search className="w-4 h-4 text-slate-400 shrink-0 mr-2" />
+                <form onSubmit={handleSearch} className={`flex items-center bg-white dark:bg-slate-800 border rounded-full shadow-sm px-3 py-1.5 transition-all ${isListening ? "border-red-500 ring-2 ring-red-200 dark:ring-red-950" : "border-slate-200 dark:border-slate-700 focus-within:border-orange-300"}`}>
+                  <Search className={`w-4 h-4 shrink-0 mr-2 ${isListening ? "text-red-500 animate-pulse" : "text-slate-400"}`} />
                   <input 
                     id="mobile-search-input"
                     type="text" 
-                    placeholder="Search services, professionals..." 
+                    placeholder={isListening ? "Listening... Speak now" : "Search services, professionals..."} 
                     value={searchQuery}
                     onFocus={() => setShowMobileSuggestions(true)}
                     onChange={(e) => {
@@ -402,7 +459,30 @@ export function Navbar() {
                     }}
                     className="w-full bg-transparent text-xs font-medium text-slate-800 dark:text-slate-100 placeholder:text-slate-400 focus:outline-none"
                   />
-                  <button type="button" onClick={() => handleSearch()} className="text-slate-400 hover:text-[#E8701A] shrink-0 ml-1 p-0.5" aria-label="Search with voice">
+                  {searchQuery.trim() && !isListening && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSearchQuery("");
+                        setShowMobileSuggestions(false);
+                      }}
+                      className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 shrink-0 p-0.5"
+                      aria-label="Clear search"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                  <button 
+                    type="button" 
+                    onClick={handleVoiceSearch} 
+                    className={`shrink-0 ml-1 p-1 rounded-full transition-all ${
+                      isListening 
+                        ? "text-red-600 bg-red-100 dark:bg-red-950/80 animate-pulse scale-110" 
+                        : "text-slate-400 hover:text-[#E8701A] active:scale-90"
+                    }`} 
+                    aria-label="Search with voice"
+                    title={isListening ? "Listening... Tap to stop" : "Voice search"}
+                  >
                     <Mic className="w-4 h-4" />
                   </button>
                 </form>

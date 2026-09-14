@@ -357,6 +357,7 @@ Route::prefix('v1')->middleware('throttle:api')->group(function () {
         Route::post('settings', [\App\Http\Controllers\SettingController::class, 'updateAll']);
 
         // Advertisements Management
+        Route::post('advertisements/{id}', [\App\Http\Controllers\Api\V1\Admin\AdvertisementController::class, 'update']);
         Route::apiResource('advertisements', \App\Http\Controllers\Api\V1\Admin\AdvertisementController::class);
         
         Route::post('blogs', [AdminController::class, 'createBlog']);

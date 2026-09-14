@@ -4,6 +4,15 @@ import Link from "next/link";
 import { Star, MapPin, ChevronRight, Check } from "lucide-react";
 import { useRef } from "react";
 
+function getInitials(name?: string) {
+  if (!name) return "P";
+  const parts = name.trim().split(/\s+/);
+  if (parts.length >= 2) {
+    return (parts[0][0] + parts[1][0]).toUpperCase();
+  }
+  return name.slice(0, 2).toUpperCase();
+}
+
 export function FeaturedProfessionals({ pros }: { pros?: any[] }) {
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -17,7 +26,7 @@ export function FeaturedProfessionals({ pros }: { pros?: any[] }) {
       rating: 4.8,
       reviews: 128,
       cover: "https://images.unsplash.com/photo-1618221195710-dd6b41faaea6?q=80&w=600&auto=format&fit=crop",
-      avatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=200&auto=format&fit=crop",
+      avatar: null,
     },
     {
       id: 2,
@@ -28,7 +37,7 @@ export function FeaturedProfessionals({ pros }: { pros?: any[] }) {
       rating: 4.7,
       reviews: 96,
       cover: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=600&auto=format&fit=crop",
-      avatar: "https://images.unsplash.com/photo-1580489944761-15a19d654956?q=80&w=200&auto=format&fit=crop",
+      avatar: null,
     },
     {
       id: 3,
@@ -39,7 +48,7 @@ export function FeaturedProfessionals({ pros }: { pros?: any[] }) {
       rating: 4.6,
       reviews: 78,
       cover: "https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?q=80&w=600&auto=format&fit=crop",
-      avatar: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?q=80&w=200&auto=format&fit=crop",
+      avatar: null,
     },
     {
       id: 4,
@@ -50,7 +59,7 @@ export function FeaturedProfessionals({ pros }: { pros?: any[] }) {
       rating: 4.5,
       reviews: 64,
       cover: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?q=80&w=600&auto=format&fit=crop",
-      avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
+      avatar: null,
     },
   ];
 
@@ -64,7 +73,7 @@ export function FeaturedProfessionals({ pros }: { pros?: any[] }) {
         city: p.city || "Patna",
         rating: p.rating || (4.8 - idx * 0.1).toFixed(1),
         cover: p.cover_image || defaultPros[idx % defaultPros.length].cover,
-        avatar: p.avatar || p.user?.profile_image || defaultPros[idx % defaultPros.length].avatar,
+        avatar: p.avatar || p.user?.avatar || p.user?.profile_image || p.logo || null,
       }))
     : defaultPros;
 
@@ -115,11 +124,23 @@ export function FeaturedProfessionals({ pros }: { pros?: any[] }) {
 
               <div className="p-3">
                 <div className="flex items-center gap-2 mb-1.5">
-                  <img
-                    src={pro.avatar}
-                    alt={pro.name}
-                    className="w-8 h-8 rounded-full object-cover bg-slate-100 shrink-0 border border-white shadow-xs"
-                  />
+                  {pro.avatar ? (
+                    <img
+                      src={pro.avatar}
+                      alt={pro.name}
+                      className="w-8 h-8 rounded-full object-cover bg-slate-100 shrink-0 border border-white dark:border-slate-800 shadow-xs"
+                      onError={(e) => {
+                        e.currentTarget.style.display = 'none';
+                        const fallback = e.currentTarget.parentElement?.querySelector('.avatar-fallback');
+                        if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                      }}
+                    />
+                  ) : null}
+                  <div 
+                    className={`avatar-fallback w-8 h-8 rounded-full bg-gradient-to-br from-orange-400 to-[#E8701A] text-white font-bold text-xs items-center justify-center shrink-0 border border-white dark:border-slate-800 shadow-xs ${pro.avatar ? 'hidden' : 'flex'}`}
+                  >
+                    {getInitials(pro.name)}
+                  </div>
                   <div className="min-w-0 flex-1">
                     <h3 className="font-bold text-xs text-[#0a1c3a] dark:text-white leading-tight truncate">
                       {pro.name}
@@ -173,11 +194,23 @@ export function FeaturedProfessionals({ pros }: { pros?: any[] }) {
                 >
                   <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-4 hover:shadow-md hover:border-slate-300 dark:hover:border-slate-600 transition-all duration-200 h-full">
                     <div className="flex items-center gap-3 mb-3">
-                      <img
-                        src={pro.avatar || `https://i.pravatar.cc/150?u=${i}`}
-                        alt={pro.name}
-                        className="w-12 h-12 rounded-full object-cover bg-slate-100 shrink-0 border-2 border-white shadow-sm"
-                      />
+                      {pro.avatar ? (
+                        <img
+                          src={pro.avatar}
+                          alt={pro.name}
+                          className="w-12 h-12 rounded-full object-cover bg-slate-100 shrink-0 border-2 border-white dark:border-slate-800 shadow-sm"
+                          onError={(e) => {
+                            e.currentTarget.style.display = 'none';
+                            const fallback = e.currentTarget.parentElement?.querySelector('.avatar-fallback');
+                            if (fallback) (fallback as HTMLElement).style.display = 'flex';
+                          }}
+                        />
+                      ) : null}
+                      <div 
+                        className={`avatar-fallback w-12 h-12 rounded-full bg-gradient-to-br from-orange-400 to-[#E8701A] text-white font-bold text-sm items-center justify-center shrink-0 border-2 border-white dark:border-slate-800 shadow-sm ${pro.avatar ? 'hidden' : 'flex'}`}
+                      >
+                        {getInitials(pro.name)}
+                      </div>
                       <div className="min-w-0">
                         <h3 className="font-bold text-[13px] text-[#111827] dark:text-white leading-tight truncate">
                           {pro.name}

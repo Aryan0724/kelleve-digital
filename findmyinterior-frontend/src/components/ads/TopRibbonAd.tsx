@@ -67,6 +67,12 @@ export function TopRibbonAd({ targetCity, targetCategoryId }: TopRibbonAdProps) 
 
   if (!isVisible || !ad) return null;
 
+  const bannerSrc = ad.banner_url?.startsWith('http') || ad.banner_url?.startsWith('data:') 
+    ? ad.banner_url 
+    : ad.banner_url 
+      ? `https://findmyinterior.com/${ad.banner_url.replace(/^\/+/, '')}` 
+      : null;
+
   return (
     <div 
       className="w-full bg-primary/10 dark:bg-slate-900 border-b border-primary/20 dark:border-white/10 relative cursor-pointer group hover:bg-primary/20 dark:hover:bg-white/5 transition-colors"
@@ -75,11 +81,12 @@ export function TopRibbonAd({ targetCity, targetCategoryId }: TopRibbonAdProps) 
       <div className="container mx-auto px-4 py-2 flex items-center justify-center text-center relative">
         
         <div className="flex-1 flex items-center justify-center max-h-12 overflow-hidden gap-4">
-          {ad.media_type === 'image' && ad.banner_url && (
+          {ad.media_type === 'image' && bannerSrc && (
             <img 
-              src={ad.banner_url} 
+              src={bannerSrc} 
               alt={ad.title || "Advertisement"} 
               className="h-full object-contain" 
+              onError={(e) => { e.currentTarget.style.display = 'none'; }}
             />
           )}
 

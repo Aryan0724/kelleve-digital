@@ -47,6 +47,23 @@ interface PlanTier {
   subtitle?: string;
 }
 
+function normalizeFeatures(raw: any): string[] {
+  if (Array.isArray(raw)) return raw.map(String);
+  if (typeof raw === "string") {
+    try {
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed)) return parsed.map(String);
+      if (typeof parsed === "string") {
+        const p2 = JSON.parse(parsed);
+        if (Array.isArray(p2)) return p2.map(String);
+      }
+    } catch {
+      return raw.split(",").map((s: string) => s.trim()).filter(Boolean);
+    }
+  }
+  return [];
+}
+
 const CANONICAL_STATIC_PLANS: PlanTier[] = [
   {
     name: "Starter",
@@ -160,6 +177,7 @@ export function SubscriptionTab({
           const slug = (apiPlan.slug || "").toLowerCase();
           const fallback = CANONICAL_STATIC_PLANS.find(c => c.slug === slug);
           const numPrice = Number(apiPlan.price_yearly || apiPlan.price_monthly || 0);
+          const parsedFeatures = normalizeFeatures(apiPlan.features);
 
           return {
             id: apiPlan.id,
@@ -172,7 +190,7 @@ export function SubscriptionTab({
             isPopular: fallback?.isPopular || false,
             themeColor: fallback?.themeColor || "purple",
             icon: fallback?.icon || Gem,
-            features: (apiPlan.features && apiPlan.features.length > 0) ? apiPlan.features : (fallback?.features || []),
+            features: parsedFeatures.length > 0 ? parsedFeatures : (fallback?.features || []),
             subtitle: fallback?.subtitle,
           };
         });
@@ -390,7 +408,7 @@ export function SubscriptionTab({
 
                   {/* Features List */}
                   <ul className="space-y-2.5 my-4 flex-1 text-xs text-slate-700 dark:text-slate-300">
-                    {plan.features.map((feature: string, idx: number) => (
+                    {normalizeFeatures(plan.features).map((feature: string, idx: number) => (
                       <li key={idx} className="flex items-start gap-2">
                         <Check className="w-3.5 h-3.5 text-emerald-500 shrink-0 mt-0.5" />
                         <span className="leading-snug">{feature}</span>

@@ -59,26 +59,36 @@ class AdvertisementController extends Controller
 
     public function trackImpression(Request $request, $id)
     {
-        $date = Carbon::now()->toDateString();
-        
-        AdvertisementStat::firstOrCreate(
-            ['advertisement_id' => $id, 'date' => $date]
-        )->increment('impressions');
+        try {
+            if (\Illuminate\Support\Facades\Schema::connection('fmi_mysql')->hasTable('advertisement_stats')) {
+                $date = Carbon::now()->toDateString();
+                AdvertisementStat::firstOrCreate(
+                    ['advertisement_id' => $id, 'date' => $date]
+                )->increment('impressions');
 
-        $this->checkAndPauseAd($id);
+                $this->checkAndPauseAd($id);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Failed to track ad impression: " . $e->getMessage());
+        }
 
         return response()->json(['status' => 'success']);
     }
 
     public function trackClick(Request $request, $id)
     {
-        $date = Carbon::now()->toDateString();
-        
-        AdvertisementStat::firstOrCreate(
-            ['advertisement_id' => $id, 'date' => $date]
-        )->increment('clicks');
+        try {
+            if (\Illuminate\Support\Facades\Schema::connection('fmi_mysql')->hasTable('advertisement_stats')) {
+                $date = Carbon::now()->toDateString();
+                AdvertisementStat::firstOrCreate(
+                    ['advertisement_id' => $id, 'date' => $date]
+                )->increment('clicks');
 
-        $this->checkAndPauseAd($id);
+                $this->checkAndPauseAd($id);
+            }
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::warning("Failed to track ad click: " . $e->getMessage());
+        }
 
         return response()->json(['status' => 'success']);
     }

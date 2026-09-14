@@ -11,7 +11,11 @@ class AdvertisementController extends Controller
 {
     public function index(Request $request)
     {
-        $ads = Advertisement::with('stats')->orderBy('created_at', 'desc')->paginate(20);
+        $query = Advertisement::orderBy('created_at', 'desc');
+        if (\Illuminate\Support\Facades\Schema::connection('fmi_mysql')->hasTable('advertisement_stats')) {
+            $query->with('stats');
+        }
+        $ads = $query->paginate(20);
         return response()->json([
             'status' => 'success',
             'data' => $ads
@@ -23,23 +27,27 @@ class AdvertisementController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'location' => 'required|string|max:100',
-            'banner_url' => 'nullable|string|max:255',
-            'banner_file' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,webm|max:10240',
+            'banner_url' => 'nullable|string|max:2048',
+            'banner_file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,mp4,webm|max:10240',
             'media_type' => 'required|string|in:image,video,html',
             'custom_code' => 'nullable|required_if:media_type,html|string',
-            'link' => 'nullable|string|max:255',
+            'link' => 'nullable|string|max:2048',
             'target_city' => 'nullable|string',
             'target_category_id' => 'nullable|exists:categories,id',
             'priority' => 'nullable|integer',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable',
             'user_id' => 'nullable|exists:users,id',
             'budget' => 'nullable|numeric|min:0',
             'max_impressions' => 'nullable|integer|min:0',
             'max_clicks' => 'nullable|integer|min:0',
             'target_role' => 'nullable|string|max:50'
         ]);
+
+        if ($request->has('is_active')) {
+            $validated['is_active'] = filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? true;
+        }
 
         if ($request->hasFile('banner_file')) {
             $validated['banner_url'] = \App\Helpers\ImageHelper::toStoragePath($request->file('banner_file'), 'advertisements');
@@ -67,7 +75,11 @@ class AdvertisementController extends Controller
 
     public function show($id)
     {
-        $ad = Advertisement::with('stats')->findOrFail($id);
+        $query = Advertisement::query();
+        if (\Illuminate\Support\Facades\Schema::connection('fmi_mysql')->hasTable('advertisement_stats')) {
+            $query->with('stats');
+        }
+        $ad = $query->findOrFail($id);
         return response()->json([
             'status' => 'success',
             'data' => $ad
@@ -79,25 +91,29 @@ class AdvertisementController extends Controller
         $ad = Advertisement::findOrFail($id);
 
         $validated = $request->validate([
-            'title' => 'string|max:255',
-            'location' => 'string|max:100',
-            'banner_url' => 'nullable|string|max:255',
-            'banner_file' => 'nullable|file|mimes:jpeg,png,jpg,gif,mp4,webm|max:10240',
-            'media_type' => 'string|in:image,video,html',
-            'custom_code' => 'string|nullable',
-            'link' => 'nullable|string|max:255',
+            'title' => 'nullable|string|max:255',
+            'location' => 'nullable|string|max:100',
+            'banner_url' => 'nullable|string|max:2048',
+            'banner_file' => 'nullable|file|mimes:jpeg,png,jpg,gif,webp,mp4,webm|max:10240',
+            'media_type' => 'nullable|string|in:image,video,html',
+            'custom_code' => 'nullable|string',
+            'link' => 'nullable|string|max:2048',
             'target_city' => 'nullable|string',
             'target_category_id' => 'nullable|exists:categories,id',
-            'priority' => 'integer',
+            'priority' => 'nullable|integer',
             'starts_at' => 'nullable|date',
             'ends_at' => 'nullable|date',
-            'is_active' => 'boolean',
+            'is_active' => 'nullable',
             'user_id' => 'nullable|exists:users,id',
             'budget' => 'nullable|numeric|min:0',
             'max_impressions' => 'nullable|integer|min:0',
             'max_clicks' => 'nullable|integer|min:0',
             'target_role' => 'nullable|string|max:50'
         ]);
+
+        if ($request->has('is_active')) {
+            $validated['is_active'] = filter_var($request->input('is_active'), FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE) ?? $ad->is_active;
+        }
 
         if ($request->hasFile('banner_file')) {
             $validated['banner_url'] = \App\Helpers\ImageHelper::toStoragePath($request->file('banner_file'), 'advertisements');

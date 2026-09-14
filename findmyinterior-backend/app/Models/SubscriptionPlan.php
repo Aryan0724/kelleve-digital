@@ -35,6 +35,32 @@ class SubscriptionPlan extends Model
         'early_lead_access_hours' => 'integer',
     ];
 
+    // ─── Accessors ────────────────────────────────────────────────────────────
+
+    public function getFeaturesAttribute($value)
+    {
+        if (is_array($value)) {
+            return $value;
+        }
+        if (is_string($value)) {
+            $decoded = json_decode($value, true);
+            if (is_array($decoded)) {
+                return $decoded;
+            }
+            if (is_string($decoded)) {
+                $second = json_decode($decoded, true);
+                if (is_array($second)) {
+                    return $second;
+                }
+            }
+            $lines = array_filter(array_map('trim', explode("\n", $value)));
+            if (!empty($lines)) {
+                return array_values($lines);
+            }
+        }
+        return [];
+    }
+
     // ─── Relationships ────────────────────────────────────────────────────────
 
     public function userSubscriptions(): HasMany
